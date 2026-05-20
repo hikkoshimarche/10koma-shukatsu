@@ -27,6 +27,21 @@ let currentCompanyId = null;
 
 const CHAR_LABEL = { nana: 'ナナ', haruki: 'ハルキ', both: '二人' };
 
+function buildVerificationFooter(lastVerifiedAt) {
+  if (!lastVerifiedAt) {
+    return `<div class="verification-footer"><span class="badge badge-unverified">⚠️ 未検証</span></div>`;
+  }
+  const dateStr = String(lastVerifiedAt).slice(0, 10);
+  const stale = (Date.now() - new Date(lastVerifiedAt).getTime()) > 180 * 24 * 60 * 60 * 1000;
+  return `
+    <div class="verification-footer">
+      <span class="verification-date">最終確認日：${esc(dateStr)}</span>
+      ${stale
+        ? '<span class="badge badge-stale">⚠️ 情報が古い可能性があります</span>'
+        : '<span class="badge badge-verified">✓ 検証済み</span>'}
+    </div>`;
+}
+
 function esc(s) {
   return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -137,6 +152,7 @@ async function main() {
         ${company.description ? `<p class="company-detail-desc">${esc(company.description)}</p>` : ''}
       </div>
       <div class="panels-section">${panelsHtml}</div>
+      ${buildVerificationFooter(company.last_verified_at)}
       <div class="action-bar">
         <button class="btn-like" id="btn-like" aria-label="いいね">
           <span class="btn-icon">♡</span>

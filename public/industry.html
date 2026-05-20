@@ -27,6 +27,21 @@ function esc(s) {
   return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+function buildVerificationFooter(lastVerifiedAt) {
+  if (!lastVerifiedAt) {
+    return `<div class="verification-footer"><span class="badge badge-unverified">⚠️ 未検証</span></div>`;
+  }
+  const dateStr = String(lastVerifiedAt).slice(0, 10);
+  const stale = (Date.now() - new Date(lastVerifiedAt).getTime()) > 180 * 24 * 60 * 60 * 1000;
+  return `
+    <div class="verification-footer">
+      <span class="verification-date">最終確認日：${esc(dateStr)}</span>
+      ${stale
+        ? '<span class="badge badge-stale">⚠️ 情報が古い可能性があります</span>'
+        : '<span class="badge badge-verified">✓ 検証済み</span>'}
+    </div>`;
+}
+
 async function initLiff() {
   await liff.init({ liffId: LIFF_ID });
   if (!liff.isLoggedIn()) { liff.login(); return null; }
@@ -92,7 +107,8 @@ async function main() {
       <div class="content">
         <p class="section-title">この業界の企業</p>
         ${cardsHtml}
-      </div>`;
+      </div>
+      ${buildVerificationFooter(industry.last_verified_at)}`;
 
     app.addEventListener('click', e => {
       const card = e.target.closest('.card');
