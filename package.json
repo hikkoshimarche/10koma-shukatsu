@@ -1,0 +1,24 @@
+{
+  "name": "10koma-shukatsu",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hikkoshimarche/10koma-shukatsu.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/hikkoshimarche/10koma-shukatsu/issues"
+  },
+  "homepage": "https://github.com/hikkoshimarche/10koma-shukatsu#readme",
+  "devDependencies": {
+    "wrangler": "^4.93.0"
+  }
+}

@@ -1,0 +1,8 @@
+name = "10koma-shukatsu-api"
+main = "src/index.ts"
+compatibility_date = "2026-05-20"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "10koma-shukatsu-db"
+database_id = "666d0b01-0919-437e-9644-a6b1ff8b00b2"
