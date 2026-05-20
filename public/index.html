@@ -14,30 +14,37 @@
   </div>
 
   <script>
-    // LIFF ID: LINE Developersコンソールの「LIFFアプリ」から確認できる
     const LIFF_ID = "2010075487-89AJxZnA";
+    const API_BASE = "https://10koma-shukatsu-api.oscar-dodds.workers.dev";
 
     async function main() {
       try {
-        // LIFFを初期化（LINEアプリとの通信を開始）
         await liff.init({ liffId: LIFF_ID });
 
-        // LINEにログインしていなければログイン画面へリダイレクト
         if (!liff.isLoggedIn()) {
           liff.login();
           return;
         }
 
-        // LINEプロフィール（名前・アイコン）を取得
         const profile = await liff.getProfile();
 
+        // APIから業界一覧を取得
+        const res = await fetch(`${API_BASE}/api/industries`);
+        const industries = await res.json();
+
+        // 業界をリスト表示
+        const industriesHtml = industries.length > 0
+          ? industries.map(ind => `<li>${ind.name}</li>`).join("")
+          : "<li>業界データはまだありません</li>";
+
         document.getElementById("app").innerHTML = `
-          <img src="${profile.pictureUrl}" alt="プロフィール画像">
+          <img src="${profile.pictureUrl}" alt="プロフィール画像" style="width:80px;border-radius:50%;">
           <h1>こんにちは、${profile.displayName}さん！</h1>
           <p>10コマ就活へようこそ</p>
+          <h2>業界一覧</h2>
+          <ul>${industriesHtml}</ul>
         `;
       } catch (err) {
-        // エラー内容を画面に表示（開発中のデバッグ用）
         document.getElementById("app").innerHTML =
           `<p class="error">エラー: ${err.message}</p>`;
         console.error(err);
