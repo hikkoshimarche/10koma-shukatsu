@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>業界詳細 | 10コマ就活</title>
+  <link rel="stylesheet" href="shared.css">
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+<div class="page-wrapper">
+  <header class="header">
+    <button class="btn-back" onclick="history.back()" aria-label="戻る">←</button>
+    <h1 class="header-title" id="header-title">業界詳細</h1>
+    <div class="header-spacer"></div>
+  </header>
+  <div id="app">
+    <div class="loading-wrap"><p class="loading-text">読み込み中...</p></div>
+  </div>
+</div>
+
+<script>
+const LIFF_ID = '2010075487-89AJxZnA';
+const API_BASE = 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+
+function esc(s) {
+  return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+async function initLiff() {
+  await liff.init({ liffId: LIFF_ID });
+  if (!liff.isLoggedIn()) { liff.login(); return null; }
+  const profile = await liff.getProfile();
+  fetch(`${API_BASE}/api/users/upsert`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      line_user_id: profile.userId,
+      display_name: profile.displayName,
+      picture_url: profile.pictureUrl
+    })
+  }).catch(() => {});
+  return profile;
+}
+
+async function main() {
+  const app = document.getElementById('app');
+  const params = new URLSearchParams(location.search);
+  const industryId = params.get('id');
+
+  if (!industryId) {
+    app.innerHTML = '<p class="error-text">業界IDが指定されていません</p>';
+    return;
+  }
+
+  try {
+    await initLiff();
+
+    const [indRes, compRes] = await Promise.all([
+      fetch(`${API_BASE}/api/industries`),
+      fetch(`${API_BASE}/api/companies`)
+    ]);
+    if (!indRes.ok || !compRes.ok) throw new Error('APIエラーが発生しました');
+
+    const industries = await indRes.json();
+    const allCompanies = await compRes.json();
+
+    const industry = industries.find(i => i.id === industryId);
+    if (!industry) {
+      app.innerHTML = '<p class="error-text">業界が見つかりません</p>';
+      return;
+    }
+
+    const companies = allCompanies.filter(c => c.industry_id === industryId);
+
+    document.getElementById('header-title').textContent = industry.name;
+    document.title = `${industry.name} | 10コマ就活`;
+
+    const cardsHtml = companies.length === 0
+      ? '<p class="empty-text">この業界の企業データはまだありません</p>'
+      : companies.map(c => `
+          <div class="card" data-id="${esc(c.id)}">
+            <p class="card-title">${esc(c.name)}</p>
+            ${c.description ? `<p class="card-desc">${esc(c.description)}</p>` : ''}
+          </div>`).join('');
+
+    app.innerHTML = `
+      <div class="industry-detail">
+        <p class="industry-detail-name">${esc(industry.name)}</p>
+        ${industry.description ? `<p class="industry-detail-desc">${esc(industry.description)}</p>` : ''}
+      </div>
+      <div class="content">
+        <p class="section-title">この業界の企業</p>
+        ${cardsHtml}
+      </div>`;
+
+    app.addEventListener('click', e => {
+      const card = e.target.closest('.card');
+      if (card) location.href = `company.html?id=${encodeURIComponent(card.dataset.id)}`;
+    });
+  } catch (err) {
+    app.innerHTML = `<p class="error-text">エラー: ${esc(err.message)}</p>`;
+    console.error(err);
+  }
+}
+
+main();
+</script>
+</body>
+</html>
