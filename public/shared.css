@@ -1,231 +1,231 @@
+/* =========================================================
+   10コマ就活 - 漫画雑誌風 共通CSS
+   ベージュ紙 × 黒インク × コマ枠 × フキダシ
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Reggae+One&family=Yusei+Magic:wght@400&family=Kaisei+Decol:wght@400;500;700&display=swap');
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+:root {
+  --paper:      #f5efe0;   /* マンガ紙ベース */
+  --paper-dark: #ebe2c8;   /* 紙の陰影 */
+  --ink:        #1a1a1a;   /* 黒インク */
+  --ink-soft:   #444;
+  --ink-mute:   #777;
+  --accent-red: #d63031;   /* 赤入れ・効果音 */
+  --nana-blue:  #4a90d9;   /* ナナ色 */
+  --haruki-grn: #2d8659;   /* ハルキ色 */
+  --both-purple:#7d3c98;   /* 二人色 */
+  --like-red:   #e63946;
+  --bookmark-y: #f39c12;
+  --shadow-sm:  2px 2px 0 var(--ink);
+  --shadow-md:  4px 4px 0 var(--ink);
+  --shadow-lg:  6px 6px 0 var(--ink);
+}
+
+html, body {
+  background: var(--paper);
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
-  background: #f0f0f0;
-  color: #333;
+  font-family: "Kaisei Decol", "Yusei Magic", -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+  color: var(--ink);
   -webkit-font-smoothing: antialiased;
+  /* 紙のテクスチャ（うっすらノイズ） */
+  background-image:
+    radial-gradient(circle at 25% 30%, rgba(0,0,0,0.025) 1px, transparent 2px),
+    radial-gradient(circle at 70% 60%, rgba(0,0,0,0.02) 1px, transparent 2px),
+    linear-gradient(180deg, var(--paper) 0%, var(--paper-dark) 100%);
+  background-size: 8px 8px, 12px 12px, 100% 100%;
+  min-height: 100vh;
 }
 
 .page-wrapper {
   max-width: 480px;
   margin: 0 auto;
   min-height: 100vh;
-  background: #fff;
+  background: var(--paper);
+  background-image:
+    radial-gradient(circle at 25% 30%, rgba(0,0,0,0.025) 1px, transparent 2px),
+    radial-gradient(circle at 70% 60%, rgba(0,0,0,0.02) 1px, transparent 2px);
+  background-size: 8px 8px, 12px 12px;
+  position: relative;
+  box-shadow: 0 0 20px rgba(0,0,0,0.08);
 }
 
-/* === Header === */
+/* === Header（雑誌のロゴ風） === */
 .header {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: #fff;
-  border-bottom: 1px solid #e8e8e8;
+  background: var(--ink);
+  color: var(--paper);
   display: flex;
   align-items: center;
   padding: 0 12px;
-  height: 52px;
+  height: 56px;
+  border-bottom: 4px double var(--paper);
 }
 
 .header-title {
   flex: 1;
   text-align: center;
-  font-size: 17px;
-  font-weight: 700;
-  color: #111;
+  font-family: "Reggae One", "Kaisei Decol", sans-serif;
+  font-size: 19px;
+  font-weight: 400;
+  color: var(--paper);
+  letter-spacing: 0.08em;
+  text-shadow: 1px 1px 0 var(--accent-red);
 }
 
 .btn-back {
   background: none;
-  border: none;
-  font-size: 22px;
+  border: 2px solid var(--paper);
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: 700;
   cursor: pointer;
-  padding: 8px;
-  color: #555;
+  width: 36px;
+  height: 36px;
+  color: var(--paper);
   line-height: 1;
-  min-width: 40px;
   -webkit-tap-highlight-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header-spacer {
-  min-width: 40px;
+  min-width: 36px;
 }
 
-/* === Profile badge === */
-.profile-badge {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  background: #fafafa;
-  border-bottom: 1px solid #eee;
+/* === セクションタイトル === */
+.section-title {
+  font-family: "Reggae One", sans-serif;
+  font-size: 16px;
+  color: var(--ink);
+  letter-spacing: 0.05em;
+  margin: 16px 0 12px;
+  padding-left: 12px;
+  border-left: 6px solid var(--accent-red);
 }
 
-.profile-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: #ddd;
-}
-
-.profile-name {
-  font-size: 14px;
-  color: #555;
-}
-
-/* === Content area === */
+/* === コンテンツエリア === */
 .content {
   padding: 16px;
 }
 
-.section-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #999;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #eee;
-}
-
-/* === Card === */
+/* === カード（雑誌のコーナー風） === */
 .card {
   background: #fff;
-  border: 1px solid #e8e8e8;
-  border-radius: 12px;
+  border: 2.5px solid var(--ink);
+  border-radius: 4px;
   padding: 16px;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
   cursor: pointer;
-  transition: background 0.1s;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.1s, box-shadow 0.1s;
   -webkit-tap-highlight-color: transparent;
+  position: relative;
 }
 
 .card:active {
-  background: #f8f8f8;
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .card-title {
-  font-size: 17px;
-  font-weight: 600;
+  font-family: "Kaisei Decol", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
   margin-bottom: 6px;
   line-height: 1.4;
+  color: var(--ink);
 }
 
 .card-desc {
   font-size: 13px;
-  color: #666;
-  line-height: 1.6;
+  color: var(--ink-soft);
+  line-height: 1.65;
 }
 
-.card-footer {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-top: 10px;
-}
-
-/* === Like / Bookmark buttons === */
-.btn-like,
-.btn-bookmark {
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: 24px;
-  padding: 4px 10px;
-  border-radius: 8px;
-  color: #ccc;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.btn-like:disabled,
-.btn-bookmark:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-
-.btn-like.liked {
-  color: #e74c3c;
-}
-
-.btn-bookmark.bookmarked {
-  color: #f39c12;
-}
-
-.btn-label {
-  font-size: 11px;
-  color: #aaa;
-}
-
-/* === Industry detail === */
-.industry-detail {
-  padding: 20px 16px 16px;
-  border-bottom: 1px solid #eee;
-}
-
-.industry-detail-name {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.industry-detail-desc {
-  font-size: 14px;
-  color: #666;
-  line-height: 1.7;
-}
-
-/* === Company detail header === */
+/* === 業界・企業詳細ヘッダー === */
+.industry-detail,
 .company-detail {
-  padding: 20px 16px 16px;
-  border-bottom: 1px solid #eee;
+  padding: 24px 16px 18px;
+  text-align: center;
+  position: relative;
 }
 
+.industry-detail::after,
+.company-detail::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 16px;
+  right: 16px;
+  height: 3px;
+  background-image: repeating-linear-gradient(90deg, var(--ink) 0 8px, transparent 8px 14px);
+}
+
+.industry-detail-name,
 .company-detail-name {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 8px;
+  font-family: "Reggae One", sans-serif;
+  font-size: 26px;
+  font-weight: 400;
+  margin-bottom: 10px;
+  color: var(--ink);
+  letter-spacing: 0.04em;
+  text-shadow: 2px 2px 0 var(--accent-red);
 }
 
+.industry-detail-desc,
 .company-detail-desc {
   font-size: 14px;
-  color: #666;
-  line-height: 1.7;
+  color: var(--ink-soft);
+  line-height: 1.75;
 }
 
-/* === Panels === */
+/* === パネル（コマ）セクション === */
 .panels-section {
-  padding: 16px;
+  padding: 16px 14px 24px;
 }
 
 .panel {
-  margin-bottom: 28px;
+  margin-bottom: 36px;
+  position: relative;
 }
 
+/* コマ番号（リボン風） */
 .panel-num {
-  font-size: 11px;
-  font-weight: 600;
-  color: #bbb;
-  letter-spacing: 0.05em;
-  margin-bottom: 8px;
+  display: inline-block;
+  font-family: "Reggae One", sans-serif;
+  font-size: 13px;
+  color: var(--paper);
+  background: var(--ink);
+  padding: 4px 14px 4px 10px;
+  margin-bottom: 10px;
+  letter-spacing: 0.08em;
+  position: relative;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 50%, 100% 100%, 0 100%);
 }
 
+/* コマ枠（太い黒線・少し傾けない・影付き） */
 .panel-image-wrap {
   width: 100%;
   aspect-ratio: 4 / 5;
-  background: #e9e9e9;
-  border-radius: 10px;
+  background: #fff;
+  border: 3px solid var(--ink);
+  border-radius: 2px;
   overflow: hidden;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-md);
+  position: relative;
 }
 
 .panel-image-wrap img {
@@ -233,69 +233,340 @@ body {
   height: 100%;
   object-fit: contain;
   display: block;
-}
-
-.panel-dialogue {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-}
-
-.panel-character {
-  font-size: 11px;
-  font-weight: 600;
-  color: #fff;
-  background: #4a90d9;
-  border-radius: 4px;
-  padding: 3px 6px;
-  white-space: nowrap;
-  flex-shrink: 0;
-  margin-top: 3px;
-}
-
-.panel-character.haruki {
-  background: #27ae60;
-}
-
-.panel-character.both {
-  background: #8e44ad;
-}
-
-.panel-text {
-  font-size: 15px;
-  line-height: 1.65;
-  background: #f5f5f5;
-  border-radius: 8px;
-  padding: 8px 12px;
-  flex: 1;
-}
-
-/* === Action bar === */
-.action-bar {
-  display: flex;
-  justify-content: center;
-  gap: 32px;
-  padding: 16px;
-  border-top: 1px solid #eee;
   background: #fff;
 }
 
-.action-bar .btn-like,
-.action-bar .btn-bookmark {
-  font-size: 30px;
+/* === フキダシ（しっぽ付き） === */
+.panel-dialogue {
+  position: relative;
+  margin-top: 8px;
+  padding-left: 4px;
 }
 
-/* === Verification footer === */
+.speech-bubble {
+  position: relative;
+  background: #fff;
+  border: 2.5px solid var(--ink);
+  border-radius: 18px;
+  padding: 12px 16px 12px 18px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+  font-family: "Kaisei Decol", sans-serif;
+  font-weight: 500;
+}
+
+/* しっぽ（外側の黒） */
+.speech-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -16px;
+  left: 28px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 16px 12px 0 0;
+  border-color: var(--ink) transparent transparent transparent;
+}
+
+/* しっぽ（内側の白） */
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -11px;
+  left: 30px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 13px 9px 0 0;
+  border-color: #fff transparent transparent transparent;
+}
+
+/* ハルキ：右寄りしっぽ */
+.speech-bubble.haruki::before { left: auto; right: 28px; border-width: 16px 0 0 12px; border-color: var(--ink) transparent transparent transparent; }
+.speech-bubble.haruki::after  { left: auto; right: 30px; border-width: 13px 0 0 9px;  border-color: #fff transparent transparent transparent; }
+
+/* 二人：中央しっぽ */
+.speech-bubble.both::before { left: 50%; transform: translateX(-50%); }
+.speech-bubble.both::after  { left: 50%; transform: translateX(-46%); }
+
+/* キャラ名タグ */
+.char-tag {
+  display: inline-block;
+  font-family: "Reggae One", sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: #fff;
+  background: var(--nana-blue);
+  border: 2px solid var(--ink);
+  border-radius: 20px;
+  padding: 2px 12px;
+  margin-bottom: -8px;
+  margin-left: 14px;
+  position: relative;
+  z-index: 2;
+  letter-spacing: 0.08em;
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+.char-tag.haruki {
+  background: var(--haruki-grn);
+  float: right;
+  margin-left: 0;
+  margin-right: 14px;
+}
+
+.char-tag.both {
+  background: var(--both-purple);
+  display: block;
+  margin: 0 auto -8px;
+  width: fit-content;
+}
+
+/* === コマ下アクションボタン（いいね・シェア） === */
+.panel-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  padding: 0 4px;
+}
+
+.panel-action-btn {
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-family: "Kaisei Decol", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 1px 1px 0 var(--ink);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.08s, box-shadow 0.08s;
+  min-height: 34px;
+}
+
+.panel-action-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+
+.panel-action-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.panel-action-btn .icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.panel-action-btn.liked {
+  background: var(--like-red);
+  color: #fff;
+  border-color: var(--ink);
+}
+
+.panel-action-btn.liked .icon {
+  animation: pop 0.3s ease;
+}
+
+@keyframes pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+/* === 最後のコマ後 大CTA（YouTube動画） === */
+.cta-youtube {
+  margin: 8px 14px 24px;
+  background: var(--ink);
+  color: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: 6px;
+  padding: 18px 16px;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.1s, box-shadow 0.1s;
+  text-decoration: none;
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-youtube:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.cta-youtube::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 80px;
+  height: 200%;
+  background: var(--accent-red);
+  transform: rotate(20deg);
+  opacity: 0.25;
+}
+
+.cta-youtube-label {
+  font-family: "Reggae One", sans-serif;
+  font-size: 13px;
+  color: var(--accent-red);
+  letter-spacing: 0.15em;
+  margin-bottom: 4px;
+  position: relative;
+}
+
+.cta-youtube-title {
+  font-family: "Reggae One", sans-serif;
+  font-size: 19px;
+  color: var(--paper);
+  letter-spacing: 0.04em;
+  position: relative;
+}
+
+.cta-youtube-sub {
+  font-size: 11px;
+  color: rgba(245,239,224,0.7);
+  margin-top: 6px;
+  position: relative;
+}
+
+/* === ブックマーク・次企業（最終アクションバー） === */
+.final-action-bar {
+  display: flex;
+  gap: 10px;
+  padding: 16px 14px;
+  background: var(--paper-dark);
+  border-top: 3px solid var(--ink);
+  border-bottom: 3px solid var(--ink);
+}
+
+.final-action-bar .btn-pill {
+  flex: 1;
+  background: #fff;
+  border: 2.5px solid var(--ink);
+  border-radius: 999px;
+  padding: 12px 8px;
+  font-family: "Kaisei Decol", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: var(--shadow-sm);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.08s, box-shadow 0.08s;
+  min-height: 46px;
+}
+
+.final-action-bar .btn-pill:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.final-action-bar .btn-pill.bookmarked {
+  background: var(--bookmark-y);
+  color: #fff;
+}
+
+.final-action-bar .btn-pill .icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* === 他社レコメンド（次の企業を見る） === */
+.recommend-section {
+  padding: 22px 14px 28px;
+  background: var(--paper);
+}
+
+.recommend-title {
+  font-family: "Reggae One", sans-serif;
+  font-size: 17px;
+  margin-bottom: 14px;
+  text-align: center;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+}
+
+.recommend-title::before,
+.recommend-title::after {
+  content: '◆';
+  color: var(--accent-red);
+  margin: 0 10px;
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+.recommend-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.recommend-card {
+  background: #fff;
+  border: 2.5px solid var(--ink);
+  border-radius: 6px;
+  padding: 14px 10px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.08s, box-shadow 0.08s;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.recommend-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.recommend-card-name {
+  font-family: "Kaisei Decol", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+.recommend-card-arrow {
+  font-size: 11px;
+  color: var(--ink-mute);
+  margin-top: 6px;
+  letter-spacing: 0.1em;
+}
+
+/* === 検証フッター === */
 .verification-footer {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
   padding: 12px 16px;
-  background: #f7f7f7;
-  border-top: 1px solid #e8e8e8;
-  font-size: 12px;
-  color: #888;
+  background: var(--paper-dark);
+  border-top: 1px dashed var(--ink-soft);
+  font-size: 11px;
+  color: var(--ink-soft);
+  font-family: "Kaisei Decol", sans-serif;
 }
 
 .verification-date {
@@ -304,55 +575,121 @@ body {
 
 .badge {
   display: inline-block;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
   border-radius: 20px;
   white-space: nowrap;
+  border: 1.5px solid var(--ink);
 }
 
-.badge-stale {
-  background: #fff3e0;
-  color: #e65100;
-  border: 1px solid #ffcc80;
-}
-
-.badge-unverified {
-  background: #fdecea;
-  color: #c62828;
-  border: 1px solid #ef9a9a;
-}
-
-.badge-verified {
-  background: #e8f5e9;
-  color: #2e7d32;
-  border: 1px solid #a5d6a7;
-}
+.badge-stale       { background: #fff3e0; color: #b35900; }
+.badge-unverified  { background: #fdecea; color: #b71c1c; }
+.badge-verified    { background: #e8f5e9; color: #1b5e20; }
 
 /* === Loading / Error / Empty === */
 .loading-wrap {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 200px;
+  min-height: 240px;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .loading-text {
-  color: #bbb;
-  font-size: 15px;
+  color: var(--ink-mute);
+  font-size: 14px;
+  font-family: "Reggae One", sans-serif;
+  letter-spacing: 0.1em;
+}
+
+.loading-dot {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--ink);
+  margin: 0 3px;
+  animation: bounce 0.8s infinite;
+}
+.loading-dot:nth-child(2) { animation-delay: 0.15s; }
+.loading-dot:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
 }
 
 .error-text {
-  color: #e74c3c;
+  color: var(--accent-red);
   font-size: 14px;
   padding: 24px 16px;
   text-align: center;
   line-height: 1.6;
+  font-weight: 700;
 }
 
 .empty-text {
-  color: #aaa;
+  color: var(--ink-mute);
   font-size: 14px;
   text-align: center;
   padding: 40px 16px;
+}
+
+/* === シェアトースト === */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--paper);
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  z-index: 1000;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none;
+  font-family: "Kaisei Decol", sans-serif;
+  white-space: nowrap;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+/* === プロフィールバッジ（index/industryで使用） === */
+.profile-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--paper-dark);
+  border-bottom: 2px solid var(--ink);
+}
+
+.profile-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #ddd;
+  border: 2px solid var(--ink);
+}
+
+.profile-name {
+  font-size: 13px;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 10px;
 }

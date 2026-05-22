@@ -58,15 +58,16 @@ app.get('/api/companies', async (c) => {
   return c.json(results)
 })
 
-// 会社詳細（10コマURL一覧付き）
+// 会社詳細（10コマ・既存like/bookmark状態・同業他社レコメンド込み）
 app.get('/api/companies/:id', async (c) => {
   const id = c.req.param('id')
+  const userId = c.req.query('user_id') ?? null
 
   const company = await c.env.DB.prepare(
     'SELECT * FROM companies WHERE id = ?'
   )
     .bind(id)
-    .first()
+    .first<{ id: string; industry_id: string; [key: string]: unknown }>()
 
   if (!company) {
     return c.json({ error: 'not found' }, 404)
@@ -78,16 +79,72 @@ app.get('/api/companies/:id', async (c) => {
     .bind(id)
     .all()
 
-  return c.json({ ...company, panels })
+  // 同業他社レコメンド（最大5社、自社を除く）
+  const { results: recommendations } = await c.env.DB.prepare(
+    `SELECT id, name, description, thumbnail_url
+     FROM companies
+     WHERE industry_id = ? AND id != ?
+     ORDER BY id
+     LIMIT 5`
+  )
+    .bind(company.industry_id, id)
+    .all()
+
+  // 既存like / bookmark 状態（user_idが渡された時のみ）
+  let liked = false
+  let bookmarked = false
+  let likedPanels: number[] = []
+
+  if (userId) {
+    const likeRow = await c.env.DB.prepare(
+      `SELECT 1 FROM likes
+       WHERE line_user_id = ? AND content_type = 'company' AND content_id = ?`
+    )
+      .bind(userId, id)
+      .first()
+    liked = !!likeRow
+
+    const bookmarkRow = await c.env.DB.prepare(
+      'SELECT 1 FROM bookmarks WHERE line_user_id = ? AND company_id = ?'
+    )
+      .bind(userId, id)
+      .first()
+    bookmarked = !!bookmarkRow
+
+    // パネル単位のいいねは content_id = `${company_id}:${panel_num}` で保存
+    const { results: panelLikes } = await c.env.DB.prepare(
+      `SELECT content_id FROM likes
+       WHERE line_user_id = ? AND content_type = 'panel' AND content_id LIKE ?`
+    )
+      .bind(userId, `${id}:%`)
+      .all<{ content_id: string }>()
+
+    likedPanels = panelLikes
+      .map((r) => Number((r.content_id as string).split(':')[1]))
+      .filter((n) => !isNaN(n))
+  }
+
+  return c.json({
+    ...company,
+    panels,
+    recommendations,
+    liked,
+    bookmarked,
+    liked_panels: likedPanels,
+  })
 })
 
-// いいね toggle
+// いいね toggle（company/panel共通）
 app.post('/api/like', async (c) => {
   const { line_user_id, content_type, content_id } = await c.req.json<{
     line_user_id: string
     content_type: string
     content_id: string
   }>()
+
+  if (!line_user_id || !content_type || !content_id) {
+    return c.json({ error: 'missing params' }, 400)
+  }
 
   const existing = await c.env.DB.prepare(
     'SELECT 1 FROM likes WHERE line_user_id = ? AND content_type = ? AND content_id = ?'
@@ -118,6 +175,10 @@ app.post('/api/bookmark', async (c) => {
     line_user_id: string
     company_id: string
   }>()
+
+  if (!line_user_id || !company_id) {
+    return c.json({ error: 'missing params' }, 400)
+  }
 
   const existing = await c.env.DB.prepare(
     'SELECT 1 FROM bookmarks WHERE line_user_id = ? AND company_id = ?'
@@ -177,4 +238,3 @@ app.post('/api/share-log', async (c) => {
 })
 
 export default app
-

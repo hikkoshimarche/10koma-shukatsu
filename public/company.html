@@ -11,25 +11,52 @@
 <div class="page-wrapper">
   <header class="header">
     <button class="btn-back" onclick="history.back()" aria-label="戻る">←</button>
-    <h1 class="header-title" id="header-title">企業詳細</h1>
+    <h1 class="header-title" id="header-title">10コマ就活</h1>
     <div class="header-spacer"></div>
   </header>
   <div id="app">
-    <div class="loading-wrap"><p class="loading-text">読み込み中...</p></div>
+    <div class="loading-wrap">
+      <p class="loading-text">読み込み中</p>
+      <div>
+        <span class="loading-dot"></span>
+        <span class="loading-dot"></span>
+        <span class="loading-dot"></span>
+      </div>
+    </div>
   </div>
+  <div id="toast" class="toast"></div>
 </div>
 
 <script>
 const LIFF_ID = '2010075487-89AJxZnA';
 const API_BASE = 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+const APP_BASE = 'https://10koma-shukatsu.pages.dev';
+
 let currentUserId = null;
 let currentCompanyId = null;
+let currentCompany = null;
 
 const CHAR_LABEL = { nana: 'ナナ', haruki: 'ハルキ', both: '二人' };
 
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
 function buildVerificationFooter(lastVerifiedAt) {
   if (!lastVerifiedAt) {
-    return `<div class="verification-footer"><span class="badge badge-unverified">⚠️ 未検証</span></div>`;
+    return `<div class="verification-footer"><span class="badge badge-unverified">⚠ 未検証</span></div>`;
   }
   const dateStr = String(lastVerifiedAt).slice(0, 10);
   const stale = (Date.now() - new Date(lastVerifiedAt).getTime()) > 180 * 24 * 60 * 60 * 1000;
@@ -37,13 +64,9 @@ function buildVerificationFooter(lastVerifiedAt) {
     <div class="verification-footer">
       <span class="verification-date">最終確認日：${esc(dateStr)}</span>
       ${stale
-        ? '<span class="badge badge-stale">⚠️ 情報が古い可能性があります</span>'
+        ? '<span class="badge badge-stale">⚠ 情報が古い可能性</span>'
         : '<span class="badge badge-verified">✓ 検証済み</span>'}
     </div>`;
-}
-
-function esc(s) {
-  return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 async function initLiff() {
@@ -62,25 +85,56 @@ async function initLiff() {
   return profile;
 }
 
-async function handleLike(btn) {
+/* ===== インタラクション1: コマいいね ===== */
+async function handlePanelLike(btn, panelNum) {
   if (!currentUserId || btn.disabled) return;
   btn.disabled = true;
+  const contentId = `${currentCompanyId}:${panelNum}`;
   try {
     const res = await fetch(`${API_BASE}/api/like`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ line_user_id: currentUserId, content_type: 'company', content_id: currentCompanyId })
+      body: JSON.stringify({ line_user_id: currentUserId, content_type: 'panel', content_id: contentId })
     });
     const { liked } = await res.json();
     btn.classList.toggle('liked', liked);
-    btn.querySelector('.btn-icon').textContent = liked ? '♥' : '♡';
+    btn.querySelector('.icon').textContent = liked ? '♥' : '♡';
+    btn.querySelector('.label').textContent = liked ? 'いいね済' : 'いいね';
   } catch (e) {
     console.error(e);
+    showToast('通信エラー');
   } finally {
     btn.disabled = false;
   }
 }
 
+/* ===== インタラクション1: コマシェア ===== */
+async function handlePanelShare(panelNum, dialogue) {
+  const shareText = `【10コマ就活｜${currentCompany.name}】コマ${panelNum}\n「${dialogue}」\n${APP_BASE}/company.html?id=${encodeURIComponent(currentCompanyId)}`;
+  fetch(`${API_BASE}/api/share-log`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ line_user_id: currentUserId, content_type: 'panel', content_id: `${currentCompanyId}:${panelNum}` })
+  }).catch(() => {});
+
+  try {
+    if (liff.isApiAvailable && liff.isApiAvailable('shareTargetPicker')) {
+      await liff.shareTargetPicker([{ type: 'text', text: shareText }]);
+      showToast('シェアしました');
+      return;
+    }
+  } catch (e) { console.warn(e); }
+
+  // フォールバック：クリップボード
+  try {
+    await navigator.clipboard.writeText(shareText);
+    showToast('リンクをコピーしました');
+  } catch (e) {
+    showToast('シェアに失敗しました');
+  }
+}
+
+/* ===== インタラクション3: 企業ブックマーク ===== */
 async function handleBookmark(btn) {
   if (!currentUserId || btn.disabled) return;
   btn.disabled = true;
@@ -92,12 +146,85 @@ async function handleBookmark(btn) {
     });
     const { bookmarked } = await res.json();
     btn.classList.toggle('bookmarked', bookmarked);
-    btn.querySelector('.btn-icon').textContent = bookmarked ? '★' : '☆';
+    btn.querySelector('.icon').textContent = bookmarked ? '★' : '☆';
+    btn.querySelector('.label').textContent = bookmarked ? '保存済み' : '保存';
+    showToast(bookmarked ? 'ポケットに保存しました' : '保存を解除しました');
   } catch (e) {
     console.error(e);
+    showToast('通信エラー');
   } finally {
     btn.disabled = false;
   }
+}
+
+/* ===== インタラクション2: YouTube動画 ===== */
+function handleYoutubeClick(url) {
+  fetch(`${API_BASE}/api/share-log`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ line_user_id: currentUserId, content_type: 'youtube_click', content_id: currentCompanyId })
+  }).catch(() => {});
+  try {
+    if (liff && liff.openWindow) {
+      liff.openWindow({ url, external: true });
+      return;
+    }
+  } catch (e) { console.warn(e); }
+  window.open(url, '_blank');
+}
+
+/* ===== インタラクション4: 他社レコメンド ===== */
+function buildRecommendSection(recommendations) {
+  if (!recommendations || recommendations.length === 0) {
+    return '';
+  }
+  const cards = recommendations.map(r => `
+    <a href="company.html?id=${encodeURIComponent(r.id)}" class="recommend-card">
+      <div class="recommend-card-name">${esc(r.name)}</div>
+      <div class="recommend-card-arrow">読む ▶</div>
+    </a>
+  `).join('');
+  return `
+    <section class="recommend-section">
+      <h2 class="recommend-title">次の企業を読む</h2>
+      <div class="recommend-grid">${cards}</div>
+    </section>
+  `;
+}
+
+function buildPanelHtml(p, totalPanels, isLiked) {
+  const charLabel = CHAR_LABEL[p.character] ?? p.character;
+  const charCls = esc(p.character);
+
+  // キャラタグの位置（ナナ=左、ハルキ=右、二人=中央）
+  const tagHtml = `<span class="char-tag ${charCls}">${esc(charLabel)}</span>`;
+
+  return `
+    <div class="panel">
+      <div class="panel-num">コマ ${p.panel_num} / ${totalPanels}</div>
+      <div class="panel-image-wrap">
+        <img src="${esc(p.image_url)}" alt="コマ${p.panel_num}" onerror="this.style.display='none'">
+      </div>
+      ${tagHtml}
+      <div class="panel-dialogue">
+        <div class="speech-bubble ${charCls}">${esc(p.dialogue)}</div>
+      </div>
+      <div class="panel-actions">
+        <button class="panel-action-btn panel-like-btn ${isLiked ? 'liked' : ''}"
+                data-panel-num="${p.panel_num}"
+                aria-label="このコマにいいね">
+          <span class="icon">${isLiked ? '♥' : '♡'}</span>
+          <span class="label">${isLiked ? 'いいね済' : 'いいね'}</span>
+        </button>
+        <button class="panel-action-btn panel-share-btn"
+                data-panel-num="${p.panel_num}"
+                data-dialogue="${esc(p.dialogue)}"
+                aria-label="このコマをシェア">
+          <span class="icon">↗</span>
+          <span class="label">シェア</span>
+        </button>
+      </div>
+    </div>`;
 }
 
 async function main() {
@@ -116,12 +243,14 @@ async function main() {
     if (!profile) return;
     currentUserId = profile.userId;
 
-    const res = await fetch(`${API_BASE}/api/companies/${encodeURIComponent(companyId)}`);
+    // 会社詳細（10コマ・like/bookmark状態・推薦・パネルlike込み）
+    const res = await fetch(`${API_BASE}/api/companies/${encodeURIComponent(companyId)}?user_id=${encodeURIComponent(currentUserId)}`);
     if (res.status === 404) { app.innerHTML = '<p class="error-text">企業が見つかりません</p>'; return; }
     if (!res.ok) throw new Error(`API error ${res.status}`);
     const company = await res.json();
+    currentCompany = company;
 
-    // 閲覧ログ（fire-and-forget）
+    // 閲覧ログ
     fetch(`${API_BASE}/api/log-view`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -132,19 +261,35 @@ async function main() {
     document.title = `${company.name} | 10コマ就活`;
 
     const panels = company.panels ?? [];
-    const panelsHtml = panels.length === 0
+    const likedSet = new Set(company.liked_panels ?? []);
+    const totalPanels = panels.length;
+
+    const panelsHtml = totalPanels === 0
       ? '<p class="empty-text">パネルデータはまだありません</p>'
-      : panels.map(p => `
-          <div class="panel">
-            <p class="panel-num">コマ ${p.panel_num} / ${panels.length}</p>
-            <div class="panel-image-wrap">
-              <img src="${esc(p.image_url)}" alt="コマ${p.panel_num}" onerror="this.style.display='none'">
-            </div>
-            <div class="panel-dialogue">
-              <span class="panel-character ${esc(p.character)}">${esc(CHAR_LABEL[p.character] ?? p.character)}</span>
-              <p class="panel-text">${esc(p.dialogue)}</p>
-            </div>
-          </div>`).join('');
+      : panels.map(p => buildPanelHtml(p, totalPanels, likedSet.has(p.panel_num))).join('');
+
+    // 最後のコマ後のYouTube CTA
+    const youtubeUrl = company.video_url && !String(company.video_url).includes('PLACEHOLDER')
+      ? company.video_url
+      : null;
+    const youtubeCta = youtubeUrl ? `
+      <a class="cta-youtube" id="cta-youtube" data-url="${esc(youtubeUrl)}">
+        <div class="cta-youtube-label">▶ MOVIE</div>
+        <div class="cta-youtube-title">さらに詳しく動画で見る</div>
+        <div class="cta-youtube-sub">YouTubeで開きます</div>
+      </a>` : '';
+
+    // 最終アクションバー（ブックマーク + 次の企業）
+    const finalBar = `
+      <div class="final-action-bar">
+        <button class="btn-pill bookmark-btn ${company.bookmarked ? 'bookmarked' : ''}" id="btn-bookmark">
+          <span class="icon">${company.bookmarked ? '★' : '☆'}</span>
+          <span class="label">${company.bookmarked ? '保存済み' : 'ポケットに保存'}</span>
+        </button>
+      </div>`;
+
+    // 他社レコメンド
+    const recommendHtml = buildRecommendSection(company.recommendations);
 
     app.innerHTML = `
       <div class="company-detail">
@@ -152,20 +297,36 @@ async function main() {
         ${company.description ? `<p class="company-detail-desc">${esc(company.description)}</p>` : ''}
       </div>
       <div class="panels-section">${panelsHtml}</div>
+      ${youtubeCta}
+      ${finalBar}
+      ${recommendHtml}
       ${buildVerificationFooter(company.last_verified_at)}
-      <div class="action-bar">
-        <button class="btn-like" id="btn-like" aria-label="いいね">
-          <span class="btn-icon">♡</span>
-          <span class="btn-label">いいね</span>
-        </button>
-        <button class="btn-bookmark" id="btn-bookmark" aria-label="ブックマーク">
-          <span class="btn-icon">☆</span>
-          <span class="btn-label">保存</span>
-        </button>
-      </div>`;
+    `;
 
-    document.getElementById('btn-like').addEventListener('click', e => handleLike(e.currentTarget));
-    document.getElementById('btn-bookmark').addEventListener('click', e => handleBookmark(e.currentTarget));
+    // イベントバインド
+    document.querySelectorAll('.panel-like-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const b = e.currentTarget;
+        handlePanelLike(b, Number(b.dataset.panelNum));
+      });
+    });
+    document.querySelectorAll('.panel-share-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const b = e.currentTarget;
+        handlePanelShare(Number(b.dataset.panelNum), b.dataset.dialogue);
+      });
+    });
+    const btnBookmark = document.getElementById('btn-bookmark');
+    if (btnBookmark) {
+      btnBookmark.addEventListener('click', e => handleBookmark(e.currentTarget));
+    }
+    const ctaYoutube = document.getElementById('cta-youtube');
+    if (ctaYoutube) {
+      ctaYoutube.addEventListener('click', e => {
+        e.preventDefault();
+        handleYoutubeClick(e.currentTarget.dataset.url);
+      });
+    }
   } catch (err) {
     app.innerHTML = `<p class="error-text">エラー: ${esc(err.message)}</p>`;
     console.error(err);
