@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>動画で研究 | 10コマ就活</title>
+  <link rel="stylesheet" href="shared.css">
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+<div class="page-wrapper">
+  <header class="header">
+    <button class="btn-back" onclick="history.back()" aria-label="戻る">←</button>
+    <h1 class="header-title">動画で研究</h1>
+    <div class="header-spacer"></div>
+  </header>
+  <div id="app">
+    <div class="loading-wrap">
+      <p class="loading-text">読み込み中</p>
+      <div>
+        <span class="loading-dot"></span>
+        <span class="loading-dot"></span>
+        <span class="loading-dot"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const LIFF_ID = '2010075487-89AJxZnA';
+const API_BASE = 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+let currentUserId = null;
+
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+async function initLiff() {
+  await liff.init({ liffId: LIFF_ID });
+  if (!liff.isLoggedIn()) { liff.login(); return null; }
+  const profile = await liff.getProfile();
+  fetch(`${API_BASE}/api/users/upsert`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      line_user_id: profile.userId,
+      display_name: profile.displayName,
+      picture_url: profile.pictureUrl
+    })
+  }).catch(() => {});
+  return profile;
+}
+
+function openYoutube(url) {
+  fetch(`${API_BASE}/api/share-log`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ line_user_id: currentUserId, content_type: 'video_click', content_id: url })
+  }).catch(() => {});
+  try {
+    if (liff && liff.openWindow) {
+      liff.openWindow({ url, external: true });
+      return;
+    }
+  } catch (e) { console.warn(e); }
+  window.open(url, '_blank');
+}
+
+// 業界IDごとに動画をグループ化
+function groupByIndustry(industryVideos, companyVideos) {
+  const map = new Map();
+  for (const v of industryVideos) {
+    if (!map.has(v.industry_id)) {
+      map.set(v.industry_id, { name: v.industry_name, industry_videos: [], company_videos: [] });
+    }
+    map.get(v.industry_id).industry_videos.push(v);
+  }
+  for (const v of companyVideos) {
+    if (!map.has(v.industry_id)) {
+      map.set(v.industry_id, { name: v.industry_name, industry_videos: [], company_videos: [] });
+    }
+    map.get(v.industry_id).company_videos.push(v);
+  }
+  return map;
+}
+
+async function main() {
+  const app = document.getElementById('app');
+  try {
+    const profile = await initLiff();
+    if (!profile) return;
+    currentUserId = profile.userId;
+
+    const res = await fetch(`${API_BASE}/api/videos`);
+    if (!res.ok) throw new Error(`API error ${res.status}`);
+    const { industry_videos = [], company_videos = [] } = await res.json();
+
+    fetch(`${API_BASE}/api/log-view`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ line_user_id: currentUserId, content_type: 'videos_page', content_id: 'index' })
+    }).catch(() => {});
+
+    if (industry_videos.length === 0 && company_videos.length === 0) {
+      app.innerHTML = `
+        <div class="industry-detail">
+          <p class="industry-detail-name">動画で研究</p>
+          <p class="industry-detail-desc">業界・企業を動画で深掘り</p>
+        </div>
+        <p class="empty-text">動画はまだ準備中です。<br>近日公開予定！</p>
+      `;
+      return;
+    }
+
+    const grouped = groupByIndustry(industry_videos, company_videos);
+
+    let sectionsHtml = '';
+    for (const [industryId, data] of grouped) {
+      const ivHtml = data.industry_videos.map(v => `
+        <div class="video-card" data-url="${esc(v.video_url)}">
+          <div class="video-thumb">
+            <span class="play-icon">▶</span>
+          </div>
+          <div class="video-meta">
+            <div class="video-badge video-badge-industry">業界</div>
+            <div class="video-title">${esc(v.title)}</div>
+          </div>
+        </div>`).join('');
+
+      const cvHtml = data.company_videos.map(v => `
+        <div class="video-card" data-url="${esc(v.video_url)}">
+          <div class="video-thumb">
+            <span class="play-icon">▶</span>
+          </div>
+          <div class="video-meta">
+            <div class="video-badge video-badge-company">企業</div>
+            <div class="video-title">${esc(v.company_name)}</div>
+          </div>
+        </div>`).join('');
+
+      sectionsHtml += `
+        <section class="video-section">
+          <h2 class="section-title">${esc(data.name)}</h2>
+          <div class="video-list">${ivHtml}${cvHtml}</div>
+        </section>
+      `;
+    }
+
+    app.innerHTML = `
+      <div class="industry-detail">
+        <p class="industry-detail-name">動画で研究</p>
+        <p class="industry-detail-desc">業界・企業を動画で深掘り</p>
+      </div>
+      <div class="content">${sectionsHtml}</div>
+    `;
+
+    document.querySelectorAll('.video-card').forEach(card => {
+      card.addEventListener('click', e => {
+        openYoutube(e.currentTarget.dataset.url);
+      });
+    });
+  } catch (err) {
+    app.innerHTML = `<p class="error-text">エラー: ${esc(err.message)}</p>`;
+    console.error(err);
+  }
+}
+
+main();
+</script>
+
+<style>
+  .video-section { margin-bottom: 24px; }
+  .video-list { display: flex; flex-direction: column; gap: 12px; }
+  .video-card {
+    display: flex;
+    align-items: stretch;
+    background: #fff;
+    border: 2.5px solid var(--ink);
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .video-card:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+  }
+  .video-thumb {
+    width: 120px;
+    min-height: 80px;
+    background: var(--ink);
+    color: var(--accent-red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .video-thumb::before {
+    content: 'MOVIE';
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    font-size: 10px;
+    font-family: "Reggae One", sans-serif;
+    color: var(--paper);
+    letter-spacing: 0.1em;
+  }
+  .play-icon {
+    background: var(--accent-red);
+    color: #fff;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    padding-left: 4px;
+  }
+  .video-meta {
+    flex: 1;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+  }
+  .video-badge {
+    display: inline-block;
+    width: fit-content;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1.5px solid var(--ink);
+    font-family: "Kaisei Decol", sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .video-badge-industry { background: #fff3e0; color: #b35900; }
+  .video-badge-company  { background: #e8f5e9; color: #1b5e20; }
+  .video-title {
+    font-family: "Kaisei Decol", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+</style>
+
+</body>
+</html>

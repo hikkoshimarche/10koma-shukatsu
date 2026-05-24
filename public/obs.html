@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>OB・内定者 | 10コマ就活</title>
+  <link rel="stylesheet" href="shared.css">
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+<div class="page-wrapper">
+  <header class="header">
+    <button class="btn-back" onclick="history.back()" aria-label="戻る">←</button>
+    <h1 class="header-title">OB・内定者</h1>
+    <div class="header-spacer"></div>
+  </header>
+  <div id="app">
+    <div class="loading-wrap">
+      <p class="loading-text">読み込み中</p>
+      <div>
+        <span class="loading-dot"></span>
+        <span class="loading-dot"></span>
+        <span class="loading-dot"></span>
+      </div>
+    </div>
+  </div>
+  <div id="toast" class="toast"></div>
+</div>
+
+<script>
+const LIFF_ID = '2010075487-89AJxZnA';
+const API_BASE = 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+const INTERN_URL = 'https://01intern.com/corporation/2430';
+let currentUserId = null;
+
+function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+async function initLiff() {
+  await liff.init({ liffId: LIFF_ID });
+  if (!liff.isLoggedIn()) { liff.login(); return null; }
+  const profile = await liff.getProfile();
+  fetch(`${API_BASE}/api/users/upsert`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      line_user_id: profile.userId,
+      display_name: profile.displayName,
+      picture_url: profile.pictureUrl
+    })
+  }).catch(() => {});
+  return profile;
+}
+
+function openExternal(url) {
+  try {
+    if (liff && liff.openWindow) {
+      liff.openWindow({ url, external: true });
+      return;
+    }
+  } catch (e) { console.warn(e); }
+  window.open(url, '_blank');
+}
+
+function openLineFriend(lineId) {
+  // LINE ID で友だち追加URLを開く
+  const url = `https://line.me/R/ti/p/@${encodeURIComponent(lineId)}`;
+  fetch(`${API_BASE}/api/share-log`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ line_user_id: currentUserId, content_type: 'ob_contact', content_id: lineId })
+  }).catch(() => {});
+  openExternal(url);
+}
+
+function renderAuthScreen(errorMsg = '') {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="auth-wrap">
+      <div class="auth-card">
+        <div class="auth-lock">🔒</div>
+        <h2 class="auth-title">OSDインターン生<br>限定サービス</h2>
+        <p class="auth-sub">OB・内定者と直接話せる<br>プレミアム機能</p>
+
+        <div class="auth-form">
+          <input type="password"
+                 id="password-input"
+                 class="auth-input"
+                 placeholder="パスワード"
+                 autocomplete="off"
+                 inputmode="text">
+          <button class="auth-submit" id="btn-auth">認証する</button>
+          ${errorMsg ? `<p class="auth-error">${esc(errorMsg)}</p>` : ''}
+        </div>
+      </div>
+
+      <div class="auth-divider">
+        <span class="auth-divider-text">パスワードをお持ちでない方</span>
+      </div>
+
+      <div class="intern-card">
+        <div class="intern-label">▶ INTERN</div>
+        <h3 class="intern-title">OSDのインターンになって<br>OB・内定者と話そう</h3>
+        <p class="intern-desc">
+          株式会社OSDは六本木の急成長スタートアップ。<br>
+          総合商社・コンサル・金融など第一線で活躍する<br>
+          OB・内定者ネットワークに参加できます。
+        </p>
+        <button class="intern-btn" id="btn-intern">
+          OSDインターンに応募する
+          <span class="intern-arrow">→</span>
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('btn-auth').addEventListener('click', handleAuth);
+  document.getElementById('password-input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') handleAuth();
+  });
+  document.getElementById('btn-intern').addEventListener('click', () => {
+    fetch(`${API_BASE}/api/share-log`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ line_user_id: currentUserId, content_type: 'intern_click', content_id: '01intern_2430' })
+    }).catch(() => {});
+    openExternal(INTERN_URL);
+  });
+}
+
+async function handleAuth() {
+  const input = document.getElementById('password-input');
+  const btn = document.getElementById('btn-auth');
+  const password = input.value.trim();
+
+  if (!password) {
+    showToast('パスワードを入力してください');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '認証中...';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/ob/auth`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, line_user_id: currentUserId })
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      // 正解：セッションに保存してOB一覧を表示
+      sessionStorage.setItem('ob_password', password);
+      await renderObList(password);
+    } else {
+      btn.disabled = false;
+      btn.textContent = '認証する';
+      renderAuthScreen('パスワードが違います');
+    }
+  } catch (e) {
+    console.error(e);
+    btn.disabled = false;
+    btn.textContent = '認証する';
+    showToast('通信エラー');
+  }
+}
+
+async function renderObList(password) {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="loading-wrap">
+      <p class="loading-text">読み込み中</p>
+      <div>
+        <span class="loading-dot"></span>
+        <span class="loading-dot"></span>
+        <span class="loading-dot"></span>
+      </div>
+    </div>
+  `;
+
+  try {
+    const res = await fetch(`${API_BASE}/api/ob/list`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+    if (!res.ok) {
+      sessionStorage.removeItem('ob_password');
+      renderAuthScreen('セッションが無効です。再度パスワードを入力してください。');
+      return;
+    }
+    const obs = await res.json();
+
+    if (obs.length === 0) {
+      app.innerHTML = `
+        <div class="industry-detail">
+          <p class="industry-detail-name">OB・内定者</p>
+          <p class="industry-detail-desc">OSDの先輩に相談</p>
+        </div>
+        <p class="empty-text">登録されているOB・内定者がいません。</p>
+      `;
+      return;
+    }
+
+    const cardsHtml = obs.map(o => `
+      <div class="ob-card">
+        <div class="ob-card-head">
+          <div class="ob-avatar">${esc(o.name.charAt(0))}</div>
+          <div class="ob-info">
+            <div class="ob-name">${esc(o.name)}</div>
+            <div class="ob-meta">${esc(o.university)}卒</div>
+          </div>
+        </div>
+        <div class="ob-affiliation">
+          <span class="ob-affil-label">所属</span>
+          <span class="ob-affil-name">${esc(o.affiliation)}</span>
+        </div>
+        <button class="ob-contact-btn" data-lineid="${esc(o.line_id)}">
+          <span class="ob-line-icon">L</span>
+          LINEで連絡する
+        </button>
+      </div>
+    `).join('');
+
+    app.innerHTML = `
+      <div class="industry-detail">
+        <p class="industry-detail-name">OB・内定者</p>
+        <p class="industry-detail-desc">OSDの先輩に相談しよう</p>
+      </div>
+      <div class="ob-notice">
+        <span class="ob-notice-icon">!</span>
+        <p>連絡時は必ず「10コマ就活経由」とお伝えください</p>
+      </div>
+      <div class="content">
+        <div class="ob-list">${cardsHtml}</div>
+      </div>
+    `;
+
+    document.querySelectorAll('.ob-contact-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        openLineFriend(e.currentTarget.dataset.lineid);
+      });
+    });
+  } catch (e) {
+    console.error(e);
+    app.innerHTML = `<p class="error-text">エラー: ${esc(e.message)}</p>`;
+  }
+}
+
+async function main() {
+  try {
+    const profile = await initLiff();
+    if (!profile) return;
+    currentUserId = profile.userId;
+
+    fetch(`${API_BASE}/api/log-view`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ line_user_id: currentUserId, content_type: 'obs_page', content_id: 'index' })
+    }).catch(() => {});
+
+    // セッションストレージにパスワードがあれば自動認証
+    const savedPassword = sessionStorage.getItem('ob_password');
+    if (savedPassword) {
+      await renderObList(savedPassword);
+    } else {
+      renderAuthScreen();
+    }
+  } catch (err) {
+    document.getElementById('app').innerHTML = `<p class="error-text">エラー: ${esc(err.message)}</p>`;
+    console.error(err);
+  }
+}
+
+main();
+</script>
+
+<style>
+  /* 認証画面 */
+  .auth-wrap {
+    padding: 20px 16px 32px;
+  }
+  .auth-card {
+    background: #fff;
+    border: 3px solid var(--ink);
+    border-radius: 6px;
+    padding: 28px 20px;
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .auth-lock {
+    font-size: 48px;
+    margin-bottom: 10px;
+  }
+  .auth-title {
+    font-family: "Reggae One", sans-serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+    text-shadow: 2px 2px 0 var(--accent-red);
+    margin-bottom: 12px;
+    line-height: 1.4;
+  }
+  .auth-sub {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    margin-bottom: 22px;
+  }
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .auth-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2.5px solid var(--ink);
+    border-radius: 999px;
+    font-size: 16px;
+    font-family: "Kaisei Decol", sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    text-align: center;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  .auth-input:focus {
+    background: #fff;
+    box-shadow: var(--shadow-sm);
+  }
+  .auth-submit {
+    background: var(--ink);
+    color: var(--paper);
+    border: 2.5px solid var(--ink);
+    border-radius: 999px;
+    padding: 12px;
+    font-family: "Reggae One", sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .auth-submit:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+  }
+  .auth-submit:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  .auth-error {
+    color: var(--accent-red);
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 6px;
+  }
+
+  /* 区切り */
+  .auth-divider {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+  }
+  .auth-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-image: repeating-linear-gradient(90deg, var(--ink) 0 8px, transparent 8px 14px);
+  }
+  .auth-divider-text {
+    position: relative;
+    background: var(--paper);
+    padding: 0 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    font-family: "Kaisei Decol", sans-serif;
+  }
+
+  /* インターン応募カード */
+  .intern-card {
+    background: var(--ink);
+    color: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 6px;
+    padding: 22px 18px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+  }
+  .intern-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 80px;
+    height: 200%;
+    background: var(--accent-red);
+    transform: rotate(20deg);
+    opacity: 0.25;
+  }
+  .intern-label {
+    font-family: "Reggae One", sans-serif;
+    font-size: 13px;
+    color: var(--accent-red);
+    letter-spacing: 0.15em;
+    margin-bottom: 6px;
+    position: relative;
+  }
+  .intern-title {
+    font-family: "Reggae One", sans-serif;
+    font-size: 19px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--paper);
+    letter-spacing: 0.04em;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .intern-desc {
+    font-size: 12px;
+    line-height: 1.7;
+    color: rgba(245,239,224,0.85);
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .intern-btn {
+    width: 100%;
+    background: var(--paper);
+    color: var(--ink);
+    border: 2.5px solid var(--paper);
+    border-radius: 999px;
+    padding: 14px;
+    font-family: "Kaisei Decol", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    position: relative;
+    transition: transform 0.08s;
+  }
+  .intern-btn:active {
+    transform: scale(0.98);
+  }
+  .intern-arrow {
+    font-weight: 700;
+  }
+
+  /* OB一覧 */
+  .ob-notice {
+    margin: 12px 14px 0;
+    padding: 10px 14px;
+    background: #fff3e0;
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  .ob-notice-icon {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    background: var(--accent-red);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Reggae One", sans-serif;
+    font-size: 14px;
+  }
+  .ob-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .ob-card {
+    background: #fff;
+    border: 2.5px solid var(--ink);
+    border-radius: 6px;
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .ob-card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .ob-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--nana-blue);
+    color: #fff;
+    border: 2.5px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Reggae One", sans-serif;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .ob-info {
+    flex: 1;
+  }
+  .ob-name {
+    font-family: "Kaisei Decol", sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .ob-meta {
+    font-size: 12px;
+    color: var(--ink-mute);
+  }
+  .ob-affiliation {
+    padding: 8px 12px;
+    background: var(--paper-dark);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .ob-affil-label {
+    font-size: 10px;
+    font-weight: 700;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+  }
+  .ob-affil-name {
+    font-family: "Kaisei Decol", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .ob-contact-btn {
+    width: 100%;
+    background: #06c755;
+    color: #fff;
+    border: 2.5px solid var(--ink);
+    border-radius: 999px;
+    padding: 12px;
+    font-family: "Kaisei Decol", sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .ob-contact-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+  }
+  .ob-line-icon {
+    width: 24px;
+    height: 24px;
+    background: #fff;
+    color: #06c755;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Reggae One", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+  }
+</style>
+
+</body>
+</html>
