@@ -73,7 +73,6 @@ function openExternal(url) {
 }
 
 function openLineFriend(lineId) {
-  // LINE ID で友だち追加URLを開く
   const url = `https://line.me/R/ti/p/@${encodeURIComponent(lineId)}`;
   fetch(`${API_BASE}/api/share-log`, {
     method: 'POST',
@@ -160,7 +159,6 @@ async function handleAuth() {
     const data = await res.json();
 
     if (data.ok) {
-      // 正解：セッションに保存してOB一覧を表示
       sessionStorage.setItem('ob_password', password);
       await renderObList(password);
     } else {
@@ -213,25 +211,32 @@ async function renderObList(password) {
       return;
     }
 
-    const cardsHtml = obs.map(o => `
-      <div class="ob-card">
-        <div class="ob-card-head">
-          <div class="ob-avatar">${esc(o.name.charAt(0))}</div>
-          <div class="ob-info">
-            <div class="ob-name">${esc(o.name)}</div>
-            <div class="ob-meta">${esc(o.university)}卒</div>
+    const cardsHtml = obs.map(o => {
+      // 大学名 + 卒業年度の表示組み立て
+      const universityLine = o.graduation_year
+        ? `${esc(o.university)} ${o.graduation_year}年卒`
+        : `${esc(o.university)}卒`;
+
+      return `
+        <div class="ob-card">
+          <div class="ob-card-head">
+            <div class="ob-avatar">${esc(o.name.charAt(0))}</div>
+            <div class="ob-info">
+              <div class="ob-name">${esc(o.name)}</div>
+              <div class="ob-meta">${universityLine}</div>
+            </div>
           </div>
+          <div class="ob-affiliation">
+            <span class="ob-affil-label">所属</span>
+            <span class="ob-affil-name">${esc(o.affiliation)}</span>
+          </div>
+          <button class="ob-contact-btn" data-lineid="${esc(o.line_id)}">
+            <span class="ob-line-icon">L</span>
+            LINEで連絡する
+          </button>
         </div>
-        <div class="ob-affiliation">
-          <span class="ob-affil-label">所属</span>
-          <span class="ob-affil-name">${esc(o.affiliation)}</span>
-        </div>
-        <button class="ob-contact-btn" data-lineid="${esc(o.line_id)}">
-          <span class="ob-line-icon">L</span>
-          LINEで連絡する
-        </button>
-      </div>
-    `).join('');
+      `;
+    }).join('');
 
     app.innerHTML = `
       <div class="industry-detail">
@@ -270,7 +275,6 @@ async function main() {
       body: JSON.stringify({ line_user_id: currentUserId, content_type: 'obs_page', content_id: 'index' })
     }).catch(() => {});
 
-    // セッションストレージにパスワードがあれば自動認証
     const savedPassword = sessionStorage.getItem('ob_password');
     if (savedPassword) {
       await renderObList(savedPassword);
@@ -288,9 +292,7 @@ main();
 
 <style>
   /* 認証画面 */
-  .auth-wrap {
-    padding: 20px 16px 32px;
-  }
+  .auth-wrap { padding: 20px 16px 32px; }
   .auth-card {
     background: #fff;
     border: 3px solid var(--ink);
@@ -300,10 +302,7 @@ main();
     text-align: center;
     margin-bottom: 28px;
   }
-  .auth-lock {
-    font-size: 48px;
-    margin-bottom: 10px;
-  }
+  .auth-lock { font-size: 48px; margin-bottom: 10px; }
   .auth-title {
     font-family: "Reggae One", sans-serif;
     font-size: 22px;
@@ -320,11 +319,7 @@ main();
     line-height: 1.6;
     margin-bottom: 22px;
   }
-  .auth-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+  .auth-form { display: flex; flex-direction: column; gap: 10px; }
   .auth-input {
     width: 100%;
     padding: 12px 16px;
@@ -338,10 +333,7 @@ main();
     outline: none;
     -webkit-appearance: none;
   }
-  .auth-input:focus {
-    background: #fff;
-    box-shadow: var(--shadow-sm);
-  }
+  .auth-input:focus { background: #fff; box-shadow: var(--shadow-sm); }
   .auth-submit {
     background: var(--ink);
     color: var(--paper);
@@ -356,27 +348,11 @@ main();
     box-shadow: var(--shadow-sm);
     transition: transform 0.08s, box-shadow 0.08s;
   }
-  .auth-submit:active {
-    transform: translate(2px, 2px);
-    box-shadow: none;
-  }
-  .auth-submit:disabled {
-    opacity: 0.6;
-    cursor: default;
-  }
-  .auth-error {
-    color: var(--accent-red);
-    font-size: 13px;
-    font-weight: 700;
-    margin-top: 6px;
-  }
+  .auth-submit:active { transform: translate(2px, 2px); box-shadow: none; }
+  .auth-submit:disabled { opacity: 0.6; cursor: default; }
+  .auth-error { color: var(--accent-red); font-size: 13px; font-weight: 700; margin-top: 6px; }
 
-  /* 区切り */
-  .auth-divider {
-    text-align: center;
-    margin: 20px 0;
-    position: relative;
-  }
+  .auth-divider { text-align: center; margin: 20px 0; position: relative; }
   .auth-divider::before {
     content: '';
     position: absolute;
@@ -396,7 +372,6 @@ main();
     font-family: "Kaisei Decol", sans-serif;
   }
 
-  /* インターン応募カード */
   .intern-card {
     background: var(--ink);
     color: var(--paper);
@@ -462,14 +437,9 @@ main();
     position: relative;
     transition: transform 0.08s;
   }
-  .intern-btn:active {
-    transform: scale(0.98);
-  }
-  .intern-arrow {
-    font-weight: 700;
-  }
+  .intern-btn:active { transform: scale(0.98); }
+  .intern-arrow { font-weight: 700; }
 
-  /* OB一覧 */
   .ob-notice {
     margin: 12px 14px 0;
     padding: 10px 14px;
@@ -497,11 +467,7 @@ main();
     font-family: "Reggae One", sans-serif;
     font-size: 14px;
   }
-  .ob-list {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
+  .ob-list { display: flex; flex-direction: column; gap: 14px; }
   .ob-card {
     background: #fff;
     border: 2.5px solid var(--ink);
@@ -509,12 +475,7 @@ main();
     padding: 16px;
     box-shadow: var(--shadow-sm);
   }
-  .ob-card-head {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 14px;
-  }
+  .ob-card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
   .ob-avatar {
     width: 52px;
     height: 52px;
@@ -529,9 +490,7 @@ main();
     font-size: 22px;
     flex-shrink: 0;
   }
-  .ob-info {
-    flex: 1;
-  }
+  .ob-info { flex: 1; }
   .ob-name {
     font-family: "Kaisei Decol", sans-serif;
     font-size: 17px;
@@ -539,10 +498,7 @@ main();
     color: var(--ink);
     margin-bottom: 2px;
   }
-  .ob-meta {
-    font-size: 12px;
-    color: var(--ink-mute);
-  }
+  .ob-meta { font-size: 12px; color: var(--ink-mute); }
   .ob-affiliation {
     padding: 8px 12px;
     background: var(--paper-dark);
@@ -586,10 +542,7 @@ main();
     box-shadow: var(--shadow-sm);
     transition: transform 0.08s, box-shadow 0.08s;
   }
-  .ob-contact-btn:active {
-    transform: translate(2px, 2px);
-    box-shadow: none;
-  }
+  .ob-contact-btn:active { transform: translate(2px, 2px); box-shadow: none; }
   .ob-line-icon {
     width: 24px;
     height: 24px;
