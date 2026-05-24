@@ -300,7 +300,7 @@ app.post('/api/ob/list', async (c) => {
   }
 
   const { results } = await c.env.DB.prepare(
-    `SELECT id, name, affiliation, university, line_id, industry_id, display_order
+    `SELECT id, name, affiliation, university, line_id, industry_id, display_order, graduation_year
      FROM obs
      ORDER BY display_order, id`
   ).all()
