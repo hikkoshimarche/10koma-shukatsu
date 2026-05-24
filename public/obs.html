@@ -212,7 +212,6 @@ async function renderObList(password) {
     }
 
     const cardsHtml = obs.map(o => {
-      // 大学名 + 卒業年度の表示組み立て
       const universityLine = o.graduation_year
         ? `${esc(o.university)} ${o.graduation_year}年卒`
         : `${esc(o.university)}卒`;
@@ -245,7 +244,7 @@ async function renderObList(password) {
       </div>
       <div class="ob-notice">
         <span class="ob-notice-icon">!</span>
-        <p>連絡時は必ず「10コマ就活経由」とお伝えください</p>
+        <p>連絡時は必ず「OSDインターン生です」とお伝えください</p>
       </div>
       <div class="content">
         <div class="ob-list">${cardsHtml}</div>
