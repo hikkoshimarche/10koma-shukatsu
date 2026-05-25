@@ -316,6 +316,7 @@ body {
   background: var(--haruki-grn);
   left: auto;
   right: 18px;
+  top: -60px;
 }
 
 .char-tag.both {
