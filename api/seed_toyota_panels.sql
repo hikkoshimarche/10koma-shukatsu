@@ -1,7 +1,7 @@
 -- 業種: 自動車（先に作成）
 INSERT OR IGNORE INTO industries (id, name, description, panel_count, thumbnail_url)
 VALUES (
-  'jidousha',
+  'manufacturer',
   '自動車',
   '日本の基幹産業。電動化・自動運転・モビリティサービスへの大変革期。',
   10,
@@ -13,7 +13,7 @@ INSERT OR IGNORE INTO companies (id, name, industry_id, description, thumbnail_u
 VALUES (
   'toyota_motor',
   'トヨタ自動車',
-  'jidousha',
+  'manufacturer',
   '世界販売台数1位の自動車メーカー。モビリティカンパニーへの変革を掲げ、HV/EV/水素の全方位電動化、コネクテッド、Woven Cityで未来を創る。',
   'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@main/public/images/toyota/panel_01.png',
   'https://www.youtube.com/watch?v=PLACEHOLDER_TOYOTA'
@@ -34,4 +34,4 @@ INSERT OR IGNORE INTO company_panels (company_id, panel_num, image_url, characte
 
 -- 検証ステータス更新
 UPDATE companies SET last_verified_at='2026-05-25', verification_status='verified' WHERE id='toyota_motor';
-UPDATE industries SET last_verified_at='2026-05-25', verification_status='verified' WHERE id='jidousha';
+UPDATE industries SET last_verified_at='2026-05-25', verification_status='verified' WHERE id='manufacturer';
