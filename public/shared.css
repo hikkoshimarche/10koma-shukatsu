@@ -291,11 +291,8 @@ body {
 .speech-bubble.both::before { left: 50%; transform: translateX(-50%); }
 .speech-bubble.both::after  { left: 50%; transform: translateX(-46%); }
 
-/* キャラ名タグ（吹き出し上端外に絶対配置） */
+/* キャラ名タグ（吹き出し上端に重ねる：inline-block方式） */
 .char-tag {
-  position: absolute;
-  top: -14px;
-  left: 18px;
   display: inline-block;
   font-family: "Kaisei Decol", sans-serif;
   font-size: 12px;
@@ -305,7 +302,11 @@ body {
   border: 2px solid var(--ink);
   border-radius: 20px;
   padding: 3px 14px;
+  margin-left: 14px;
+  margin-top: -26px;
+  margin-bottom: 4px;
   z-index: 2;
+  position: relative;
   letter-spacing: 0.05em;
   box-shadow: 1px 1px 0 var(--ink);
   line-height: 1.4;
@@ -314,15 +315,17 @@ body {
 
 .char-tag.haruki {
   background: var(--haruki-grn);
-  left: auto;
-  right: 18px;
-  top: -60px;
+  float: right;
+  margin-left: 0;
+  margin-right: 14px;
 }
 
 .char-tag.both {
   background: var(--both-purple);
-  left: 50%;
-  transform: translateX(-50%);
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
 }
 
 /* === コマ下アクションボタン（いいね・シェア） === */
