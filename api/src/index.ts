@@ -430,7 +430,7 @@ app.post('/api/room/message', async (c) => {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
-        max_tokens: 1024,
+        max_tokens: 2048,
         system: persona?.system_prompt ?? '',
         messages: history.map(m => ({ role: m.role, content: m.content })),
       }),
@@ -584,7 +584,7 @@ app.post('/api/room/init', async (c) => {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
-        max_tokens: 256,
+        max_tokens: 2048,
         system: persona.system_prompt,
         messages: [{ role: 'user', content: 'はじめまして。自己紹介をお願いします。' }],
       }),
