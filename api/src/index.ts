@@ -457,9 +457,12 @@ app.post('/api/room/tts', async (c) => {
     const { text, voice_config } = await c.req.json<{
       text: string
       voice_config?: {
+        voiceName?: string  // DBのフォーマット
+        name?: string       // Google TTS直接フォーマット
         languageCode?: string
-        name?: string
         ssmlGender?: string
+        speakingRate?: number
+        pitch?: number
       }
     }>()
 
@@ -467,10 +470,13 @@ app.post('/api/room/tts', async (c) => {
       return c.json({ error: 'missing text' }, 400)
     }
 
-    const voiceConfig = voice_config ?? { languageCode: 'ja-JP', name: 'ja-JP-Neural2-B', ssmlGender: 'MALE' }
+    const vc = voice_config ?? {}
+    const voiceName = vc.voiceName ?? vc.name ?? 'ja-JP-Neural2-B'
+    const speakingRate = vc.speakingRate ?? 1.0
+    const pitch = vc.pitch ?? 0.0
 
     // キャッシュキー生成（SHA-256）
-    const cacheData = JSON.stringify({ text, voiceConfig })
+    const cacheData = JSON.stringify({ text, voiceName, speakingRate, pitch })
     const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(cacheData))
     const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('')
     const r2Key = `tts/${hashHex}.mp3`
@@ -493,8 +499,8 @@ app.post('/api/room/tts', async (c) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           input: { text },
-          voice: voiceConfig,
-          audioConfig: { audioEncoding: 'MP3' },
+          voice: { languageCode: 'ja-JP', name: voiceName },
+          audioConfig: { audioEncoding: 'MP3', speakingRate, pitch },
         }),
       }
     )

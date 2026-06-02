@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>トーキャリ・ルーム</title>
+  <link rel="stylesheet" href="shared.css">
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+<div class="page-wrapper">
+  <header class="header">
+    <div class="header-spacer"></div>
+    <h1 class="header-title">トーキャリ・ルーム</h1>
+    <div class="header-spacer"></div>
+  </header>
+  <div id="app">
+    <div class="loading-wrap"><p class="loading-text">読み込み中...</p></div>
+  </div>
+</div>
+
+<script>
+const LIFF_ID = '2010075487-89AJxZnA';
+const API_BASE = 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function main() {
+  const app = document.getElementById('app');
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    if (!liff.isLoggedIn()) { liff.login(); return; }
+
+    const res = await fetch(`${API_BASE}/api/room/personas/mitsui_corp`);
+    if (!res.ok) throw new Error(`API error ${res.status}`);
+    const personas = await res.json();
+
+    app.innerHTML = `
+      <div class="room-company-header">
+        <p class="room-company-name">三井物産</p>
+        <p class="room-company-sub">OBに直接話しかけてみよう</p>
+      </div>
+      <div class="room-grid">
+        ${personas.map(p => `
+          <div class="room-card" data-persona-id="${esc(p.persona_id)}">
+            <div class="room-card-img-wrap">
+              <img class="room-card-img" src="${esc(p.image_url ?? '')}" alt="${esc(p.display_name)}"
+                onerror="this.style.display='none'">
+            </div>
+            <div class="room-card-body">
+              <p class="room-card-name">
+                ${esc(p.display_name)}<span class="room-card-age">${p.age}歳</span>
+              </p>
+              <p class="room-card-dept">${esc(p.department ?? '')}</p>
+              <p class="room-card-desc">${esc(p.short_description ?? '')}</p>
+            </div>
+          </div>
+        `).join('')}
+      </div>`;
+
+    app.addEventListener('click', e => {
+      const card = e.target.closest('.room-card');
+      if (card) location.href = `chat.html?persona_id=${encodeURIComponent(card.dataset.personaId)}`;
+    });
+  } catch (err) {
+    app.innerHTML = `<p class="error-text">エラー: ${esc(err.message)}</p>`;
+    console.error(err);
+  }
+}
+
+main();
+</script>
+</body>
+</html>

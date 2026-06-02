@@ -693,3 +693,308 @@ body {
   align-items: center;
   margin-top: 10px;
 }
+/* =========================================================
+   トーキャリ・ルーム (room.html / chat.html)
+   ========================================================= */
+
+/* === room.html: ペルソナ選択画面 === */
+
+.room-company-header {
+  text-align: center;
+  padding: 20px 16px 14px;
+  border-bottom: 2px dashed var(--ink);
+}
+
+.room-company-name {
+  font-family: "Reggae One", sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  text-shadow: 1px 1px 0 var(--accent-red);
+}
+
+.room-company-sub {
+  font-size: 12px;
+  color: var(--ink-mute);
+  margin-top: 5px;
+}
+
+.room-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 14px;
+}
+
+.room-card {
+  background: #fff;
+  border: 2.5px solid var(--ink);
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.1s, box-shadow 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.room-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.room-card-img-wrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--paper-dark);
+  border-bottom: 2px solid var(--ink);
+}
+
+.room-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.room-card-body {
+  padding: 8px;
+}
+
+.room-card-name {
+  font-family: "Kaisei Decol", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.3;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.room-card-age {
+  font-size: 11px;
+  color: var(--ink-mute);
+  font-weight: 400;
+}
+
+.room-card-dept {
+  font-size: 10px;
+  color: var(--ink-mute);
+  margin-top: 3px;
+  line-height: 1.3;
+}
+
+.room-card-desc {
+  font-size: 10px;
+  color: var(--ink-soft);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* === chat.html: チャット画面 === */
+
+.chat-body {
+  overflow: hidden;
+}
+
+.chat-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--paper);
+}
+
+.chat-header {
+  position: static;
+  flex-shrink: 0;
+}
+
+.chat-header-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+}
+
+.chat-header-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--paper);
+  flex-shrink: 0;
+}
+
+.chat-header-name {
+  font-family: "Kaisei Decol", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--paper);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chat-msg-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.chat-msg-row.user {
+  flex-direction: row-reverse;
+}
+
+.chat-msg-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--ink);
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.chat-bubble-wrap {
+  display: flex;
+  flex-direction: column;
+  max-width: 72%;
+  gap: 4px;
+}
+
+.chat-msg-row.user .chat-bubble-wrap {
+  align-items: flex-end;
+}
+
+.chat-bubble {
+  padding: 10px 13px;
+  font-size: 14px;
+  line-height: 1.65;
+  font-family: "Kaisei Decol", sans-serif;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.chat-bubble.assistant {
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 4px 18px 18px 18px;
+  box-shadow: var(--shadow-sm);
+  color: var(--ink);
+}
+
+.chat-bubble.user {
+  background: #4a90d9;
+  color: #fff;
+  border: 2px solid #2c6fa8;
+  border-radius: 18px 18px 4px 18px;
+}
+
+.chat-tts-btn {
+  background: none;
+  border: 1.5px solid var(--ink-mute);
+  border-radius: 20px;
+  font-size: 11px;
+  padding: 3px 9px;
+  cursor: pointer;
+  color: var(--ink-mute);
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+  align-self: flex-start;
+}
+
+.chat-tts-btn:active { background: var(--paper-dark); }
+
+/* タイピングインジケーター */
+.chat-typing-dots {
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 4px 18px 18px 18px;
+  padding: 12px 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.chat-typing-dots span {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink-mute);
+  animation: typingDot 1.2s infinite;
+}
+
+.chat-typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.chat-typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingDot {
+  0%, 60%, 100% { opacity: 0.2; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-4px); }
+}
+
+/* 入力エリア */
+.chat-input-area {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 10px 12px;
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+  background: var(--ink);
+  border-top: 3px solid var(--ink);
+  flex-shrink: 0;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 2px solid var(--paper);
+  border-radius: 22px;
+  font-size: 15px;
+  font-family: "Kaisei Decol", "Hiragino Sans", sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  outline: none;
+  resize: none;
+  min-height: 42px;
+  max-height: 120px;
+  line-height: 1.5;
+  overflow-y: auto;
+}
+
+.chat-send-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--accent-red);
+  border: 2px solid var(--paper);
+  color: var(--paper);
+  font-size: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
+}
+
+.chat-send-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}

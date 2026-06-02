@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>トーキャリ・ルーム チャット</title>
+  <link rel="stylesheet" href="shared.css">
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body class="chat-body">
+<div class="chat-layout">
+  <!-- ヘッダー -->
+  <header class="header chat-header">
+    <button class="btn-back" onclick="history.length > 1 ? history.back() : location.href='room.html'" aria-label="戻る">‹</button>
+    <div id="chat-header-center" class="chat-header-center">
+      <span class="chat-header-name">読み込み中...</span>
+    </div>
+    <div class="header-spacer"></div>
+  </header>
+
+  <!-- メッセージエリア -->
+  <div id="chat-messages" class="chat-messages"></div>
+
+  <!-- 入力エリア -->
+  <div class="chat-input-area">
+    <textarea id="chat-input" class="chat-input" placeholder="メッセージを入力..." rows="1"></textarea>
+    <button id="chat-send-btn" class="chat-send-btn" disabled aria-label="送信">▶</button>
+  </div>
+</div>
+
+<script>
+const LIFF_ID = '2010075487-89AJxZnA';
+const API_BASE = 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+
+let lineUserId = null;
+let personaId = null;
+let persona = null;
+let conversationId = null;
+let isSending = false;
+
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function escText(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function buildMsgHtml(role, content, msgId) {
+  if (role === 'user') {
+    return `<div class="chat-msg-row user">
+      <div class="chat-bubble-wrap">
+        <div class="chat-bubble user">${escText(content)}</div>
+      </div>
+    </div>`;
+  }
+  const imgSrc = persona ? esc(persona.image_url ?? '') : '';
+  const ttsBtn = msgId
+    ? `<button class="chat-tts-btn" data-msg-id="${esc(msgId)}" data-text="${esc(content)}" onclick="playTts(this)">🔊</button>`
+    : '';
+  return `<div class="chat-msg-row assistant">
+    ${imgSrc ? `<img class="chat-msg-avatar" src="${imgSrc}" alt="${esc(persona?.display_name ?? '')}" onerror="this.style.display='none'">` : ''}
+    <div class="chat-bubble-wrap">
+      <div class="chat-bubble assistant">${escText(content)}</div>
+      ${ttsBtn}
+    </div>
+  </div>`;
+}
+
+function typingHtml() {
+  const imgSrc = persona ? esc(persona.image_url ?? '') : '';
+  return `<div class="chat-msg-row assistant" id="chat-typing">
+    ${imgSrc ? `<img class="chat-msg-avatar" src="${imgSrc}" alt="" onerror="this.style.display='none'">` : ''}
+    <div class="chat-typing-dots">
+      <span></span><span></span><span></span>
+    </div>
+  </div>`;
+}
+
+function scrollBottom() {
+  const el = document.getElementById('chat-messages');
+  el.scrollTop = el.scrollHeight;
+}
+
+function appendMsg(role, content, msgId) {
+  const el = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.innerHTML = buildMsgHtml(role, content, msgId);
+  el.appendChild(div.firstElementChild);
+  scrollBottom();
+}
+
+function showTyping() {
+  const el = document.getElementById('chat-messages');
+  if (document.getElementById('chat-typing')) return;
+  const div = document.createElement('div');
+  div.innerHTML = typingHtml();
+  el.appendChild(div.firstElementChild);
+  scrollBottom();
+}
+
+function hideTyping() {
+  const t = document.getElementById('chat-typing');
+  if (t) t.remove();
+}
+
+async function playTts(btn) {
+  if (btn.dataset.playing === '1') return;
+  const text = btn.dataset.text;
+  const voiceConfig = persona?.voice_config ? JSON.parse(persona.voice_config) : null;
+
+  btn.dataset.playing = '1';
+  btn.textContent = '⏳';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/room/tts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, voice_config: voiceConfig }),
+    });
+    if (!res.ok) throw new Error('TTS failed');
+    const { audio_base64 } = await res.json();
+    const audio = new Audio(`data:audio/mpeg;base64,${audio_base64}`);
+    audio.play();
+    btn.textContent = '🔊';
+    audio.onended = () => { btn.dataset.playing = '0'; };
+  } catch (e) {
+    console.error('TTS error:', e);
+    btn.textContent = '🔊';
+    btn.dataset.playing = '0';
+  }
+}
+
+async function sendMessage(content) {
+  if (isSending || !content.trim()) return;
+  isSending = true;
+
+  const input = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('chat-send-btn');
+  input.value = '';
+  input.style.height = '';
+  sendBtn.disabled = true;
+
+  appendMsg('user', content);
+  showTyping();
+
+  try {
+    const res = await fetch(`${API_BASE}/api/room/message`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        conversation_id: conversationId,
+        line_user_id: lineUserId,
+        persona_id: personaId,
+        content: content.trim(),
+      }),
+    });
+    if (!res.ok) throw new Error(`API error ${res.status}`);
+    const data = await res.json();
+    hideTyping();
+    appendMsg('assistant', data.content, data.message_id);
+  } catch (e) {
+    hideTyping();
+    appendMsg('assistant', '⚠️ エラーが発生しました。もう一度お試しください。', null);
+    console.error(e);
+  } finally {
+    isSending = false;
+    sendBtn.disabled = false;
+    input.focus();
+  }
+}
+
+function setupInput() {
+  const input = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('chat-send-btn');
+
+  input.addEventListener('input', () => {
+    sendBtn.disabled = !input.value.trim() || isSending;
+    input.style.height = '';
+    input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+  });
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (!sendBtn.disabled) sendMessage(input.value);
+    }
+  });
+
+  sendBtn.addEventListener('click', () => {
+    if (!sendBtn.disabled) sendMessage(input.value);
+  });
+}
+
+async function main() {
+  personaId = new URLSearchParams(location.search).get('persona_id');
+  if (!personaId) { location.href = 'room.html'; return; }
+
+  setupInput();
+
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    if (!liff.isLoggedIn()) { liff.login(); return; }
+    const profile = await liff.getProfile();
+    lineUserId = profile.userId;
+
+    // ペルソナ情報取得
+    const personasRes = await fetch(`${API_BASE}/api/room/personas/mitsui_corp`);
+    const personas = await personasRes.json();
+    persona = personas.find(p => p.persona_id === personaId);
+    if (!persona) { location.href = 'room.html'; return; }
+
+    // ヘッダー更新
+    document.getElementById('chat-header-center').innerHTML = `
+      ${persona.image_url
+        ? `<img class="chat-header-avatar" src="${esc(persona.image_url)}" alt="" onerror="this.style.display='none'">`
+        : ''}
+      <span class="chat-header-name">${esc(persona.display_name)}</span>`;
+    document.title = `${persona.display_name} | トーキャリ・ルーム`;
+
+    // 会話取得・作成
+    const convRes = await fetch(
+      `${API_BASE}/api/room/conversation?line_user_id=${encodeURIComponent(lineUserId)}&persona_id=${encodeURIComponent(personaId)}`
+    );
+    const convData = await convRes.json();
+    conversationId = convData.conversation.conversation_id;
+
+    // 過去メッセージ表示
+    const messagesEl = document.getElementById('chat-messages');
+    if (convData.messages.length > 0) {
+      convData.messages.forEach(m => {
+        const div = document.createElement('div');
+        div.innerHTML = buildMsgHtml(m.role, m.content, m.role === 'assistant' ? m.message_id : null);
+        messagesEl.appendChild(div.firstElementChild);
+      });
+      scrollBottom();
+    } else {
+      // 初回挨拶
+      showTyping();
+      try {
+        const initRes = await fetch(`${API_BASE}/api/room/init`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ conversation_id: conversationId, persona_id: personaId }),
+        });
+        const initData = await initRes.json();
+        hideTyping();
+        if (!initData.skipped) {
+          appendMsg('assistant', initData.content, initData.message_id);
+        }
+      } catch (e) {
+        hideTyping();
+        console.error('init error:', e);
+      }
+    }
+
+    document.getElementById('chat-send-btn').disabled = false;
+  } catch (err) {
+    document.getElementById('chat-messages').innerHTML =
+      `<p class="error-text" style="padding:20px">エラー: ${esc(err.message)}</p>`;
+    console.error(err);
+  }
+}
+
+main();
+</script>
+</body>
+</html>
