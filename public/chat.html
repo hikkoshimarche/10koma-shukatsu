@@ -46,7 +46,7 @@ function escText(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-function buildMsgHtml(role, content, msgId) {
+function buildMsgHtml(role, content) {
   if (role === 'user') {
     return `<div class="chat-msg-row user">
       <div class="chat-bubble-wrap">
@@ -55,14 +55,13 @@ function buildMsgHtml(role, content, msgId) {
     </div>`;
   }
   const imgSrc = persona ? esc(persona.image_url ?? '') : '';
-  const ttsBtn = msgId
-    ? `<button class="chat-tts-btn" data-msg-id="${esc(msgId)}" data-text="${esc(content)}" onclick="playTts(this)">🔊</button>`
-    : '';
   return `<div class="chat-msg-row assistant">
     ${imgSrc ? `<img class="chat-msg-avatar" src="${imgSrc}" alt="${esc(persona?.display_name ?? '')}" onerror="this.style.display='none'">` : ''}
     <div class="chat-bubble-wrap">
-      <div class="chat-bubble assistant">${escText(content)}</div>
-      ${ttsBtn}
+      <div class="chat-bubble-with-audio">
+        <div class="chat-bubble assistant">${escText(content)}</div>
+        <button class="chat-tts-btn" data-state="idle" data-text="${esc(content)}" onclick="playTts(this)" aria-label="音声再生">▶</button>
+      </div>
     </div>
   </div>`;
 }
@@ -82,10 +81,10 @@ function scrollBottom() {
   el.scrollTop = el.scrollHeight;
 }
 
-function appendMsg(role, content, msgId) {
+function appendMsg(role, content) {
   const el = document.getElementById('chat-messages');
   const div = document.createElement('div');
-  div.innerHTML = buildMsgHtml(role, content, msgId);
+  div.innerHTML = buildMsgHtml(role, content);
   el.appendChild(div.firstElementChild);
   scrollBottom();
 }
@@ -105,12 +104,24 @@ function hideTyping() {
 }
 
 async function playTts(btn) {
-  if (btn.dataset.playing === '1') return;
+  const state = btn.dataset.state;
+
+  if (state === 'playing') {
+    if (btn._audio) { btn._audio.pause(); btn._audio.currentTime = 0; btn._audio = null; }
+    btn.dataset.state = 'idle';
+    btn.textContent = '▶';
+    btn.classList.remove('active');
+    return;
+  }
+
+  if (state === 'loading') return;
+
   const text = btn.dataset.text;
   const voiceConfig = persona?.voice_config ? JSON.parse(persona.voice_config) : null;
 
-  btn.dataset.playing = '1';
+  btn.dataset.state = 'loading';
   btn.textContent = '⏳';
+  btn.classList.remove('active');
 
   try {
     const res = await fetch(`${API_BASE}/api/room/tts`, {
@@ -121,13 +132,24 @@ async function playTts(btn) {
     if (!res.ok) throw new Error('TTS failed');
     const { audio_base64 } = await res.json();
     const audio = new Audio(`data:audio/mpeg;base64,${audio_base64}`);
+    btn._audio = audio;
+    btn.dataset.state = 'playing';
+    btn.textContent = '⏸';
+    btn.classList.add('active');
     audio.play();
-    btn.textContent = '🔊';
-    audio.onended = () => { btn.dataset.playing = '0'; };
+    const reset = () => {
+      btn._audio = null;
+      btn.dataset.state = 'idle';
+      btn.textContent = '▶';
+      btn.classList.remove('active');
+    };
+    audio.onended = reset;
+    audio.onerror = reset;
   } catch (e) {
     console.error('TTS error:', e);
-    btn.textContent = '🔊';
-    btn.dataset.playing = '0';
+    btn.dataset.state = 'idle';
+    btn.textContent = '▶';
+    btn.classList.remove('active');
   }
 }
 
@@ -158,10 +180,10 @@ async function sendMessage(content) {
     if (!res.ok) throw new Error(`API error ${res.status}`);
     const data = await res.json();
     hideTyping();
-    appendMsg('assistant', data.content, data.message_id);
+    appendMsg('assistant', data.content);
   } catch (e) {
     hideTyping();
-    appendMsg('assistant', '⚠️ エラーが発生しました。もう一度お試しください。', null);
+    appendMsg('assistant', '⚠️ エラーが発生しました。もう一度お試しください。');
     console.error(e);
   } finally {
     isSending = false;
@@ -230,7 +252,7 @@ async function main() {
     if (convData.messages.length > 0) {
       convData.messages.forEach(m => {
         const div = document.createElement('div');
-        div.innerHTML = buildMsgHtml(m.role, m.content, m.role === 'assistant' ? m.message_id : null);
+        div.innerHTML = buildMsgHtml(m.role, m.content);
         messagesEl.appendChild(div.firstElementChild);
       });
       scrollBottom();
@@ -246,7 +268,7 @@ async function main() {
         const initData = await initRes.json();
         hideTyping();
         if (!initData.skipped) {
-          appendMsg('assistant', initData.content, initData.message_id);
+          appendMsg('assistant', initData.content);
         }
       } catch (e) {
         hideTyping();

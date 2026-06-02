@@ -315,6 +315,22 @@ app.post('/api/ob/list', async (c) => {
 // トーキャリ・ルーム API
 // =====================================================
 
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/```[\s\S]*?```/g, (m) => m.replace(/```/g, '').trim())
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\*\*([^*\n]+)\*\*/g, '$1')
+    .replace(/__([^_\n]+)__/g, '$1')
+    .replace(/\*([^*\n]+)\*/g, '$1')
+    .replace(/_([^_\n]+)_/g, '$1')
+    .replace(/#{1,6}\s+(.+)/gm, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/^[-*+]\s+/gm, '')
+    .replace(/^\d+\.\s+/gm, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
 // ペルソナ一覧
 app.get('/api/room/personas/:company_id', async (c) => {
   try {
@@ -429,7 +445,7 @@ app.post('/api/room/message', async (c) => {
     const claudeData = await claudeRes.json<{
       content: Array<{ type: string; text: string }>
     }>()
-    const aiText = claudeData.content.find(b => b.type === 'text')?.text ?? ''
+    const aiText = stripMarkdown(claudeData.content.find(b => b.type === 'text')?.text ?? '')
 
     // AIメッセージをDB保存
     const aiMsgId = crypto.randomUUID()
@@ -581,7 +597,7 @@ app.post('/api/room/init', async (c) => {
     const claudeData = await claudeRes.json<{
       content: Array<{ type: string; text: string }>
     }>()
-    const greeting = claudeData.content.find(b => b.type === 'text')?.text ?? ''
+    const greeting = stripMarkdown(claudeData.content.find(b => b.type === 'text')?.text ?? '')
 
     const msgId = crypto.randomUUID()
     await c.env.DB.prepare(
