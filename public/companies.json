@@ -431,6 +431,8 @@
     { "id": "openai-japan",      "name": "OpenAI Japan",                    "jukoma_liff_id": "2010075487-89AJxZnA", "room_liff_id": null, "video_url": null, "kessan_url": null },
     { "id": "spiber",            "name": "Spiber（スパイバー）",            "jukoma_liff_id": "2010075487-89AJxZnA", "room_liff_id": null, "video_url": null, "kessan_url": null },
     { "id": "tbm",               "name": "TBM（ティービーエム）",           "jukoma_liff_id": "2010075487-89AJxZnA", "room_liff_id": null, "video_url": null, "kessan_url": null },
-    { "id": "euglena",           "name": "ユーグレナ",                      "jukoma_liff_id": "2010075487-89AJxZnA", "room_liff_id": null, "video_url": null, "kessan_url": null }
+    { "id": "euglena",           "name": "ユーグレナ",                      "jukoma_liff_id": "2010075487-89AJxZnA", "room_liff_id": null, "video_url": null, "kessan_url": null },
+    { "id": "base-food",         "name": "ベースフード",                    "jukoma_liff_id": "2010075487-89AJxZnA", "room_liff_id": null, "video_url": null, "kessan_url": null },
+    { "id": "bitflyer",          "name": "bitFlyer",                        "jukoma_liff_id": "2010075487-89AJxZnA", "room_liff_id": null, "video_url": null, "kessan_url": null }
   ]
 }
