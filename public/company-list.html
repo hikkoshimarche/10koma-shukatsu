@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>業界選択 | トーキャリ</title>
+  <title>会社選択 | トーキャリ</title>
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -19,13 +19,28 @@
 
     .page-header {
       padding: 48px 24px 24px;
-      text-align: center;
+      position: relative;
+    }
+
+    .btn-back {
+      position: absolute;
+      top: 48px;
+      left: 16px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px;
+      line-height: 1;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .page-title {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 700;
       line-height: 1.4;
+      text-align: center;
     }
 
     .cards {
@@ -82,7 +97,8 @@
 <body>
 
 <div class="page-header">
-  <h1 class="page-title">どの業界の会社を探しますか？</h1>
+  <button class="btn-back" id="btn-back" aria-label="戻る">←</button>
+  <h1 class="page-title" id="page-title">会社を選んでください</h1>
 </div>
 
 <div class="cards" id="cards"></div>
@@ -94,31 +110,44 @@ const LIFF_ID = '2010075487-89AJxZnA';
 
 async function main() {
   const params = new URLSearchParams(location.search);
+  const industry = params.get('industry') ?? '';
   const from = params.get('from') ?? '';
   const cardsEl = document.getElementById('cards');
+
+  document.getElementById('btn-back').addEventListener('click', () => {
+    location.href = `/industry?from=${encodeURIComponent(from)}`;
+  });
+
+  if (!industry) {
+    cardsEl.innerHTML = '<p class="error-text">業界が指定されていません</p>';
+    return;
+  }
+
+  document.getElementById('page-title').textContent = `${industry}の会社を選んでください`;
+  document.title = `${industry} | トーキャリ`;
 
   try {
     const res = await fetch('/companies.json');
     if (!res.ok) throw new Error(`fetch error ${res.status}`);
     const data = await res.json();
 
-    const industries = Object.keys(data);
-    if (industries.length === 0) {
-      cardsEl.innerHTML = '<p class="error-text">業界データがありません</p>';
+    const companies = data[industry];
+    if (!companies || companies.length === 0) {
+      cardsEl.innerHTML = '<p class="error-text">この業界の会社データがありません</p>';
       return;
     }
 
-    cardsEl.innerHTML = industries.map(name => `
-      <div class="card" data-industry="${encodeURIComponent(name)}">
-        <span class="card-label">${name}</span>
+    cardsEl.innerHTML = companies.map(c => `
+      <div class="card" data-id="${encodeURIComponent(c.id)}">
+        <span class="card-label">${c.name}</span>
         <span class="card-arrow">›</span>
       </div>`).join('');
 
     cardsEl.addEventListener('click', e => {
       const card = e.target.closest('.card');
       if (!card) return;
-      const industry = decodeURIComponent(card.dataset.industry);
-      location.href = `/company-list?industry=${encodeURIComponent(industry)}&from=${encodeURIComponent(from)}`;
+      const id = decodeURIComponent(card.dataset.id);
+      location.href = `/hub?company=${encodeURIComponent(id)}&from=${encodeURIComponent(from)}&industry=${encodeURIComponent(industry)}`;
     });
   } catch (err) {
     cardsEl.innerHTML = `<p class="error-text">エラー: ${err.message}</p>`;

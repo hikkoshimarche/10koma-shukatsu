@@ -19,7 +19,22 @@
 
     .hub-header {
       padding: 48px 24px 24px;
+      position: relative;
       text-align: center;
+    }
+
+    .btn-back {
+      position: absolute;
+      top: 48px;
+      left: 16px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px;
+      line-height: 1;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .hub-company-name {
@@ -49,11 +64,10 @@
       display: flex;
       align-items: center;
       padding: 18px 20px;
-      text-decoration: none;
       color: #003F7D;
+      cursor: pointer;
       transition: transform 0.12s, opacity 0.12s;
       -webkit-tap-highlight-color: transparent;
-      cursor: pointer;
     }
 
     .hub-card:active {
@@ -98,13 +112,6 @@
       letter-spacing: 0.1em;
     }
 
-    .loading-wrap {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
     .error-text {
       color: rgba(255,255,255,0.75);
       text-align: center;
@@ -115,48 +122,39 @@
 <body>
 
 <div class="hub-header">
+  <button class="btn-back" id="btn-back" aria-label="戻る">←</button>
   <h1 class="hub-company-name" id="company-name">読み込み中…</h1>
   <p class="hub-subtitle">学習コンテンツを選んでください</p>
 </div>
 
-<div class="hub-cards" id="hub-cards">
-  <div class="loading-wrap"><p></p></div>
-</div>
+<div class="hub-cards" id="hub-cards"></div>
 
 <div class="hub-footer">トーキャリ TALK CAREER</div>
 
 <script>
 const LIFF_ID = '2010075487-89AJxZnA';
-
-const COMPANIES = {
-  mitsui_corp: {
-    name: '三井物産',
-    contents: {
-      '10koma': { label: '10コマで知る',        icon: '📱', url: 'https://liff.line.me/2010075487-89AJxZnA?company=mitsui_corp', type: 'liff' },
-      'video':  { label: '企業動画を見る',      icon: '📺', url: 'https://youtu.be/T2fLKNfnr0k',                                  type: 'youtube' },
-      'kessan': { label: '決算書動画を見る',    icon: '📊', url: 'https://youtu.be/pprtKnkqnos',                                  type: 'youtube' },
-      'room':   { label: 'トーキャリ・ルームに入る', icon: '🚪', url: 'https://liff.line.me/2010075487-d4TJ2xZc?company=mitsui_corp', type: 'liff' }
-    }
-  }
-};
-
 const LEARNING_ORDER = ['10koma', 'video', 'kessan', 'room'];
+
+function buildContents(c) {
+  return {
+    '10koma': { label: '10コマで知る',            icon: '📱', url: `https://liff.line.me/${c.jukoma_liff_id}?company=${c.id}`, type: 'liff' },
+    'video':  { label: '企業動画を見る',          icon: '📺', url: c.video_url,                                                  type: 'youtube' },
+    'kessan': { label: '決算書動画を見る',        icon: '📊', url: c.kessan_url,                                                type: 'youtube' },
+    'room':   { label: 'トーキャリ・ルームに入る', icon: '🚪', url: `https://liff.line.me/${c.room_liff_id}?company=${c.id}`,  type: 'liff' }
+  };
+}
 
 function navigate(url, type) {
   try {
-    if (type === 'liff' && typeof liff !== 'undefined' && liff.openWindow) {
-      liff.openWindow({ url, external: false });
-      return;
-    }
     if (typeof liff !== 'undefined' && liff.openWindow) {
-      liff.openWindow({ url, external: true });
+      liff.openWindow({ url, external: type !== 'liff' });
       return;
     }
   } catch (e) { /* fallback */ }
   window.location.href = url;
 }
 
-function renderCards(company, from) {
+function renderCards(contents, from) {
   const keys = [...LEARNING_ORDER];
   if (from && keys.includes(from)) {
     keys.splice(keys.indexOf(from), 1);
@@ -165,7 +163,7 @@ function renderCards(company, from) {
 
   const cardsEl = document.getElementById('hub-cards');
   cardsEl.innerHTML = keys.map(key => {
-    const c = company.contents[key];
+    const c = contents[key];
     if (!c) return '';
     const isPrimary = key === from;
     return `
@@ -185,19 +183,48 @@ function renderCards(company, from) {
 async function main() {
   const params = new URLSearchParams(location.search);
   const companyId = params.get('company');
-  const from = params.get('from');
+  const from = params.get('from') ?? '';
+  const industry = params.get('industry') ?? '';
 
-  const company = COMPANIES[companyId];
-  if (!company) {
-    document.getElementById('company-name').textContent = '企業が見つかりません';
-    document.getElementById('hub-cards').innerHTML = '';
+  document.getElementById('btn-back').addEventListener('click', () => {
+    if (industry) {
+      location.href = `/company-list?industry=${encodeURIComponent(industry)}&from=${encodeURIComponent(from)}`;
+    } else {
+      history.back();
+    }
+  });
+
+  if (!companyId) {
+    document.getElementById('company-name').textContent = '企業が指定されていません';
     return;
   }
 
-  document.getElementById('company-name').textContent = company.name;
-  document.title = `${company.name} | トーキャリ`;
+  try {
+    const res = await fetch('/companies.json');
+    if (!res.ok) throw new Error(`fetch error ${res.status}`);
+    const data = await res.json();
 
-  renderCards(company, from);
+    let company = null;
+    for (const list of Object.values(data)) {
+      company = list.find(c => c.id === companyId);
+      if (company) break;
+    }
+
+    if (!company) {
+      document.getElementById('company-name').textContent = '企業が見つかりません';
+      document.getElementById('hub-cards').innerHTML = '';
+      return;
+    }
+
+    document.getElementById('company-name').textContent = company.name;
+    document.title = `${company.name} | トーキャリ`;
+
+    renderCards(buildContents(company), from);
+  } catch (err) {
+    document.getElementById('company-name').textContent = 'エラーが発生しました';
+    document.getElementById('hub-cards').innerHTML = `<p class="error-text">${err.message}</p>`;
+    console.error(err);
+  }
 
   try {
     await liff.init({ liffId: LIFF_ID });
