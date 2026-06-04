@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>企業ハブ | トーキャリ</title>
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #003F7D;
+      min-height: 100vh;
+      font-family: -apple-system, 'Hiragino Sans', sans-serif;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hub-header {
+      padding: 48px 24px 24px;
+      text-align: center;
+    }
+
+    .hub-company-name {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      line-height: 1.3;
+    }
+
+    .hub-subtitle {
+      margin-top: 8px;
+      font-size: 14px;
+      opacity: 0.75;
+    }
+
+    .hub-cards {
+      flex: 1;
+      padding: 8px 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .hub-card {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      padding: 18px 20px;
+      text-decoration: none;
+      color: #003F7D;
+      transition: transform 0.12s, opacity 0.12s;
+      -webkit-tap-highlight-color: transparent;
+      cursor: pointer;
+    }
+
+    .hub-card:active {
+      transform: scale(0.97);
+      opacity: 0.85;
+    }
+
+    .hub-card.primary {
+      background: #D4AF37;
+      color: #1a1200;
+      box-shadow: 0 4px 16px rgba(212, 175, 55, 0.45);
+    }
+
+    .hub-card-icon {
+      font-size: 28px;
+      margin-right: 16px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .hub-card-label {
+      flex: 1;
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .hub-card-arrow {
+      font-size: 20px;
+      opacity: 0.6;
+      flex-shrink: 0;
+    }
+
+    .hub-card.primary .hub-card-arrow {
+      opacity: 0.8;
+    }
+
+    .hub-footer {
+      padding: 20px 24px env(safe-area-inset-bottom, 16px);
+      text-align: center;
+      font-size: 12px;
+      opacity: 0.5;
+      letter-spacing: 0.1em;
+    }
+
+    .loading-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .error-text {
+      color: rgba(255,255,255,0.75);
+      text-align: center;
+      padding: 24px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="hub-header">
+  <h1 class="hub-company-name" id="company-name">読み込み中…</h1>
+  <p class="hub-subtitle">学習コンテンツを選んでください</p>
+</div>
+
+<div class="hub-cards" id="hub-cards">
+  <div class="loading-wrap"><p></p></div>
+</div>
+
+<div class="hub-footer">トーキャリ TALK CAREER</div>
+
+<script>
+const LIFF_ID = '2010075487-89AJxZnA';
+
+const COMPANIES = {
+  mitsui_corp: {
+    name: '三井物産',
+    contents: {
+      '10koma': { label: '10コマで知る',        icon: '📱', url: 'https://liff.line.me/2010075487-89AJxZnA?company=mitsui_corp', type: 'liff' },
+      'video':  { label: '企業動画を見る',      icon: '📺', url: 'https://youtu.be/T2fLKNfnr0k',                                  type: 'youtube' },
+      'kessan': { label: '決算書動画を見る',    icon: '📊', url: 'https://youtu.be/pprtKnkqnos',                                  type: 'youtube' },
+      'room':   { label: 'トーキャリ・ルームに入る', icon: '🚪', url: 'https://liff.line.me/2010075487-d4TJ2xZc?company=mitsui_corp', type: 'liff' }
+    }
+  }
+};
+
+const LEARNING_ORDER = ['10koma', 'video', 'kessan', 'room'];
+
+function navigate(url, type) {
+  try {
+    if (type === 'liff' && typeof liff !== 'undefined' && liff.openWindow) {
+      liff.openWindow({ url, external: false });
+      return;
+    }
+    if (typeof liff !== 'undefined' && liff.openWindow) {
+      liff.openWindow({ url, external: true });
+      return;
+    }
+  } catch (e) { /* fallback */ }
+  window.location.href = url;
+}
+
+function renderCards(company, from) {
+  const keys = [...LEARNING_ORDER];
+  if (from && keys.includes(from)) {
+    keys.splice(keys.indexOf(from), 1);
+    keys.unshift(from);
+  }
+
+  const cardsEl = document.getElementById('hub-cards');
+  cardsEl.innerHTML = keys.map(key => {
+    const c = company.contents[key];
+    if (!c) return '';
+    const isPrimary = key === from;
+    return `
+      <div class="hub-card${isPrimary ? ' primary' : ''}" data-url="${c.url}" data-type="${c.type}">
+        <span class="hub-card-icon">${c.icon}</span>
+        <span class="hub-card-label">${c.label}</span>
+        <span class="hub-card-arrow">›</span>
+      </div>`;
+  }).join('');
+
+  cardsEl.addEventListener('click', e => {
+    const card = e.target.closest('.hub-card');
+    if (card) navigate(card.dataset.url, card.dataset.type);
+  });
+}
+
+async function main() {
+  const params = new URLSearchParams(location.search);
+  const companyId = params.get('company');
+  const from = params.get('from');
+
+  const company = COMPANIES[companyId];
+  if (!company) {
+    document.getElementById('company-name').textContent = '企業が見つかりません';
+    document.getElementById('hub-cards').innerHTML = '';
+    return;
+  }
+
+  document.getElementById('company-name').textContent = company.name;
+  document.title = `${company.name} | トーキャリ`;
+
+  renderCards(company, from);
+
+  try {
+    await liff.init({ liffId: LIFF_ID });
+  } catch (e) {
+    console.warn('LIFF init failed (non-LINE browser):', e.message);
+  }
+}
+
+main();
+</script>
+</body>
+</html>
