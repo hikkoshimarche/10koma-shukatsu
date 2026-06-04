@@ -1,12 +1,54 @@
 {
   "総合商社": [
-    {
-      "id": "mitsui_corp",
-      "name": "三井物産",
-      "video_url": "https://youtu.be/T2fLKNfnr0k",
-      "kessan_url": "https://youtu.be/pprtKnkqnos",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "jukoma_liff_id": "2010075487-89AJxZnA"
-    }
+    { "id": "mitsui-bussan",  "name": "三井物産",             "video_url": "https://youtu.be/T2fLKNfnr0k", "kessan_url": "https://youtu.be/pprtKnkqnos", "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "itochu",         "name": "伊藤忠商事",           "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "marubeni",       "name": "丸紅",                 "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "sumitomo-corp",  "name": "住友商事",             "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "mitsubishi_corp","name": "三菱商事",             "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "toyota-tsusho",  "name": "豊田通商",             "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "sojitz",         "name": "双日",                 "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "kanematsu",      "name": "兼松",                 "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" }
+  ],
+  "銀行・証券・保険": [
+    { "id": "mufg",       "name": "三菱UFJ銀行",               "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "mizuho-fg",  "name": "みずほフィナンシャルグループ", "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "smbc-bank",  "name": "三井住友銀行",              "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "mufg-trust", "name": "三菱UFJ信託銀行",           "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "smtb",       "name": "三井住友信託銀行",          "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "resona",     "name": "りそな銀行",                "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "chibagin",   "name": "千葉銀行",                  "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "hamagin",    "name": "横浜銀行",                  "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "yucho",      "name": "ゆうちょ銀行",              "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" }
+  ],
+  "小売・流通": [
+    { "id": "fast-retailing", "name": "ファーストリテイリング", "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" }
+  ],
+  "食品・飲料": [
+    { "id": "suntory", "name": "サントリー", "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" }
+  ],
+  "航空・運輸・物流": [
+    { "id": "ana",     "name": "ANAホールディングス", "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "jr-east", "name": "JR東日本",           "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" }
+  ],
+  "広告・メディア": [
+    { "id": "dentsu", "name": "電通", "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" }
+  ],
+  "不動産・建設": [
+    { "id": "mitsubishi-estate", "name": "三菱地所", "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" }
+  ],
+  "コンサル": [
+    { "id": "mckinsey", "name": "マッキンゼー・アンド・カンパニー", "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" }
+  ],
+  "IT・AI・SaaS": [
+    { "id": "google-japan",  "name": "Google日本",  "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "openai-japan",  "name": "OpenAI Japan","video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" }
+  ],
+  "商社（専門）": [
+    { "id": "medipal",  "name": "メディパルホールディングス", "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "inabata",  "name": "稲畑産業",                  "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" },
+    { "id": "chori",    "name": "蝶理",                      "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" }
+  ],
+  "自動車": [
+    { "id": "toyota_motor", "name": "トヨタ自動車", "video_url": null, "kessan_url": null, "room_liff_id": "2010075487-d4TJ2xZc", "jukoma_liff_id": "2010075487-89AJxZnA" }
   ]
 }

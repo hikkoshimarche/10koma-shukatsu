@@ -81,6 +81,12 @@
       box-shadow: 0 4px 16px rgba(212, 175, 55, 0.45);
     }
 
+    .hub-card.inactive {
+      opacity: 0.45;
+      cursor: default;
+      pointer-events: none;
+    }
+
     .hub-card-icon {
       font-size: 28px;
       margin-right: 16px;
@@ -102,6 +108,16 @@
 
     .hub-card.primary .hub-card-arrow {
       opacity: 0.8;
+    }
+
+    .hub-card-soon {
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(0,0,0,0.15);
+      padding: 3px 10px;
+      border-radius: 99px;
+      letter-spacing: 0.05em;
+      flex-shrink: 0;
     }
 
     .hub-footer {
@@ -137,10 +153,10 @@ const LEARNING_ORDER = ['10koma', 'video', 'kessan', 'room'];
 
 function buildContents(c) {
   return {
-    '10koma': { label: '10コマで知る',            icon: '📱', url: `https://liff.line.me/${c.jukoma_liff_id}?company=${c.id}`, type: 'liff' },
-    'video':  { label: '企業動画を見る',          icon: '📺', url: c.video_url,                                                  type: 'youtube' },
-    'kessan': { label: '決算書動画を見る',        icon: '📊', url: c.kessan_url,                                                type: 'youtube' },
-    'room':   { label: 'トーキャリ・ルームに入る', icon: '🚪', url: `https://liff.line.me/${c.room_liff_id}?company=${c.id}`,  type: 'liff' }
+    '10koma': { label: '10コマで知る',            icon: '📱', url: `https://liff.line.me/${c.jukoma_liff_id}?company=${c.id}`, type: 'liff',    active: true },
+    'video':  { label: '企業動画を見る',          icon: '📺', url: c.video_url,                                                  type: 'youtube', active: !!c.video_url },
+    'kessan': { label: '決算書動画を見る',        icon: '📊', url: c.kessan_url,                                                type: 'youtube', active: !!c.kessan_url },
+    'room':   { label: 'トーキャリ・ルームに入る', icon: '🚪', url: `https://liff.line.me/${c.room_liff_id}?company=${c.id}`,   type: 'liff',    active: true }
   };
 }
 
@@ -165,18 +181,23 @@ function renderCards(contents, from) {
   cardsEl.innerHTML = keys.map(key => {
     const c = contents[key];
     if (!c) return '';
-    const isPrimary = key === from;
+    const isPrimary = key === from && c.active;
+    const cls = ['hub-card', isPrimary ? 'primary' : '', !c.active ? 'inactive' : ''].filter(Boolean).join(' ');
+    const right = c.active
+      ? '<span class="hub-card-arrow">›</span>'
+      : '<span class="hub-card-soon">準備中</span>';
+    const attrs = c.active ? `data-url="${c.url}" data-type="${c.type}"` : '';
     return `
-      <div class="hub-card${isPrimary ? ' primary' : ''}" data-url="${c.url}" data-type="${c.type}">
+      <div class="${cls}" ${attrs}>
         <span class="hub-card-icon">${c.icon}</span>
         <span class="hub-card-label">${c.label}</span>
-        <span class="hub-card-arrow">›</span>
+        ${right}
       </div>`;
   }).join('');
 
   cardsEl.addEventListener('click', e => {
-    const card = e.target.closest('.hub-card');
-    if (card) navigate(card.dataset.url, card.dataset.type);
+    const card = e.target.closest('.hub-card:not(.inactive)');
+    if (card && card.dataset.url) navigate(card.dataset.url, card.dataset.type);
   });
 }
 

@@ -3,9 +3,425 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>企業詳細 | 10コマ就活</title>
-  <link rel="stylesheet" href="shared.css">
+  <title>企業詳細 | トーキャリ</title>
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Reggae+One&family=Kaisei+Decol:wght@400;500;700&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:      #003F7D;
+      --navy-dark: #002D5C;
+      --gold:      #D4AF37;
+      --white:     #fff;
+      --white-dim: rgba(255,255,255,0.75);
+      --white-faint: rgba(255,255,255,0.15);
+      --ink:       #1a1a1a;
+      --nana-blue: #4a90d9;
+      --haruki-grn:#2d8659;
+      --both-purple:#7d3c98;
+      --like-red:  #e63946;
+      --bookmark-y:#f39c12;
+    }
+
+    html, body {
+      background: var(--navy);
+      min-height: 100vh;
+      font-family: "Kaisei Decol", -apple-system, 'Hiragino Sans', sans-serif;
+      color: var(--white);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page-wrapper {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: var(--navy);
+    }
+
+    /* === Header === */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--navy-dark);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      height: 56px;
+      border-bottom: 1px solid var(--white-faint);
+    }
+
+    .header-title {
+      flex: 1;
+      text-align: center;
+      font-family: "Reggae One", sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--white);
+      letter-spacing: 0.08em;
+    }
+
+    .btn-back {
+      background: none;
+      border: 1.5px solid var(--white-faint);
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      color: var(--white);
+      line-height: 1;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-header-bookmark {
+      background: none;
+      border: none;
+      cursor: pointer;
+      min-width: 36px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      color: var(--white-dim);
+      -webkit-tap-highlight-color: transparent;
+      padding: 0;
+      transition: transform 0.15s;
+    }
+
+    .btn-header-bookmark:active { transform: scale(0.85); }
+    .btn-header-bookmark.bookmarked { color: var(--bookmark-y); }
+    .btn-header-bookmark:disabled { opacity: 0.4; cursor: default; }
+
+    /* === Loading / Error === */
+    .loading-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 240px;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .loading-text {
+      color: var(--white-dim);
+      font-size: 14px;
+      letter-spacing: 0.1em;
+    }
+
+    .loading-dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.6);
+      margin: 0 3px;
+      animation: bounce 0.8s infinite;
+    }
+    .loading-dot:nth-child(2) { animation-delay: 0.15s; }
+    .loading-dot:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-8px); }
+    }
+
+    .error-text {
+      color: #ff8a80;
+      font-size: 14px;
+      padding: 24px 16px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .empty-text {
+      color: var(--white-dim);
+      font-size: 14px;
+      text-align: center;
+      padding: 40px 16px;
+    }
+
+    /* === Company header === */
+    .company-detail {
+      padding: 24px 20px 20px;
+      text-align: center;
+      border-bottom: 1px solid var(--white-faint);
+    }
+
+    .company-detail-name {
+      font-family: "Reggae One", sans-serif;
+      font-size: 24px;
+      color: var(--white);
+      letter-spacing: 0.06em;
+    }
+
+    .company-detail-desc {
+      font-size: 13px;
+      color: var(--white-dim);
+      line-height: 1.7;
+      margin-top: 10px;
+    }
+
+    /* === Panels === */
+    .panels-section {
+      padding: 20px 16px 28px;
+    }
+
+    .panel {
+      margin-bottom: 32px;
+    }
+
+    .panel-num {
+      display: inline-block;
+      font-family: "Reggae One", sans-serif;
+      font-size: 12px;
+      color: var(--navy);
+      background: var(--white);
+      padding: 3px 14px 3px 10px;
+      margin-bottom: 10px;
+      letter-spacing: 0.08em;
+      border-radius: 2px;
+      clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 50%, 100% 100%, 0 100%);
+    }
+
+    .panel-image-wrap {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+
+    .panel-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #fff;
+    }
+
+    /* === Speech bubble === */
+    .speech-bubble {
+      position: relative;
+      background: #fff;
+      border-radius: 16px;
+      padding: 26px 16px 12px;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--ink);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    }
+
+    .speech-bubble::before {
+      content: '';
+      position: absolute;
+      bottom: -13px; left: 28px;
+      border: 13px solid transparent;
+      border-top-color: #fff;
+      border-right-width: 0;
+    }
+
+    .speech-bubble.haruki::before { left: auto; right: 28px; border-right-width: 0; border-left-width: 0; border-top-color: #fff; border: 13px solid transparent; border-top-color: #fff; right: 28px; left: auto; }
+    .speech-bubble.haruki::before { left: auto; right: 28px; width: 0; height: 0; border-top: 13px solid #fff; border-left: 13px solid transparent; border-right: 0; border-bottom: 0; }
+    .speech-bubble.both::before   { left: 50%; transform: translateX(-50%); }
+
+    .char-tag {
+      position: absolute;
+      top: 0; left: 14px;
+      transform: translateY(-50%);
+      font-family: "Kaisei Decol", sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      background: var(--nana-blue);
+      border-radius: 20px;
+      padding: 3px 12px;
+      z-index: 2;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    .char-tag.haruki  { background: var(--haruki-grn); left: auto; right: 14px; }
+    .char-tag.both    { background: var(--both-purple); left: 50%; transform: translateX(-50%) translateY(-50%); }
+
+    .bubble-text { font-size: 14px; line-height: 1.7; color: var(--ink); }
+
+    /* === Panel actions === */
+    .panel-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 16px;
+      padding: 0 4px;
+    }
+
+    .panel-btn {
+      background: rgba(255,255,255,0.15);
+      border: 1.5px solid var(--white-faint);
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.1s;
+      min-height: 34px;
+    }
+
+    .panel-btn:active  { background: rgba(255,255,255,0.25); }
+    .panel-btn:disabled { opacity: 0.4; cursor: default; }
+    .panel-btn.liked   { background: var(--like-red); border-color: var(--like-red); }
+    .panel-btn .icon   { font-size: 15px; line-height: 1; }
+
+    /* === YouTube CTA === */
+    .cta-section { padding: 0 16px 24px; }
+
+    .cta-youtube {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255,255,255,0.1);
+      border: 1.5px solid var(--white-faint);
+      border-radius: 12px;
+      padding: 18px 20px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.12s;
+      width: 100%;
+      text-align: left;
+    }
+
+    .cta-youtube:active { background: rgba(255,255,255,0.2); }
+
+    .cta-icon {
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .cta-main {
+      display: block;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .cta-sub {
+      display: block;
+      font-size: 12px;
+      color: var(--white-dim);
+      margin-top: 3px;
+    }
+
+    /* === Recommends === */
+    .recommend-section {
+      padding: 20px 16px 28px;
+      border-top: 1px solid var(--white-faint);
+    }
+
+    .recommend-title {
+      font-family: "Reggae One", sans-serif;
+      font-size: 15px;
+      color: var(--white-dim);
+      margin-bottom: 14px;
+      letter-spacing: 0.06em;
+    }
+
+    .recommend-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .recommend-card {
+      background: rgba(255,255,255,0.1);
+      border: 1.5px solid var(--white-faint);
+      border-radius: 10px;
+      padding: 14px 10px;
+      text-align: center;
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.1s;
+    }
+
+    .recommend-card:active { background: rgba(255,255,255,0.2); }
+
+    .recommend-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.4;
+    }
+
+    .recommend-desc {
+      font-size: 11px;
+      color: var(--white-dim);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* === Verification footer === */
+    .verification-footer {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 12px 16px;
+      background: rgba(0,0,0,0.2);
+      border-top: 1px dashed rgba(255,255,255,0.2);
+      font-size: 11px;
+      color: var(--white-dim);
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .badge-stale      { background: rgba(255,165,0,0.2); color: #ffa500; }
+    .badge-unverified { background: rgba(255,100,100,0.2); color: #ff8080; }
+    .badge-verified   { background: rgba(100,220,100,0.2); color: #90ee90; }
+
+    /* === Toast === */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.85);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-4px);
+    }
+  </style>
 </head>
 <body>
 <div class="page-wrapper">
@@ -16,6 +432,7 @@
       <span id="header-bookmark-icon">☆</span>
     </button>
   </header>
+
   <div id="app">
     <div class="loading-wrap">
       <p class="loading-text">読み込み中</p>
@@ -83,19 +500,18 @@ async function initLiff() {
 }
 
 function updateBookmarkUI() {
-  const headerBtn = document.getElementById('btn-header-bookmark');
-  const headerIcon = document.getElementById('header-bookmark-icon');
-  if (headerBtn) {
-    headerBtn.classList.toggle('bookmarked', isBookmarked);
-    headerIcon.textContent = isBookmarked ? '★' : '☆';
+  const btn = document.getElementById('btn-header-bookmark');
+  const icon = document.getElementById('header-bookmark-icon');
+  if (btn) {
+    btn.classList.toggle('bookmarked', isBookmarked);
+    icon.textContent = isBookmarked ? '★' : '☆';
   }
 }
 
 async function toggleBookmark() {
   if (!currentUserId) return;
-  const headerBtn = document.getElementById('btn-header-bookmark');
-  headerBtn.disabled = true;
-
+  const btn = document.getElementById('btn-header-bookmark');
+  btn.disabled = true;
   try {
     const res = await fetch(`${API_BASE}/api/bookmark`, {
       method: 'POST',
@@ -110,7 +526,7 @@ async function toggleBookmark() {
     console.error(e);
     showToast('エラーが発生しました');
   } finally {
-    headerBtn.disabled = false;
+    btn.disabled = false;
   }
 }
 
@@ -171,10 +587,7 @@ function openYoutube(url) {
     })
   }).catch(() => {});
   try {
-    if (liff && liff.openWindow) {
-      liff.openWindow({ url, external: true });
-      return;
-    }
+    if (liff && liff.openWindow) { liff.openWindow({ url, external: true }); return; }
   } catch (e) { console.warn(e); }
   window.open(url, '_blank');
 }
@@ -207,7 +620,7 @@ async function main() {
     }).catch(() => {});
 
     document.getElementById('header-title').textContent = company.name;
-    document.title = `${company.name} | 10コマ就活`;
+    document.title = `${company.name} | トーキャリ`;
     isBookmarked = !!company.bookmarked;
     updateBookmarkUI();
 
@@ -256,7 +669,7 @@ async function main() {
 
     const recommendsHtml = recommends.length === 0 ? '' : `
       <div class="recommend-section">
-        <h2 class="recommend-title">▼ 次の企業を読む</h2>
+        <p class="recommend-title">▼ 次の企業を読む</p>
         <div class="recommend-grid">
           ${recommends.map(r => `
             <a href="company.html?id=${encodeURIComponent(r.id)}" class="recommend-card">
@@ -276,7 +689,6 @@ async function main() {
       ${recommendsHtml}
       ${buildVerificationFooter(company.last_verified_at)}`;
 
-    // パネル単位のいいね＆シェア
     document.querySelectorAll('.panel-like').forEach(btn => {
       btn.addEventListener('click', e => {
         const panelNum = parseInt(e.currentTarget.dataset.panel, 10);
@@ -291,7 +703,6 @@ async function main() {
       });
     });
 
-    // YouTube CTA
     const youtubeBtn = document.querySelector('.cta-youtube');
     if (youtubeBtn) {
       youtubeBtn.addEventListener('click', e => {
@@ -304,40 +715,9 @@ async function main() {
   }
 }
 
-// ヘッダーのブックマークボタンは最初から存在するので、即イベント登録
 document.getElementById('btn-header-bookmark').addEventListener('click', toggleBookmark);
 
 main();
 </script>
-
-<style>
-  .btn-header-bookmark {
-    background: none;
-    border: none;
-    cursor: pointer;
-    min-width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    color: var(--paper);
-    -webkit-tap-highlight-color: transparent;
-    padding: 0;
-    transition: transform 0.15s;
-  }
-  .btn-header-bookmark:active {
-    transform: scale(0.85);
-  }
-  .btn-header-bookmark.bookmarked {
-    color: var(--bookmark-y);
-    text-shadow: 0 0 8px rgba(243, 156, 18, 0.5);
-  }
-  .btn-header-bookmark:disabled {
-    opacity: 0.5;
-    cursor: default;
-  }
-</style>
-
 </body>
 </html>

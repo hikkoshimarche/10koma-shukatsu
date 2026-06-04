@@ -4,108 +4,62 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>10コマ就活</title>
-  <link rel="stylesheet" href="shared.css">
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #003F7D;
+      min-height: 100vh;
+      font-family: -apple-system, 'Hiragino Sans', sans-serif;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loading-text {
+      font-size: 16px;
+      opacity: 0.75;
+      letter-spacing: 0.1em;
+    }
+  </style>
 </head>
 <body>
-<div class="page-wrapper">
-  <header class="header">
-    <div class="header-spacer"></div>
-    <h1 class="header-title">10コマ就活</h1>
-    <div class="header-spacer"></div>
-  </header>
-  <div id="app">
-    <div class="loading-wrap"><p class="loading-text">読み込み中...</p></div>
-  </div>
-</div>
+  <p class="loading-text" id="status">読み込み中…</p>
 
 <script>
 const LIFF_ID = '2010075487-89AJxZnA';
 const API_BASE = 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
-let currentUserId = null;
 
-function esc(s) {
-  return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-async function initLiff() {
-  await liff.init({ liffId: LIFF_ID });
-  if (!liff.isLoggedIn()) { liff.login(); return null; }
-  const profile = await liff.getProfile();
-  fetch(`${API_BASE}/api/users/upsert`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      line_user_id: profile.userId,
-      display_name: profile.displayName,
-      picture_url: profile.pictureUrl
-    })
-  }).catch(() => {});
-  return profile;
-}
-
-async function handleLike(btn) {
-  if (!currentUserId || btn.disabled) return;
-  btn.disabled = true;
+async function main() {
   try {
-    const res = await fetch(`${API_BASE}/api/like`, {
+    await liff.init({ liffId: LIFF_ID });
+    if (!liff.isLoggedIn()) { liff.login(); return; }
+
+    const profile = await liff.getProfile();
+    fetch(`${API_BASE}/api/users/upsert`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        line_user_id: currentUserId,
-        content_type: btn.dataset.type,
-        content_id: btn.dataset.id
+        line_user_id: profile.userId,
+        display_name: profile.displayName,
+        picture_url: profile.pictureUrl
       })
-    });
-    const { liked } = await res.json();
-    btn.classList.toggle('liked', liked);
-    btn.querySelector('.btn-icon').textContent = liked ? '♥' : '♡';
-  } catch (e) {
-    console.error(e);
-  } finally {
-    btn.disabled = false;
-  }
-}
+    }).catch(() => {});
 
-async function main() {
-  const app = document.getElementById('app');
-  try {
-    const profile = await initLiff();
-    if (!profile) return;
-    currentUserId = profile.userId;
+    const params = new URLSearchParams(location.search);
+    const companyId = params.get('company');
 
-    const res = await fetch(`${API_BASE}/api/industries`);
-    if (!res.ok) throw new Error(`API error ${res.status}`);
-    const industries = await res.json();
-
-    const cardsHtml = industries.length === 0
-      ? '<p class="empty-text">業界データはまだありません</p>'
-      : industries.map(ind => `
-          <div class="card" data-id="${esc(ind.id)}">
-            <p class="card-title">${esc(ind.name)}</p>
-            ${ind.description ? `<p class="card-desc">${esc(ind.description)}</p>` : ''}
-            <div class="card-footer">
-              <button class="btn-like" data-type="industry" data-id="${esc(ind.id)}" aria-label="いいね">
-                <span class="btn-icon">♡</span>
-              </button>
-            </div>
-          </div>`).join('');
-
-    app.innerHTML = `
-      <div class="profile-badge">
-        <img class="profile-avatar" src="${esc(profile.pictureUrl)}" alt="" onerror="this.style.display='none'">
-        <span class="profile-name">${esc(profile.displayName)}さん</span>
-      </div>
-      <div class="content">${cardsHtml}</div>`;
-
-    app.addEventListener('click', e => {
-      const likeBtn = e.target.closest('.btn-like');
-      if (likeBtn) { e.stopPropagation(); handleLike(likeBtn); return; }
-      const card = e.target.closest('.card');
-      if (card) location.href = `industry.html?id=${encodeURIComponent(card.dataset.id)}`;
-    });
+    if (companyId) {
+      // hub.html から「10コマで知る」でLIFFを開いた場合: 直接company.htmlへ
+      location.href = `/company.html?id=${encodeURIComponent(companyId)}`;
+    } else {
+      // リッチメニュー枠1 から直接開いた場合: 業界選択フローへ
+      location.href = '/industry?from=10koma';
+    }
   } catch (err) {
-    app.innerHTML = `<p class="error-text">エラー: ${esc(err.message)}</p>`;
+    document.getElementById('status').textContent = 'エラー: ' + err.message;
     console.error(err);
   }
 }
