@@ -426,7 +426,7 @@
 <body>
 <div class="page-wrapper">
   <header class="header">
-    <button class="btn-back" onclick="history.back()" aria-label="戻る">←</button>
+    <button class="btn-back" onclick="goBack()" aria-label="戻る">←</button>
     <h1 class="header-title" id="header-title">企業詳細</h1>
     <button class="btn-header-bookmark" id="btn-header-bookmark" aria-label="お気に入り保存">
       <span id="header-bookmark-icon">☆</span>
@@ -449,6 +449,19 @@
 <script>
 const LIFF_ID = '2010075487-89AJxZnA';
 const API_BASE = 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+
+function goBack() {
+  const params = new URLSearchParams(location.search);
+  const industry = params.get('industry');
+  const from     = params.get('from');
+  if (industry && from) {
+    location.href = `/company-list?industry=${encodeURIComponent(industry)}&from=${encodeURIComponent(from)}`;
+  } else if (industry) {
+    location.href = `/company-list?industry=${encodeURIComponent(industry)}`;
+  } else {
+    history.go(-2);
+  }
+}
 let currentUserId = null;
 let currentCompanyId = null;
 let isBookmarked = false;

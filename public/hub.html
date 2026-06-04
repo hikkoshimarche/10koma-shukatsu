@@ -151,12 +151,14 @@
 const LIFF_ID = '2010075487-89AJxZnA';
 const LEARNING_ORDER = ['10koma', 'video', 'kessan', 'room'];
 
-function buildContents(c) {
+function buildContents(c, industry, from) {
+  const ind = encodeURIComponent(industry ?? '');
+  const fr  = encodeURIComponent(from ?? '');
   return {
-    '10koma': { label: '10コマで知る',            icon: '📱', url: `https://liff.line.me/${c.jukoma_liff_id}?company=${c.id}`, type: 'liff',    active: true },
-    'video':  { label: '企業動画を見る',          icon: '📺', url: c.video_url,                                                  type: 'youtube', active: !!c.video_url },
-    'kessan': { label: '決算書動画を見る',        icon: '📊', url: c.kessan_url,                                                type: 'youtube', active: !!c.kessan_url },
-    'room':   { label: 'トーキャリ・ルーム（AI OB訪問）に入る', icon: '🚪', url: c.room_liff_id ? `https://liff.line.me/${c.room_liff_id}?company=${c.id}` : null, type: 'liff', active: !!c.room_liff_id }
+    '10koma': { label: '10コマで知る',            icon: '📱', url: `https://liff.line.me/${c.jukoma_liff_id}?company=${c.id}&industry=${ind}&from=${fr}`, type: 'liff',    active: true },
+    'video':  { label: '企業動画を見る',          icon: '📺', url: c.video_url,                                                                            type: 'youtube', active: !!c.video_url },
+    'kessan': { label: '決算書動画を見る',        icon: '📊', url: c.kessan_url,                                                                           type: 'youtube', active: !!c.kessan_url },
+    'room':   { label: 'トーキャリ・ルーム（AI OB訪問）に入る', icon: '🚪', url: c.room_liff_id ? `https://liff.line.me/${c.room_liff_id}?company=${c.id}&industry=${ind}` : null, type: 'liff', active: !!c.room_liff_id }
   };
 }
 
@@ -211,7 +213,7 @@ async function main() {
     if (industry) {
       location.href = `/company-list?industry=${encodeURIComponent(industry)}&from=${encodeURIComponent(from)}`;
     } else {
-      history.back();
+      location.href = '/industry';
     }
   });
 
@@ -240,7 +242,7 @@ async function main() {
     document.getElementById('company-name').textContent = company.name;
     document.title = `${company.name} | トーキャリ`;
 
-    renderCards(buildContents(company), from);
+    renderCards(buildContents(company, industry, from), from);
   } catch (err) {
     document.getElementById('company-name').textContent = 'エラーが発生しました';
     document.getElementById('hub-cards').innerHTML = `<p class="error-text">${err.message}</p>`;

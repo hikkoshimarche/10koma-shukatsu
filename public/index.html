@@ -52,8 +52,12 @@ async function main() {
     const companyId = params.get('company');
 
     if (companyId) {
-      // hub.html から「10コマで知る」でLIFFを開いた場合: 直接company.htmlへ
-      location.href = `/company.html?id=${encodeURIComponent(companyId)}`;
+      const industry = params.get('industry') ?? '';
+      const from     = params.get('from') ?? '';
+      let dest = `/company.html?id=${encodeURIComponent(companyId)}`;
+      if (industry) dest += `&industry=${encodeURIComponent(industry)}`;
+      if (from)     dest += `&from=${encodeURIComponent(from)}`;
+      location.href = dest;
     } else {
       // リッチメニュー枠1 から直接開いた場合: 業界選択フローへ
       location.href = '/industry?from=10koma';

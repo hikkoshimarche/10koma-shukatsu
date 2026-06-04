@@ -10,7 +10,7 @@
 <body>
 <div class="page-wrapper">
   <header class="header">
-    <div class="header-spacer"></div>
+    <button class="btn-back" id="btn-back" aria-label="戻る">‹</button>
     <h1 class="header-title">トーキャリ・ルーム</h1>
     <div class="header-spacer"></div>
   </header>
@@ -28,6 +28,18 @@ function esc(s) {
 }
 
 async function main() {
+  const params   = new URLSearchParams(location.search);
+  const company  = params.get('company') ?? '';
+  const industry = params.get('industry') ?? '';
+
+  document.getElementById('btn-back').addEventListener('click', () => {
+    if (company) {
+      location.href = `/hub?company=${encodeURIComponent(company)}&industry=${encodeURIComponent(industry)}&from=room`;
+    } else {
+      location.href = '/industry';
+    }
+  });
+
   const app = document.getElementById('app');
   try {
     await liff.init({ liffId: LIFF_ID });
@@ -62,7 +74,11 @@ async function main() {
 
     app.addEventListener('click', e => {
       const card = e.target.closest('.room-card');
-      if (card) location.href = `chat.html?persona_id=${encodeURIComponent(card.dataset.personaId)}`;
+      if (!card) return;
+      let url = `chat.html?persona_id=${encodeURIComponent(card.dataset.personaId)}`;
+      if (company)  url += `&company=${encodeURIComponent(company)}`;
+      if (industry) url += `&industry=${encodeURIComponent(industry)}`;
+      location.href = url;
     });
   } catch (err) {
     app.innerHTML = `<p class="error-text">エラー: ${esc(err.message)}</p>`;
