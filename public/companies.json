@@ -89,7 +89,7 @@
     { "id": "tokio-marine",      "name": "東京海上日動火災保険",             "jukoma_liff_id": "2010075487-89AJxZnA", "room_liff_id": null, "video_url": null, "kessan_url": null },
     { "id": "smtb",              "name": "三井住友信託銀行",                 "jukoma_liff_id": "2010075487-89AJxZnA", "room_liff_id": null, "video_url": null, "kessan_url": null },
     { "id": "resona",            "name": "りそな銀行",                       "jukoma_liff_id": "2010075487-89AJxZnA", "room_liff_id": null, "video_url": null, "kessan_url": null },
-    { "id": "nomura",            "name": "野村証券",                         "jukoma_liff_id": "2010075487-89AJxZnA", "room_liff_id": null, "video_url": null, "kessan_url": null },
+    { "id": "nomura",            "name": "野村證券",                         "jukoma_liff_id": "2010075487-89AJxZnA", "room_liff_id": null, "video_url": null, "kessan_url": null },
     { "id": "daiwa",             "name": "大和証券",                         "jukoma_liff_id": "2010075487-89AJxZnA", "room_liff_id": null, "video_url": null, "kessan_url": null },
     { "id": "mufg-ms",           "name": "三菱UFJモルガン・スタンレー証券",  "jukoma_liff_id": "2010075487-89AJxZnA", "room_liff_id": null, "video_url": null, "kessan_url": null },
     { "id": "smbc-nikko",        "name": "SMBC日興証券",                     "jukoma_liff_id": "2010075487-89AJxZnA", "room_liff_id": null, "video_url": null, "kessan_url": null },
