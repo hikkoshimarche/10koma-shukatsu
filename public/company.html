@@ -253,6 +253,52 @@
 
     .bubble-text { font-size: 14px; line-height: 1.7; color: var(--ink); }
 
+    /* === v3.6: 複数吹き出し (script_json から生成) === */
+    .bubble-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .bubble-stack .speech-bubble { margin: 0; }
+    /* nana は左寄り・haruki は右寄り・both は中央でストーリー性を出す (画面幅の85%) */
+    .bubble-stack .speech-bubble.nana   { margin-right: 15%; }
+    .bubble-stack .speech-bubble.haruki { margin-left: 15%; }
+    .bubble-stack .speech-bubble.both   { margin-left: 5%; margin-right: 5%; }
+
+    /* === v3.6: 画像上 main_copy オーバーレイ === */
+    .panel-image-wrap { position: relative; }
+    .panel-overlay {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      padding: 28px 14px 14px;
+      background: linear-gradient(to top,
+        rgba(0,0,0,0.78) 0%,
+        rgba(0,0,0,0.45) 60%,
+        rgba(0,0,0,0) 100%);
+      color: #fff;
+      font-family: "Reggae One", "Kaisei Decol", sans-serif;
+      letter-spacing: 0.02em;
+      line-height: 1.25;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+      pointer-events: none;  /* タッチ操作を画像側に通す */
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+    .panel-overlay .overlay-main {
+      display: block;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .panel-overlay .overlay-sub {
+      display: block;
+      font-size: 12px;
+      margin-top: 6px;
+      opacity: 0.88;
+      font-family: "Kaisei Decol", sans-serif;
+      letter-spacing: 0.03em;
+      font-weight: 400;
+    }
+
     /* === Panel actions === */
     .panel-actions {
       display: flex;
@@ -467,10 +513,49 @@ let currentCompanyId = null;
 let isBookmarked = false;
 
 const CHAR_LABEL = { nana: 'ナナ', haruki: 'ハルキ', both: '二人' };
+const KNOWN_SPEAKERS = new Set(['nana', 'haruki', 'both']);
 
 function esc(s) {
   return String(s ?? '')
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/**
+ * script_json (string) を配列にパース。無効/空なら null。
+ * 旧データ (script_json なし) は null を返してフォールバックさせる。
+ */
+function parseScriptJson(raw) {
+  if (!raw || typeof raw !== 'string') return null;
+  try {
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr) || arr.length === 0) return null;
+    return arr.filter(s => typeof s === 'string' && s.trim().length > 0);
+  } catch { return null; }
+}
+
+/**
+ * "[nana] セリフ" → { cssSpeaker:'nana', label:'ナナ', text:'セリフ' }
+ * 未知タグ "[OB先輩] ..." → cssSpeaker:'haruki' (CSS色フォールバック), label:'OB先輩' (表示はそのまま)
+ * タグなし行 → cssSpeaker:'haruki', label:'ハルキ' (デフォルト)
+ */
+function splitSpeakerLine(line) {
+  const m = String(line).match(/^\[([^\]]+)\]\s*(.*)$/);
+  if (!m) return { cssSpeaker: 'haruki', label: CHAR_LABEL.haruki, text: String(line).trim() };
+  const rawTag = m[1];
+  const lc = rawTag.toLowerCase();
+  const cssSpeaker = KNOWN_SPEAKERS.has(lc) ? lc : 'haruki';
+  const label = CHAR_LABEL[lc] || rawTag;  // 未知タグはそのまま表示 (例: OB先輩)
+  return { cssSpeaker, label, text: m[2].trim() };
+}
+
+/**
+ * Panel オブジェクトから「シェア用クリーンテキスト」を作る。
+ * 旧データは dialogue をそのまま、新データは script_json から [tag] を剥がしたもの。
+ */
+function panelCleanDialogue(p) {
+  const arr = parseScriptJson(p.script_json);
+  if (!arr) return String(p.dialogue ?? '');
+  return arr.map(l => splitSpeakerLine(l).text).join('\n');
 }
 
 function showToast(msg) {
@@ -497,6 +582,12 @@ function buildVerificationFooter(lastVerifiedAt) {
 }
 
 async function initLiff() {
+  // 開発用: localhost ではLIFF初期化をスキップして mock profile を返す
+  // (本番 pages.dev / LIFF 経由ではこの分岐に入らないため挙動は無変化)
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    console.info('[dev] localhost detected → LIFF bypass (preview mode)');
+    return { userId: 'localhost-preview', displayName: 'Preview', pictureUrl: '' };
+  }
   await liff.init({ liffId: LIFF_ID });
   if (!liff.isLoggedIn()) { liff.login(); return null; }
   const profile = await liff.getProfile();
@@ -645,23 +736,53 @@ async function main() {
       ? '<p class="empty-text">パネルデータはまだありません</p>'
       : panels.map(p => {
           const liked = !!panelLikes[p.panel_num];
-          const bubbleClass = `speech-bubble ${esc(p.character)}`;
+          const scriptArr = parseScriptJson(p.script_json);
+
+          // === 吹き出し: 新方式 (script_json から複数生成) または 旧方式 (dialogue 単発) ===
+          let bubbleHtml;
+          if (scriptArr) {
+            const innerBubbles = scriptArr.map(line => {
+              const { cssSpeaker, label, text } = splitSpeakerLine(line);
+              return `
+                <div class="speech-bubble ${cssSpeaker}">
+                  <span class="char-tag ${cssSpeaker}">${esc(label)}</span>
+                  <p class="bubble-text">${esc(text)}</p>
+                </div>`;
+            }).join('');
+            bubbleHtml = `<div class="bubble-stack">${innerBubbles}</div>`;
+          } else {
+            // 旧データ (三井物産等) は従来通り 単一吹き出し
+            const bubbleClass = `speech-bubble ${esc(p.character)}`;
+            bubbleHtml = `
+              <div class="${bubbleClass}">
+                <span class="char-tag ${esc(p.character)}">${esc(CHAR_LABEL[p.character] ?? p.character)}</span>
+                <p class="bubble-text">${esc(p.dialogue)}</p>
+              </div>`;
+          }
+
+          // === 画像上 main_copy オーバーレイ (新方式のみ、無ければ表示しない) ===
+          const overlayHtml = p.main_copy
+            ? `<div class="panel-overlay">
+                <span class="overlay-main">${esc(p.main_copy)}</span>
+                ${p.sub_copy ? `<span class="overlay-sub">${esc(p.sub_copy)}</span>` : ''}
+              </div>`
+            : '';
+
+          const shareDialogue = panelCleanDialogue(p);
           return `
             <div class="panel">
               <div class="panel-num">${String(p.panel_num).padStart(2, '0')} / ${String(panels.length).padStart(2, '0')}</div>
               <div class="panel-image-wrap">
                 <img src="${esc(p.image_url)}" alt="コマ${p.panel_num}" onerror="this.style.display='none'">
+                ${overlayHtml}
               </div>
-              <div class="${bubbleClass}">
-                <span class="char-tag ${esc(p.character)}">${esc(CHAR_LABEL[p.character] ?? p.character)}</span>
-                <p class="bubble-text">${esc(p.dialogue)}</p>
-              </div>
+              ${bubbleHtml}
               <div class="panel-actions">
                 <button class="panel-btn panel-like ${liked ? 'liked' : ''}" data-panel="${p.panel_num}" aria-label="いいね">
                   <span class="icon">${liked ? '♥' : '♡'}</span>
                   <span class="label">いいね</span>
                 </button>
-                <button class="panel-btn panel-share" data-panel="${p.panel_num}" data-dialogue="${esc(p.dialogue)}" aria-label="シェア">
+                <button class="panel-btn panel-share" data-panel="${p.panel_num}" data-dialogue="${esc(shareDialogue)}" aria-label="シェア">
                   <span class="icon">↗</span>
                   <span class="label">シェア</span>
                 </button>
