@@ -257,13 +257,32 @@
     .bubble-stack {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 18px;  /* 14→18 に拡大: 尻尾(12px)が次の吹き出しと干渉しないよう余裕を確保 */
     }
     .bubble-stack .speech-bubble { margin: 0; }
     /* nana は左寄り・haruki は右寄り・both は中央でストーリー性を出す (画面幅の85%) */
     .bubble-stack .speech-bubble.nana   { margin-right: 15%; }
     .bubble-stack .speech-bubble.haruki { margin-left: 15%; }
     .bubble-stack .speech-bubble.both   { margin-left: 5%; margin-right: 5%; }
+
+    /* === v3.6: bubble-stack 内の尻尾(三角)を左右対称化 ===
+       既存の単一吹き出し (三井物産等) は外側スコープのため無変化。
+       下向き三角・白塗り・10px ベース幅 × 12px 高さで統一。 */
+    .bubble-stack .speech-bubble::before {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 12px solid #fff;   /* 吹き出し背景色と一致 */
+      border-bottom: 0;
+      transform: none;
+    }
+    .bubble-stack .speech-bubble.nana::before   { left: 28px; right: auto; }
+    .bubble-stack .speech-bubble.haruki::before { left: auto; right: 28px; }
+    .bubble-stack .speech-bubble.both::before   { left: 50%; right: auto; transform: translateX(-50%); }
 
     /* === v3.6: 画像上 main_copy オーバーレイ === */
     .panel-image-wrap { position: relative; }
