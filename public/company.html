@@ -21,6 +21,7 @@
       --nana-blue: #4a90d9;
       --haruki-grn:#2d8659;
       --both-purple:#7d3c98;
+      --ob-orange: #d97a1f;  /* OB先輩 等の第三者キャラ (ハルキ緑/二人紫と明確に区別できるオレンジ系) */
       --like-red:  #e63946;
       --bookmark-y:#f39c12;
     }
@@ -231,6 +232,8 @@
     .speech-bubble.haruki::before { left: auto; right: 28px; border-right-width: 0; border-left-width: 0; border-top-color: #fff; border: 13px solid transparent; border-top-color: #fff; right: 28px; left: auto; }
     .speech-bubble.haruki::before { left: auto; right: 28px; width: 0; height: 0; border-top: 13px solid #fff; border-left: 13px solid transparent; border-right: 0; border-bottom: 0; }
     .speech-bubble.both::before   { left: 50%; transform: translateX(-50%); }
+    /* OB先輩は中央寄りで尻尾を出す (ハルキ右・ナナ左と区別、二人とは色で区別) */
+    .speech-bubble.ob::before     { left: 50%; transform: translateX(-50%); }
 
     .char-tag {
       position: absolute;
@@ -250,6 +253,7 @@
 
     .char-tag.haruki  { background: var(--haruki-grn); left: auto; right: 14px; }
     .char-tag.both    { background: var(--both-purple); left: 50%; transform: translateX(-50%) translateY(-50%); }
+    .char-tag.ob      { background: var(--ob-orange); left: 50%; transform: translateX(-50%) translateY(-50%); }
 
     .bubble-text { font-size: 14px; line-height: 1.7; color: var(--ink); }
 
@@ -264,6 +268,7 @@
     .bubble-stack .speech-bubble.nana   { margin-right: 15%; }
     .bubble-stack .speech-bubble.haruki { margin-left: 15%; }
     .bubble-stack .speech-bubble.both   { margin-left: 5%; margin-right: 5%; }
+    .bubble-stack .speech-bubble.ob     { margin-left: 8%; margin-right: 8%; background: #fff5ec; }  /* OB先輩は薄いオレンジ背景で他と区別 */
 
     /* === v3.6: bubble-stack 内の尻尾(三角)を左右対称化 ===
        既存の単一吹き出し (三井物産等) は外側スコープのため無変化。
@@ -283,6 +288,7 @@
     .bubble-stack .speech-bubble.nana::before   { left: 28px; right: auto; }
     .bubble-stack .speech-bubble.haruki::before { left: auto; right: 28px; }
     .bubble-stack .speech-bubble.both::before   { left: 50%; right: auto; transform: translateX(-50%); }
+    .bubble-stack .speech-bubble.ob::before     { left: 50%; right: auto; transform: translateX(-50%); border-top-color: #fff5ec; }
 
     /* === v3.6: 画像上 main_copy オーバーレイ === */
     .panel-image-wrap { position: relative; }
@@ -562,9 +568,12 @@ function splitSpeakerLine(line) {
   if (!m) return { cssSpeaker: 'haruki', label: CHAR_LABEL.haruki, text: String(line).trim() };
   const rawTag = m[1];
   const lc = rawTag.toLowerCase();
-  const cssSpeaker = KNOWN_SPEAKERS.has(lc) ? lc : 'haruki';
-  const label = CHAR_LABEL[lc] || rawTag;  // 未知タグはそのまま表示 (例: OB先輩)
-  return { cssSpeaker, label, text: m[2].trim() };
+  // 既知主役 (nana/haruki/both) はそのままCSSクラス
+  if (KNOWN_SPEAKERS.has(lc)) {
+    return { cssSpeaker: lc, label: CHAR_LABEL[lc] || rawTag, text: m[2].trim() };
+  }
+  // 第三者 (OB先輩・先生・タカシ先輩 等) は ob カテゴリ (オレンジ系、薄背景で主役と区別)
+  return { cssSpeaker: 'ob', label: rawTag, text: m[2].trim() };
 }
 
 /**
