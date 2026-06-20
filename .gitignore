@@ -11,3 +11,15 @@
 
 # Node（将来使う場合）
 node_modules/
+
+.dev.vars*
+!.dev.vars.example
+!.env.example
+
+# --- tokyari checkpoint 2026-06-20 ---
+.backups/
+.claude/
+pipeline/
+mitsui_video/
+*.bak
+api/migration_v36_*.sql

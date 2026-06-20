@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "wrangler deploy",
+    "preview": "wrangler dev"
   },
   "repository": {
     "type": "git",
@@ -19,6 +21,6 @@
   },
   "homepage": "https://github.com/hikkoshimarche/10koma-shukatsu#readme",
   "devDependencies": {
-    "wrangler": "^4.93.0"
+    "wrangler": "^4.98.0"
   }
 }
