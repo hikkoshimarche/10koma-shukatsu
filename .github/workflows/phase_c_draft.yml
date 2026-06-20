@@ -1,0 +1,27 @@
+name: Phase C - draft fixes PR
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Draft proposals
+        env:
+          SHEET_WEBAPP_URL: ${{ secrets.SHEET_WEBAPP_URL }}
+          SHEET_API_TOKEN: ${{ secrets.SHEET_API_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python tools/phase_c_draft.py
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: phase-c/draft-fixes
+          title: "Phase C: 修正案ドラフト（要レビュー・自動反映なし）"
+          body: "要対応の修正案ドラフト。①バグは現行→新を提示。承認後Mac側で安全手順反映（本番自動反映なし）。"
+          add-paths: proposals/**
