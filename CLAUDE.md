@@ -23,21 +23,39 @@
 class LintError(RuntimeError):
     """scenario_lints_v5_ext の error 検出時に SQL 生成を中止するための例外。"""
 ```
-`build_sql_for_company(tokyari_slug, ref, warnings=None, use_v4=False, lint=True)` の scenario 読込直後:
+`build_sql_for_company(tokyari_slug, ref, warnings=None, use_v4=False, lint=True)` の scenario 読込直後（**全部入りゲート**: v4 4-lint＋話者主役表記揺れ＋v5_ext）:
 ```python
     if lint and use_v4:
         _sd = str(Path(__file__).resolve().parent)   # cwd非依存: scripts/ を import path に
         if _sd not in sys.path:
             sys.path.insert(0, _sd)
+        _errs = []
+        # (1) v5_ext (倍率/生MD/採用数/同語連発/終端/第三者主役化)
         try:
-            from scenario_lints_v5_ext import run_ext_lints, format_report
+            from scenario_lints_v5_ext import run_ext_lints, format_report as _fmt_ext
         except Exception as _e:
             raise LintError(f"lint module 読込失敗 (scenario_lints_v5_ext): {_e}")
         _rep = run_ext_lints(scenario, tokyari_slug)
         if _rep["errors"] > 0:
-            sys.stderr.write(format_report(_rep) + "\n")
-            raise LintError(f"[lint] {tokyari_slug}: errors={_rep['errors']} → SQL生成中止 (--no-lint で回避可)")
+            _errs.append(_fmt_ext(_rep))
+        # (2) 本家 v4 4-lint (story_type_repeat は history連携要のため対象外) / (3) 話者: 主役表記揺れのみerror
+        try:
+            from scenario_lints import run_all_v4_lints, lint_speaker_tag
+        except Exception as _e:
+            raise LintError(f"lint module 読込失敗 (scenario_lints): {_e}")
+        _v4 = run_all_v4_lints(scenario, tokyari_slug)
+        for _k, _items in _v4.items():
+            if _k == "story_type_repeat" or not _items:
+                continue
+            _errs.append(f"[{_k}] (v4)\n" + "\n".join(f"  - {_i}" for _i in _items))
+        _spk_fatal = [w for w in lint_speaker_tag(scenario) if "★主役の表記揺れ★" in w]
+        if _spk_fatal:
+            _errs.append("[speaker_tag] 主役表記揺れ(error)\n" + "\n".join(f"  - {w}" for w in _spk_fatal))
+        if _errs:
+            sys.stderr.write("\n".join(_errs) + "\n")
+            raise LintError(f"[lint] {tokyari_slug}: 品質ゲート error 検出 → SQL生成中止 (--no-lint で回避可)")
 ```
+※ 未知タグ(OB先輩等)は warning＝通す。story_type_repeat は生成バッチ側で history 突合（関所ではgateしない）。
 `main()`（argparse に `--no-lint` 追加、生成ループ）:
 ```python
     parser.add_argument("--no-lint", action="store_true",
