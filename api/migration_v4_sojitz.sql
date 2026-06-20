@@ -9,11 +9,11 @@ INSERT OR IGNORE INTO companies (id, name, industry_id, thumbnail_url) VALUES ('
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sojitz', 1, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@673bf31/public/images/sojitz/panel_01.png', 'nana', '[nana] 双日って、2003年生まれなんだって。
 [haruki] 2003年? 私たちと…ほぼ同い年?
 [nana] うん、私たちが22-23歳の時、双日も22-23歳。
-[haruki] え、じゃあ、10年後の双日を作るのは…', '双日2003年生まれ、あなたと同い年', '双日 / 2768 / 一番新しい総合商社', NULL, '["[nana] 双日って、2003年生まれなんだって。", "[haruki] 2003年? 私たちと…ほぼ同い年?", "[nana] うん、私たちが22-23歳の時、双日も22-23歳。", "[haruki] え、じゃあ、10年後の双日を作るのは…"]', 'H1: 内幸町東急ビル本社', '{"location": "本社ビル上部の外壁", "object_type": "建築サイン (双日 / Sojitz)", "brand_form": "ビル外壁に控えめな『双日 / Sojitz』のサイン", "attachment": "ビル外壁固定", "scale_note": "実在の本社ビル通常サイズ"}');
+[haruki] え、じゃあ、10年後の双日を作るのは…', '双日2003年生まれ、あなたとほぼ同い年', '双日 / 2768 / 一番新しい総合商社', NULL, '["[nana] 双日って、2003年生まれなんだって。", "[haruki] 2003年? 私たちと…ほぼ同い年?", "[nana] うん、私たちが22-23歳の時、双日も22-23歳。", "[haruki] え、じゃあ、10年後の双日を作るのは…"]', 'H1: 内幸町東急ビル本社', '{"location": "本社ビル上部の外壁", "object_type": "建築サイン (双日 / Sojitz)", "brand_form": "ビル外壁に控えめな『双日 / Sojitz』のサイン", "attachment": "ビル外壁固定", "scale_note": "実在の本社ビル通常サイズ"}');
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sojitz', 2, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@673bf31/public/images/sojitz/panel_02.png', 'haruki', '[haruki] 純利益1,106億円、売上2.5兆円。23歳の会社で、これは大きい。
-[nana] 親が同じ年齢の時、まだ就職活動始めたばかりだったろうに…
+[nana] え、23歳でそんなに大きいの?
 [haruki] 双日は2003年に日商岩井とニチメンが合併して生まれた。だから23歳でも、中身は両社の100年以上。
-[nana] そっか、新しい会社だけど、根は古いんだ…', '純利益1,106億円(23歳)', '売上 約2.5兆円 / 2003年 ニチメン+日商岩井 合併', '公式IR', '["[haruki] 純利益1,106億円、売上2.5兆円。23歳の会社で、これは大きい。", "[nana] 親が同じ年齢の時、まだ就職活動始めたばかりだったろうに…", "[haruki] 双日は2003年に日商岩井とニチメンが合併して生まれた。だから23歳でも、中身は両社の100年以上。", "[nana] そっか、新しい会社だけど、根は古いんだ…"]', NULL, NULL);
+[nana] そっか、新しい会社だけど、根は古いんだ…', '純利益1,106億円(23歳)', '売上 約2.5兆円 / 2003年 ニチメン+日商岩井 合併', '公式IR', '["[haruki] 純利益1,106億円、売上2.5兆円。23歳の会社で、これは大きい。", "[nana] え、23歳でそんなに大きいの?", "[haruki] 双日は2003年に日商岩井とニチメンが合併して生まれた。だから23歳でも、中身は両社の100年以上。", "[nana] そっか、新しい会社だけど、根は古いんだ…"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sojitz', 3, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@673bf31/public/images/sojitz/panel_03.png', 'haruki', '[haruki] 双日のベトナム進出は商社No.1の規模。
 [nana] え、5大商社よりも?
 [haruki] うん、ベトナムだけは別格。製造業の進出を双日が現地で支援、不動産・物流・小売まで一気通貫。
@@ -24,8 +24,8 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [nana] バナナとEV、全然違うのに、同じ会社で持ってるんだ…', 'バナナとEV、両方トップクラス', 'フィリピン産バナナシェア / 車載LiB電解液', NULL, '["[haruki] フィリピン産バナナの輸入シェア、双日は業界トップクラス。", "[nana] スーパーで買うバナナの…!?", "[haruki] それだけじゃない。車載リチウムイオン電池の電解液で世界シェアトップクラス。EVの中身も双日。", "[nana] バナナとEV、全然違うのに、同じ会社で持ってるんだ…"]', 'H3: フィリピンのバナナ農園', NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sojitz', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@673bf31/public/images/sojitz/panel_05.png', 'nana', '[nana] 双日の年収は?
 [haruki] 平均1,274万円。5大商社より低いけど、新興の追い上げ中。
-[haruki] ベース+海外駐在手当+ベトナム・東南アジア赴任のリスク手当。若手で海外に出る人ほど早く積み上がる。
-[nana] 23歳の会社らしく、若手の伸びシロが額に反映されるんだ。', '1,274万円(平均)+若手で伸びる', 'ベース / ベトナム・東南ア駐在で加算', '日経会社情報 2768', '["[nana] 双日の年収は?", "[haruki] 平均1,274万円。5大商社より低いけど、新興の追い上げ中。", "[haruki] ベース+海外駐在手当+ベトナム・東南アジア赴任のリスク手当。若手で海外に出る人ほど早く積み上がる。", "[nana] 23歳の会社らしく、若手の伸びシロが額に反映されるんだ。"]', NULL, NULL);
+[haruki] ベース+海外駐在手当+ベトナム・東南アジアの赴任手当。若手で海外に出る人ほど早く積み上がる。
+[nana] 23歳の会社らしく、若手の伸びシロが額に反映されるんだ。', '1,274万円(平均)+若手で伸びる', 'ベース / ベトナム・東南ア駐在で加算', '日経会社情報 2768', '["[nana] 双日の年収は?", "[haruki] 平均1,274万円。5大商社より低いけど、新興の追い上げ中。", "[haruki] ベース+海外駐在手当+ベトナム・東南アジアの赴任手当。若手で海外に出る人ほど早く積み上がる。", "[nana] 23歳の会社らしく、若手の伸びシロが額に反映されるんだ。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sojitz', 6, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@673bf31/public/images/sojitz/panel_06.png', 'nana', '[nana] 働き方はどうですか?
 [OB先輩] フレックスとリモートが両方使えるよ。新しい会社だから、制度の導入が早かったの。
 [OB先輩] 福利厚生で大きいのは家賃補助と独身寮。内幸町近くの寮があるから、20代の家賃の心配がほぼなくなる。
@@ -35,14 +35,14 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [OB先輩] でも双日は若手抜擢で有名。2〜3年でハノイ・ホーチミン駐在は当たり前。航空機事業ならシアトル・トゥールーズ。
 [haruki] 5大商社の若手より、双日の若手は1〜2年早く海外に出る、ってことか…', '若手抜擢、2〜3年でハノイ駐在', '第一希望通る人は半分 / 5大商社より1〜2年早く海外', NULL, '["[nana] 採用約130名は、5大商社並みですよね。", "[OB先輩] うん、規模感は5大商社並み。第一希望そのまま通る人は半分くらい。", "[OB先輩] でも双日は若手抜擢で有名。2〜3年でハノイ・ホーチミン駐在は当たり前。航空機事業ならシアトル・トゥールーズ。", "[haruki] 5大商社の若手より、双日の若手は1〜2年早く海外に出る、ってことか…"]', 'H4: 航空機メンテナンス工場', NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sojitz', 8, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@673bf31/public/images/sojitz/panel_08.png', 'nana', '[OB先輩] 双日が見るのは、双日精神。スピード・チャレンジ・誠実さ・チームワーク。
-[OB先輩] 倍率100倍は確かに高い。でも一番見てるのは、新しい挑戦を恐れずに、誠実に、チームで動ける人。
+[OB先輩] 一番見てるのは、新しい挑戦を恐れずに、誠実に、チームで動ける人。
 [nana] (静かに) 一番新しい商社だから、新しい挑戦が当たり前、ってこと…
-[haruki] スピードと誠実さの両立、ってのが双日らしいんだ。', 'スピード・チャレンジ・誠実・チームワーク', '倍率より、新しい挑戦を誠実に', NULL, '["[OB先輩] 双日が見るのは、双日精神。スピード・チャレンジ・誠実さ・チームワーク。", "[OB先輩] 倍率100倍は確かに高い。でも一番見てるのは、新しい挑戦を恐れずに、誠実に、チームで動ける人。", "[nana] (静かに) 一番新しい商社だから、新しい挑戦が当たり前、ってこと…", "[haruki] スピードと誠実さの両立、ってのが双日らしいんだ。"]', 'H6: 双日の社章', '{"location": "壁面中央", "object_type": "社章 (双日のロゴ)", "brand_form": "金属レリーフの『双日』ロゴ、実在のデザイン", "attachment": "壁面に固定", "scale_note": "実在の社内展示の通常サイズ"}');
+[haruki] スピードと誠実さの両立、ってのが双日らしいんだ。', 'スピード・チャレンジ・誠実・チームワーク', '新しい挑戦を、誠実に', NULL, '["[OB先輩] 双日が見るのは、双日精神。スピード・チャレンジ・誠実さ・チームワーク。", "[OB先輩] 一番見てるのは、新しい挑戦を恐れずに、誠実に、チームで動ける人。", "[nana] (静かに) 一番新しい商社だから、新しい挑戦が当たり前、ってこと…", "[haruki] スピードと誠実さの両立、ってのが双日らしいんだ。"]', 'H6: 双日の社章', '{"location": "壁面中央", "object_type": "社章 (双日のロゴ)", "brand_form": "金属レリーフの『双日』ロゴ、実在のデザイン", "attachment": "壁面に固定", "scale_note": "実在の社内展示の通常サイズ"}');
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sojitz', 9, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@673bf31/public/images/sojitz/panel_09.png', 'haruki', '[nana] もし入れたら、10年後どこにいると思う?
 [haruki] たとえば、こんな未来。ハノイの工業団地で日本企業の進出を統括。
 [haruki] フィリピン・ミンダナオでバナナのサプライチェーンを再設計。
 [haruki] 中東〜アジアを結ぶLNG運搬で、エネルギー安全保障の起案。
-[nana] 10年後、双日は33歳。私も33歳。一緒に成長していけるんだ…', '10年後、双日33歳。あなたも33歳。', 'ハノイ / ミンダナオ / 中東〜アジアLNG', NULL, '["[nana] もし入れたら、10年後どこにいると思う?", "[haruki] たとえば、こんな未来。ハノイの工業団地で日本企業の進出を統括。", "[haruki] フィリピン・ミンダナオでバナナのサプライチェーンを再設計。", "[haruki] 中東〜アジアを結ぶLNG運搬で、エネルギー安全保障の起案。", "[nana] 10年後、双日は33歳。私も33歳。一緒に成長していけるんだ…"]', 'H2 ハノイ + H3 バナナ農園 + H5 LNGタンカー', NULL);
+[nana] 10年後、双日も私も、ひとまわり成長してる。一緒に育っていけるんだ…', '10年後、双日も私も、ひとまわり成長。', 'ハノイ / ミンダナオ / 中東〜アジアLNG', NULL, '["[nana] もし入れたら、10年後どこにいると思う?", "[haruki] たとえば、こんな未来。ハノイの工業団地で日本企業の進出を統括。", "[haruki] フィリピン・ミンダナオでバナナのサプライチェーンを再設計。", "[haruki] 中東〜アジアを結ぶLNG運搬で、エネルギー安全保障の起案。", "[nana] 10年後、双日も私も、ひとまわり成長してる。一緒に育っていけるんだ…"]', 'H2 ハノイ + H3 バナナ農園 + H5 LNGタンカー', NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sojitz', 10, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@673bf31/public/images/sojitz/panel_10.png', 'both', '[haruki] 売上2.5兆円、純利益1,106億円、採用約130名。
 [nana] 双日は23歳、私もまだ22-23歳。
-[both] **一番新しい総合商社、23歳。あなたと同い年だから、何度でも挑める。**', 'あなたと同い年だから、何度でも挑める。', '売上 約2.5兆円 / 純利益 約1,106億円 / 採用 約130名', NULL, '["[haruki] 売上2.5兆円、純利益1,106億円、採用約130名。", "[nana] 双日は23歳、私もまだ22-23歳。", "[both] **一番新しい総合商社、23歳。あなたと同い年だから、何度でも挑める。**"]', 'H1: 内幸町東急ビル (朝の光)', NULL);
+[both] 一番新しい総合商社、23歳。伸びしろも、挑戦の数も、これから。', '伸びしろも、挑戦の数も、これから。', '売上 約2.5兆円 / 純利益 約1,106億円 / 採用 約130名', NULL, '["[haruki] 売上2.5兆円、純利益1,106億円、採用約130名。", "[nana] 双日は23歳、私もまだ22-23歳。", "[both] 一番新しい総合商社、23歳。伸びしろも、挑戦の数も、これから。"]', 'H1: 内幸町東急ビル (朝の光)', NULL);

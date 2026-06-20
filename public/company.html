@@ -545,6 +545,12 @@ function esc(s) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+// セリフ(dialogue / script_json)に紛れた Markdown 太字記号 ** を除去 (再発防止の二重ガード)。
+// main_copy / sub_copy は対象外 (意図的な記号が入る余地を残す)。
+function stripMd(s) {
+  return String(s ?? '').replace(/\*\*/g, '');
+}
+
 /**
  * script_json (string) を配列にパース。無効/空なら null。
  * 旧データ (script_json なし) は null を返してフォールバックさせる。
@@ -582,8 +588,8 @@ function splitSpeakerLine(line) {
  */
 function panelCleanDialogue(p) {
   const arr = parseScriptJson(p.script_json);
-  if (!arr) return String(p.dialogue ?? '');
-  return arr.map(l => splitSpeakerLine(l).text).join('\n');
+  if (!arr) return stripMd(String(p.dialogue ?? ''));
+  return arr.map(l => stripMd(splitSpeakerLine(l).text)).join('\n');
 }
 
 function showToast(msg) {
@@ -774,7 +780,7 @@ async function main() {
               return `
                 <div class="speech-bubble ${cssSpeaker}">
                   <span class="char-tag ${cssSpeaker}">${esc(label)}</span>
-                  <p class="bubble-text">${esc(text)}</p>
+                  <p class="bubble-text">${esc(stripMd(text))}</p>
                 </div>`;
             }).join('');
             bubbleHtml = `<div class="bubble-stack">${innerBubbles}</div>`;
@@ -784,7 +790,7 @@ async function main() {
             bubbleHtml = `
               <div class="${bubbleClass}">
                 <span class="char-tag ${esc(p.character)}">${esc(CHAR_LABEL[p.character] ?? p.character)}</span>
-                <p class="bubble-text">${esc(p.dialogue)}</p>
+                <p class="bubble-text">${esc(stripMd(p.dialogue))}</p>
               </div>`;
           }
 

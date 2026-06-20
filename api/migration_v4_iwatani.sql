@@ -9,7 +9,7 @@ INSERT OR IGNORE INTO companies (id, name, industry_id, thumbnail_url) VALUES ('
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('iwatani', 1, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@a183b34/public/images/iwatani/panel_01.png', 'nana', '[nana] 朝ごはん、鍋にしてみた。
 [haruki] 鍋朝食、いいね。これ、カセットコンロ?
 [nana] うん。これって誰が作ってる会社なんだろう?
-[haruki] 『カセットフー』、岩谷産業の50年続くロングセラーだよ。日本の家庭の鍋を温めてきた会社。', '朝の鍋、誰のコンロ?', '岩谷産業 / 8088 / カセットフー(1969年〜)', NULL, '["[nana] 朝ごはん、鍋にしてみた。", "[haruki] 鍋朝食、いいね。これ、カセットコンロ?", "[nana] うん。これって誰が作ってる会社なんだろう?", "[haruki] 『カセットフー』、岩谷産業の50年続くロングセラーだよ。日本の家庭の鍋を温めてきた会社。"]', 'H1: イワタニのカセットコンロ『カセットフー』', '{"location": "カセットコンロ本体上部の中央", "object_type": "ブランドロゴ (Iwatani)", "brand_form": "青いカセットコンロ本体に白文字でブランド名、控えめに", "attachment": "コンロ本体に印刷", "scale_note": "実在のカセットフーの通常サイズ"}');
+[haruki] 『カセットフー』、岩谷産業の50年続くロングセラーだよ。日本の家庭の鍋を温めてきた会社。岩谷は自分でこういう製品も作る、商社でありメーカーでもある会社なんだ。', '朝の鍋、誰のコンロ?', '岩谷産業 / 8088 / カセットフー(1969年〜)', NULL, '["[nana] 朝ごはん、鍋にしてみた。", "[haruki] 鍋朝食、いいね。これ、カセットコンロ?", "[nana] うん。これって誰が作ってる会社なんだろう?", "[haruki] 『カセットフー』、岩谷産業の50年続くロングセラーだよ。日本の家庭の鍋を温めてきた会社。岩谷は自分でこういう製品も作る、商社でありメーカーでもある会社なんだ。"]', 'H1: イワタニのカセットコンロ『カセットフー』', '{"location": "カセットコンロ本体上部の中央", "object_type": "ブランドロゴ (Iwatani)", "brand_form": "青いカセットコンロ本体に白文字でブランド名、控えめに", "attachment": "コンロ本体に印刷", "scale_note": "実在のカセットフーの通常サイズ"}');
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('iwatani', 2, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@a183b34/public/images/iwatani/panel_02.png', 'haruki', '[haruki] このカセットボンベも、ぜんぶイワタニだ。
 [nana] え、これも?
 [haruki] うん、50年以上のロングセラー。鍋もキャンプも、災害備蓄も、ぜんぶイワタニのボンベ。
@@ -23,9 +23,9 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [haruki] うん。岩谷は国内の水素ステーションのトップシェア。トヨタMIRAIみたいなFCV(燃料電池車)に充填してる。
 [nana] カセットコンロからLPG、水素まで、エネルギーを連続でやってる会社…', '未来のエネルギーも、イワタニ', '国内水素ステーションのトップシェア / FCV充填', NULL, '["[haruki] あ、水素ステーション。これもイワタニ。", "[nana] 水素って、未来のエネルギーだよね。", "[haruki] うん。岩谷は国内の水素ステーションのトップシェア。トヨタMIRAIみたいなFCV(燃料電池車)に充填してる。", "[nana] カセットコンロからLPG、水素まで、エネルギーを連続でやってる会社…"]', 'H4: 水素ステーション (トヨタMIRAI充填中)', '{"location": "ステーション上部のサイン", "object_type": "イワタニ水素ステーションのブランドサイン", "brand_form": "ステーション屋根の下に『Iwatani』+ 水素マークのサイン", "attachment": "ステーション構造の一部", "scale_note": "実在の水素ステーション通常サイズ"}');
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('iwatani', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@a183b34/public/images/iwatani/panel_05.png', 'nana', '[nana] 年収はいくらなの?
-[haruki] 平均約820万円。5大商社の半分くらい。
+[haruki] 平均約820万円。
 [haruki] でも岩谷はエネルギー専業で、LPG・水素・産業ガスの3本柱。値段が動けば年収も動く。
-[nana] 規模じゃなくて、エネルギー価格と一緒に動くんだ。', '約820万円(平均)+エネルギー連動', 'LPG / 水素 / 産業ガスの値動きに連動', '公式・有報', '["[nana] 年収はいくらなの?", "[haruki] 平均約820万円。5大商社の半分くらい。", "[haruki] でも岩谷はエネルギー専業で、LPG・水素・産業ガスの3本柱。値段が動けば年収も動く。", "[nana] 規模じゃなくて、エネルギー価格と一緒に動くんだ。"]', NULL, NULL);
+[nana] 会社の大きさじゃなくて、エネルギーの値段と一緒に給料も動くんだ。', '約820万円(平均)+エネルギー連動', 'LPG / 水素 / 産業ガスの値動きに連動', '公式・有報', '["[nana] 年収はいくらなの?", "[haruki] 平均約820万円。", "[haruki] でも岩谷はエネルギー専業で、LPG・水素・産業ガスの3本柱。値段が動けば年収も動く。", "[nana] 会社の大きさじゃなくて、エネルギーの値段と一緒に給料も動くんだ。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('iwatani', 6, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@a183b34/public/images/iwatani/panel_06.png', 'nana', '[nana] 働き方はどうですか?
 [OB先輩] フレックス・リモート両方あるよ。エネルギー業界だから、災害時の現場対応はあるけどね。
 [OB先輩] 福利厚生は『独身寮』と『社宅』が手厚い。大阪本社なら、堂島近くの寮があるから家賃の心配がほぼなくなる。
@@ -45,4 +45,4 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [nana] 朝のコンロから、夜のキャンプまで。私が動かすエネルギー、人の生活と続いてる…', '10年後、たとえばこんな場面', '福岡(LPG) / デュッセルドルフ(水素) / 大阪(企画)', NULL, '["[nana] もし入れたら、10年後どこにいると思う?", "[haruki] たとえば、こんな未来。福岡でLPG営業所長として地域のガスを支えてる。", "[haruki] デュッセルドルフで欧州の水素技術の合弁事業を立ち上げ。", "[haruki] 大阪本社で次世代カセットコンロの企画。50年続く商品の次を考える。", "[nana] 朝のコンロから、夜のキャンプまで。私が動かすエネルギー、人の生活と続いてる…"]', 'H5: キャンプシーンのカセットコンロ', NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('iwatani', 10, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@a183b34/public/images/iwatani/panel_10.png', 'both', '[haruki] カセットコンロ国内シェアNo.1、マルヰガス約340万世帯、採用60〜80名。
 [nana] 朝のカセットコンロから、オリンピック聖火台まで。岩谷の水素が、世界を照らした。
-[both] **朝から夜まで、365日、岩谷と一緒に生きている。**', '朝から夜まで、365日、岩谷と。', 'カセットフー1969〜 / マルヰガス約340万世帯 / 東京2020 水素聖火', NULL, '["[haruki] カセットコンロ国内シェアNo.1、マルヰガス約340万世帯、採用60〜80名。", "[nana] 朝のカセットコンロから、オリンピック聖火台まで。岩谷の水素が、世界を照らした。", "[both] **朝から夜まで、365日、岩谷と一緒に生きている。**"]', 'H6: 東京2020オリンピック聖火台', NULL);
+[both] 朝から夜まで、365日、岩谷と一緒に生きている。', '朝から夜まで、365日、岩谷と。', 'カセットフー1969〜 / マルヰガス約340万世帯 / 東京2020 水素聖火', NULL, '["[haruki] カセットコンロ国内シェアNo.1、マルヰガス約340万世帯、採用60〜80名。", "[nana] 朝のカセットコンロから、オリンピック聖火台まで。岩谷の水素が、世界を照らした。", "[both] 朝から夜まで、365日、岩谷と一緒に生きている。"]', 'H6: 東京2020オリンピック聖火台', NULL);

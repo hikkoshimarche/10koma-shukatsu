@@ -10,10 +10,10 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [haruki] え、地味?
 [nana] うん、三菱・三井・伊藤忠と並べると、印象が薄い…
 [haruki] それ、もしかして400年続いた理由かもしれない。', '5大商社で一番地味?', '住友商事 / 8053 / 派手じゃない武器', NULL, '["[nana] 住友商事って、5大商社で一番地味じゃない?", "[haruki] え、地味?", "[nana] うん、三菱・三井・伊藤忠と並べると、印象が薄い…", "[haruki] それ、もしかして400年続いた理由かもしれない。"]', 'H1: 大手町プレイス イーストタワー本社', '{"location": "本社タワー上部の外壁", "object_type": "建築サイン (Sumitomo Corporation)", "brand_form": "ガラスファサード上部に『Sumitomo Corporation』のレリーフサイン、控えめに", "attachment": "タワー外壁に固定", "scale_note": "実在の本社タワーと同じ控えめな比率"}');
-INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sumitomo-corp', 2, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@9e93cbf/public/images/sumitomo-corp/panel_02.png', 'haruki', '[haruki] 純利益5,618億円。売上7兆円。地味どころか、5大商社で堅実な3番手。
+INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sumitomo-corp', 2, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@9e93cbf/public/images/sumitomo-corp/panel_02.png', 'haruki', '[haruki] 純利益5,618億円。売上7兆円。地味どころか、総合商社の中でも堅実なポジション。
 [nana] え、そんなに?
 [haruki] でも住友は『派手な広告』を打たない会社。だから印象が薄く感じる。
-[nana] 数字は出てるのに、自分から語らないんだ…', '純利益5,618億円、地味じゃない', '売上 約7兆円 / 5大商社の堅実派', '公式IR・有報', '["[haruki] 純利益5,618億円。売上7兆円。地味どころか、5大商社で堅実な3番手。", "[nana] え、そんなに?", "[haruki] でも住友は『派手な広告』を打たない会社。だから印象が薄く感じる。", "[nana] 数字は出てるのに、自分から語らないんだ…"]', NULL, NULL);
+[nana] 数字は出てるのに、自分から語らないんだ…', '純利益5,618億円、地味じゃない', '売上 約7兆円 / 5大商社の堅実派', '公式IR・有報', '["[haruki] 純利益5,618億円。売上7兆円。地味どころか、総合商社の中でも堅実なポジション。", "[nana] え、そんなに?", "[haruki] でも住友は『派手な広告』を打たない会社。だから印象が薄く感じる。", "[nana] 数字は出てるのに、自分から語らないんだ…"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sumitomo-corp', 3, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@9e93cbf/public/images/sumitomo-corp/panel_03.png', 'nana', '[nana] あれ、J:COMって…
 [haruki] そう、住友商事のグループ会社。ジュピターテレコム。
 [nana] 実家のリモコン、これ、ずっと住友商事だったの!?
@@ -31,9 +31,9 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [OB先輩] 入社5〜7年でアフリカ・中東の発電所赴任は普通にある。長期駐在を厭わない人に向く。
 [haruki] 短期で結果を出す商社じゃなくて、長く根を張る商社、ってことか…', '10年単位で人を育てる', '第一希望通る人は半分 / 5〜7年で中東・アフリカ駐在', NULL, '["[OB先輩] 9事業部門あって、第一希望そのまま通る人は半分くらい。", "[OB先輩] でも住友は『不趨浮利』。短期の派手な異動はしない。10年単位で人を育てる。", "[OB先輩] 入社5〜7年でアフリカ・中東の発電所赴任は普通にある。長期駐在を厭わない人に向く。", "[haruki] 短期で結果を出す商社じゃなくて、長く根を張る商社、ってことか…"]', 'H6: 海外発電プラント', NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sumitomo-corp', 7, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@9e93cbf/public/images/sumitomo-corp/panel_07.png', 'nana', '[OB先輩] 住友が見るのは、『自利利他公私一如』。自分の利と他人の利が一つに見えるか。
-[OB先輩] 倍率189倍は出すけど、本当に見てるのは、人と社風が合うか。
+[OB先輩] 倍率は189倍あるけど、本当に見てるのは、人と社風が合うか。
 [nana] (静かに) 自利と利他が一つ、って言葉、初めて聞いた…
-[haruki] 派手じゃない、長く強い。それは社風から始まってる。', '自利利他公私一如', '倍率より社風 / 自利と利他を一つに見られる人', NULL, '["[OB先輩] 住友が見るのは、『自利利他公私一如』。自分の利と他人の利が一つに見えるか。", "[OB先輩] 倍率189倍は出すけど、本当に見てるのは、人と社風が合うか。", "[nana] (静かに) 自利と利他が一つ、って言葉、初めて聞いた…", "[haruki] 派手じゃない、長く強い。それは社風から始まってる。"]', NULL, NULL);
+[haruki] 派手じゃない、長く強い。それは社風から始まってる。', '自利利他公私一如', '倍率より社風 / 自利と利他を一つに見られる人', NULL, '["[OB先輩] 住友が見るのは、『自利利他公私一如』。自分の利と他人の利が一つに見えるか。", "[OB先輩] 倍率は189倍あるけど、本当に見てるのは、人と社風が合うか。", "[nana] (静かに) 自利と利他が一つ、って言葉、初めて聞いた…", "[haruki] 派手じゃない、長く強い。それは社風から始まってる。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sumitomo-corp', 8, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@9e93cbf/public/images/sumitomo-corp/panel_08.png', 'nana', '[nana] このスナックも…ヤマザキビスケットって、住友の子会社なの?
 [haruki] そう。TBSも関連会社。テレビと、お菓子と、リモコンと、SCSKと…
 [nana] 私の1日、住友商事の中をぐるっと回ってる…
