@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import os, json, datetime, urllib.request, urllib.parse, pathlib
-SHEET_URL=os.environ["SHEET_WEBAPP_URL"].strip(); SHEET_TOKEN=os.environ["SHEET_API_TOKEN"].strip(); ANTHROPIC_KEY=os.environ["ANTHROPIC_API_KEY"].strip()
+import re
+SHEET_URL=re.sub(r"\s","",os.environ["SHEET_WEBAPP_URL"]); SHEET_TOKEN=re.sub(r"\s","",os.environ["SHEET_API_TOKEN"]); ANTHROPIC_KEY=re.sub(r"\s","",os.environ["ANTHROPIC_API_KEY"])
+print(f"[diag] key_len={len(ANTHROPIC_KEY)} key_prefix_ok={ANTHROPIC_KEY[:7]=='sk-ant-'} url_exec_ok={SHEET_URL.endswith('/exec')}", flush=True)
 REPO=pathlib.Path(__file__).resolve().parents[1]
 COMPANY_SLUG={"三菱商事":"mitsubishi-corp","伊藤忠商事":"itochu","住友商事":"sumitomo-corp","丸紅":"marubeni","兼松":"kanematsu","神鋼商事":"shinkokusyoji","岩谷産業":"iwatani","双日":"sojitz","三井物産":"mitsui-bussan","豊田通商":"toyota-tsusho"}
 def fetch_attention():
