@@ -12,6 +12,9 @@ import json, os, re, sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUTPUT = os.path.join(REPO, "output")
+if not os.path.isdir(OUTPUT):
+    _fb = os.path.expanduser("~/oscar-ai/tokyari-pipeline/output")
+    OUTPUT = _fb if os.path.isdir(_fb) else OUTPUT
 PROTAGONISTS = {"nana", "haruki", "both"}
 SHOSHA9 = ["mitsubishi-corp","itochu-shoji","sumitomo-corp","marubeni",
            "kanematsu","shinkokusyoji","iwatani","sojitz","mitsui-bussan"]
