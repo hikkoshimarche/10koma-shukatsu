@@ -24,3 +24,9 @@ mitsui_video/
 *.bak
 api/migration_v36_*.sql
 .work_fb/
+
+# Phase C autoloop (secrets/GASクローン/結果)
+tools/.env.phase_c
+tools/gas/
+tools/_autoloop_last.json
+tools/__pycache__/
