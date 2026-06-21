@@ -22,10 +22,10 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [nana] 水素って、未来のエネルギーだよね。
 [haruki] うん。岩谷は国内の水素ステーションのトップシェア。トヨタMIRAIみたいなFCV(燃料電池車)に充填してる。
 [nana] カセットコンロからLPG、水素まで、エネルギーを連続でやってる会社…', '未来のエネルギーも、イワタニ', '国内水素ステーションのトップシェア / FCV充填', NULL, '["[haruki] あ、水素ステーション。これもイワタニ。", "[nana] 水素って、未来のエネルギーだよね。", "[haruki] うん。岩谷は国内の水素ステーションのトップシェア。トヨタMIRAIみたいなFCV(燃料電池車)に充填してる。", "[nana] カセットコンロからLPG、水素まで、エネルギーを連続でやってる会社…"]', 'H4: 水素ステーション (トヨタMIRAI充填中)', '{"location": "ステーション上部のサイン", "object_type": "イワタニ水素ステーションのブランドサイン", "brand_form": "ステーション屋根の下に『Iwatani』+ 水素マークのサイン", "attachment": "ステーション構造の一部", "scale_note": "実在の水素ステーション通常サイズ"}');
-INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('iwatani', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@a183b34/public/images/iwatani/panel_05.png', 'nana', '[nana] 年収はいくらなの?
-[haruki] 平均約820万円。
-[haruki] でも岩谷はエネルギー専業で、LPG・水素・産業ガスの3本柱。値段が動けば年収も動く。
-[nana] 会社の大きさじゃなくて、エネルギーの値段と一緒に給料も動くんだ。', '約820万円(平均)+エネルギー連動', 'LPG / 水素 / 産業ガスの値動きに連動', '公式・有報', '["[nana] 年収はいくらなの?", "[haruki] 平均約820万円。", "[haruki] でも岩谷はエネルギー専業で、LPG・水素・産業ガスの3本柱。値段が動けば年収も動く。", "[nana] 会社の大きさじゃなくて、エネルギーの値段と一緒に給料も動くんだ。"]', NULL, NULL);
+INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('iwatani', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@a183b34/public/images/iwatani/panel_05.png', 'nana', '[nana] 年収ってどうなの?
+[haruki] 有価証券報告書(単体)によると平均約820万円(平均年齢42歳)。
+[haruki] ただ岩谷はLPG・水素・産業ガスの専業商社。エネルギー価格が動けば業績も動く、その構造が年収に直結してる。
+[nana] 会社の規模より、エネルギーの値動きと自分の給料が連動する仕事なんだね。', '平均約820万円(有報単体・平均年齢42歳)+エネルギー価格連動', 'LPG・水素・産業ガス専業ゆえの業績連動型', '公式・有報', '["[nana] 年収ってどうなの?", "[haruki] 有価証券報告書(単体)によると平均約820万円(平均年齢42歳)。", "[haruki] ただ岩谷はLPG・水素・産業ガスの専業商社。エネルギー価格が動けば業績も動く、その構造が年収に直結してる。", "[nana] 会社の規模より、エネルギーの値動きと自分の給料が連動する仕事なんだね。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('iwatani', 6, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@a183b34/public/images/iwatani/panel_06.png', 'nana', '[nana] 働き方はどうですか?
 [OB先輩] フレックス・リモート両方あるよ。エネルギー業界だから、災害時の現場対応はあるけどね。
 [OB先輩] 福利厚生は『独身寮』と『社宅』が手厚い。大阪本社なら、堂島近くの寮があるから家賃の心配がほぼなくなる。

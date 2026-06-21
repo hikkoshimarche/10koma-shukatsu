@@ -147,9 +147,21 @@ def _anthropic(prompt: str, system: str = "", model: str = "claude-sonnet-4-6", 
     # macOS(Python3.14)の素urllibはCA不足でSSL失敗するため requests/certifi を優先
     try:
         import requests
-        r = requests.post(url, headers=headers, json=body, timeout=120)
-        r.raise_for_status()
-        data = r.json()
+        last = None
+        for attempt in range(4):  # ネットワーク瞬断/過負荷に指数バックオフ
+            try:
+                r = requests.post(url, headers=headers, json=body, timeout=120)
+                if r.status_code in (429, 500, 502, 503, 529):
+                    raise requests.exceptions.RequestException(f"retryable {r.status_code}")
+                r.raise_for_status()
+                data = r.json()
+                last = None
+                break
+            except requests.exceptions.RequestException as ex:
+                last = ex
+                time.sleep(2 ** attempt)
+        if last is not None:
+            raise last
     except ImportError:
         import ssl
         ctx = None
@@ -184,8 +196,8 @@ def triage_fb(company: str, fb: str) -> dict:
         return {"script_bugs": [], "image_bugs": [], "opinions": [], "_raw": txt}
 
 
-def fix_script_koma(slug: str, koma_num: int, instruction: str, rules: str) -> dict:
-    """該当コマの台詞/overlayをClaudeで修正し、SQLを書き換える。(変更前/後と backup path)。
+def fix_script_koma(slug: str, koma_num: int, instruction: str, rules: str, dry: bool = False) -> dict:
+    """該当コマの台詞/overlayをClaudeで修正。dry=Trueなら書込まず提案のみ返す。
 
     戻り値: {'changed':bool,'before':{...},'after':{...},'backup':Path|None,'note':str}
     """
@@ -214,6 +226,9 @@ def fix_script_koma(slug: str, koma_num: int, instruction: str, rules: str) -> d
              "sub_copy": new.get("sub_copy", target.get("sub_copy"))}
     if after == before:
         return {"changed": False, "note": "変更なし(反映済)", "before": before, "after": after}
+    if dry:
+        return {"changed": True, "before": before, "after": after, "backup": None,
+                "note": new.get("note", ""), "dry": True}
 
     backup = backup_file(parsed["path"], f"{slug}_koma{koma_num}")
     new_dialogue = "\n".join(after["script"])
@@ -223,6 +238,28 @@ def fix_script_koma(slug: str, koma_num: int, instruction: str, rules: str) -> d
                      "before": before, "after": after, "backup": str(backup),
                      "note": new.get("note", instruction[:80])})
     return {"changed": True, "before": before, "after": after, "backup": backup, "note": new.get("note", "")}
+
+
+def lint_with_overrides(slug: str, overrides: dict):
+    """台本に koma別 override({koma:{'script','main_copy','sub_copy'}})を当てた状態でlint。
+
+    overrides を反映した仮想 scenario を作って scenario_lints_v5_ext にかける(ファイルは触らない)。
+    戻り値: (errors, warnings, findings)
+    """
+    import sys
+    sys.path.insert(0, str(REPO / "tools"))
+    import scenario_lints_v5_ext as v5
+    parsed = parse_migration_sql(slug)
+    scen = sql_to_scenario(parsed)
+    for k in scen["koma"]:
+        ov = overrides.get(k["koma_number"])
+        if ov:
+            if "script" in ov:
+                k["script"] = ov["script"]
+            k["overlay_text"] = {"main_copy": ov.get("main_copy", k["overlay_text"]["main_copy"]),
+                                 "sub": ov.get("sub_copy", k["overlay_text"]["sub"])}
+    r = v5.run_ext_lints(scen, slug)
+    return r["errors"], r["warnings"], r["findings"]
 
 
 def _sqlq(v) -> str:

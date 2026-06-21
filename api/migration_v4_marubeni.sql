@@ -22,10 +22,10 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [nana] 商社が、発電所を運営?
 [haruki] そう。建設して終わりじゃなくて、20〜30年単位で電気を売る。海外電力IPPで世界トップクラス。
 [nana] 小麦と発電…全然違う2つの世界を、同じ会社が回してる…', '海外発電IPPで世界トップクラス', '20〜30年で電気を売る事業', NULL, '["[haruki] 2つ目の強み、海外発電。中東・東南アジアの発電所を運営。", "[nana] 商社が、発電所を運営?", "[haruki] そう。建設して終わりじゃなくて、20〜30年単位で電気を売る。海外電力IPPで世界トップクラス。", "[nana] 小麦と発電…全然違う2つの世界を、同じ会社が回してる…"]', 'H3: 海外大規模発電所', NULL);
-INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('marubeni', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@3486a64/public/images/marubeni/panel_05.png', 'nana', '[nana] 丸紅の年収って、いくらなの?
-[haruki] 平均1,709万円。でも、構造が大事。
-[haruki] ベース+海外駐在手当+リスク手当。シカゴ駐在(小麦)とドバイ駐在(発電)で、額が大きく変わる。
-[nana] 同じ丸紅でも、駐在地で手当が違うんだ。', '1,709万円(平均)+駐在地で変動', 'シカゴ(小麦) / ドバイ(発電) で手当差', '日経会社情報 8002', '["[nana] 丸紅の年収って、いくらなの?", "[haruki] 平均1,709万円。でも、構造が大事。", "[haruki] ベース+海外駐在手当+リスク手当。シカゴ駐在(小麦)とドバイ駐在(発電)で、額が大きく変わる。", "[nana] 同じ丸紅でも、駐在地で手当が違うんだ。"]', NULL, NULL);
+INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('marubeni', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@3486a64/public/images/marubeni/panel_05.png', 'nana', '[nana] 丸紅の年収って、どんな構造なの?
+[haruki] 有価証券報告書(2025年3月期・単体)によると、平均1,709万円(平均年齢42.5歳)。ただ、額より構造が大事。
+[haruki] ベース給に加えて、海外駐在手当とリスク手当が乗る。シカゴ駐在(小麦)とドバイ駐在(発電)では、駐在地のリスク・物価が違うから手当額も変わってくる。
+[nana] 同じ丸紅でも、どこに駐在するかで中身がかなり違うんだね。', '平均1,709万円(有報2025年3月期・単体)+駐在地で変動', 'ベース+海外駐在手当+リスク手当の三層構造', '日経会社情報 8002', '["[nana] 丸紅の年収って、どんな構造なの?", "[haruki] 有価証券報告書(2025年3月期・単体)によると、平均1,709万円(平均年齢42.5歳)。ただ、額より構造が大事。", "[haruki] ベース給に加えて、海外駐在手当とリスク手当が乗る。シカゴ駐在(小麦)とドバイ駐在(発電)では、駐在地のリスク・物価が違うから手当額も変わってくる。", "[nana] 同じ丸紅でも、どこに駐在するかで中身がかなり違うんだね。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('marubeni', 6, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@3486a64/public/images/marubeni/panel_06.png', 'haruki', '[haruki] 9つの営業グループ。生活産業、食料、エネルギー・金属、化学、電力、インフラ、航空・船舶、金融・リース、ICT・不動産。
 [nana] 9つ…私はどこ?
 [haruki] 入った後の配属で決まる。希望は出せるけど、その通りに行くとは限らない。

@@ -22,10 +22,10 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [nana] 1691年!? 300年以上前…
 [haruki] 江戸時代から400年続いてる商家。井桁マークは住友家の家紋。
 [nana] 4世紀続いた家が、今のJ:COMやメルカリに繋がってるんだ…', '1691年、別子銅山から400年', '住友家 / 井桁マーク / 江戸から続く商家', NULL, '["[haruki] 住友家は1691年、別子銅山の経営から始まった。", "[nana] 1691年!? 300年以上前…", "[haruki] 江戸時代から400年続いてる商家。井桁マークは住友家の家紋。", "[nana] 4世紀続いた家が、今のJ:COMやメルカリに繋がってるんだ…"]', 'H5: 井桁マーク (住友家の家紋)', '{"location": "壁面中央", "object_type": "井桁マーク (社の家紋・歴史展示)", "brand_form": "井桁(井)を象った住友家の家紋、金属レリーフまたは石彫", "attachment": "壁面に固定", "scale_note": "実在の社内展示の通常サイズ"}');
-INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sumitomo-corp', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@9e93cbf/public/images/sumitomo-corp/panel_05.png', 'nana', '[nana] でも、5大商社で一番低いんでしょ?
-[haruki] 平均1,744万円。確かに三菱・伊藤忠より低い。
-[haruki] でも住友の理念は『無理せず急がず、不趨浮利』。浮利を追わない。長期で報いる仕組み。
-[nana] 派手な額じゃなくて、長く続けることでリターンが大きくなる、ってこと…', '1,744万円(平均)+長期で報いる', '不趨浮利 / 無理せず急がず', '日経会社情報 8053', '["[nana] でも、5大商社で一番低いんでしょ?", "[haruki] 平均1,744万円。確かに三菱・伊藤忠より低い。", "[haruki] でも住友の理念は『無理せず急がず、不趨浮利』。浮利を追わない。長期で報いる仕組み。", "[nana] 派手な額じゃなくて、長く続けることでリターンが大きくなる、ってこと…"]', NULL, NULL);
+INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sumitomo-corp', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@9e93cbf/public/images/sumitomo-corp/panel_05.png', 'nana', '[nana] 5大商社のなかで、年収水準は高くないって聞いたけど。
+[haruki] 有価証券報告書(2025年3月期・単体)によると平均年収は1,744万円。住友の理念は『無理せず急がず、不趨浮利』——浮利は追わない。
+[haruki] 目先の派手な数字より、長期で積み上げる報酬設計を選んでいる、ってこと。
+[nana] 額じゃなくて、続けることでリターンが育つ仕組みなんだ。', '有報単体1,744万円＋長期で報いる設計', '不趨浮利 / 無理せず急がず', '日経会社情報 8053', '["[nana] 5大商社のなかで、年収水準は高くないって聞いたけど。", "[haruki] 有価証券報告書(2025年3月期・単体)によると平均年収は1,744万円。住友の理念は『無理せず急がず、不趨浮利』——浮利は追わない。", "[haruki] 目先の派手な数字より、長期で積み上げる報酬設計を選んでいる、ってこと。", "[nana] 額じゃなくて、続けることでリターンが育つ仕組みなんだ。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sumitomo-corp', 6, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@9e93cbf/public/images/sumitomo-corp/panel_06.png', 'haruki', '[OB先輩] 9事業部門あって、第一希望そのまま通る人は半分くらい。
 [OB先輩] でも住友は『不趨浮利』。短期の派手な異動はしない。10年単位で人を育てる。
 [OB先輩] 入社5〜7年でアフリカ・中東の発電所赴任は普通にある。長期駐在を厭わない人に向く。

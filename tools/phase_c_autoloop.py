@@ -125,18 +125,25 @@ def process_company(item, rules, args):
     # --- 台本バグ修正 + lint ---
     sql_path = L.API_DIR / f"migration_v4_{slug}.sql"
     if triage.get("script_bugs") and sql_path.exists():
+        overrides = {}
         for b in triage["script_bugs"]:
             koma = b.get("koma")
             if not koma:
                 rec["escalate"].append(f"台本: コマ不明 '{b.get('detail')}' → 手動")
                 continue
-            if args.dry_run:
-                rec["actions"].append(f"[DRY] 台本koma{koma}修正予定: {b.get('detail')[:50]}")
+            res = L.fix_script_koma(slug, koma, b.get("detail", ""), rules, dry=args.dry_run)
+            if res.get("changed"):
+                rec["script_changed"] = True
+                overrides[koma] = res["after"]
+                rec["actions"].append({"koma": koma, "before": res["before"]["script"],
+                                       "after": res["after"]["script"], "note": res.get("note", "")})
             else:
-                res = L.fix_script_koma(slug, koma, b.get("detail", ""), rules)
-                rec["script_changed"] = rec["script_changed"] or res.get("changed", False)
-                rec["actions"].append(f"台本koma{koma}: {'修正' if res.get('changed') else res.get('note')}")
-        e, w, _ = L.lint_company(slug)
+                rec["actions"].append({"koma": koma, "note": res.get("note", "変更なし")})
+        # 提案(dry)は override 反映後をlint / 本番適用時は実ファイルをlint
+        if args.dry_run:
+            e, w, _ = L.lint_with_overrides(slug, overrides)
+        else:
+            e, w, _ = L.lint_company(slug)
         rec["lint"] = {"errors": e, "warnings": w}
     elif triage.get("script_bugs"):
         rec["escalate"].append(f"台本SQL無し(api/migration_v4_{slug}.sql) → 手動")
@@ -202,18 +209,30 @@ def main(argv=None):
         rec = process_company(it, rules, args)
         results.append(rec)
         print(f"\n--- {rec['company']} ({rec.get('slug')}) ---")
-        print("  triage:", json.dumps(rec.get("triage", {}), ensure_ascii=False)[:200])
+        tr = rec.get("triage", {})
+        print(f"  仕分け: 台本バグ{len(tr.get('script_bugs',[]))} / 画像バグ{len(tr.get('image_bugs',[]))} / 感想{len(tr.get('opinions',[]))}")
         for a in rec["actions"]:
-            print("  •", a)
+            if isinstance(a, dict) and "before" in a:
+                print(f"  ①台本koma{a['koma']} 修正案:")
+                print(f"     現行: {a['before']}")
+                print(f"     新案: {a['after']}")
+                if a.get("note"):
+                    print(f"     理由: {a['note']}")
+            elif isinstance(a, dict):
+                print(f"  ①台本koma{a.get('koma','?')}: {a.get('note')}")
         if rec.get("lint"):
-            print("  lint:", rec["lint"])
-        if rec["image_results"]:
-            print("  image:", rec["image_results"])
+            le = rec["lint"]["errors"]
+            print(f"  lint(提案反映後): errors={le} warnings={rec['lint']['warnings']} {'✅マージ可' if le==0 else '❌要修正'}")
+        for ir in rec["image_results"]:
+            if ir.get("status") == "DRY":
+                print(f"  ②画像koma{ir['koma']} 再生成予定: {ir['detail']}")
+            else:
+                print(f"  ②画像koma{ir['koma']}: ok={ir.get('ok')} attempts={ir.get('attempts')}")
         if rec["escalate"]:
-            print("  ⚠ escalate:", rec["escalate"])
+            print("  ⚠ エスカレーション:", rec["escalate"])
         if rec["opinions"]:
             print("  ③感想(要オスカー判断):", rec["opinions"])
-        print("  → deployable:", rec["deployable"], rec.get("note", ""))
+        print(f"  → 反映可(deployable): {rec['deployable']} {rec.get('note','')}")
 
     print("\n=== LINE文面(プレビュー) ===")
     print(compose_line(results))

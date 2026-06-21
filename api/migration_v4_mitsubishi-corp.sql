@@ -22,10 +22,10 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [nana] え、商社が消えたってこと?
 [haruki] うん。でも1954年、三菱商事として再結集。
 [nana] 一度ゼロになっても戻ってくる組織。今は三菱食品とローソンで日本の食卓を支えてる。', '解体されても、戻ってきた組織', '1947 解体 / 1954 再結集 / 今 三菱食品6,500社×3,000社', NULL, '["[haruki] 戦後1947年、GHQで139社にバラバラに解体された。", "[nana] え、商社が消えたってこと?", "[haruki] うん。でも1954年、三菱商事として再結集。", "[nana] 一度ゼロになっても戻ってくる組織。今は三菱食品とローソンで日本の食卓を支えてる。"]', 'H4: 三菱食品の物流倉庫 (戦後の商社復活の象徴として)', NULL);
-INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('mitsubishi-corp', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@29041ca/public/images/mitsubishi-corp/panel_05.png', 'nana', '[nana] 年収、結局いくらなの?
-[haruki] 平均2,033万円。でも、ここは構造で見るところ。
-[haruki] ベース+海外駐在手当+資源/LNG事業の業績連動賞与。場所と事業で大きく動く。
-[nana] 額だけ見たら見誤る、ってことか。', '2,033万円(平均)+構造で変動', 'ベース / 海外駐在 / 資源・LNG連動賞与', '日経会社情報 8058 / 有報', '["[nana] 年収、結局いくらなの?", "[haruki] 平均2,033万円。でも、ここは構造で見るところ。", "[haruki] ベース+海外駐在手当+資源/LNG事業の業績連動賞与。場所と事業で大きく動く。", "[nana] 額だけ見たら見誤る、ってことか。"]', NULL, NULL);
+INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('mitsubishi-corp', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@29041ca/public/images/mitsubishi-corp/panel_05.png', 'nana', '[nana] 年収、結局どう見ればいいの?
+[haruki] 有価証券報告書(単体)ベースで平均2,033万円(42.4歳時点)。でも額より構造で見るところ。
+[haruki] ベース給に海外駐在手当、資源・LNG事業の業績連動賞与が乗る。配属先と担当事業で大きく動く仕組み。
+[nana] 額だけ切り取ったら、実態を見誤るってことか。', '平均2,033万円(有報単体・42.4歳)+構造で変動', 'ベース / 海外駐在手当 / 資源・LNG連動賞与', '日経会社情報 8058 / 有報', '["[nana] 年収、結局どう見ればいいの?", "[haruki] 有価証券報告書(単体)ベースで平均2,033万円(42.4歳時点)。でも額より構造で見るところ。", "[haruki] ベース給に海外駐在手当、資源・LNG事業の業績連動賞与が乗る。配属先と担当事業で大きく動く仕組み。", "[nana] 額だけ切り取ったら、実態を見誤るってことか。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('mitsubishi-corp', 6, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@29041ca/public/images/mitsubishi-corp/panel_06.png', 'haruki', '[haruki] 1969年、アラスカからLNG輸入を始めた。日本企業初。
 [nana] LNG?
 [haruki] 液化天然ガス。今は世界14のプロジェクトに参画。日本の電力の3割が、これに支えられてる。

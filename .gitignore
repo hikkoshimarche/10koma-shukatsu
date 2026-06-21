@@ -27,6 +27,7 @@ api/migration_v36_*.sql
 
 # Phase C autoloop (secrets/GASクローン/結果)
 tools/.env.phase_c
-tools/gas/
+tools/gas/.clasp.json
+tools/gas/.clasprc.json
 tools/_autoloop_last.json
 tools/__pycache__/

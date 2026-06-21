@@ -6,10 +6,10 @@
 INSERT OR IGNORE INTO companies (id, name, industry_id, thumbnail_url) VALUES ('shinkokusyoji', '神鋼商事株式会社', 'sogo_shosha', 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@fe2b636/public/images/shinkokusyoji/panel_01.png');
 
 -- 10 panels (panel_num 1-10) — 既存5列 + v3.6 拡張列
-INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('shinkokusyoji', 1, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@fe2b636/public/images/shinkokusyoji/panel_01.png', 'nana', '[nana] 神鋼商事って、5大商社じゃないのに平均年収919万円。
-[haruki] あ、それ調べたの?
-[nana] うん。でもこれ、どこから出てるか分かる?
-[haruki] それは…神戸製鋼の動脈に乗ってる、ってことだよ。', '919万円、どこから?', '神鋼商事 / 8075 / KOBELCOグループ', NULL, '["[nana] 神鋼商事って、5大商社じゃないのに平均年収919万円。", "[haruki] あ、それ調べたの?", "[nana] うん。でもこれ、どこから出てるか分かる?", "[haruki] それは…神戸製鋼の動脈に乗ってる、ってことだよ。"]', 'H1: 神戸の港湾エリア、神戸製鋼ビルと神鋼商事本社', '{"location": "工場群の建物外壁", "object_type": "建築サイン (KOBELCO)", "brand_form": "工場上部に『KOBELCO』のサイン、赤と白", "attachment": "工場外壁に固定", "scale_note": "実在の工場サインの通常サイズ"}');
+INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('shinkokusyoji', 1, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@fe2b636/public/images/shinkokusyoji/panel_01.png', 'nana', '[nana] 神鋼商事、有価証券報告書（単体）の平均年収は919万円。
+[haruki] でもそれ、なんでその水準が出るか分かる?
+[nana] 5大商社じゃないのに、ってこと?
+[haruki] 神戸製鋼グループの素材・鉄鋼フローを一手に担う専業商社だから、取扱商材の単価と取引規模が年収の土台になってるんだよ。', '919万円の背景を読む。', '神鋼商事 / 8075 / KOBELCOグループ', NULL, '["[nana] 神鋼商事、有価証券報告書（単体）の平均年収は919万円。", "[haruki] でもそれ、なんでその水準が出るか分かる?", "[nana] 5大商社じゃないのに、ってこと?", "[haruki] 神戸製鋼グループの素材・鉄鋼フローを一手に担う専業商社だから、取扱商材の単価と取引規模が年収の土台になってるんだよ。"]', 'H1: 神戸の港湾エリア、神戸製鋼ビルと神鋼商事本社', '{"location": "工場群の建物外壁", "object_type": "建築サイン (KOBELCO)", "brand_form": "工場上部に『KOBELCO』のサイン、赤と白", "attachment": "工場外壁に固定", "scale_note": "実在の工場サインの通常サイズ"}');
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('shinkokusyoji', 2, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@fe2b636/public/images/shinkokusyoji/panel_02.png', 'haruki', '[haruki] 売上4,500億円、純利益約100億円。確かに5大商社の数十分の1。
 [nana] そんな小さいのに、919万円?
 [haruki] それは、神鋼商事は神戸製鋼グループの中核商社だから。

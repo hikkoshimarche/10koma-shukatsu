@@ -22,10 +22,10 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [nana] 1台のトヨタ車を、海を渡って売って、走らせて、最後は素材に戻すまで?
 [haruki] そう。ぜんぶ豊田通商が回してる。
 [nana] そっか…『商社って何屋さん?』に、初めて自分の言葉で答えられそう。', '売る前から、廃車のあとまで', '輸出→販売→金融→部品→回収→リサイクル', NULL, '["[haruki] 売って終わりじゃない。輸出物流もアフター部品も、廃車になったらリサイクルまで。", "[nana] 1台のトヨタ車を、海を渡って売って、走らせて、最後は素材に戻すまで?", "[haruki] そう。ぜんぶ豊田通商が回してる。", "[nana] そっか…『商社って何屋さん?』に、初めて自分の言葉で答えられそう。"]', 'H6: トヨタリサイクル工場 (廃車解体ライン)', NULL);
-INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('toyota-tsusho', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@2fa3409/public/images/toyota-tsusho/panel_05.png', 'nana', '[nana] 平均年収って、結局いくらなの?
-[haruki] 平均1,320万円。でもね、ここからが豊田通商らしい。
-[haruki] ベース+海外駐在手当+ハードシップ手当。アフリカ駐在で年収+300〜500万になる人もいる。
-[nana] え、額じゃなくて構造で見るのか…海外に出るほど積み上がるんだ。', '1,320万円(平均)+駐在手当', 'アフリカ駐在で+300〜500万円のケースも', '日経会社情報 8015 / OpenWork等', '["[nana] 平均年収って、結局いくらなの?", "[haruki] 平均1,320万円。でもね、ここからが豊田通商らしい。", "[haruki] ベース+海外駐在手当+ハードシップ手当。アフリカ駐在で年収+300〜500万になる人もいる。", "[nana] え、額じゃなくて構造で見るのか…海外に出るほど積み上がるんだ。"]', NULL, NULL);
+INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('toyota-tsusho', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@2fa3409/public/images/toyota-tsusho/panel_05.png', 'nana', '[nana] 平均年収って、結局どんな水準なの?
+[haruki] 有価証券報告書(単体・2025年3月期)によると平均1,320万円(平均年齢43.1歳)。でもね、ここからが豊田通商らしい。
+[haruki] ベース給に加えて、海外駐在手当・ハードシップ手当が積み上がる仕組み。アフリカ駐在になると手当の比重がぐっと大きくなる。
+[nana] 額より構造で見るんだ。どこに赴任するかで年収の中身がまるで変わるってことか。', '平均1,320万円(有報単体・2025年3月期)+駐在手当', '赴任地のハードシップ度合いで手当の比重が変わる仕組み', '日経会社情報 8015 / OpenWork等', '["[nana] 平均年収って、結局どんな水準なの?", "[haruki] 有価証券報告書(単体・2025年3月期)によると平均1,320万円(平均年齢43.1歳)。でもね、ここからが豊田通商らしい。", "[haruki] ベース給に加えて、海外駐在手当・ハードシップ手当が積み上がる仕組み。アフリカ駐在になると手当の比重がぐっと大きくなる。", "[nana] 額より構造で見るんだ。どこに赴任するかで年収の中身がまるで変わるってことか。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('toyota-tsusho', 6, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@2fa3409/public/images/toyota-tsusho/panel_06.png', 'haruki', '[haruki] ここが名古屋本社。世界9兆円の動脈を、ここから動かしてる。
 [nana] 東京じゃないんだ。名古屋…
 [haruki] トヨタグループの『現地現物』が染み込んでる。社員が必ず現場に立つ文化。
@@ -45,4 +45,4 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [nana] どれも、私の手で世界の地図が変わってる絵が見える…', '10年後、あなたが見ている景色', 'ケニア / ブラジル / 名古屋 — 3つの具体', NULL, '["[nana] もし入れたら、10年後どこにいると思う?", "[haruki] たとえば、こんな未来が見える。ケニア・モンバサ港でアフリカ全土の輸入物流を統括。", "[haruki] ブラジル・サンパウロで水素ステーションをゼロから立ち上げる。", "[haruki] 名古屋本社で世界の販売網に新しい仕組みを作る。", "[nana] どれも、私の手で世界の地図が変わってる絵が見える…"]', 'H5: 水素ステーションとMIRAI (新事業領域の具体例)', NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('toyota-tsusho', 10, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@2fa3409/public/images/toyota-tsusho/panel_10.png', 'both', '[haruki] アフリカ54カ国、社員2万3,000人。採用 約100人。
 [nana] 倍率の話じゃなくて、どの国で、どんな仕事を自分のものにするか、ってことだね。
-[both] **名古屋から、世界の地図を変えにいく。**', '名古屋から、世界の地図を変えにいく。', 'アフリカ54カ国 / 社員23,000名 / 採用 約100名', NULL, '["[haruki] アフリカ54カ国、社員2万3,000人。採用 約100人。", "[nana] 倍率の話じゃなくて、どの国で、どんな仕事を自分のものにするか、ってことだね。", "[both] **名古屋から、世界の地図を変えにいく。**"]', 'H4: サバンナを走るランドクルーザー (アフリカ事業の象徴)', NULL);
+[both] 名古屋から、世界の地図を変えにいく。', '名古屋から、世界の地図を変えにいく。', 'アフリカ54カ国 / 社員23,000名 / 採用 約100名', NULL, '["[haruki] アフリカ54カ国、社員2万3,000人。採用 約100人。", "[nana] 倍率の話じゃなくて、どの国で、どんな仕事を自分のものにするか、ってことだね。", "[both] 名古屋から、世界の地図を変えにいく。"]', 'H4: サバンナを走るランドクルーザー (アフリカ事業の象徴)', NULL);

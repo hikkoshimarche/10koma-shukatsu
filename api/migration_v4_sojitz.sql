@@ -22,10 +22,10 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [nana] スーパーで買うバナナの…!?
 [haruki] それだけじゃない。車載リチウムイオン電池の電解液で世界シェアトップクラス。EVの中身も双日。
 [nana] バナナとEV、全然違うのに、同じ会社で持ってるんだ…', 'バナナとEV、両方トップクラス', 'フィリピン産バナナシェア / 車載LiB電解液', NULL, '["[haruki] フィリピン産バナナの輸入シェア、双日は業界トップクラス。", "[nana] スーパーで買うバナナの…!?", "[haruki] それだけじゃない。車載リチウムイオン電池の電解液で世界シェアトップクラス。EVの中身も双日。", "[nana] バナナとEV、全然違うのに、同じ会社で持ってるんだ…"]', 'H3: フィリピンのバナナ農園', NULL);
-INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sojitz', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@673bf31/public/images/sojitz/panel_05.png', 'nana', '[nana] 双日の年収は?
-[haruki] 平均1,274万円。5大商社より低いけど、新興の追い上げ中。
-[haruki] ベース+海外駐在手当+ベトナム・東南アジアの赴任手当。若手で海外に出る人ほど早く積み上がる。
-[nana] 23歳の会社らしく、若手の伸びシロが額に反映されるんだ。', '1,274万円(平均)+若手で伸びる', 'ベース / ベトナム・東南ア駐在で加算', '日経会社情報 2768', '["[nana] 双日の年収は?", "[haruki] 平均1,274万円。5大商社より低いけど、新興の追い上げ中。", "[haruki] ベース+海外駐在手当+ベトナム・東南アジアの赴任手当。若手で海外に出る人ほど早く積み上がる。", "[nana] 23歳の会社らしく、若手の伸びシロが額に反映されるんだ。"]', NULL, NULL);
+INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sojitz', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@673bf31/public/images/sojitz/panel_05.png', 'nana', '[nana] 双日の年収って、どんな構造になってるの?
+[haruki] 有価証券報告書(2025年3月期・単体)によると平均1,274万円、平均年齢42.2歳。
+[haruki] 内訳はベース給に、海外駐在手当とベトナム・東南アジアへの赴任手当が乗る仕組み。若手で早く海外に出るほど、その分が積み上がっていく。
+[nana] 平均年齢42歳台のベースラインだから、20代で海外に飛び出せば、その構造をまるごと前倒しで使えるってことか。', '平均1,274万円(42.2歳・有報単体2025年3月期)+海外駐在で前倒し積み上げ', 'ベース給 / ベトナム・東南ア駐在手当が加算される構造', '日経会社情報 2768', '["[nana] 双日の年収って、どんな構造になってるの?", "[haruki] 有価証券報告書(2025年3月期・単体)によると平均1,274万円、平均年齢42.2歳。", "[haruki] 内訳はベース給に、海外駐在手当とベトナム・東南アジアへの赴任手当が乗る仕組み。若手で早く海外に出るほど、その分が積み上がっていく。", "[nana] 平均年齢42歳台のベースラインだから、20代で海外に飛び出せば、その構造をまるごと前倒しで使えるってことか。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sojitz', 6, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@673bf31/public/images/sojitz/panel_06.png', 'nana', '[nana] 働き方はどうですか?
 [OB先輩] フレックスとリモートが両方使えるよ。新しい会社だから、制度の導入が早かったの。
 [OB先輩] 福利厚生で大きいのは家賃補助と独身寮。内幸町近くの寮があるから、20代の家賃の心配がほぼなくなる。

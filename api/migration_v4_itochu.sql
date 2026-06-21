@@ -22,10 +22,10 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [nana] 原料って、綿花とか?
 [haruki] そう。綿花を中央アジア・米国・豪州から買い付け、中国・ベトナムで縫製、日本のファミマで売る。
 [nana] 1枚のTシャツが、世界5カ国を回って、私の手元に来てるんだ…', '綿花→反物→Tシャツ→ファミマ', '原料〜アパレル〜小売まで一気通貫', NULL, '["[haruki] 伊藤忠の繊維カンパニーは業界リーダー。原料→アパレル→小売まで一気通貫。", "[nana] 原料って、綿花とか?", "[haruki] そう。綿花を中央アジア・米国・豪州から買い付け、中国・ベトナムで縫製、日本のファミマで売る。", "[nana] 1枚のTシャツが、世界5カ国を回って、私の手元に来てるんだ…"]', 'H6: 繊維倉庫の反物・アパレル工場', NULL);
-INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('itochu', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@2630894/public/images/itochu/panel_05.png', 'nana', '[nana] 伊藤忠の年収って、いくらなの?
-[haruki] 平均1,805万円。でも、構造で見るのが大事。
+INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('itochu', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@2630894/public/images/itochu/panel_05.png', 'nana', '[nana] 伊藤忠の年収って、どんな構造なの?
+[haruki] 有価証券報告書(単体)によると平均1,805万円(42.2歳)。でも額より構造が大事。
 [haruki] ベース+海外駐在手当+各カンパニーの業績連動。自分の担当事業が伸びれば、賞与に反映する。
-[nana] 自分が動かした事業の結果が、年収に返ってくるんだ。', '1,805万円(平均)+業績連動', 'ベース / 海外駐在 / 各事業の業績連動', '日経会社情報 8001 / 有報', '["[nana] 伊藤忠の年収って、いくらなの?", "[haruki] 平均1,805万円。でも、構造で見るのが大事。", "[haruki] ベース+海外駐在手当+各カンパニーの業績連動。自分の担当事業が伸びれば、賞与に反映する。", "[nana] 自分が動かした事業の結果が、年収に返ってくるんだ。"]', NULL, NULL);
+[nana] 自分が動かした事業の結果が、年収に返ってくるんだ。', '平均1,805万円(有価証券報告書・単体)+業績連動', 'ベース / 海外駐在手当 / 各事業の業績連動', '日経会社情報 8001 / 有報', '["[nana] 伊藤忠の年収って、どんな構造なの?", "[haruki] 有価証券報告書(単体)によると平均1,805万円(42.2歳)。でも額より構造が大事。", "[haruki] ベース+海外駐在手当+各カンパニーの業績連動。自分の担当事業が伸びれば、賞与に反映する。", "[nana] 自分が動かした事業の結果が、年収に返ってくるんだ。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('itochu', 6, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@2630894/public/images/itochu/panel_06.png', 'haruki', '[haruki] 青山本社、1980年竣工。マホガニー・レッドの外装は45年変わってない。
 [nana] 街に馴染んでる感じ…
 [haruki] 2026年8月、45年使った青山の本社をいったん離れる。そしていずれ、同じ青山に新しい本社を建て替えるんだ。

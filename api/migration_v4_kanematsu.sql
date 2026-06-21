@@ -22,10 +22,10 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [nana] え、私が毎朝飲むコーヒー、もしかして…
 [haruki] そう、カフェチェーンの豆はかなり兼松経由。インスタント麺の小麦原料もそう。
 [nana] 表に出ないだけで、朝の食卓は兼松だらけだったんだ…', '朝のコーヒー、麺、ぜんぶ兼松', 'ブラジル・コロンビアからの豆 / 食料原料', NULL, '["[haruki] 食料も主力。ブラジル・コロンビアからコーヒー豆を年間数万トン輸入。", "[nana] え、私が毎朝飲むコーヒー、もしかして…", "[haruki] そう、カフェチェーンの豆はかなり兼松経由。インスタント麺の小麦原料もそう。", "[nana] 表に出ないだけで、朝の食卓は兼松だらけだったんだ…"]', 'H2: コーヒー麻袋を積んだ倉庫 (+ H6 インスタント麺)', '{"location": "麻袋の側面", "object_type": "麻袋のスタンプ (KANEMATSU)", "brand_form": "麻袋に黒インクのスタンプで『KANEMATSU』と『COFFEE』の文字", "attachment": "麻袋にスタンプ印刷", "scale_note": "実在のコーヒー麻袋の通常表記"}');
-INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('kanematsu', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@36be84b/public/images/kanematsu/panel_05.png', 'nana', '[nana] 兼松の年収は?
-[haruki] 平均1,143万円。ある商社Aの2,033万円と比べると低い。
-[haruki] でも社員数が少ない分、1人あたりの裁量と利益貢献が大きい。手当も電子・食料の業績連動。
-[nana] 大きい商社の半分弱、でも一人あたりの責任や裁量は、他の商社よりも大きい、ってことか…', '1,143万円(平均)+少人数で裁量', 'ベース / 電子・食料連動', '日経会社情報 8020', '["[nana] 兼松の年収は?", "[haruki] 平均1,143万円。ある商社Aの2,033万円と比べると低い。", "[haruki] でも社員数が少ない分、1人あたりの裁量と利益貢献が大きい。手当も電子・食料の業績連動。", "[nana] 大きい商社の半分弱、でも一人あたりの責任や裁量は、他の商社よりも大きい、ってことか…"]', NULL, NULL);
+INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('kanematsu', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@36be84b/public/images/kanematsu/panel_05.png', 'nana', '[nana] 兼松の年収って、実際どうなの?
+[haruki] 有価証券報告書(2025年3月期・単体)で平均1,143万円(平均年齢42歳)。
+[haruki] 電子・食料の業績連動手当があるから、事業が伸びれば手元に返ってくる構造になっている。
+[nana] 額より『稼ぎに連動する仕組みがある』ってことか。少人数で一人ひとりが利益に近い分、そこは大きいね。', '平均1,143万円(有報2025年3月期単体)+業績連動の構造', '電子・食料の連動手当 / 少数精鋭で利益に近い', '日経会社情報 8020', '["[nana] 兼松の年収って、実際どうなの?", "[haruki] 有価証券報告書(2025年3月期・単体)で平均1,143万円(平均年齢42歳)。", "[haruki] 電子・食料の業績連動手当があるから、事業が伸びれば手元に返ってくる構造になっている。", "[nana] 額より『稼ぎに連動する仕組みがある』ってことか。少人数で一人ひとりが利益に近い分、そこは大きいね。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('kanematsu', 6, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@36be84b/public/images/kanematsu/panel_06.png', 'nana', '[nana] 働き方ってどんな感じですか?
 [OB先輩] 電子事業は繁忙期が長いけど、フレックスとリモートが両方使えるよ。
 [OB先輩] 福利厚生で大きいのは、独身寮と家賃補助。芝浦の社員寮があるから、20代の家賃の心配がほぼなくなる。
