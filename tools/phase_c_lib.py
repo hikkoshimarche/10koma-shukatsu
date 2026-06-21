@@ -27,7 +27,7 @@ API_DIR = REPO / "api"
 BACKUP_DIR = REPO / ".backups"
 DIFF_LOG = BACKUP_DIR / "phase_c_diff.log"
 
-EXCLUDED_SLUGS = {"mitsui-bussan"}  # 三井物産は対象外(安全)
+EXCLUDED_SLUGS = set()  # 除外なし。三井物産も一般化canary下で他社同様のライブ自動対象(2026-06-22解除)
 
 # --- migration SQL パース --------------------------------------------------
 PANEL_RE = re.compile(
