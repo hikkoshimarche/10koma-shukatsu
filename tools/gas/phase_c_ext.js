@@ -123,6 +123,50 @@ function handleExt(mode, e, token){
     return _json({ok:true, note:'9時=要対応 / 12,15,18,21,0時=直近3h'});
   }
 
+  if(mode === 'celldiag'){
+    // 診断: D列(4)/J列(10)の背景色+値、各行のステータス・round2状態/反映、条件付き書式の有無
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sh = ss.getSheetByName(KOMA_SHEET);
+    const last = sh.getLastRow();
+    const n = last - CONFIG.FIRST_ROW + 1;
+    const vals = sh.getRange(CONFIG.FIRST_ROW,1,n,45).getValues();
+    const dBgs = sh.getRange(CONFIG.FIRST_ROW,4,n,1).getBackgrounds();   // D列 一括
+    const jBgs = sh.getRange(CONFIG.FIRST_ROW,10,n,1).getBackgrounds();  // J列 一括
+    const out = [];
+    for(let i=0;i<n;i++){
+      const v = vals[i];
+      if(!v[1]) continue;
+      out.push({
+        row:CONFIG.FIRST_ROW+i, company:String(v[1]), status:String(v[2]||''),
+        D_val:String(v[3]||''), D_bg:dBgs[i][0],
+        J_val:String(v[9]||'').slice(0,20), J_bg:jBgs[i][0],
+        r2_state:String(v[10]||''), r2_reflect:String(v[11]||'')
+      });
+    }
+    // 条件付き書式ルール数(色の自動付与があるか)
+    let cfCount = 0;
+    try { cfCount = sh.getConditionalFormatRules().length; } catch(err){}
+    return _json({conditional_format_rules: cfCount, rows: out});
+  }
+
+  if(mode === 'cfrules'){
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sh = ss.getSheetByName(KOMA_SHEET);
+    const rules = sh.getConditionalFormatRules();
+    const out = rules.map(function(rule){
+      const ranges = rule.getRanges().map(function(r){return r.getA1Notation();});
+      let cond=null, bg=null;
+      try {
+        const bc = rule.getBooleanCondition();
+        if(bc){ cond={type:String(bc.getCriteriaType()), values:bc.getCriteriaValues()}; bg=bc.getBackgroundObject()?bc.getBackgroundObject().asRgbColor().asHexString():null; }
+      } catch(err){ cond={err:String(err)}; }
+      return {ranges:ranges, condition:cond, background:bg};
+    });
+    return _json({count:out.length, rules:out});
+  }
+
   if(mode === 'companyrow'){
     if(!_authed(e, token)) return _json({error:'unauthorized'});
     const ss = SpreadsheetApp.getActiveSpreadsheet();
