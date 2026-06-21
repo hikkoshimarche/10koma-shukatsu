@@ -172,6 +172,32 @@ function handleExt(mode, e, token){
     return _json({ok:true, removed_ranges:removed, rules_after:newRules.length});
   }
 
+  if(mode === 'cfforcell'){
+    // 指定セル(col,row)に range が掛かるCFルールを全列挙(条件・色付き)。CF実塗りの特定用。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sh = ss.getSheetByName(e.parameter.sheet || KOMA_SHEET);
+    const col = parseInt(e.parameter.col||'4',10);
+    const rowsP = (e.parameter.rows||'3,4,5,8,9,10').split(',').map(function(x){return parseInt(x,10);});
+    const rules = sh.getConditionalFormatRules();
+    const out = {};
+    rowsP.forEach(function(rw){
+      const hits = [];
+      rules.forEach(function(rule,idx){
+        const inRange = rule.getRanges().some(function(r){
+          return rw>=r.getRow() && rw<=r.getLastRow() && col>=r.getColumn() && col<=r.getLastColumn();
+        });
+        if(!inRange) return;
+        let cond=null,bg=null;
+        try{ const bc=rule.getBooleanCondition(); if(bc){cond={type:String(bc.getCriteriaType()),values:bc.getCriteriaValues()}; bg=bc.getBackgroundObject()?bc.getBackgroundObject().asRgbColor().asHexString():null;} }catch(err){}
+        hits.push({rule:idx, bg:bg, cond:cond, ranges:rule.getRanges().map(function(r){return r.getA1Notation();})});
+      });
+      // セル値+明示背景も付ける
+      out["row"+rw] = {value:String(sh.getRange(rw,col).getValue()), explicit_bg:sh.getRange(rw,col).getBackground(), matching_rules:hits};
+    });
+    return _json({col:col, cells:out});
+  }
+
   if(mode === 'fixstatusrounds'){
     // 既存行のステータス『N次完了』を、実際の最高『反映済』ラウンドに合わせて是正(完了/未着手等は触らない)
     if(!_authed(e, token)) return _json({error:'unauthorized'});
