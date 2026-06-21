@@ -51,6 +51,31 @@ def canary_hash():
     return hashlib.sha256(blob.encode()).hexdigest()[:16]
 
 
+def canary_snapshot(exclude_slugs):
+    """一般化canary: 今サイクルの対象社を除く『全社』の台本ハッシュ {slug: hash}。
+
+    三井固有参照を撤去。対象外の全社をhash照合する番人。
+    """
+    ex = ",".join("'" + str(s).replace("'", "''") + "'" for s in exclude_slugs) or "''"
+    rows = d1_query(
+        "SELECT company_id,panel_num,dialogue,main_copy,sub_copy,image_url "
+        f"FROM company_panels WHERE company_id NOT IN ({ex}) ORDER BY company_id,panel_num")
+    by = {}
+    for r in rows:
+        by.setdefault(r["company_id"], []).append(r)
+    return {slug: hashlib.sha256(json.dumps(rs, ensure_ascii=False, sort_keys=True).encode()).hexdigest()[:16]
+            for slug, rs in by.items()}
+
+
+def canary_diff(before: dict, after: dict):
+    """変化した『対象外』社のリストを返す。空=安全(他社を壊していない)。"""
+    changed = []
+    for slug in set(before) | set(after):
+        if before.get(slug) != after.get(slug):
+            changed.append(slug)
+    return sorted(changed)
+
+
 def sqlq(v):
     if v is None:
         return "NULL"

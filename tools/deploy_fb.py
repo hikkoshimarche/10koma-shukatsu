@@ -75,9 +75,10 @@ def main():
     if not deployable:
         print("deploy対象なし"); return 0
 
-    print("\n[canary before]")
-    c_before = D.canary_hash()
-    print(f"  {D.CANARY} = {c_before}")
+    target_slugs = {r["slug"] for r in deployable}
+    print("\n[canary before] 一般化: 対象外の全社をhash監視")
+    c_before = D.canary_snapshot(target_slugs)
+    print(f"  対象外 {len(c_before)}社を監視 (対象={sorted(target_slugs)})")
 
     print("\n[backup + UPDATE 台本列(image_url不変)]")
     for r in deployable:
@@ -90,8 +91,13 @@ def main():
             proc = D.wrangler(["--command", D.update_sql(r["slug"], koma, after)])
             print(f"  {r['slug']:14} koma{koma} {'✅' if proc.returncode==0 else '❌ '+proc.stderr[:100]}")
 
-    c_after = D.canary_hash()
-    print(f"\n[canary after] {D.CANARY} = {c_after} {'✅不変' if c_after==c_before else '⚠️変化!'}")
+    c_after = D.canary_snapshot(target_slugs)
+    drift = D.canary_diff(c_before, c_after)
+    if drift:
+        print(f"\n[canary after] 🛑 対象外が変化: {drift} → 異常!即停止。書き戻しせず手動確認を。")
+        gas({"mode": "addcommonfix", "rule": f"[CANARY異常] 対象外社が変化: {drift} (要調査)", "scope": "system"})
+        return 2
+    print(f"\n[canary after] 対象外 {len(c_after)}社 全hash不変 ✅ (他社を壊していない)")
 
     print("\n[API検証]")
     for r in deployable:
