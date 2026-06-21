@@ -59,7 +59,7 @@ function onEdit(e){
       break;
     }
     if(col===hanCol(n)){                       // 反映(Claude/オスカー)
-      if(String(e.value||'')==='反映済') c.setValue('1次完了');
+      if(String(e.value||'')==='反映済') c.setValue(n + '次完了');  // ラウンドで一般化(反映2→2次完了)
       break;
     }
   }

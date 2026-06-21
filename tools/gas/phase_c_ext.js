@@ -89,7 +89,7 @@ function handleExt(mode, e, token){
       if(!round) round=1;
     }
     sh.getRange(row, hanCol(round)).setValue('反映済');
-    sh.getRange(row, CONFIG.COL.ステータス).setValue('1次完了');
+    sh.getRange(row, CONFIG.COL.ステータス).setValue(round + '次完了');  // ラウンドで一般化
     sh.getRange(row, CONFIG.COL.最終更新).setValue(new Date());
     return _json({ok:true, row:row, round:round});
   }
@@ -170,6 +170,68 @@ function handleExt(mode, e, token){
     }).filter(function(x){return x!==null;});
     sh.setConditionalFormatRules(newRules);
     return _json({ok:true, removed_ranges:removed, rules_after:newRules.length});
+  }
+
+  if(mode === 'fixstatusrounds'){
+    // 既存行のステータス『N次完了』を、実際の最高『反映済』ラウンドに合わせて是正(完了/未着手等は触らない)
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const names = e.parameter.sheet ? [e.parameter.sheet] : CONFIG.CONTENT_SHEETS;
+    const fixed = [];
+    names.forEach(function(name){
+      const sh = ss.getSheetByName(name); if(!sh) return;
+      const last = sh.getLastRow(); if(last<CONFIG.FIRST_ROW) return;
+      const vals = sh.getRange(CONFIG.FIRST_ROW,1,last-CONFIG.FIRST_ROW+1,45).getValues();
+      vals.forEach(function(r,i){
+        const status = String(r[CONFIG.COL.ステータス-1]||'').trim();
+        if(!/^\d+次完了$/.test(status)) return;   // 反映済由来の『N次完了』のみ対象
+        let maxr = 0;
+        for(let n=1;n<=CONFIG.ROUNDS;n++){ if(String(r[hanCol(n)-1]).trim()==='反映済') maxr=n; }
+        if(maxr>0){
+          const correct = maxr + '次完了';
+          if(status !== correct){
+            sh.getRange(CONFIG.FIRST_ROW+i, CONFIG.COL.ステータス).setValue(correct);
+            fixed.push({sheet:name, row:CONFIG.FIRST_ROW+i, company:String(r[1]), from:status, to:correct});
+          }
+        }
+      });
+    });
+    return _json({fixed_count:fixed.length, fixed:fixed});
+  }
+
+  if(mode === 'readsheet'){
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sh = ss.getSheetByName(e.parameter.sheet);
+    if(!sh) return _json({error:'no sheet'});
+    const lr=sh.getLastRow(), lc=sh.getLastColumn();
+    const vals = sh.getRange(1,1,lr,lc).getValues();
+    const formulas = (e.parameter.formulas==="1") ? sh.getRange(1,1,Math.min(lr,4),lc).getFormulas() : null;
+    return _json({name:e.parameter.sheet, values:vals, formulas:formulas});
+  }
+
+  if(mode === 'listsheets'){
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const out = ss.getSheets().map(function(sh){
+      const lc = sh.getLastColumn();
+      const hdr = lc>0 ? sh.getRange(1,1,2,Math.min(lc,50)).getValues() : [];
+      return {name:sh.getName(), rows:sh.getLastRow(), cols:lc, header:hdr};
+    });
+    return _json({sheets:out});
+  }
+
+  if(mode === 'listtriggers'){
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    try {
+      const trs = ScriptApp.getProjectTriggers();
+      const out = trs.map(function(t){
+        return {fn:t.getHandlerFunction(), type:String(t.getEventType()), source:String(t.getTriggerSource())};
+      });
+      return _json({count:out.length, triggers:out});
+    } catch(err){
+      return _json({error:String(err)});
+    }
   }
 
   if(mode === 'cfrules'){
