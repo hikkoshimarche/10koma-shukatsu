@@ -150,6 +150,28 @@ function handleExt(mode, e, token){
     return _json({conditional_format_rules: cfCount, rows: out});
   }
 
+  if(mode === 'fixcf12'){
+    // rule#12是正: 全ルールから『純粋J列(col10のみ)』のrangeを除去(=J6:J7,J9:J28)。他range/条件/書式は不変。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sh = ss.getSheetByName(KOMA_SHEET);
+    const rules = sh.getConditionalFormatRules();
+    const removed = [];
+    const newRules = rules.map(function(rule){
+      const ranges = rule.getRanges();
+      const kept = ranges.filter(function(r){
+        const isPureJ = (r.getColumn()===10 && r.getLastColumn()===10);
+        if(isPureJ) removed.push(r.getA1Notation());
+        return !isPureJ;
+      });
+      if(kept.length===ranges.length) return rule;           // 変更なし
+      if(kept.length===0) return null;                       // 全rangeがJ→ルール削除(該当しない想定)
+      return rule.copy().setRanges(kept).build();
+    }).filter(function(x){return x!==null;});
+    sh.setConditionalFormatRules(newRules);
+    return _json({ok:true, removed_ranges:removed, rules_after:newRules.length});
+  }
+
   if(mode === 'cfrules'){
     if(!_authed(e, token)) return _json({error:'unauthorized'});
     const ss = SpreadsheetApp.getActiveSpreadsheet();
