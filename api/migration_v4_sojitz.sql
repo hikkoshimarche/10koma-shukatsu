@@ -36,8 +36,8 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [haruki] 5大商社の若手より、双日の若手は1〜2年早く海外に出る、ってことか…', '若手抜擢、2〜3年でハノイ駐在', '第一希望通る人は半分 / 5大商社より1〜2年早く海外', NULL, '["[nana] 採用約130名は、5大商社並みですよね。", "[OB先輩] うん、規模感は5大商社並み。第一希望そのまま通る人は半分くらい。", "[OB先輩] でも双日は若手抜擢で有名。2〜3年でハノイ・ホーチミン駐在は当たり前。航空機事業ならシアトル・トゥールーズ。", "[haruki] 5大商社の若手より、双日の若手は1〜2年早く海外に出る、ってことか…"]', 'H4: 航空機メンテナンス工場', NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sojitz', 8, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@673bf31/public/images/sojitz/panel_08.png', 'nana', '[OB先輩] 双日が見るのは、双日精神。スピード・チャレンジ・誠実さ・チームワーク。
 [OB先輩] 一番見てるのは、新しい挑戦を恐れずに、誠実に、チームで動ける人。
-[nana] (静かに) 一番新しい商社だから、新しい挑戦が当たり前、ってこと…
-[haruki] スピードと誠実さの両立、ってのが双日らしいんだ。', 'スピード・チャレンジ・誠実・チームワーク', '新しい挑戦を、誠実に', NULL, '["[OB先輩] 双日が見るのは、双日精神。スピード・チャレンジ・誠実さ・チームワーク。", "[OB先輩] 一番見てるのは、新しい挑戦を恐れずに、誠実に、チームで動ける人。", "[nana] (静かに) 一番新しい商社だから、新しい挑戦が当たり前、ってこと…", "[haruki] スピードと誠実さの両立、ってのが双日らしいんだ。"]', 'H6: 双日の社章', '{"location": "壁面中央", "object_type": "社章 (双日のロゴ)", "brand_form": "金属レリーフの『双日』ロゴ、実在のデザイン", "attachment": "壁面に固定", "scale_note": "実在の社内展示の通常サイズ"}');
+[nana] 一番新しい商社だから、新しい挑戦が当たり前、ってこと…
+[haruki] スピードと誠実さの両立、ってのが双日らしいんだ。', 'スピード・チャレンジ・誠実・チームワーク', '新しい挑戦を、誠実に', NULL, '["[OB先輩] 双日が見るのは、双日精神。スピード・チャレンジ・誠実さ・チームワーク。", "[OB先輩] 一番見てるのは、新しい挑戦を恐れずに、誠実に、チームで動ける人。", "[nana] 一番新しい商社だから、新しい挑戦が当たり前、ってこと…", "[haruki] スピードと誠実さの両立、ってのが双日らしいんだ。"]', 'H6: 双日の社章', '{"location": "壁面中央", "object_type": "社章 (双日のロゴ)", "brand_form": "金属レリーフの『双日』ロゴ、実在のデザイン", "attachment": "壁面に固定", "scale_note": "実在の社内展示の通常サイズ"}');
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sojitz', 9, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@673bf31/public/images/sojitz/panel_09.png', 'haruki', '[nana] もし入れたら、10年後どこにいると思う?
 [haruki] たとえば、こんな未来。ハノイの工業団地で日本企業の進出を統括。
 [haruki] フィリピン・ミンダナオでバナナのサプライチェーンを再設計。

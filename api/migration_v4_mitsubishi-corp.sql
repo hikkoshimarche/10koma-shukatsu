@@ -38,10 +38,10 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [nana] え、この店舗ぜんぶ?
 [haruki] 約14,600店舗。三菱食品が6,500社から仕入れて3,000社に卸す。コンビニ・スーパーの裏方は、ぜんぶ三菱の動脈。
 [nana] 私のおにぎりも、三菱商事の中を通ってきたんだ…', 'おにぎり1個も、三菱の動脈の中', 'ローソン約14,600店舗 / 三菱食品6,500社×3,000社', NULL, '["[haruki] 2001年子会社化、2017年に連結子会社化。ローソンは三菱商事のもの。", "[nana] え、この店舗ぜんぶ?", "[haruki] 約14,600店舗。三菱食品が6,500社から仕入れて3,000社に卸す。コンビニ・スーパーの裏方は、ぜんぶ三菱の動脈。", "[nana] 私のおにぎりも、三菱商事の中を通ってきたんだ…"]', 'H2: ローソン店舗ファサード', '{"location": "店舗ファサード上部", "object_type": "店舗サイン (LAWSON 看板)", "brand_form": "ミルク缶モチーフの青と白の LAWSON 看板。実在のロゴデザインそのまま", "attachment": "店舗の外壁に固定された看板", "scale_note": "実在のコンビニ店舗の通常サイズ"}');
-INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('mitsubishi-corp', 9, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@29041ca/public/images/mitsubishi-corp/panel_09.png', 'nana', '[OB先輩] 三菱が見るのは、『芯』『共創力』『高い志と誠実性』。学歴や倍率じゃない。
+INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('mitsubishi-corp', 9, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@29041ca/public/images/mitsubishi-corp/panel_09.png', 'nana', '[OB先輩] 三菱が見るのは、『芯』『共創力』『高い志と誠実性』。学歴や採用の数字じゃない。
 [OB先輩] 自分らしさをもって、ステークホルダーと共に価値を作れるか。
-[nana] (静かに) 倍率じゃなくて、芯か…
-[haruki] 三綱領の90年前から変わらない、人の見方ってことだ。', '見てるのは『芯・共創力・高い志』', '倍率じゃない、人物像で', NULL, '["[OB先輩] 三菱が見るのは、『芯』『共創力』『高い志と誠実性』。学歴や倍率じゃない。", "[OB先輩] 自分らしさをもって、ステークホルダーと共に価値を作れるか。", "[nana] (静かに) 倍率じゃなくて、芯か…", "[haruki] 三綱領の90年前から変わらない、人の見方ってことだ。"]', NULL, NULL);
+[nana] 学歴より、芯か…それが90年前から変わらない基準なんだ。
+[haruki] 三綱領に刻まれた人の見方が、今も採用の核にある。', '見てるのは『芯・共創力・高い志』', '学歴でも数字でもなく、人物像で', NULL, '["[OB先輩] 三菱が見るのは、『芯』『共創力』『高い志と誠実性』。学歴や採用の数字じゃない。", "[OB先輩] 自分らしさをもって、ステークホルダーと共に価値を作れるか。", "[nana] 学歴より、芯か…それが90年前から変わらない基準なんだ。", "[haruki] 三綱領に刻まれた人の見方が、今も採用の核にある。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('mitsubishi-corp', 10, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@29041ca/public/images/mitsubishi-corp/panel_10.png', 'both', '[haruki] 売上19兆円、純利益8,000億円、採用139名。
-[nana] 倍率の話じゃなくて、150年続いてきた仕事を、次に誰が動かすか、ってことだね。
-[both] 所期奉公から、三価値同時実現へ。', '所期奉公から、三価値同時実現へ。', '売上 約19兆円 / 純利益 約8,000億円 / 採用139名', NULL, '["[haruki] 売上19兆円、純利益8,000億円、採用139名。", "[nana] 倍率の話じゃなくて、150年続いてきた仕事を、次に誰が動かすか、ってことだね。", "[both] 所期奉公から、三価値同時実現へ。"]', 'H1: 丸の内パークビル本社 (朝の光)', NULL);
+[nana] 数字じゃわからないのが、この会社の選び方だよ。学歴より芯、実績より三綱領の価値観に共鳴できるか、そこを見てる。
+[both] 所期奉公から、三価値同時実現へ。', '所期奉公から、三価値同時実現へ。', '売上 約19兆円 / 純利益 約8,000億円 / 採用139名', NULL, '["[haruki] 売上19兆円、純利益8,000億円、採用139名。", "[nana] 数字じゃわからないのが、この会社の選び方だよ。学歴より芯、実績より三綱領の価値観に共鳴できるか、そこを見てる。", "[both] 所期奉公から、三価値同時実現へ。"]', 'H1: 丸の内パークビル本社 (朝の光)', NULL);

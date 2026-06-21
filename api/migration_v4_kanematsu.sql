@@ -20,8 +20,8 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [nana] 規模じゃなくて、勝てる場所を選んでるんだ…', '兼松のおかげでスマホが使えてる', '電子・デバイスが主力 / 半導体トレード', NULL, '["[haruki] 電子・デバイスが兼松の主力。スマホの半導体部品、ぜんぶ兼松経由で動いてる。", "[nana] え、私のスマホの中も?", "[haruki] うん、ナナのスマホの半導体部品も兼松が動かしてる。電子の方が、資源より利益率が高いんだ。", "[nana] 規模じゃなくて、勝てる場所を選んでるんだ…"]', 'H3: 半導体ウェハの輸送ケース', NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('kanematsu', 4, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@36be84b/public/images/kanematsu/panel_04.png', 'haruki', '[haruki] 食料も主力。ブラジル・コロンビアからコーヒー豆を年間数万トン輸入。
 [nana] え、私が毎朝飲むコーヒー、もしかして…
-[haruki] そう、カフェチェーンの豆はかなり兼松経由。インスタント麺の小麦原料もそう。
-[nana] 表に出ないだけで、朝の食卓は兼松だらけだったんだ…', '朝のコーヒー、麺、ぜんぶ兼松', 'ブラジル・コロンビアからの豆 / 食料原料', NULL, '["[haruki] 食料も主力。ブラジル・コロンビアからコーヒー豆を年間数万トン輸入。", "[nana] え、私が毎朝飲むコーヒー、もしかして…", "[haruki] そう、カフェチェーンの豆はかなり兼松経由。インスタント麺の小麦原料もそう。", "[nana] 表に出ないだけで、朝の食卓は兼松だらけだったんだ…"]', 'H2: コーヒー麻袋を積んだ倉庫 (+ H6 インスタント麺)', '{"location": "麻袋の側面", "object_type": "麻袋のスタンプ (KANEMATSU)", "brand_form": "麻袋に黒インクのスタンプで『KANEMATSU』と『COFFEE』の文字", "attachment": "麻袋にスタンプ印刷", "scale_note": "実在のコーヒー麻袋の通常表記"}');
+[haruki] そう、カフェチェーンの豆はかなりの割合のものが兼松経由。インスタント麺の小麦原料もそう。
+[nana] 表に出ないだけで、朝の食卓は兼松だらけだったんだ…', '朝のコーヒー、麺、ぜんぶ兼松', 'ブラジル・コロンビアからの豆 / 食料原料', NULL, '["[haruki] 食料も主力。ブラジル・コロンビアからコーヒー豆を年間数万トン輸入。", "[nana] え、私が毎朝飲むコーヒー、もしかして…", "[haruki] そう、カフェチェーンの豆はかなりの割合のものが兼松経由。インスタント麺の小麦原料もそう。", "[nana] 表に出ないだけで、朝の食卓は兼松だらけだったんだ…"]', 'H2: コーヒー麻袋を積んだ倉庫 (+ H6 インスタント麺)', '{"location": "麻袋の側面", "object_type": "麻袋のスタンプ (KANEMATSU)", "brand_form": "麻袋に黒インクのスタンプで『KANEMATSU』と『COFFEE』の文字", "attachment": "麻袋にスタンプ印刷", "scale_note": "実在のコーヒー麻袋の通常表記"}');
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('kanematsu', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@36be84b/public/images/kanematsu/panel_05.png', 'nana', '[nana] 兼松の年収って、実際どうなの?
 [haruki] 有価証券報告書(2025年3月期・単体)で平均1,143万円(平均年齢42歳)。
 [haruki] 電子・食料の業績連動手当があるから、事業が伸びれば手元に返ってくる構造になっている。
@@ -40,8 +40,8 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [nana] 130年、規模で勝負しない選択を続けてきたんだ。', '1889年、規模より質を選んだ', '兼松房治郎 / 直道は近道なり', NULL, '["[haruki] 1889年、創業者 兼松房治郎が豪州との貿易から始めた。", "[nana] 明治22年!? 130年以上前…", "[haruki] 兼松房治郎の遺した言葉:『直道は近道なり』。誠実が最大の近道。", "[nana] 130年、規模で勝負しない選択を続けてきたんだ。"]', 'H5: 明治の暖簾 (『兼』の社章)', '{"location": "壁面中央の暖簾", "object_type": "創業時の暖簾 (社章)", "brand_form": "藍色の和風暖簾、白抜きで『兼』の文字", "attachment": "壁面に固定された展示", "scale_note": "実在の社章展示の通常サイズ"}');
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('kanematsu', 9, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@36be84b/public/images/kanematsu/panel_09.png', 'nana', '[OB先輩] 兼松が見るのは、『直道は近道なり』を体現できる人。
 [OB先輩] 倍率は確かに高い。でも一番見てるのは、規模を追わず、質で勝負できる人。
-[nana] (静かに) 派手じゃなくていい、ってこと…
-[haruki] 若手のうちから大手商社の中堅と同じ量の仕事をやる覚悟があるか、ってことだね。', '見てるのは『質で戦える人』', '倍率じゃなく、直道は近道なり', NULL, '["[OB先輩] 兼松が見るのは、『直道は近道なり』を体現できる人。", "[OB先輩] 倍率は確かに高い。でも一番見てるのは、規模を追わず、質で勝負できる人。", "[nana] (静かに) 派手じゃなくていい、ってこと…", "[haruki] 若手のうちから大手商社の中堅と同じ量の仕事をやる覚悟があるか、ってことだね。"]', NULL, NULL);
+[nana] 派手じゃなくていい、ってこと…
+[haruki] 若手のうちから大手商社の中堅と同じ量の仕事をやる覚悟があるか、ってことだね。', '見てるのは『質で戦える人』', '倍率じゃなく、直道は近道なり', NULL, '["[OB先輩] 兼松が見るのは、『直道は近道なり』を体現できる人。", "[OB先輩] 倍率は確かに高い。でも一番見てるのは、規模を追わず、質で勝負できる人。", "[nana] 派手じゃなくていい、ってこと…", "[haruki] 若手のうちから大手商社の中堅と同じ量の仕事をやる覚悟があるか、ってことだね。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('kanematsu', 10, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@36be84b/public/images/kanematsu/panel_10.png', 'both', '[haruki] 売上7,700億円、純利益約200億円、採用は毎年40〜50名規模。
 [nana] 5大商社の競争に参加せず、自分の戦い方を130年続けてる。
 [both] 5大商社じゃない。だから、戦い方が違う。', '5大商社じゃない。だから、戦い方が違う。', '売上 約7,700億円 / 純利益 約200億円 / 採用40〜50名規模', NULL, '["[haruki] 売上7,700億円、純利益約200億円、採用は毎年40〜50名規模。", "[nana] 5大商社の競争に参加せず、自分の戦い方を130年続けてる。", "[both] 5大商社じゃない。だから、戦い方が違う。"]', 'H1: 兼松本社シーバンスN館 (朝の光)', NULL);

@@ -81,11 +81,32 @@ function handleExt(mode, e, token){
     const sh = ss.getSheetByName(KOMA_SHEET);
     const row = _findRowByCompany(sh, e.parameter.company);
     if(row < 0) return _json({error:'company not found', company:e.parameter.company});
-    const round = parseInt(e.parameter.round||'1',10);
+    // round未指定なら、FBが入っている最新ラウンドを自動検出
+    let round = parseInt(e.parameter.round||'0',10);
+    if(!round){
+      const r = sh.getRange(row,1,1,45).getValues()[0];
+      for(let n=1;n<=CONFIG.ROUNDS;n++){ if(r[fbCol(n)-1]) round=n; }
+      if(!round) round=1;
+    }
     sh.getRange(row, hanCol(round)).setValue('反映済');
     sh.getRange(row, CONFIG.COL.ステータス).setValue('1次完了');
     sh.getRange(row, CONFIG.COL.最終更新).setValue(new Date());
     return _json({ok:true, row:row, round:round});
+  }
+  if(mode === 'companyrow'){
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sh = ss.getSheetByName(e.parameter.sheet || KOMA_SHEET);
+    const row = _findRowByCompany(sh, e.parameter.company);
+    if(row < 0) return _json({error:'company not found', company:e.parameter.company});
+    const r = sh.getRange(row,1,1,45).getValues()[0];
+    const rounds = [];
+    for(let n=1;n<=CONFIG.ROUNDS;n++){
+      const tan=r[tanCol(n)-1], fb=r[fbCol(n)-1], jot=r[jotCol(n)-1], han=r[hanCol(n)-1];
+      if(tan||fb||jot||han) rounds.push({round:n, owner:String(tan||''), fb:String(fb||''),
+                                         state:String(jot||''), reflected:String(han||'')});
+    }
+    return _json({row:row, company:String(r[1]), status:String(r[2]), publicUrl:String(r[3]||''), rounds:rounds});
   }
   return null; // 未知mode → 既存doGetのfallbackへ
 }

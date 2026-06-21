@@ -13,7 +13,7 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('shinkokusyoji', 2, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@fe2b636/public/images/shinkokusyoji/panel_02.png', 'haruki', '[haruki] 売上4,500億円、純利益約100億円。確かに5大商社の数十分の1。
 [nana] そんな小さいのに、919万円?
 [haruki] それは、神鋼商事は神戸製鋼グループの中核商社だから。
-[nana] 母体の質に乗ってる、って言ったやつね…', '売上4,500億円、純利益100億円', '規模より、母体の質', NULL, '["[haruki] 売上4,500億円、純利益約100億円。確かに5大商社の数十分の1。", "[nana] そんな小さいのに、919万円?", "[haruki] それは、神鋼商事は神戸製鋼グループの中核商社だから。", "[nana] 母体の質に乗ってる、って言ったやつね…"]', NULL, NULL);
+[nana] 神戸製鋼の動脈に乗ってる、って言ったやつね…', '売上4,500億円、純利益100億円', '規模より、母体の質', NULL, '["[haruki] 売上4,500億円、純利益約100億円。確かに5大商社の数十分の1。", "[nana] そんな小さいのに、919万円?", "[haruki] それは、神鋼商事は神戸製鋼グループの中核商社だから。", "[nana] 神戸製鋼の動脈に乗ってる、って言ったやつね…"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('shinkokusyoji', 3, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@fe2b636/public/images/shinkokusyoji/panel_03.png', 'haruki', '[haruki] これ、神戸製鋼の自動車鋼板コイル。3メートル径。
 [nana] 3メートル!?
 [haruki] 神戸製鋼が作って、神鋼商事がトヨタや日産に売る。日本車の車体は、ここから始まってる。
@@ -40,8 +40,8 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [haruki] 別の5大商社ならではの『総合』とは違う、神戸製鋼一本での『深さ』、ってことだね。', '神戸製鋼の世界戦略を担う1社', 'トヨタ・ボーイング・エアバスへ', NULL, '["[OB先輩] 神戸製鋼は、自動車の薄鋼板ではトヨタの主要サプライヤー。航空のチタンはボーイング・エアバス向け。", "[OB先輩] その世界販売を担うのが神鋼商事。1社のグループ商社として、グローバルに動く役。", "[nana] 神戸製鋼の物語と、神鋼商事の物語が、ぴったり重なってるんだ。", "[haruki] 別の5大商社ならではの『総合』とは違う、神戸製鋼一本での『深さ』、ってことだね。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('shinkokusyoji', 9, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@fe2b636/public/images/shinkokusyoji/panel_09.png', 'nana', '[OB先輩] 神鋼商事が見るのは、『Sincerity, Synergy, Speed』。誠実・連携・スピード。
 [OB先輩] 神戸製鋼の素材を、世界の顧客に届ける。3つともBtoBの商売の核。
-[nana] (静かに) 派手じゃないけど、根が深い言葉…
-[haruki] 製造と商売の両方を理解できる人、ってことだね。', 'Sincerity, Synergy, Speed', '誠実・連携・スピード / BtoB商売の核', NULL, '["[OB先輩] 神鋼商事が見るのは、『Sincerity, Synergy, Speed』。誠実・連携・スピード。", "[OB先輩] 神戸製鋼の素材を、世界の顧客に届ける。3つともBtoBの商売の核。", "[nana] (静かに) 派手じゃないけど、根が深い言葉…", "[haruki] 製造と商売の両方を理解できる人、ってことだね。"]', NULL, NULL);
+[nana] 派手じゃないけど、根が深い言葉…
+[haruki] 製造と商売の両方を理解できる人、ってことだね。', 'Sincerity, Synergy, Speed', '誠実・連携・スピード / BtoB商売の核', NULL, '["[OB先輩] 神鋼商事が見るのは、『Sincerity, Synergy, Speed』。誠実・連携・スピード。", "[OB先輩] 神戸製鋼の素材を、世界の顧客に届ける。3つともBtoBの商売の核。", "[nana] 派手じゃないけど、根が深い言葉…", "[haruki] 製造と商売の両方を理解できる人、ってことだね。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('shinkokusyoji', 10, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@fe2b636/public/images/shinkokusyoji/panel_10.png', 'both', '[haruki] 売上4,500億円、純利益約100億円、採用は少数精鋭。
 [nana] 神戸製鋼の素材を世界中の自動車・医療・航空に届ける役を担ってる。
 [both] 神戸製鋼の動脈で、世界の機械を動かす。神鋼商事。', '神戸製鋼の動脈で、世界の機械を動かす。', '売上 約4,500億円 / 純利益 約100億円 / 採用は少数精鋭', NULL, '["[haruki] 売上4,500億円、純利益約100億円、採用は少数精鋭。", "[nana] 神戸製鋼の素材を世界中の自動車・医療・航空に届ける役を担ってる。", "[both] 神戸製鋼の動脈で、世界の機械を動かす。神鋼商事。"]', 'H1: 神戸の港湾エリア (朝の光)', NULL);

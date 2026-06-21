@@ -36,8 +36,8 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [haruki] 楽じゃないけど、若いうちにそれだけの裁量があるってことか…', 'アフリカ赴任は『普通にある』', '入社3〜5年で海外駐在 / 20代で国を任される', NULL, '["[nana] 配属って、希望どおりに行けるんですか?", "[OB先輩] 正直に言うと、第一希望そのまま通る人は半分くらい。アフリカ赴任は普通にある。", "[OB先輩] 入社3〜5年で海外駐在に出る人が多い。覚悟は要る。でも、20代で国を任される経験ができる会社、他にそうない。", "[haruki] 楽じゃないけど、若いうちにそれだけの裁量があるってことか…"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('toyota-tsusho', 8, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@2fa3409/public/images/toyota-tsusho/panel_08.png', 'nana', '[OB先輩] うちが見るのは、学歴じゃない。『現地・現物』で動けるか。
 [OB先輩] アフリカの土埃の中で、現地のスタッフと汗をかいて、トラブルを直せるか。
-[nana] (静かに) 学歴じゃない、ってシンプルに言われたの、初めてかも。
-[haruki] 数字より、足を動かす人を取る会社、ってことか。', '見てるのは『現地・現物で動けるか』', '学歴じゃない。足を動かせるか', NULL, '["[OB先輩] うちが見るのは、学歴じゃない。『現地・現物』で動けるか。", "[OB先輩] アフリカの土埃の中で、現地のスタッフと汗をかいて、トラブルを直せるか。", "[nana] (静かに) 学歴じゃない、ってシンプルに言われたの、初めてかも。", "[haruki] 数字より、足を動かす人を取る会社、ってことか。"]', NULL, NULL);
+[nana] 学歴じゃない、ってシンプルに言われたの、初めてかも。
+[haruki] 数字より、足を動かす人を取る会社、ってことか。', '見てるのは『現地・現物で動けるか』', '学歴じゃない。足を動かせるか', NULL, '["[OB先輩] うちが見るのは、学歴じゃない。『現地・現物』で動けるか。", "[OB先輩] アフリカの土埃の中で、現地のスタッフと汗をかいて、トラブルを直せるか。", "[nana] 学歴じゃない、ってシンプルに言われたの、初めてかも。", "[haruki] 数字より、足を動かす人を取る会社、ってことか。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('toyota-tsusho', 9, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@2fa3409/public/images/toyota-tsusho/panel_09.png', 'haruki', '[nana] もし入れたら、10年後どこにいると思う?
 [haruki] たとえば、こんな未来が見える。ケニア・モンバサ港でアフリカ全土の輸入物流を統括。
 [haruki] ブラジル・サンパウロで水素ステーションをゼロから立ち上げる。
