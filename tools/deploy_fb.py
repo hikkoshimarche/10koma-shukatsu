@@ -101,13 +101,12 @@ def main():
         except Exception as ex:
             print(f"  {r['slug']:14} 検証失敗 {ex}")
 
-    print("\n[書き戻し 反映済] ※エスカレーション(静かに)が残る社は保留")
+    # 明確komaをdeployしたら反映済(再処理ループ防止)。エスカレーション内容はLINEで手動通知。
+    print("\n[書き戻し 反映済]")
     for r in deployable:
-        if r["escalate"]:
-            print(f"  {r['slug']:14} 保留(静かに残件 {len(r['escalate'])}件→step2後に反映済)")
-            continue
         res = gas({"mode": "setreflected", "company": r["company"]})
-        print(f"  {r['slug']:14} 反映済セット: {res}")
+        note = f"(手動要対応{len(r['escalate'])}件はLINE通知)" if r["escalate"] else ""
+        print(f"  {r['slug']:14} 反映済セット: {res} {note}")
 
     # LINEレポート(プレビュー)。実際の定時LINEはGAS line3hSummaryが反映済を読んで送る
     reflected = [r for r in deployable if not r["escalate"]]
