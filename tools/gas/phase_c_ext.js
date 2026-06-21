@@ -93,6 +93,36 @@ function handleExt(mode, e, token){
     sh.getRange(row, CONFIG.COL.最終更新).setValue(new Date());
     return _json({ok:true, row:row, round:round});
   }
+  if(mode === 'attention_robust'){
+    // 取りこぼし対策: ステータス=FB対応中 に加え、最新ラウンドが「状態=提出 かつ 反映=空」の行も拾う
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const ss = SpreadsheetApp.getActiveSpreadsheet(); const items=[];
+    CONFIG.CONTENT_SHEETS.forEach(function(name){
+      const sh = ss.getSheetByName(name); if(!sh) return;
+      const last = sh.getLastRow(); if(last<CONFIG.FIRST_ROW) return;
+      const vals = sh.getRange(CONFIG.FIRST_ROW,1,last-CONFIG.FIRST_ROW+1,45).getValues();
+      vals.forEach(function(r){
+        const statusAtt = CONFIG.ATTENTION.indexOf(String(r[CONFIG.COL.ステータス-1]).trim())!==-1;
+        // 最新のFBラウンド
+        let latest=0; for(let n=1;n<=CONFIG.ROUNDS;n++){ if(r[fbCol(n)-1]) latest=n; }
+        const pending = latest>0 && String(r[jotCol(latest)-1]).trim()==='提出'
+                        && !String(r[hanCol(latest)-1]).trim();
+        if(statusAtt || pending){
+          items.push({content:name, industry:r[0], company:r[1], round:latest,
+                      owner:latestVal(r,tanCol), fb:latestVal(r,fbCol),
+                      reason: statusAtt?'FB対応中':'提出&反映空'});
+        }
+      });
+    });
+    return _json({count:items.length, items:items});
+  }
+
+  if(mode === 'setuptriggers'){
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    setupTriggers();
+    return _json({ok:true, note:'9時=要対応 / 12,15,18,21,0時=直近3h'});
+  }
+
   if(mode === 'companyrow'){
     if(!_authed(e, token)) return _json({error:'unauthorized'});
     const ss = SpreadsheetApp.getActiveSpreadsheet();

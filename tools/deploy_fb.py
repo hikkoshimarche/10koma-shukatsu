@@ -50,13 +50,21 @@ def main():
             print(f"  {company}: skip(slug={slug})"); continue
         triage = L.triage_fb(company, it.get("fb", ""))
         changed, escalate = [], []
+        from collections import OrderedDict
+        by_koma = OrderedDict()
         for b in triage.get("script_bugs", []):
             koma = b.get("koma")
             if not koma:
-                escalate.append(b.get("detail", "")); continue
-            res = L.fix_script_koma(slug, koma, b.get("detail", ""), rules, dry=False)
+                escalate.append(f"台本:{b.get('detail','')[:40]}"); continue
+            by_koma.setdefault(koma, []).append(b.get("detail", ""))
+        for koma, details in by_koma.items():
+            instr = "このコマへの指摘(全て反映):\n" + "\n".join(f"- {d}" for d in details)
+            res = L.fix_script_koma(slug, koma, instr, rules, dry=False)
             if res.get("changed"):
                 changed.append(koma)
+        # 画像バグは現状エスカレーション(画像再生成はGemini/別工程)
+        for b in triage.get("image_bugs", []):
+            escalate.append(f"画像koma{b.get('koma','?')}:{b.get('detail','')[:30]}")
         e, w, _ = L.lint_company(slug)
         recs.append({"company": company, "slug": slug, "changed": changed,
                      "escalate": escalate, "lint": (e, w)})
@@ -100,6 +108,17 @@ def main():
             continue
         res = gas({"mode": "setreflected", "company": r["company"]})
         print(f"  {r['slug']:14} 反映済セット: {res}")
+
+    # LINEレポート(プレビュー)。実際の定時LINEはGAS line3hSummaryが反映済を読んで送る
+    reflected = [r for r in deployable if not r["escalate"]]
+    esc = [r for r in recs if r["escalate"]]
+    print("\n=== LINEレポート(プレビュー) ===")
+    lines = [f"【トーキャリ自動修正】台本反映 {len(reflected)}社 / 要対応(手動) {len(esc)}社"]
+    for r in reflected:
+        lines.append(f"・{r['company']}: koma{r['changed']} 反映済")
+    for r in esc:
+        lines.append(f"⚠{r['company']}: {'; '.join(r['escalate'][:2])}")
+    print("\n".join(lines))
     print("\n完了。巻き戻しは .backups/d1_*.json から。")
     return 0
 

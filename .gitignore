@@ -31,3 +31,4 @@ tools/gas/.clasp.json
 tools/gas/.clasprc.json
 tools/_autoloop_last.json
 tools/__pycache__/
+logs/

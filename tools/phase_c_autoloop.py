@@ -78,9 +78,10 @@ def resolve_slug(company_name: str):
 
 
 def fetch_attention():
+    """robust版: ステータス=FB対応中 に加え『最新ラウンド提出&反映空』も拾う(取りこぼし対策)。"""
     url = os.environ["SHEET_WEBAPP_URL"].strip()
     token = os.environ["SHEET_API_TOKEN"].strip()
-    r = requests.get(f"{url}?mode=attention&token={urllib.parse.quote(token)}", timeout=60)
+    r = requests.get(f"{url}?mode=attention_robust&token={urllib.parse.quote(token)}", timeout=60)
     r.raise_for_status()
     return r.json().get("items", [])
 
@@ -112,7 +113,8 @@ def process_company(item, rules, args):
     company = item.get("company", "")
     slug = resolve_slug(company)
     rec = {"company": company, "slug": slug, "actions": [], "script_changed": False,
-           "image_results": [], "deployable": False, "escalate": [], "note": ""}
+           "image_results": [], "deployable": False, "escalate": [], "note": "",
+           "opinions": [], "triage": {}}
     if not slug:
         rec["note"] = "slug解決不可"; return rec
     if slug in EXCLUDED:
@@ -123,15 +125,21 @@ def process_company(item, rules, args):
     rec["triage"] = triage
 
     # --- 台本バグ修正 + lint ---
+    # 同一komaへの複数指摘は1回にまとめて適用(重複・矛盾提案を防ぐ)
     sql_path = L.API_DIR / f"migration_v4_{slug}.sql"
     if triage.get("script_bugs") and sql_path.exists():
-        overrides = {}
+        from collections import OrderedDict
+        by_koma = OrderedDict()
         for b in triage["script_bugs"]:
             koma = b.get("koma")
             if not koma:
                 rec["escalate"].append(f"台本: コマ不明 '{b.get('detail')}' → 手動")
                 continue
-            res = L.fix_script_koma(slug, koma, b.get("detail", ""), rules, dry=args.dry_run)
+            by_koma.setdefault(koma, []).append(b.get("detail", ""))
+        overrides = {}
+        for koma, details in by_koma.items():
+            instr = "このコマへの指摘(全て反映):\n" + "\n".join(f"- {d}" for d in details)
+            res = L.fix_script_koma(slug, koma, instr, rules, dry=args.dry_run)
             if res.get("changed"):
                 rec["script_changed"] = True
                 overrides[koma] = res["after"]
