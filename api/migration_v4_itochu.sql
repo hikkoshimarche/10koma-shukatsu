@@ -30,10 +30,10 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [nana] 街に馴染んでる感じ…
 [haruki] 2026年8月、45年使った青山の本社をいったん離れる。そしていずれ、同じ青山に新しい本社を建て替えるんだ。
 [nana] 建物も人も、続いて、変わる。', '青山45年、そして次へ', '1980年竣工 / 雁行配置 / マホガニー・レッド', NULL, '["[haruki] 青山本社、1980年竣工。マホガニー・レッドの外装は45年変わってない。", "[nana] 街に馴染んでる感じ…", "[haruki] 2026年8月、45年使った青山の本社をいったん離れる。そしていずれ、同じ青山に新しい本社を建て替えるんだ。", "[nana] 建物も人も、続いて、変わる。"]', 'H1: 北青山の伊藤忠商事東京本社ビル', '{"location": "本社ビル上部の外壁", "object_type": "建築サイン (ITOCHU)", "brand_form": "ビル上部にレリーフ調の『ITOCHU』サイン、控えめに", "attachment": "ビル外壁の建築サインとして固定", "scale_note": "実在の本社ビルと同じ控えめな比率"}');
-INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('itochu', 7, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@2630894/public/images/itochu/panel_07.png', 'nana', '[nana] 配属って、自分が希望した繊維に行けるんですか?
+INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('itochu', 7, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@2630894/public/images/itochu/panel_07.png', 'nana', '[nana] 配属って、自分が希望した部署に行けるんですか？
 [OB先輩] 8カンパニーあって、第一希望そのまま通る人は半分くらい。繊維志望が金属に行くことも普通にある。
 [OB先輩] でも、3〜5年で海外駐在に出る人が多い。ファミマの海外展開も、商社マンが現地で立ち上げる。
-[haruki] 希望と違う配属でも、別の現場が見える、ってことか…', '8カンパニー、希望通り半分', '繊維志望→金属も普通 / 3〜5年で海外駐在', NULL, '["[nana] 配属って、自分が希望した繊維に行けるんですか?", "[OB先輩] 8カンパニーあって、第一希望そのまま通る人は半分くらい。繊維志望が金属に行くことも普通にある。", "[OB先輩] でも、3〜5年で海外駐在に出る人が多い。ファミマの海外展開も、商社マンが現地で立ち上げる。", "[haruki] 希望と違う配属でも、別の現場が見える、ってことか…"]', NULL, NULL);
+[haruki] 希望と違う配属でも、別の現場が見える、ってことか…', '8カンパニー、希望通り半分', '繊維志望→金属も普通 / 3〜5年で海外駐在', NULL, '["[nana] 配属って、自分が希望した部署に行けるんですか？", "[OB先輩] 8カンパニーあって、第一希望そのまま通る人は半分くらい。繊維志望が金属に行くことも普通にある。", "[OB先輩] でも、3〜5年で海外駐在に出る人が多い。ファミマの海外展開も、商社マンが現地で立ち上げる。", "[haruki] 希望と違う配属でも、別の現場が見える、ってことか…"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('itochu', 8, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@2630894/public/images/itochu/panel_08.png', 'haruki', '[haruki] 2020年4月、全社員参加で理念を改訂。満場一致で『三方よし』に。
 [nana] 売り手よし、買い手よし、世間よし…
 [haruki] 近江商人150年の『商売は菩薩の業』を、現代の言葉で言い直したもの。
