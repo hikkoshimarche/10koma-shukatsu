@@ -55,6 +55,26 @@ function handleExt(mode, e, token){
     return _json({ok:true, row:sh.getLastRow()});
   }
 
+  if(mode === 'linequota'){
+    // 実測: 当月quota(type/value) + consumption(totalUsage) + bot情報(どのチャネルか) + 生レスポンス。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const props = PropertiesService.getScriptProperties();
+    const tk = props.getProperty('LINE_CHANNEL_ACCESS_TOKEN');
+    const gid = props.getProperty('LINE_GROUP_ID');
+    if(!tk) return _json({error:'no token in ScriptProperties'});
+    const hdr = { headers:{ Authorization:'Bearer '+tk }, muteHttpExceptions:true };
+    const out = { token_tail: tk.slice(-6), group_id: (gid||'') };
+    [['quota','https://api.line.me/v2/bot/message/quota'],
+     ['consumption','https://api.line.me/v2/bot/message/quota/consumption'],
+     ['botinfo','https://api.line.me/v2/bot/info']].forEach(function(p){
+      try{
+        const r = UrlFetchApp.fetch(p[1], hdr);
+        out[p[0]] = { code:r.getResponseCode(), body:r.getContentText() };
+      }catch(err){ out[p[0]] = { error:String(err) }; }
+    });
+    return _json(out);
+  }
+
   if(mode === 'pushline'){
     if(!_authed(e, token)) return _json({error:'unauthorized'});
     const text = e.parameter.text || '';
