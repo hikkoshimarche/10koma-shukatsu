@@ -37,3 +37,5 @@ logs/
 tools/_image_fix_last.json
 tools/_mitsubishi_proposals.json
 tools/.image_fix_state.json
+tools/_close_shosha_result.json
+outputs/

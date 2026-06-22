@@ -9,7 +9,7 @@ INSERT OR IGNORE INTO companies (id, name, industry_id, thumbnail_url) VALUES ('
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('mitsubishi-corp', 1, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@29041ca/public/images/mitsubishi-corp/panel_01.png', 'nana', '[nana] 丸の内って、なんで三菱の建物だらけなんだろ?
 [haruki] 丸の内には、三菱地所、三菱UFJ、三菱重工、三菱商事…など、三菱系の会社が集まっているよ。
 [nana] みんな『三菱村』って呼んでるらしい。
-[haruki] それは三菱が丸の内で150年前から続いてるって知ったら、見方変わるかも。', '丸の内って、なんで三菱村?', '三菱商事 / 8058 / 150年の起点', NULL, '["[nana] 丸の内って、なんで三菱の建物だらけなんだろ?", "[haruki] 丸の内には、三菱地所、三菱UFJ、三菱重工、三菱商事…など、三菱系の会社が集まっているよ。", "[nana] みんな『三菱村』って呼んでるらしい。", "[haruki] それは三菱が丸の内で150年前から続いてるって知ったら、見方変わるかも。"]', 'H1: 丸の内パークビルディング本社 (赤いスリーダイヤサイン)', '{"location": "丸の内パークビルディング本社上部の外壁", "object_type": "建築サイン (社名+三菱マーク)", "brand_form": "赤いスリーダイヤと『三菱商事』の漢字サイン、ビル外壁に控えめなサイズで設置", "attachment": "ビル外壁の建築サインとして固定", "scale_note": "実在の本社ビルと同じ控えめな比率"}');
+[haruki] 三菱が150年前からこの街を育ててきたと知ると、その景色の意味が変わってくるよ。', '丸の内って、なんで三菱村?', '三菱商事 / 8058 / 150年の起点', NULL, '["[nana] 丸の内って、なんで三菱の建物だらけなんだろ?", "[haruki] 丸の内には、三菱地所、三菱UFJ、三菱重工、三菱商事…など、三菱系の会社が集まっているよ。", "[nana] みんな『三菱村』って呼んでるらしい。", "[haruki] 三菱が150年前からこの街を育ててきたと知ると、その景色の意味が変わってくるよ。"]', 'H1: 丸の内パークビルディング本社 (赤いスリーダイヤサイン)', '{"location": "丸の内パークビルディング本社上部の外壁", "object_type": "建築サイン (社名+三菱マーク)", "brand_form": "赤いスリーダイヤと『三菱商事』の漢字サイン、ビル外壁に控えめなサイズで設置", "attachment": "ビル外壁の建築サインとして固定", "scale_note": "実在の本社ビルと同じ控えめな比率"}');
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('mitsubishi-corp', 2, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@29041ca/public/images/mitsubishi-corp/panel_02.png', 'haruki', '[haruki] 1870年代、岩崎弥太郎が土佐藩の船を引き継いで始めたのが海運業。
 [nana] スリーダイヤって、土佐藩主の家紋と岩崎家の家紋を合わせたんだって。
 [haruki] そう。海から始まって、今は10事業グループで売上19兆円。
@@ -21,7 +21,7 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('mitsubishi-corp', 4, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@29041ca/public/images/mitsubishi-corp/panel_04.png', 'haruki', '[haruki] 戦後の1947年、GHQによって139社に解体された。
 [nana] え、商社が消えたってこと?
 [haruki] うん。でも1954年、三菱商事として再結集。
-[nana] 一度ゼロになっても戻ってくる組織。今は三菱食品とローソンで日本の食卓を支えてる。', '解体されても、戻ってきた組織', '1947 解体 / 1954 再結集 / 今 三菱食品6,500社×3,000社', NULL, '["[haruki] 戦後の1947年、GHQによって139社に解体された。", "[nana] え、商社が消えたってこと?", "[haruki] うん。でも1954年、三菱商事として再結集。", "[nana] 一度ゼロになっても戻ってくる組織。今は三菱食品とローソンで日本の食卓を支えてる。"]', 'H4: 三菱食品の物流倉庫 (戦後の商社復活の象徴として)', NULL);
+[nana] 一度ゼロになっても戻ってくる組織。食品・資源・インフラ、幅広い事業を束ねる総合商社として、今も日本の産業を動かし続けてる。', '解体されても、戻ってきた組織', '1947 解体 / 1954 再結集 / 今 食品・資源・インフラ——総合商社', NULL, '["[haruki] 戦後の1947年、GHQによって139社に解体された。", "[nana] え、商社が消えたってこと?", "[haruki] うん。でも1954年、三菱商事として再結集。", "[nana] 一度ゼロになっても戻ってくる組織。食品・資源・インフラ、幅広い事業を束ねる総合商社として、今も日本の産業を動かし続けてる。"]', 'H4: 三菱食品の物流倉庫 (戦後の商社復活の象徴として)', NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('mitsubishi-corp', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@29041ca/public/images/mitsubishi-corp/panel_05.png', 'nana', '[nana] 年収、結局どう見ればいいの?
 [haruki] 有価証券報告書(単体)ベースで平均2,033万円(42.4歳時点)。でも額より構造で見るところ。
 [haruki] ベース給に海外駐在手当、資源・LNG事業の業績連動賞与が乗る。配属先と担当事業で大きく動く仕組み。
@@ -43,5 +43,5 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [nana] 芯か…三綱領に刻まれた『社会への貢献・人を大切にする姿勢』が、今も採用の基準になってるんだ。
 [haruki] 90年前に言語化された人の見方が、形を変えずに生き続けてる。それが三菱の核心なんだな。', '見てるのは『芯・共創力・高い志』', '学歴でもスペックでもなく、人物像で', NULL, '["[OB先輩] 三菱が見るのは、『芯』『共創力』『高い志と誠実性』。学歴やスペックじゃない。", "[OB先輩] 自分らしさをもって、ステークホルダーと共に価値を作れるか。", "[nana] 芯か…三綱領に刻まれた『社会への貢献・人を大切にする姿勢』が、今も採用の基準になってるんだ。", "[haruki] 90年前に言語化された人の見方が、形を変えずに生き続けてる。それが三菱の核心なんだな。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('mitsubishi-corp', 10, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@29041ca/public/images/mitsubishi-corp/panel_10.png', 'both', '[haruki] 売上19兆円、純利益8,000億円、採用139名。
-[nana] 数字じゃわからないのが、この会社の選び方だよ。学歴より芯、実績より三綱領の価値観に共鳴できるか、そこを見てる。
-[both] 所期奉公から、三価値同時実現へ。', '所期奉公から、三価値同時実現へ。', '売上 約19兆円 / 純利益 約8,000億円 / 採用139名', NULL, '["[haruki] 売上19兆円、純利益8,000億円、採用139名。", "[nana] 数字じゃわからないのが、この会社の選び方だよ。学歴より芯、実績より三綱領の価値観に共鳴できるか、そこを見てる。", "[both] 所期奉公から、三価値同時実現へ。"]', 'H1: 丸の内パークビル本社 (朝の光)', NULL);
+[nana] この規模の会社が少人数採用に絞るのは、学歴より芯、実績より三綱領への共鳴を一人ひとり確かめたいからだよ。
+[both] 所期奉公から、三価値同時実現へ。', '所期奉公から、三価値同時実現へ。', '売上 約19兆円 / 純利益 約8,000億円 / 採用139名', NULL, '["[haruki] 売上19兆円、純利益8,000億円、採用139名。", "[nana] この規模の会社が少人数採用に絞るのは、学歴より芯、実績より三綱領への共鳴を一人ひとり確かめたいからだよ。", "[both] 所期奉公から、三価値同時実現へ。"]', 'H1: 丸の内パークビル本社 (朝の光)', NULL);

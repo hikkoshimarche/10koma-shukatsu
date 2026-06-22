@@ -39,10 +39,10 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [nana] 9つのどこに行っても、その3文字が指針になるんだ…
 [haruki] どの部署でも、この3文字が自分のキャリアの方向性を形作る。', '見てるのは『正・新・和』', '倍率じゃない、3文字に合うか', NULL, '["[OB先輩] 丸紅が見るのは、『正・新・和』。正しい行動、新しい価値、和をもって事業に取り組むか。", "[OB先輩] 応募者は多数だが、この3文字を体現できる人を求めている。", "[nana] 9つのどこに行っても、その3文字が指針になるんだ…", "[haruki] どの部署でも、この3文字が自分のキャリアの方向性を形作る。"]', 'H5: 緑の丸に紅字の社章 (再使用)', '{"location": "壁面中央", "object_type": "理念の3文字額または掲示", "brand_form": "『正・新・和』が縦書きで書かれた額、緑と白", "attachment": "壁面に固定", "scale_note": "実在の社内掲示の通常サイズ"}');
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('marubeni', 9, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@3486a64/public/images/marubeni/panel_09.png', 'haruki', '[nana] もし入れたら、10年後どこにいると思う?
-[haruki] たとえば、こんな未来。シカゴで小麦トレーディングをドル建てで動かしてる。
+[haruki] たとえば、こんな未来。シカゴで小麦トレーディングを担当して、米ドルで決済を完結させてる。
 [haruki] バンコクで太陽光IPPを着工。
 [haruki] 大手町本社でNYと電話会議しながら、新本部の設立を起案。
-[nana] こんな未来、どれも私が選べる。この3文字を軸にすればいい。', '10年後、たとえばこんな場面', 'シカゴ / バンコク / 大手町(電話会議)', NULL, '["[nana] もし入れたら、10年後どこにいると思う?", "[haruki] たとえば、こんな未来。シカゴで小麦トレーディングをドル建てで動かしてる。", "[haruki] バンコクで太陽光IPPを着工。", "[haruki] 大手町本社でNYと電話会議しながら、新本部の設立を起案。", "[nana] こんな未来、どれも私が選べる。この3文字を軸にすればいい。"]', 'H4: 食品スーパーのパン棚 + H2 + H3 (3つの未来)', NULL);
+[nana] こんな未来、どれも私が選べる。この3文字を軸にすればいい。', '10年後、たとえばこんな場面', 'シカゴ / バンコク / 大手町(電話会議)', NULL, '["[nana] もし入れたら、10年後どこにいると思う?", "[haruki] たとえば、こんな未来。シカゴで小麦トレーディングを担当して、米ドルで決済を完結させてる。", "[haruki] バンコクで太陽光IPPを着工。", "[haruki] 大手町本社でNYと電話会議しながら、新本部の設立を起案。", "[nana] こんな未来、どれも私が選べる。この3文字を軸にすればいい。"]', 'H4: 食品スーパーのパン棚 + H2 + H3 (3つの未来)', NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('marubeni', 10, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@3486a64/public/images/marubeni/panel_10.png', 'both', '[haruki] 売上7兆円、純利益4,800億円、採用77名。
 [nana] 細かく分岐しているように見えて、理念の3文字が進むべき方向を定めてくれる。
 [both] 正しく、新しく、和をもって。丸紅、9つの分岐から、世界へ。', '正しく、新しく、和をもって。', '売上 約7兆円 / 純利益 約4,800億円 / 採用77名', NULL, '["[haruki] 売上7兆円、純利益4,800億円、採用77名。", "[nana] 細かく分岐しているように見えて、理念の3文字が進むべき方向を定めてくれる。", "[both] 正しく、新しく、和をもって。丸紅、9つの分岐から、世界へ。"]', 'H1: 丸紅本社ビル (朝の光)', NULL);

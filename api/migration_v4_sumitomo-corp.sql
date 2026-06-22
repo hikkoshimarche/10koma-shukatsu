@@ -16,8 +16,8 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [nana] 数字は出てるのに、自分から語らないんだ…', '純利益5,618億円、地味じゃない', '売上 約7兆円 / 5大商社の堅実派', '公式IR・有報', '["[haruki] 純利益5,618億円。売上7兆円。地味どころか、総合商社の中でも堅実なポジション。", "[nana] え、そんなに?", "[haruki] でも住友は自分から積極的に発信しない会社。だから規模のわりに印象が薄く感じる。", "[nana] 数字は出てるのに、自分から語らないんだ…"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sumitomo-corp', 3, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@9e93cbf/public/images/sumitomo-corp/panel_03.png', 'nana', '[nana] あれ、J:COMって…
 [haruki] そう、住友商事のグループ会社。ジュピターテレコム。
-[nana] 実家のリモコン、これ、ずっと住友商事だったの!?
-[haruki] それだけじゃない。SCSKもメルカリも、住友が出資してる。地味だけど、生活の中にいる。', 'J:COMもSCSKもメルカリも', 'ぜんぶ住友商事のグループ', NULL, '["[nana] あれ、J:COMって…", "[haruki] そう、住友商事のグループ会社。ジュピターテレコム。", "[nana] 実家のリモコン、これ、ずっと住友商事だったの!?", "[haruki] それだけじゃない。SCSKもメルカリも、住友が出資してる。地味だけど、生活の中にいる。"]', 'H2: J:COMのテレビ&リモコン', '{"location": "テレビ画面横またはリモコンの中央", "object_type": "J:COMロゴ", "brand_form": "リモコン中央のJ:COMロゴ、青と白", "attachment": "リモコン本体に印刷", "scale_note": "実在のJ:COMリモコンと同じサイズ"}');
+[nana] 実家のリモコン、ずっと住友商事がかかわっていたの!?
+[haruki] それだけじゃない。SCSKもメルカリも、住友が出資してる。地味だけど、生活の中にいる。', 'J:COMもSCSKもメルカリも', 'ぜんぶ住友商事のグループ', NULL, '["[nana] あれ、J:COMって…", "[haruki] そう、住友商事のグループ会社。ジュピターテレコム。", "[nana] 実家のリモコン、ずっと住友商事がかかわっていたの!?", "[haruki] それだけじゃない。SCSKもメルカリも、住友が出資してる。地味だけど、生活の中にいる。"]', 'H2: J:COMのテレビ&リモコン', '{"location": "テレビ画面横またはリモコンの中央", "object_type": "J:COMロゴ", "brand_form": "リモコン中央のJ:COMロゴ、青と白", "attachment": "リモコン本体に印刷", "scale_note": "実在のJ:COMリモコンと同じサイズ"}');
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sumitomo-corp', 4, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@9e93cbf/public/images/sumitomo-corp/panel_04.png', 'haruki', '[haruki] 住友家は1691年、別子銅山の経営から始まった。
 [nana] 1691年!? 300年以上前…
 [haruki] 江戸時代から400年続いてる商家。井桁マークは住友家の家紋。
@@ -25,7 +25,7 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sumitomo-corp', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@9e93cbf/public/images/sumitomo-corp/panel_05.png', 'nana', '[nana] 5大商社のなかで、年収水準は高くないって聞いたけど。
 [haruki] 有価証券報告書(2025年3月期・単体)によると平均年収は1,744万円。住友の理念は『無理せず急がず、不趨浮利』——浮利は追わない。
 [haruki] 目先の派手な数字より、長期で積み上げる報酬設計を選んでいる、ってこと。
-[nana] 額じゃなくて、続けることでリターンが育つ仕組みなんだ。', '有報単体1,744万円＋長期で報いる設計', '不趨浮利 / 無理せず急がず', '日経会社情報 8053', '["[nana] 5大商社のなかで、年収水準は高くないって聞いたけど。", "[haruki] 有価証券報告書(2025年3月期・単体)によると平均年収は1,744万円。住友の理念は『無理せず急がず、不趨浮利』——浮利は追わない。", "[haruki] 目先の派手な数字より、長期で積み上げる報酬設計を選んでいる、ってこと。", "[nana] 額じゃなくて、続けることでリターンが育つ仕組みなんだ。"]', NULL, NULL);
+[nana] 一時の利益じゃなくて、続けることでリターンが育つ仕組みなんだ。', '有報単体1,744万円＋長期で報いる設計', '不趨浮利 / 無理せず急がず', '日経会社情報 8053', '["[nana] 5大商社のなかで、年収水準は高くないって聞いたけど。", "[haruki] 有価証券報告書(2025年3月期・単体)によると平均年収は1,744万円。住友の理念は『無理せず急がず、不趨浮利』——浮利は追わない。", "[haruki] 目先の派手な数字より、長期で積み上げる報酬設計を選んでいる、ってこと。", "[nana] 一時の利益じゃなくて、続けることでリターンが育つ仕組みなんだ。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sumitomo-corp', 6, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@9e93cbf/public/images/sumitomo-corp/panel_06.png', 'haruki', '[OB先輩] 9事業部門あって、第一希望そのまま通る人は半分くらい。
 [OB先輩] でも住友は『不趨浮利』。短期の派手な異動はしない。10年単位で人を育てる。
 [OB先輩] 入社5〜7年でアフリカ・中東の発電所赴任は普通にある。長期駐在を厭わない人に向く。
