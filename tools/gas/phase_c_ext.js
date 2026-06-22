@@ -63,6 +63,32 @@ function handleExt(mode, e, token){
     return _json({ok:true, pushed:text.length});
   }
 
+  if(mode === 'bulkregister'){
+    // wave投入済をスプシに一括起票(行指定=二重行ゼロ)。rows='row|slug|kind;;…' kind=gemini|old。
+    // gemini: 公開URL記入+状態1空け→CFオレンジ(FB1待ち)。old: 公開URL記入+Note『要Gemini再生成』。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(KOMA_SHEET);
+    const rows = (e.parameter.rows||'').split(';;').filter(String);
+    const base = 'https://10koma-shukatsu.pages.dev/company?id=';
+    let matched=0, oranged=0, noted=0; const errs=[];
+    rows.forEach(function(item){
+      const a=item.split('|'); const row=parseInt(a[0],10), slug=a[1], kind=a[2];
+      if(!(row>=CONFIG.FIRST_ROW)){ errs.push('badrow:'+a[0]); return; }
+      sh.getRange(row, CONFIG.COL.公開URL).setValue(base+slug);
+      sh.getRange(row, CONFIG.COL.最終更新).setValue(new Date());
+      if(kind==='gemini'){
+        sh.getRange(row, jotCol(1)).setValue('');                 // 状態1空け→CFオレンジ(FB1待ち)
+        sh.getRange(row, CONFIG.COL.公開URL).clearNote();
+        oranged++;
+      } else {
+        sh.getRange(row, CONFIG.COL.公開URL).setNote('要Gemini再生成（旧ChatGPT画像・完成扱いにしない）');
+        noted++;
+      }
+      matched++;
+    });
+    return _json({matched:matched, oranged:oranged, noted:noted, errs:errs});
+  }
+
   if(mode === 'markcommonfix'){
     if(!_authed(e, token)) return _json({error:'unauthorized'});
     const ss = SpreadsheetApp.getActiveSpreadsheet();
