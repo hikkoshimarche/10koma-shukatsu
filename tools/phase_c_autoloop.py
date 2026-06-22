@@ -156,23 +156,39 @@ def process_company(item, rules, args):
     elif triage.get("script_bugs"):
         rec["escalate"].append(f"台本SQL無し(api/migration_v4_{slug}.sql) → 手動")
 
-    # --- 画像バグ再生成 + QA (最大3) ---
+    # --- 画像バグ: AUTO_IMAGE_FIX_ENABLED=1 なら新エンジン(翻訳/ガード/ハードQA/canary)へ委譲 ---
     tslug = TOKYARI_SLUG.get(slug, slug)
-    for b in triage.get("image_bugs", []):
-        koma = b.get("koma")
-        if not koma:
-            rec["escalate"].append(f"画像: コマ不明 '{b.get('detail')}'"); continue
-        if args.dry_run:
-            rec["image_results"].append({"koma": koma, "status": "DRY", "detail": b.get("detail", "")[:50]})
-            continue
-        ok = False
-        for attempt in range(1, QA_MAX + 1):
-            ok, panels, note = fix_image_koma(tslug, koma)
-            if ok:
-                break
-        rec["image_results"].append({"koma": koma, "ok": ok, "attempts": attempt})
-        if not ok:
-            rec["escalate"].append(f"画像koma{koma}: QA{QA_MAX}回不可 → エスカレーション")
+    if os.environ.get("AUTO_IMAGE_FIX_ENABLED") == "1":
+        import phase_c_image_fix as IMG
+        c = IMG.cfg(); st = IMG.load_state()
+        for b in triage.get("image_bugs", []):
+            koma = b.get("koma")
+            if not koma:
+                rec["escalate"].append(f"画像: コマ不明 '{b.get('detail')}'"); continue
+            r = IMG.run_one(company, slug, koma, b.get("detail", ""), args.dry_run, st, c)
+            rec["image_results"].append({"koma": koma, "action": r["action"], "deployed": r["deployed"],
+                                         "showcase": r["showcase"], "cost": r["cost"], "qa": r["qa"]})
+            if r["escalate"]:
+                rec["escalate"].append(f"画像koma{koma}: {r['escalate']}")
+        if not args.dry_run:
+            IMG.save_state(st)
+    else:
+        # 旧経路(フラグOFF): dryは記録のみ、liveは従来の再生成(翻訳/ガードなし)
+        for b in triage.get("image_bugs", []):
+            koma = b.get("koma")
+            if not koma:
+                rec["escalate"].append(f"画像: コマ不明 '{b.get('detail')}'"); continue
+            if args.dry_run:
+                rec["image_results"].append({"koma": koma, "status": "DRY", "detail": b.get("detail", "")[:50]})
+                continue
+            ok = False
+            for attempt in range(1, QA_MAX + 1):
+                ok, panels, note = fix_image_koma(tslug, koma)
+                if ok:
+                    break
+            rec["image_results"].append({"koma": koma, "ok": ok, "attempts": attempt})
+            if not ok:
+                rec["escalate"].append(f"画像koma{koma}: QA{QA_MAX}回不可 → エスカレーション")
 
     # --- デプロイ可否: lint error0 かつ 画像エスカレなし ---
     lint_ok = rec.get("lint", {}).get("errors", 0) == 0

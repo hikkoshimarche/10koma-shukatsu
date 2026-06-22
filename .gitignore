@@ -32,3 +32,8 @@ tools/gas/.clasprc.json
 tools/_autoloop_last.json
 tools/__pycache__/
 logs/
+
+# Phase C 画像修正 transient
+tools/_image_fix_last.json
+tools/_mitsubishi_proposals.json
+tools/.image_fix_state.json
