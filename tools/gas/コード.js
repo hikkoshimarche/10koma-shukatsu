@@ -34,7 +34,7 @@ const CONFIG = {
   CONTENT_SHEETS: ['10コマ', '企業紹介動画', '決算書分析動画', 'AI OB訪問（ルーム）'],
   COL: { 業界:1, 会社名:2, ステータス:3, 公開URL:4, 最終更新:45 },
   ROUNDS: 10, FIRST_ROW: 3,
-  ATTENTION: ['FB対応中'],
+  ATTENTION: ['FB対応中','要判断(オスカー)'],
   TAB: { 要対応:'#E06666', 完了:'#93C47D', 未着手:'#CCCCCC', 進行中:'#6FA8DC' },
 };
 function tanCol(n){ return 5 + (n-1)*4; }  // 担当

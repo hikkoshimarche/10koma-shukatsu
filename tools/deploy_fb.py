@@ -8,11 +8,23 @@
 koma不明(例:全社共通『静かに削除』)はエスカレーションとして分離(別途step2)。
 """
 import json
+import re
 import sys
 import urllib.parse
 from pathlib import Path
 
 import requests
+
+# 判断系(Source-or-Silence/主観)= 自動反映でなく人へエスカレ。出典・根拠を問うFBは数字を勝手に
+# 足さず必ずオスカー判断へ。質問形/主観/真偽確認を検出。
+JUDGMENT_PAT = re.compile(
+    r"(出典|根拠|ソース|エビデンス|裏付け|本当に|事実(か|\?)|データ(は|ある)|"
+    r"盛って|誇張|主観|好み|印象|センス|どう思|なぜ|why|source)", re.I)
+
+
+def is_judgment(text: str) -> bool:
+    t = str(text or "")
+    return bool(JUDGMENT_PAT.search(t))
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "tools"))
@@ -48,15 +60,22 @@ def main():
         slug = A.resolve_slug(company)
         if not slug or slug in A.L.EXCLUDED_SLUGS:
             print(f"  {company}: skip(slug={slug})"); continue
-        triage = L.triage_fb(company, it.get("fb", ""))
+        fb_raw = it.get("fb", "")
+        triage = L.triage_fb(company, fb_raw)
         changed, escalate = [], []
         from collections import OrderedDict
         by_koma = OrderedDict()
+        # FB全体が判断系(出典・根拠を問う等)なら、自動修正せず丸ごとエスカレ(数字の捏造防止)
+        fb_is_judgment = is_judgment(fb_raw)
         for b in triage.get("script_bugs", []):
             koma = b.get("koma")
+            detail = b.get("detail", "")
+            if fb_is_judgment or is_judgment(detail):
+                escalate.append(f"要判断(Source-or-Silence/主観): koma{koma or '?'} {detail[:40]}")
+                continue
             if not koma:
-                escalate.append(f"台本:{b.get('detail','')[:40]}"); continue
-            by_koma.setdefault(koma, []).append(b.get("detail", ""))
+                escalate.append(f"台本:{detail[:40]}"); continue
+            by_koma.setdefault(koma, []).append(detail)
         for koma, details in by_koma.items():
             instr = "このコマへの指摘(全て反映):\n" + "\n".join(f"- {d}" for d in details)
             res = L.fix_script_koma(slug, koma, instr, rules, dry=False)
@@ -107,12 +126,28 @@ def main():
         except Exception as ex:
             print(f"  {r['slug']:14} 検証失敗 {ex}")
 
-    # 明確komaをdeployしたら反映済(再処理ループ防止)。エスカレーション内容はLINEで手動通知。
-    print("\n[書き戻し 反映済]")
+    # 書き戻し(必須): AIが触ったらスプシが必ず動く。
+    #  - 台本を実deployした社 → setreflected(反映済+N次完了)。
+    #  - escalate(判断系/koma不明/画像)を含む社 → setescalated(要判断(オスカー))。"反映"とは別ラベル。
+    print("\n[書き戻し]")
+    deployed_slugs = {r["slug"] for r in deployable}
     for r in deployable:
-        res = gas({"mode": "setreflected", "company": r["company"]})
-        note = f"(手動要対応{len(r['escalate'])}件はLINE通知)" if r["escalate"] else ""
-        print(f"  {r['slug']:14} 反映済セット: {res} {note}")
+        if r["escalate"]:
+            # 一部deploy済でも未解決(判断系)が残るなら 要判断 を優先(人の確認を要する)
+            res = gas({"mode": "setescalated", "company": r["company"],
+                       "reason": "; ".join(r["escalate"][:3])})
+            print(f"  {r['slug']:14} 要判断(オスカー)セット: {res} (deploy済koma{r['changed']}・未解決{len(r['escalate'])})")
+        else:
+            res = gas({"mode": "setreflected", "company": r["company"]})
+            print(f"  {r['slug']:14} 反映済セット: {res}")
+    # deployは無いがescalateのみの社も必ず書き戻す(据置=混乱の原因を断つ)
+    for r in recs:
+        if r["slug"] in deployed_slugs:
+            continue
+        if r["escalate"]:
+            res = gas({"mode": "setescalated", "company": r["company"],
+                       "reason": "; ".join(r["escalate"][:3])})
+            print(f"  {r['slug']:14} 要判断(オスカー)セット(deploy無): {res}")
 
     # LINEレポート(プレビュー)。実際の定時LINEはGAS line3hSummaryが反映済を読んで送る
     reflected = [r for r in deployable if not r["escalate"]]

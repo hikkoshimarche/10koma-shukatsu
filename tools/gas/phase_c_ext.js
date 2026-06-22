@@ -55,6 +55,14 @@ function handleExt(mode, e, token){
     return _json({ok:true, row:sh.getLastRow()});
   }
 
+  if(mode === 'pushline'){
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const text = e.parameter.text || '';
+    if(!text) return _json({error:'no text'});
+    _pushLine(text);
+    return _json({ok:true, pushed:text.length});
+  }
+
   if(mode === 'markcommonfix'){
     if(!_authed(e, token)) return _json({error:'unauthorized'});
     const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -93,6 +101,19 @@ function handleExt(mode, e, token){
     sh.getRange(row, CONFIG.COL.最終更新).setValue(new Date());
     return _json({ok:true, row:row, round:round});
   }
+  if(mode === 'setescalated'){
+    // 判断系(Source-or-Silence/主観/複数コマ等)=人へ。反映列は触らず status=要判断(オスカー)。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sh = ss.getSheetByName(KOMA_SHEET);
+    const row = _findRowByCompany(sh, e.parameter.company);
+    if(row < 0) return _json({error:'company not found', company:e.parameter.company});
+    sh.getRange(row, CONFIG.COL.ステータス).setValue('要判断(オスカー)');
+    sh.getRange(row, CONFIG.COL.最終更新).setValue(new Date());
+    if(e.parameter.reason){ sh.getRange(row, CONFIG.COL.ステータス).setNote('要判断: '+String(e.parameter.reason).slice(0,500)); }
+    return _json({ok:true, row:row, status:'要判断(オスカー)'});
+  }
+
   if(mode === 'attention_robust'){
     // 取りこぼし対策: ステータス=FB対応中 に加え、最新ラウンドが「状態=提出 かつ 反映=空」の行も拾う
     if(!_authed(e, token)) return _json({error:'unauthorized'});
@@ -236,6 +257,39 @@ function handleExt(mode, e, token){
     return _json({name:e.parameter.sheet, values:vals, formulas:formulas});
   }
 
+  if(mode === 'statusvalidation'){
+    // ステータス列の入力規則を読取報告 + N次完了(N=1..10)を許可値に拡張(allowInvalid=true=警告/拒否しない)
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const apply = (e.parameter.apply === '1');
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const want = ['未着手','記入中','提出','FB対応中','要判断(オスカー)','これでOK','完了'];
+    for(let n=1;n<=10;n++) want.push(n+'次完了');
+    const report = {};
+    CONFIG.CONTENT_SHEETS.forEach(function(name){
+      const sh = ss.getSheetByName(name); if(!sh) return;
+      const last = sh.getLastRow();
+      const cell = sh.getRange(CONFIG.FIRST_ROW, CONFIG.COL.ステータス);
+      const dv = cell.getDataValidation();
+      let oldList = [], oldType = 'なし';
+      if(dv){
+        oldType = String(dv.getCriteriaType());
+        try{
+          const cv = dv.getCriteriaValues();
+          if(cv && cv[0] && cv[0].map){ oldList = cv[0].map(String); }
+          else if(cv && cv[0] && cv[0].getValues){ oldList = cv[0].getValues().map(function(r){return String(r[0]);}).filter(String); }
+        }catch(err){ oldList = ['(read不可:'+err+')']; }
+      }
+      const merged = want.slice();
+      oldList.forEach(function(v){ if(v && merged.indexOf(v)<0) merged.push(v); });
+      if(apply && last>=CONFIG.FIRST_ROW){
+        const rule = SpreadsheetApp.newDataValidation().requireValueInList(merged, true).setAllowInvalid(true).build();
+        sh.getRange(CONFIG.FIRST_ROW, CONFIG.COL.ステータス, last-CONFIG.FIRST_ROW+1, 1).setDataValidation(rule);
+      }
+      report[name] = {old_type: oldType, old_list: oldList, new_list_count: merged.length, applied: apply, rows: Math.max(0,last-CONFIG.FIRST_ROW+1)};
+    });
+    return _json({want: want, sheets: report});
+  }
+
   if(mode === 'morningpreview'){
     if(!_authed(e, token)) return _json({error:'unauthorized'});
     return _json({digest: buildMorningDigest()});
@@ -313,7 +367,8 @@ function _pushLine(text){
   });
 }
 
-/* 次ラウンドFB待ち: ステータス=N次完了(完了でない)かつ次roundのFBが空 → {content|業界|FBn: 社数} */
+/* 次ラウンドFB待ち = スプシのCFオレンジと同一条件:
+   AND(反映N="反映済", OR(round(N+1)状態="", "記入中"))。最も高い開放ラウンドで集計。 */
 function _collectFBwait(){
   const ss = SpreadsheetApp.getActiveSpreadsheet(); const by = {};
   CONFIG.CONTENT_SHEETS.forEach(function(name){
@@ -322,11 +377,14 @@ function _collectFBwait(){
     const vals = sh.getRange(CONFIG.FIRST_ROW,1,last-CONFIG.FIRST_ROW+1,45).getValues();
     vals.forEach(function(r){
       if(!r[1]) return;
-      const m = /^(\d+)次完了$/.exec(String(r[CONFIG.COL.ステータス-1]).trim());
-      if(!m) return;
-      const nxt = parseInt(m[1],10)+1;
-      if(nxt<=CONFIG.ROUNDS && !String(r[fbCol(nxt)-1]).trim()){
-        const key = name+'|'+r[0]+'|FB'+nxt;
+      let opened = 0;
+      for(let n=1;n<=CONFIG.ROUNDS-1;n++){
+        const han = String(r[hanCol(n)-1]).trim();
+        const nextJot = String(r[jotCol(n+1)-1]).trim();
+        if(han==='反映済' && (nextJot==='' || nextJot==='記入中')) opened = n+1;
+      }
+      if(opened>0){
+        const key = name+'|'+r[0]+'|FB'+opened;
         by[key] = (by[key]||0)+1;
       }
     });
@@ -343,32 +401,53 @@ function _collectSystemStops(){
     const vals = sh.getRange(r,1,1,5).getValues()[0];
     const txt = [vals[0],vals[1]].map(function(x){return String(x||'');}).join(' ');
     const status = String(vals[3]||'');
-    if(/\[(停止|CANARY|エスカレ|要対応)\]/.test(txt) && status!=='解消'){ out.push(txt.trim().slice(0,80)); }
+    const mk = txt.match(/\[(停止|CANARY|エスカレ|要対応)\][\s\S]*/);
+    if(mk && status!=='解消'){ out.push(mk[0].trim().slice(0,90)); }
   }
   return out;
 }
 
 /* 朝ダイジェスト本文を組み立て(2バケツ)。両方ゼロのとき初めて0件。 */
+/* ステータス別 社数集計(content別) — 完了/これでOK は除外。{content: n} を返す。 */
+function _collectByStatus(statusName){
+  const ss = SpreadsheetApp.getActiveSpreadsheet(); const by = {};
+  CONFIG.CONTENT_SHEETS.forEach(function(name){
+    const sh = ss.getSheetByName(name); if(!sh) return;
+    const last = sh.getLastRow(); if(last<CONFIG.FIRST_ROW) return;
+    const vals = sh.getRange(CONFIG.FIRST_ROW,1,last-CONFIG.FIRST_ROW+1,45).getValues();
+    vals.forEach(function(r){
+      if(!r[1]) return;
+      if(String(r[CONFIG.COL.ステータス-1]).trim()===statusName){ by[name]=(by[name]||0)+1; }
+    });
+  });
+  return by;
+}
+
+/* ラベル是正: 反映(実適用待ち=FB対応中) / 要判断(オスカー=人へ) / FB待ち(次ラウンド) を明確分離。
+   完了・これでOK・FB無しは混ぜない(伊藤忠など完了社が"反映"に出る誤りを止める)。 */
 function buildMorningDigest(){
-  const att = collectAttention();          // FB対応中(提出済未反映)
-  const fbwait = _collectFBwait();
+  const fbwait = _collectFBwait();                 // 次ラウンドFB待ち(CFオレンジ)
+  const reflectWait = _collectByStatus('FB対応中'); // AIが反映予定(実適用待ち)
+  const judge = _collectByStatus('要判断(オスカー)'); // 人の判断要(Source-or-Silence等)
   const stops = _collectSystemStops();
   const url = SpreadsheetApp.getActiveSpreadsheet().getUrl();
-  const waitKeys = Object.keys(fbwait);
-  let waitTotal = 0; waitKeys.forEach(function(k){ waitTotal += fbwait[k]; });
-  const needTotal = att.length + stops.length;
-  if(waitTotal===0 && needTotal===0){
+  const sum = function(o){ var t=0; Object.keys(o).forEach(function(k){t+=o[k];}); return t; };
+  const waitTotal = sum(fbwait), reflTotal = sum(reflectWait), judgeTotal = sum(judge);
+  if(waitTotal===0 && reflTotal===0 && judgeTotal===0 && stops.length===0){
     return '【おはようございます☀️】FB待ち・要対応ともに0件です 🎉';
   }
   const p = ['【おはようございます☀️ 本日】'];
   p.push('━━【インターンの皆さんへ】次ラウンドFB待ち '+waitTotal+'社');
-  if(waitKeys.length===0) p.push('・なし');
-  waitKeys.forEach(function(k){ const a=k.split('|'); p.push('・'+a[0]+' '+a[1]+' '+fbwait[k]+'社：'+a[2]+'をお願いします'); });
-  p.push('━━【要対応(AI/オスカー)】'+needTotal+'件');
-  const byC={}; att.forEach(function(it){ byC[it.content]=(byC[it.content]||0)+1; });
-  Object.keys(byC).forEach(function(k){ p.push('・FB反映待ち '+k+': '+byC[k]+'件'); });
+  const wk = Object.keys(fbwait);
+  if(wk.length===0) p.push('・なし');
+  wk.forEach(function(k){ const a=k.split('|'); p.push('・'+a[0]+' '+a[1]+' '+fbwait[k]+'社：'+a[2]+'をお願いします'); });
+  p.push('━━【AIが反映予定(実適用待ち)】'+reflTotal+'件');
+  if(reflTotal===0) p.push('・なし');
+  Object.keys(reflectWait).forEach(function(k){ p.push('・'+k+': '+reflectWait[k]+'件'); });
+  p.push('━━【要判断(オスカー)＝人の確認が必要】'+judgeTotal+'件');
+  if(judgeTotal===0) p.push('・なし');
+  Object.keys(judge).forEach(function(k){ p.push('・'+k+': '+judge[k]+'件'); });
   stops.forEach(function(s){ p.push('⚠ '+s); });
-  if(needTotal===0) p.push('・なし');
   p.push(url);
   return p.join('\n');
 }
@@ -396,9 +475,25 @@ function line3hSummary(){
       }
     });
   });
+  // 直近3hで 要判断(オスカー) に上がった社(エスカレ=人へ。"反映"とは別ラベル)
+  const esc = [];
+  CONFIG.CONTENT_SHEETS.forEach(function(name){
+    const sh = ss.getSheetByName(name); if(!sh) return;
+    const last = sh.getLastRow(); if(last < CONFIG.FIRST_ROW) return;
+    const vals = sh.getRange(CONFIG.FIRST_ROW,1,last-CONFIG.FIRST_ROW+1,45).getValues();
+    vals.forEach(function(r){
+      const upd = r[CONFIG.COL.最終更新-1];
+      if(String(r[CONFIG.COL.ステータス-1]).trim()==='要判断(オスカー)' && upd instanceof Date && upd>=since){
+        esc.push('・'+name+'/'+r[CONFIG.COL.会社名-1]);
+      }
+    });
+  });
   const hh = Utilities.formatDate(new Date(),'Asia/Tokyo','HH:mm');
-  if(done.length===0){ _pushLine('【'+hh+' 直近3h】AIの反映はありませんでした。'); return; }
-  _pushLine(['【'+hh+' 直近3hでAIが反映】'+done.length+'件', done.slice(0,20).join('\n')].join('\n'));
+  if(done.length===0 && esc.length===0){ _pushLine('【'+hh+' 直近3h】AIの反映・エスカレともになし。'); return; }
+  const p = ['【'+hh+' 直近3h】'];
+  p.push('■反映(本番に実適用) '+done.length+'件'); if(done.length) p.push(done.slice(0,15).join('\n'));
+  p.push('■要判断(オスカー判断へエスカレ) '+esc.length+'件'); if(esc.length) p.push(esc.slice(0,15).join('\n'));
+  _pushLine(p.join('\n'));
 }
 
 /* 時刻トリガー設置(既存を消さず重複登録を防ぐ)。1回実行。夜中(3,6時)はなし。 */
