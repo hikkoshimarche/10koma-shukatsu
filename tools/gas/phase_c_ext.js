@@ -236,6 +236,11 @@ function handleExt(mode, e, token){
     return _json({name:e.parameter.sheet, values:vals, formulas:formulas});
   }
 
+  if(mode === 'morningpreview'){
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    return _json({digest: buildMorningDigest()});
+  }
+
   if(mode === 'listsheets'){
     if(!_authed(e, token)) return _json({error:'unauthorized'});
     const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -308,17 +313,69 @@ function _pushLine(text){
   });
 }
 
-/* 9時: 要対応リスト */
-function lineMorningList(){
-  const items = collectAttention();
+/* 次ラウンドFB待ち: ステータス=N次完了(完了でない)かつ次roundのFBが空 → {content|業界|FBn: 社数} */
+function _collectFBwait(){
+  const ss = SpreadsheetApp.getActiveSpreadsheet(); const by = {};
+  CONFIG.CONTENT_SHEETS.forEach(function(name){
+    const sh = ss.getSheetByName(name); if(!sh) return;
+    const last = sh.getLastRow(); if(last<CONFIG.FIRST_ROW) return;
+    const vals = sh.getRange(CONFIG.FIRST_ROW,1,last-CONFIG.FIRST_ROW+1,45).getValues();
+    vals.forEach(function(r){
+      if(!r[1]) return;
+      const m = /^(\d+)次完了$/.exec(String(r[CONFIG.COL.ステータス-1]).trim());
+      if(!m) return;
+      const nxt = parseInt(m[1],10)+1;
+      if(nxt<=CONFIG.ROUNDS && !String(r[fbCol(nxt)-1]).trim()){
+        const key = name+'|'+r[0]+'|FB'+nxt;
+        by[key] = (by[key]||0)+1;
+      }
+    });
+  });
+  return by;
+}
+
+/* システム停止/エスカレ: 「共通の修正案」タブで [停止]/[CANARY]/[エスカレ] 始まりの行 */
+function _collectSystemStops(){
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('共通の修正案');
+  const out = []; if(!sh) return out;
+  const last = sh.getLastRow();
+  for(let r=2; r<=last; r++){
+    const vals = sh.getRange(r,1,1,5).getValues()[0];
+    const txt = [vals[0],vals[1]].map(function(x){return String(x||'');}).join(' ');
+    const status = String(vals[3]||'');
+    if(/\[(停止|CANARY|エスカレ|要対応)\]/.test(txt) && status!=='解消'){ out.push(txt.trim().slice(0,80)); }
+  }
+  return out;
+}
+
+/* 朝ダイジェスト本文を組み立て(2バケツ)。両方ゼロのとき初めて0件。 */
+function buildMorningDigest(){
+  const att = collectAttention();          // FB対応中(提出済未反映)
+  const fbwait = _collectFBwait();
+  const stops = _collectSystemStops();
   const url = SpreadsheetApp.getActiveSpreadsheet().getUrl();
-  const byC = {};
-  items.forEach(function(it){ byC[it.content]=(byC[it.content]||0)+1; });
-  const head = '【おはようございます☀️ 本日の要対応】' + items.length + '件';
-  const lines = Object.keys(byC).map(function(k){return '・'+k+': '+byC[k]+'件';});
-  const detail = items.slice(0,15).map(function(it){return '└ '+it.content+'/'+it.company;});
-  if(items.length>15) detail.push('…他'+(items.length-15)+'件');
-  _pushLine([head, lines.join('\n'), detail.join('\n'), url].filter(String).join('\n'));
+  const waitKeys = Object.keys(fbwait);
+  let waitTotal = 0; waitKeys.forEach(function(k){ waitTotal += fbwait[k]; });
+  const needTotal = att.length + stops.length;
+  if(waitTotal===0 && needTotal===0){
+    return '【おはようございます☀️】FB待ち・要対応ともに0件です 🎉';
+  }
+  const p = ['【おはようございます☀️ 本日】'];
+  p.push('━━【インターンの皆さんへ】次ラウンドFB待ち '+waitTotal+'社');
+  if(waitKeys.length===0) p.push('・なし');
+  waitKeys.forEach(function(k){ const a=k.split('|'); p.push('・'+a[0]+' '+a[1]+' '+fbwait[k]+'社：'+a[2]+'をお願いします'); });
+  p.push('━━【要対応(AI/オスカー)】'+needTotal+'件');
+  const byC={}; att.forEach(function(it){ byC[it.content]=(byC[it.content]||0)+1; });
+  Object.keys(byC).forEach(function(k){ p.push('・FB反映待ち '+k+': '+byC[k]+'件'); });
+  stops.forEach(function(s){ p.push('⚠ '+s); });
+  if(needTotal===0) p.push('・なし');
+  p.push(url);
+  return p.join('\n');
+}
+
+/* 9時: 朝ダイジェスト(2バケツ) */
+function lineMorningList(){
+  _pushLine(buildMorningDigest());
 }
 
 /* 12/15/18/21/0時: 直近3hでAIが反映したこと(反映済かつ最終更新が3h以内) */
