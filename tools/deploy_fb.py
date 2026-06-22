@@ -15,22 +15,14 @@ from pathlib import Path
 
 import requests
 
-# 判断系(Source-or-Silence/主観)= 自動反映でなく人へエスカレ。出典・根拠を問うFBは数字を勝手に
-# 足さず必ずオスカー判断へ。質問形/主観/真偽確認を検出。
-JUDGMENT_PAT = re.compile(
-    r"(出典|根拠|ソース|エビデンス|裏付け|本当に|事実(か|\?)|データ(は|ある)|"
-    r"盛って|誇張|主観|好み|印象|センス|どう思|なぜ|why|source)", re.I)
-
-
-def is_judgment(text: str) -> bool:
-    t = str(text or "")
-    return bool(JUDGMENT_PAT.search(t))
-
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "tools"))
 import phase_c_lib as L          # noqa: E402
 import deploy_salary as D        # noqa: E402
 import phase_c_autoloop as A     # noqa: E402
+
+# 懸念分類(2026-06-22): preference=要判断(オスカー) / factcheck=要調査(Claude裏取り・オスカーに戻さない)。
+classify_concern = L.classify_concern
 
 GAS_URL = None
 GAS_TOKEN = None
@@ -62,32 +54,46 @@ def main():
             print(f"  {company}: skip(slug={slug})"); continue
         fb_raw = it.get("fb", "")
         triage = L.triage_fb(company, fb_raw)
-        changed, escalate = [], []
+        changed, escalate, investigate = [], [], []
         from collections import OrderedDict
         by_koma = OrderedDict()
-        # FB全体が判断系(出典・根拠を問う等)なら、自動修正せず丸ごとエスカレ(数字の捏造防止)
-        fb_is_judgment = is_judgment(fb_raw)
         for b in triage.get("script_bugs", []):
             koma = b.get("koma")
             detail = b.get("detail", "")
-            if fb_is_judgment or is_judgment(detail):
-                escalate.append(f"要判断(Source-or-Silence/主観): koma{koma or '?'} {detail[:40]}")
+            concern = classify_concern(detail)
+            if concern == "preference":
+                # 真にオスカー判断(好み/トーン/方向性)のみ → 要判断(オスカー)へ
+                escalate.append(f"要判断(好み/方向性): koma{koma or '?'} {detail[:40]}")
+                continue
+            if concern == "factcheck":
+                # 事実確認/調査系 → オスカーに戻さず Claude裏取りで反映を試みる(取れなければ据置)。
+                # 数字捏造はfix_script_koma側ルール(出典なき数字禁止)で防止。
+                investigate.append(f"要調査(Claude裏取り): koma{koma or '?'} {detail[:40]}")
+                if koma:
+                    by_koma.setdefault(koma, []).append("【要調査=公式/有報で裏取りの上、取れた事実のみ反映。"
+                                                        "取れなければ現行維持】" + detail)
                 continue
             if not koma:
                 escalate.append(f"台本:{detail[:40]}"); continue
             by_koma.setdefault(koma, []).append(detail)
+        factcheck_komas = {int(re.search(r"koma(\d+)", s).group(1))
+                           for s in investigate if re.search(r"koma(\d+)", s)}
         for koma, details in by_koma.items():
             instr = "このコマへの指摘(全て反映):\n" + "\n".join(f"- {d}" for d in details)
             res = L.fix_script_koma(slug, koma, instr, rules, dry=False)
             if res.get("changed"):
                 changed.append(koma)
+        # 裏取りできず未変更の要調査koma = 据置(オスカーには出さない)
+        unresolved = sorted(factcheck_komas - set(changed))
         # 画像バグは現状エスカレーション(画像再生成はGemini/別工程)
         for b in triage.get("image_bugs", []):
             escalate.append(f"画像koma{b.get('koma','?')}:{b.get('detail','')[:30]}")
         e, w, _ = L.lint_company(slug)
         recs.append({"company": company, "slug": slug, "changed": changed,
-                     "escalate": escalate, "lint": (e, w)})
-        print(f"  {company:8}({slug:14}) 変更koma={changed} lint:err={e},warn={w} escalate={len(escalate)}")
+                     "escalate": escalate, "investigate": investigate,
+                     "unresolved": unresolved, "lint": (e, w)})
+        print(f"  {company:8}({slug:14}) 変更koma={changed} 要調査{len(investigate)}(未解決koma{unresolved}) "
+              f"lint:err={e},warn={w} escalate={len(escalate)}")
 
     deployable = [r for r in recs if r["changed"] and r["lint"][0] == 0]
     print(f"\n→ deploy対象: {[r['slug'] for r in deployable]}")
@@ -127,27 +133,25 @@ def main():
             print(f"  {r['slug']:14} 検証失敗 {ex}")
 
     # 書き戻し(必須): AIが触ったらスプシが必ず動く。
-    #  - 台本を実deployした社 → setreflected(反映済+N次完了)。
-    #  - escalate(判断系/koma不明/画像)を含む社 → setescalated(要判断(オスカー))。"反映"とは別ラベル。
+    #  - escalate(好み/方向性=要判断オスカー or koma不明/画像) を含む → setescalated。
+    #  - 要調査(factcheck)が裏取りできず未解決 → 据置(FB対応中のまま・オスカーには出さない)+要調査ログ。
+    #  - 上記なく台本deploy済 → setreflected(反映済+N次完了)。
     print("\n[書き戻し]")
-    deployed_slugs = {r["slug"] for r in deployable}
-    for r in deployable:
-        if r["escalate"]:
-            # 一部deploy済でも未解決(判断系)が残るなら 要判断 を優先(人の確認を要する)
-            res = gas({"mode": "setescalated", "company": r["company"],
-                       "reason": "; ".join(r["escalate"][:3])})
-            print(f"  {r['slug']:14} 要判断(オスカー)セット: {res} (deploy済koma{r['changed']}・未解決{len(r['escalate'])})")
-        else:
-            res = gas({"mode": "setreflected", "company": r["company"]})
-            print(f"  {r['slug']:14} 反映済セット: {res}")
-    # deployは無いがescalateのみの社も必ず書き戻す(据置=混乱の原因を断つ)
     for r in recs:
-        if r["slug"] in deployed_slugs:
-            continue
+        deployed = r["slug"] in {d["slug"] for d in deployable}
         if r["escalate"]:
             res = gas({"mode": "setescalated", "company": r["company"],
                        "reason": "; ".join(r["escalate"][:3])})
-            print(f"  {r['slug']:14} 要判断(オスカー)セット(deploy無): {res}")
+            print(f"  {r['slug']:14} 要判断(オスカー): {res}")
+        elif r.get("unresolved"):
+            # 事実確認が取れず未解決 → オスカーに出さず据置。要調査キューに記録のみ。
+            gas({"mode": "addcommonfix",
+                 "rule": f"[要調査] {r['company']} koma{r['unresolved']}: 公式/有報で裏取り要(取れたら反映)",
+                 "scope": "system", "note": "; ".join(r.get("investigate", [])[:3])})
+            print(f"  {r['slug']:14} 据置(要調査koma{r['unresolved']}・オスカー非通知)")
+        elif deployed:
+            res = gas({"mode": "setreflected", "company": r["company"]})
+            print(f"  {r['slug']:14} 反映済: {res}")
 
     # LINEレポート(プレビュー)。実際の定時LINEはGAS line3hSummaryが反映済を読んで送る
     reflected = [r for r in deployable if not r["escalate"]]

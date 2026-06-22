@@ -29,6 +29,39 @@ DIFF_LOG = BACKUP_DIR / "phase_c_diff.log"
 
 EXCLUDED_SLUGS = set()  # 除外なし。三井物産も一般化canary下で他社同様のライブ自動対象(2026-06-22解除)
 
+# --- FB懸念の分類 (要判断オスカー vs 要調査Claude) --------------------------
+# 方針(2026-06-22): 「要判断(オスカー)」はオスカーの好み/トーン/方向性"判断"だけに限定。
+# 「ちゃんと調べて」「根拠は」等の事実確認・調査系はオスカーに戻さず Claude/CC が裏取りして
+# 反映まで完結させる(取れなければ据置)。LINEの要判断件数は preference のみ数える。
+# 注: 「印象/イメージ」は明確な修正指示にも頻出(例『食品専業の印象→一事業として書いて』)し
+# 誤escalateを招くため除外。真に主観的・好みの語のみに限定。
+_PREF_PAT = re.compile(
+    r"(好み|主観|センス|テイスト|可愛|かわい|かっこ|ダサ|おしゃれ|オシャレ|雰囲気|トーン|"
+    r"方向性|テンション|温度感|世界観|刺さ|エモ|なんか変|なんかいや|"
+    r"どう思|好き(?!感)|嫌い|の方が好み|の方が好き)", re.I)
+_FACT_PAT = re.compile(
+    r"(出典|根拠|ソース|エビデンス|裏付け|本当に|事実|データ|統計|調べ|確認して|"
+    r"正しい|合って|間違って|何年|いつから|誰が|どこ(の|から)|数字|金額|割合|倍率|"
+    r"source|fact|verify|本当\?|ほんと\?)", re.I)
+
+
+def classify_concern(text: str) -> str | None:
+    """FB文を 'preference'(=要判断オスカー) | 'factcheck'(=要調査Claude) | None に分類。
+
+    事実確認が絡む場合は preference より優先(オスカーに戻さず裏取りで完結させるため)。
+    """
+    t = str(text or "")
+    if _FACT_PAT.search(t):
+        return "factcheck"
+    if _PREF_PAT.search(t):
+        return "preference"
+    return None
+
+
+def is_oscar_judgment(text: str) -> bool:
+    """真にオスカー判断(好み/トーン/方向性)のみ True。事実確認系は False(=Claude側で処理)。"""
+    return classify_concern(text) == "preference"
+
 # --- migration SQL パース --------------------------------------------------
 PANEL_RE = re.compile(
     r"INSERT OR REPLACE INTO company_panels\s*\([^)]*\)\s*VALUES\s*\((.*?)\);",
