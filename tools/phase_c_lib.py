@@ -210,8 +210,55 @@ def _anthropic(prompt: str, system: str = "", model: str = "claude-sonnet-4-6", 
 
 
 TRIAGE_SYS = ("あなたはトーキャリ10コマのFBトリアージ担当。ユーザーFBを3カテゴリに仕分ける。"
-              "①台本バグ(文言・数字・誤り・原則違反) ②画像バグ(色/手/服装/レイアウト/文字焼き/絵の誤り) ③感想(好み・主観)。"
-              "混在は①②両方に入れる。各項目に対象コマ番号(分かれば)を付す。JSONのみ出力。")
+              "①台本バグ(文言・数字・誤り・原則違反・**具体的な書き換え方向を含む指摘**) "
+              "②画像バグ(色/手/服装/レイアウト/文字焼き/絵の誤り) ③感想(好み・主観のみ)。"
+              "重要: 『〜のほうがいい』『言い回しが不自然』『分かりにくい』『リライトして』等、"
+              "**直す方向が読み取れるものは必ず①台本バグに入れる**(③感想に入れない)。"
+              "③感想は『action不能な純粋な好み・印象』だけに限定。混在は①②両方に入れる。"
+              "各項目に対象コマ番号(分かれば)を付す。JSONのみ出力。")
+
+
+def extract_koma(text: str):
+    """FB文からコマ番号を抽出(コマN / N枚目 / 【Nコマ目】等)。無ければNone。"""
+    t = str(text or "")
+    for pat in (r"(?:コマ|こま|panel)\s*0*(\d+)", r"【\s*0*(\d+)\s*(?:コマ|枚)",
+                r"0*(\d+)\s*(?:枚目|コマ目)"):
+        m = re.search(pat, t)
+        if m:
+            return int(m.group(1))
+    return None
+
+
+def fix_koma_text(slug: str, koma_num: int, instruction: str, rules: str, current: dict) -> dict:
+    """D1ライブ基準でコマ台本を修正(ファイル非依存)。current={script,main_copy,sub_copy}。
+
+    api/migration_v4_<slug>.sql の有無に依存せず、呼び出し側がD1から読んだ現行台本を渡す。
+    戻り値: {changed, before, after:{script,main_copy,sub_copy,note}, note}。
+    """
+    cur_script = current.get("script") or []
+    prompt = (f"【ルール】\n{rules}\n\n【会社】{slug} koマ{koma_num}\n"
+              f"【現行script(JSON配列)】{json.dumps(cur_script, ensure_ascii=False)}\n"
+              f"【現行main_copy】{current.get('main_copy')}\n【現行sub_copy】{current.get('sub_copy')}\n\n"
+              f"【修正指示(FB由来)】{instruction}\n\n"
+              "ルール厳守・最小限の修正。話者タグ([nana]/[haruki]/[OB先輩]等)は維持。"
+              "生Markdown禁止/倍率数値禁止/出典なき数字禁止。修正不要なら現行のまま返す。"
+              '出力はJSONのみ: {"script":[...], "main_copy":"...", "sub_copy":"...", "note":"何を直したか"}')
+    txt = _anthropic(prompt, max_tokens=1500)
+    m = re.search(r"\{.*\}", txt, re.S)
+    if not m:
+        return {"changed": False, "note": "JSON抽出失敗", "before": current, "after": current}
+    try:
+        new = json.loads(m.group(0))
+    except Exception as e:
+        return {"changed": False, "note": f"JSON不正:{e}", "before": current, "after": current}
+    after = {"script": new.get("script", cur_script),
+             "main_copy": new.get("main_copy", current.get("main_copy")),
+             "sub_copy": new.get("sub_copy", current.get("sub_copy")),
+             "note": new.get("note", "")}
+    changed = (after["script"] != cur_script
+               or after["main_copy"] != current.get("main_copy")
+               or after["sub_copy"] != current.get("sub_copy"))
+    return {"changed": changed, "before": current, "after": after, "note": after["note"]}
 
 
 def triage_fb(company: str, fb: str) -> dict:
