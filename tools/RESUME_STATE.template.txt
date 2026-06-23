@@ -1,0 +1,20 @@
+==== 再開コマンド（帰国後コピペ1発で続きから）====
+# 1) 夜間画像生成（completed済みは自動スキップ・未生成社だけ生成）
+caffeinate -dims bash -c 'cd /Users/oscardodds/oscar-ai/tokyari-pipeline; for I in "航空・運輸・物流" "広告・メディア" "不動産・建設" "IT・通信・SaaS"; do .venv/bin/python scripts/drive_images_industry.py "$I"; done' > ~/oscar-ai/tokyari-pipeline/../resume_imggen.log 2>&1 &
+
+# 2) Notionバックフィル（notion_sync_state.csvで未同期の社だけ・重複作成しない=タイトルガード）
+cd /Users/oscardodds/projects/10koma-shukatsu && \
+SLUGS=$(npx wrangler d1 execute 10koma-shukatsu-db --remote --config api/wrangler.toml --command "SELECT id FROM companies" --json 2>/dev/null | /Users/oscardodds/oscar-ai/tokyari-pipeline/.venv/bin/python -c "import json,sys,csv;d=set(r['id'] for r in json.load(sys.stdin)[0]['results']);s=set(r[0] for r in csv.reader(open('/Users/oscardodds/oscar-ai/tokyari-pipeline/output/notion_sync_state.csv')) if len(r)>4 and r[4]=='d1_sync');print(','.join(d-s))") && \
+caffeinate -dims /Users/oscardodds/oscar-ai/tokyari-pipeline/.venv/bin/python /Users/oscardodds/oscar-ai/tokyari-pipeline/scripts/notion_sync_d1.py --slugs "$SLUGS" > ~/oscar-ai/resume_notion.log 2>&1 &
+
+# 3) 完成業界の投入（任意・harness_deploy/deploy_industry経由）
+# cd /Users/oscardodds/projects/10koma-shukatsu && .venv… (各業界 deploy_industry.py を完成枚数に応じて)
+
+==== スナップショット (2026-06-23 14:45:40) ====
+夜間画像生成 完成社(10/10):
+  航空・運輸・物流 : 20/20
+  広告・メディア   : 3/30
+  不動産・建設     : 7/30
+  IT・通信・SaaS   : 1/44
+Notionバックフィル 同期済(d1_sync): 196 社
+自走FBループ(launchd com.tokyari.phasec): 触らない=海外でMac起動時に自動復帰
