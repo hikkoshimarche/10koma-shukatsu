@@ -552,16 +552,30 @@ function _collectByStatus(statusName){
 
 /* ラベル是正: 反映(実適用待ち=FB対応中) / 要判断(オスカー=人へ) / FB待ち(次ラウンド) を明確分離。
    完了・これでOK・FB無しは混ぜない(伊藤忠など完了社が"反映"に出る誤りを止める)。 */
+/* 判断ダイジェスト: 共通の修正案 scope=judgment_daily の未解消行(=真にブランド判断が要る稀なもの)。 */
+function _collectJudgmentDaily(){
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(COMMON_SHEET);
+  const out = []; if(!sh) return out;
+  const last = sh.getLastRow();
+  for(let r=2; r<=last; r++){
+    const row = sh.getRange(r,1,1,5).getValues()[0];
+    if(String(row[2]).trim()==='judgment_daily' && String(row[3]).trim()!=='解消' && String(row[3]).trim()!=='適用済'){
+      out.push(String(row[1]));
+    }
+  }
+  return out;
+}
+
 function buildMorningDigest(){
   const fbwait = _collectFBwait();                 // 次ラウンドFB待ち(CFオレンジ)
   const reflectWait = _collectByStatus('FB対応中'); // AIが反映予定(実適用待ち)
-  const judge = _collectByStatus('要判断(オスカー)'); // 人の判断要(Source-or-Silence等)
+  const judgments = _collectJudgmentDaily();        // 真のブランド判断のみ(朝1通・要れば後で覆せる)
   const stops = _collectSystemStops();
   const url = SpreadsheetApp.getActiveSpreadsheet().getUrl();
   const sum = function(o){ var t=0; Object.keys(o).forEach(function(k){t+=o[k];}); return t; };
-  const waitTotal = sum(fbwait), reflTotal = sum(reflectWait), judgeTotal = sum(judge);
-  if(waitTotal===0 && reflTotal===0 && judgeTotal===0 && stops.length===0){
-    return '【おはようございます☀️】FB待ち・要対応ともに0件です 🎉';
+  const waitTotal = sum(fbwait), reflTotal = sum(reflectWait);
+  if(waitTotal===0 && reflTotal===0 && judgments.length===0 && stops.length===0){
+    return '【おはようございます☀️】FB待ち・判断ダイジェストともに0件です 🎉';
   }
   const p = ['【おはようございます☀️ 本日】'];
   p.push('━━【インターンの皆さんへ】次ラウンドFB待ち '+waitTotal+'社');
@@ -571,9 +585,10 @@ function buildMorningDigest(){
   p.push('━━【AIが反映予定(実適用待ち)】'+reflTotal+'件');
   if(reflTotal===0) p.push('・なし');
   Object.keys(reflectWait).forEach(function(k){ p.push('・'+k+': '+reflectWait[k]+'件'); });
-  p.push('━━【要判断(オスカー)＝人の確認が必要】'+judgeTotal+'件');
-  if(judgeTotal===0) p.push('・なし');
-  Object.keys(judge).forEach(function(k){ p.push('・'+k+': '+judge[k]+'件'); });
+  // オスカー宛は『判断ダイジェスト』のみ(朝9時1通に集約・好み/事実/明確修正はAIが自走で処理済)
+  p.push('━━【判断ダイジェスト(オスカー・要れば後で覆せる)】'+judgments.length+'件');
+  if(judgments.length===0) p.push('・なし(AIが自走で処理済)');
+  judgments.slice(0,15).forEach(function(s){ p.push('・'+s.slice(0,70)); });
   stops.forEach(function(s){ p.push('⚠ '+s); });
   p.push(url);
   return p.join('\n');
@@ -602,24 +617,12 @@ function line3hSummary(){
       }
     });
   });
-  // 直近3hで 要判断(オスカー) に上がった社(エスカレ=人へ。"反映"とは別ラベル)
-  const esc = [];
-  CONFIG.CONTENT_SHEETS.forEach(function(name){
-    const sh = ss.getSheetByName(name); if(!sh) return;
-    const last = sh.getLastRow(); if(last < CONFIG.FIRST_ROW) return;
-    const vals = sh.getRange(CONFIG.FIRST_ROW,1,last-CONFIG.FIRST_ROW+1,45).getValues();
-    vals.forEach(function(r){
-      const upd = r[CONFIG.COL.最終更新-1];
-      if(String(r[CONFIG.COL.ステータス-1]).trim()==='要判断(オスカー)' && upd instanceof Date && upd>=since){
-        esc.push('・'+name+'/'+r[CONFIG.COL.会社名-1]);
-      }
-    });
-  });
+  // 根治(2026-06-23): per-3hからオスカー宛エスカレ件数を撤去。AIが自走で処理(好み/事実/明確修正/画像)。
+  // オスカー宛は朝9時の『判断ダイジェスト』(真のブランド判断のみ)に集約。
   const hh = Utilities.formatDate(new Date(),'Asia/Tokyo','HH:mm');
-  if(done.length===0 && esc.length===0){ _pushLine('【'+hh+' 直近3h】AIの反映・エスカレともになし。'); return; }
-  const p = ['【'+hh+' 直近3h】'];
-  p.push('■反映(本番に実適用) '+done.length+'件'); if(done.length) p.push(done.slice(0,15).join('\n'));
-  p.push('■要判断(オスカー判断へエスカレ) '+esc.length+'件'); if(esc.length) p.push(esc.slice(0,15).join('\n'));
+  if(done.length===0){ _pushLine('【'+hh+' 直近3h】AIの反映はありませんでした。'); return; }
+  const p = ['【'+hh+' 直近3h・AIが本番反映した社】'+done.length+'件'];
+  p.push(done.slice(0,20).join('\n'));
   _pushLine(p.join('\n'));
 }
 

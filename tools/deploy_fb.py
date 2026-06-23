@@ -82,46 +82,65 @@ def process_company(company, slug, fb_raw, rules):
                 "investigate": [], "unresolved": [], "lint": (0, 0), "landed": "D1台本なし→skip"}
     cur = _cur(panels)
     triage = L.triage_fb(company, fb_raw)
-    escalate, investigate = [], []
+    # 根治(2026-06-23): オスカーへエスカレしない。preference=デフォルト適用 / factcheck=裏取り /
+    #   actionable=反映 / image=再生成キュー / 真にブランド方針判断のみ judgment(日次1通)。
+    investigate, image_queue, judgment, default_log = [], [], [], []
     by_koma = OrderedDict()
     factcheck_komas = set()
 
     def route(koma, detail, tag):
-        """1つの指摘を必ず着地: preference→escalate / factcheck・action→fix / koma不明→escalate。"""
         concern = L.classify_concern(detail)
         koma = koma or L.extract_koma(detail)
-        if concern == "preference" or not koma:
-            escalate.append(f"要判断({tag}/好み): koma{koma or '?'} {detail[:40]}")
+        if not koma:
+            koma = _map_koma(company, detail, cur)        # 【全体】等→Claudeで最適komaにマップ
+        if not koma:
+            judgment.append(f"{tag}: {detail[:60]}")        # 置き場不明=真の判断→日次へ(オスカー即時には出さない)
             return
         if concern == "factcheck":
             factcheck_komas.add(koma)
-            investigate.append(f"要調査: koma{koma} {detail[:40]}")
-            by_koma.setdefault(koma, []).append("【要調査=公式/有報で裏取りの上、取れた事実のみ反映。取れなければ現行維持】" + detail)
+            investigate.append(f"koma{koma}:{detail[:36]}")
+            by_koma.setdefault(koma, []).append("【要調査=公式/有報で裏取り。取れた事実のみ反映、取れねば捏造せず『少人数採用』『フレックス・リモート可』等にぼかす】" + detail)
             return
-        by_koma.setdefault(koma, []).append(detail)   # actionable → 反映試行
+        if concern == "preference":
+            default_log.append(f"koma{koma}:{detail[:36]}")  # 好み=止めずデフォルト適用+ログ
+            by_koma.setdefault(koma, []).append("【好みFB→無難で自然なデフォルト改善案を適用(捏造なし・原則順守)】" + detail)
+            return
+        by_koma.setdefault(koma, []).append(detail)         # actionable→反映
 
     for b in triage.get("script_bugs", []):
         route(b.get("koma"), b.get("detail", ""), "台本")
-    # 感想も黙って捨てない: action方向があれば反映試行、純粋な好みのみescalate
     for op in triage.get("opinions", []):
         route(None, op if isinstance(op, str) else str(op), "感想")
     for b in triage.get("image_bugs", []):
-        escalate.append(f"画像koma{b.get('koma','?')}:{b.get('detail','')[:30]}")
+        image_queue.append(f"koma{b.get('koma','?')}:{b.get('detail','')[:40]}")  # 画像→再生成キュー(オスカーでない)
 
     overrides = {}
     for koma, details in by_koma.items():
         if koma not in cur:
-            escalate.append(f"koma{koma}不在→要確認"); continue
-        instr = "このコマへの指摘(全て反映):\n" + "\n".join(f"- {d}" for d in details)
+            continue
+        instr = "このコマへの指摘(全て反映・捏造/出典なき数字禁止):\n" + "\n".join(f"- {d}" for d in details)
         res = L.fix_koma_text(slug, koma, instr, rules, cur[koma])
         if res.get("changed"):
             overrides[koma] = res["after"]
     unresolved = sorted(factcheck_komas - set(overrides))
-    # lint(D1全台本+override)
     rep = v5.run_ext_lints(_scenario(slug, panels, overrides), slug)
-    return {"company": company, "slug": slug, "overrides": overrides, "escalate": escalate,
-            "investigate": investigate, "unresolved": unresolved,
+    return {"company": company, "slug": slug, "overrides": overrides,
+            "investigate": investigate, "unresolved": unresolved, "image_queue": image_queue,
+            "judgment": judgment, "default_log": default_log,
             "lint": (rep["errors"], rep["warnings"]), "landed": "ok"}
+
+
+def _map_koma(company, detail, cur):
+    """【全体】等で対象koマ不明のFBを、台本を見てClaudeが最適komaにマップ(無ければNone)。"""
+    blob = " / ".join(f"コマ{n}:{json.dumps(c['script'],ensure_ascii=False)[:60]}" for n, c in sorted(cur.items()))
+    try:
+        txt = L._anthropic(f"会社{company}の台本: {blob}\n\nこのFB『{detail[:120]}』が最も該当するコマ番号(1-10)を1つ。"
+                           "特定不能なら0。数字のみ:", max_tokens=10)
+        m = re.search(r"\d+", txt)
+        k = int(m.group(0)) if m else 0
+        return k if k in cur else None
+    except Exception:
+        return None
 
 
 def main():
@@ -141,15 +160,16 @@ def main():
             r = process_company(company, slug, it.get("fb", ""), rules)
         except Exception as ex:
             import traceback
-            print(f"  {company:8}({slug:14}) ❌処理失敗→escalate: {ex}")
+            print(f"  {company:8}({slug:14}) ❌処理失敗→判断日次: {ex}")
             traceback.print_exc()
-            recs.append({"company": company, "slug": slug, "overrides": {}, "escalate": [f"処理失敗・要確認: {ex}"],
+            recs.append({"company": company, "slug": slug, "overrides": {}, "image_queue": [],
+                         "judgment": [f"処理失敗・要確認: {ex}"], "default_log": [],
                          "investigate": [], "unresolved": [], "lint": (0, 0), "landed": f"例外:{ex}"})
             continue
         recs.append(r)
         ck = sorted(r["overrides"])
-        print(f"  {company:8}({slug:14}) 反映koma={ck} 要調査{len(r['investigate'])}(未解決{r['unresolved']}) "
-              f"lint:err={r['lint'][0]},warn={r['lint'][1]} escalate={len(r['escalate'])}")
+        print(f"  {company:8}({slug:14}) 反映koma={ck} 要調査{len(r['investigate'])} 画像{len(r['image_queue'])} "
+              f"判断{len(r['judgment'])} 好み既定{len(r['default_log'])} lint:err={r['lint'][0]}")
 
     deployable = [r for r in recs if r["overrides"] and r["lint"][0] == 0]
     print(f"\n→ deploy対象: {[r['slug'] for r in deployable]}")
@@ -183,32 +203,41 @@ def main():
             except Exception as ex:
                 print(f"  {r['slug']:14} 検証失敗 {ex}")
 
-    # 書き戻し(必須・未着地ゼロ): 全社が必ずどれかに着地する。
-    #  escalate(好み/画像/koma不明/処理失敗)→setescalated(要判断) / 要調査未解決→据置+要調査ログ /
-    #  台本反映済→setreflected(反映済+N次完了) / それ以外(変更なし)→据置ログ。
+    # 書き戻し(根治・オスカーに即時エスカレしない): 全社が必ずどれかに着地。
+    #  台本反映/デフォルト適用→setreflected(+『Claudeが判断して進めた』ログ) / 画像→再生成キュー /
+    #  要調査未解決→据置(裏取りキュー) / 真のブランド判断のみ judgment_daily(朝9時1通に集約)。
     print("\n[書き戻し]")
     deployed_slugs = {d["slug"] for d in deployable}
-    tally = {"reflected": 0, "escalated": 0, "investigate": 0, "noop": 0}
+    tally = {"reflected": 0, "image": 0, "investigate": 0, "judgment": 0, "noop": 0}
     for r in recs:
-        if r["escalate"]:
-            gas({"mode": "setescalated", "company": r["company"], "reason": "; ".join(r["escalate"][:3])})
-            tally["escalated"] += 1
-            print(f"  {r['slug']:14} 要判断(オスカー) [{'; '.join(r['escalate'][:2])}]")
-        elif r["slug"] in deployed_slugs:
+        # 画像バグ→再生成キュー(オスカーでない)
+        if r.get("image_queue"):
+            gas({"mode": "addcommonfix", "scope": "system",
+                 "rule": f"[要画像再生成] {r['company']}: {'; '.join(r['image_queue'][:3])}",
+                 "note": "画像FB=Gemini再生成キュー(台本でなく画像)"})
+            tally["image"] += 1
+        # 真のブランド/方針判断のみ日次ダイジェストへ(per-3hでオスカーに出さない)
+        if r.get("judgment"):
+            gas({"mode": "addcommonfix", "scope": "judgment_daily",
+                 "rule": f"[判断ダイジェスト] {r['company']}: {'; '.join(r['judgment'][:2])}",
+                 "note": "朝9時1通に集約(要れば後で覆せる)"})
+            tally["judgment"] += 1
+        if r["slug"] in deployed_slugs:
             res = gas({"mode": "setreflected", "company": r["company"]})
             tally["reflected"] += 1
-            print(f"  {r['slug']:14} 反映済 koma{sorted(r['overrides'])}: {res.get('round')}")
+            dl = f" [Claudeが判断して進めた: {'; '.join(r.get('default_log', [])[:2])}]" if r.get("default_log") else ""
+            print(f"  {r['slug']:14} 反映済 koma{sorted(r['overrides'])}{dl}")
         elif r.get("unresolved"):
             gas({"mode": "addcommonfix", "scope": "system",
-                 "rule": f"[要調査] {r['company']} koma{r['unresolved']}: 公式/有報で裏取り要(取れたら反映)",
+                 "rule": f"[要調査] {r['company']} koma{r['unresolved']}: 公式/有報で裏取り(取れねばぼかす)",
                  "note": "; ".join(r.get("investigate", [])[:3])})
             tally["investigate"] += 1
-            print(f"  {r['slug']:14} 据置(要調査koma{r['unresolved']})")
+            print(f"  {r['slug']:14} 据置(要調査koma{r['unresolved']}・ぼかし候補)")
         else:
             tally["noop"] += 1
-            print(f"  {r['slug']:14} 据置(変更なし/対象外) landed={r.get('landed')}")
-    print(f"\n=== 着地内訳: 反映{tally['reflected']} / 要判断{tally['escalated']} / 要調査据置{tally['investigate']} "
-          f"/ 変更なし{tally['noop']}  (計{sum(tally.values())}/{len(recs)} 未着地ゼロ) ===")
+            print(f"  {r['slug']:14} 据置(変更なし) img{len(r.get('image_queue',[]))} judg{len(r.get('judgment',[]))}")
+    print(f"\n=== 着地: 反映{tally['reflected']} / 画像キュー{tally['image']} / 要調査{tally['investigate']} "
+          f"/ 判断日次{tally['judgment']} / 変更なし{tally['noop']}  (オスカー即時エスカレ=0) ===")
     print("巻き戻しは .backups/d1_*.json から。")
     return 0
 
