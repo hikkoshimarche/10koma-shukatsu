@@ -147,6 +147,36 @@ def lint_with_overrides(sc, cur, overrides):
     return v5.run_ext_lints({"meta": {"slug": sc.get("meta", {}).get("slug", "?")}, "koma": koma}, "?")
 
 
+CAVEAT_CSV = REPO / "tools" / "data_caveat_list.csv"
+
+
+def queue_factcheck(slug, company, held):
+    """根拠不明な数字の据置を裏取りキュー(data_caveat_list.csv)へ自動投入(冪等)。
+
+    本番に未確認数字が出ない担保。後段で factsheet/公式で裏取り→反映 or ぼかし(原則C/D)。
+    """
+    import csv
+    existing = set()
+    if CAVEAT_CSV.exists():
+        for r in csv.reader(open(CAVEAT_CSV, encoding="utf-8")):
+            if len(r) >= 3:
+                existing.add((r[0], r[1], r[2][:40]))
+    new_rows = []
+    for it in held:
+        key = (slug, str(it.get("koma")), it.get("detail", "")[:40])
+        if key in existing:
+            continue
+        new_rows.append([slug, str(it.get("koma")), it.get("detail", "")[:200],
+                         it.get("persona", ""), "未裏取り"])
+    write_header = not CAVEAT_CSV.exists()
+    with open(CAVEAT_CSV, "a", encoding="utf-8", newline="") as f:
+        w = csv.writer(f)
+        if write_header:
+            w.writerow(["slug", "koma", "caveat(根拠不明な数字/事実)", "persona", "status"])
+        w.writerows(new_rows)
+    return len(new_rows)
+
+
 def run(slug, company):
     rules = (REPO / "tools" / "koma_rules.md").read_text(encoding="utf-8")
     sc, cur = load_koma(slug)
@@ -166,10 +196,13 @@ def run(slug, company):
         print(f"  ◆コマ{a['koma']} 修正: {a['note'][:80]}")
         print(f"    前: {json.dumps(a['before'],ensure_ascii=False)[:90]}")
         print(f"    後: {json.dumps(a['after'],ensure_ascii=False)[:90]}")
-    # 3) lint=0 確認
+    # 3) factcheck据置 → 裏取りキュー(data_caveat_list.csv)へ自動投入(本番に未確認数字を出さない担保)
+    n_q = queue_factcheck(slug, company, res["factcheck_held"])
+    print(f"\n--- 裏取りキュー投入: {n_q}件(新規) → data_caveat_list.csv ---")
+    # 4) lint=0 確認
     rep = lint_with_overrides(sc, cur, res["overrides"])
-    print(f"\n--- lint(自己修正後): errors={rep['errors']} warnings={rep['warnings']} {'✅' if rep['errors']==0 else '❌'} ---")
-    return {"fb": all_fb, "result": res, "lint": rep}
+    print(f"--- lint(自己修正後): errors={rep['errors']} warnings={rep['warnings']} {'✅' if rep['errors']==0 else '❌'} ---")
+    return {"fb": all_fb, "result": res, "lint": rep, "caveat_queued": n_q}
 
 
 if __name__ == "__main__":
