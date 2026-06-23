@@ -110,9 +110,13 @@ function handleExt(mode, e, token){
       if(!(row>=CONFIG.FIRST_ROW)){ errs.push('badrow:'+a[0]); return; }
       sh.getRange(row, CONFIG.COL.最終更新).setValue(new Date());
       if(kind==='gemini'){
-        // Gemini完成のみFB1待ち面へ: 公開URL記入 + 状態1空→CFオレンジ
+        // Gemini完成のみFB1待ち面へ: 公開URL記入 + 状態1空 + ステータス『公開済・FB待ち』(本番ライブ=未着手の嘘を解消)
         sh.getRange(row, CONFIG.COL.公開URL).setValue(base+slug).clearNote();
         sh.getRange(row, jotCol(1)).setValue('');
+        // FB未記入(状態1空)の時だけ公開済・FB待ちに。既にFB進行中(N次完了等)は上書きしない=冪等。
+        var stcell = sh.getRange(row, CONFIG.COL.ステータス);
+        var st = String(stcell.getValue()).trim();
+        if(st==='' || st==='未着手' || st==='公開済・FB待ち') stcell.setValue('公開済・FB待ち');
         oranged++;
       } else {
         // old/quarantine(旧ChatGPT画像): FB面に出さない。公開URL列を空に + 状態1を可視の隔離状態値に。
@@ -123,6 +127,67 @@ function handleExt(mode, e, token){
       matched++;
     });
     return _json({matched:matched, oranged:oranged, quarantined:quarantined, errs:errs});
+  }
+
+  if(mode === 'cfpublished'){
+    // CFオレンジを『公開済・FB待ち』ステータスに紐付け(C列限定で追記・既存ルール非破壊)。冪等。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(KOMA_SHEET);
+    const rng = sh.getRange(CONFIG.FIRST_ROW, CONFIG.COL.ステータス, 403, 1); // C3:C405限定(他列に混入させない)
+    let rules = sh.getConditionalFormatRules();
+    // 既存の同等ルール(公開済・FB待ち)を除去してから1本だけ追加=冪等
+    rules = rules.filter(function(rl){
+      try{ var c=rl.getBooleanCondition(); var vs=c?c.getCriteriaValues():[];
+        return !(vs && String(vs[0]).indexOf('公開済・FB待ち')>=0); }catch(e){ return true; }
+    });
+    const rule = SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo('公開済・FB待ち').setBackground('#f4b183').setRanges([rng]).build();
+    rules.push(rule);
+    sh.setConditionalFormatRules(rules);
+    return _json({ok:true, rules_total:rules.length, range:'C3:C405'});
+  }
+
+  if(mode === 'fixdashboard'){
+    // ダッシュボードの未使用バケツ『制作中』を『公開済・FB待ち』に転用(COUNTIF式+ヘッダ文言)。
+    // 母数(COUNTA 398)は不変。公開済・FB待ちが未着手でなく進行中側に算入される。冪等。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('ダッシュボード');
+    if(!sh) return _json({error:'no dashboard'});
+    const lr=sh.getLastRow(), lc=sh.getLastColumn();
+    const rng=sh.getRange(1,1,lr,lc);
+    const fs=rng.getFormulas(), vs=rng.getValues();
+    let f_changed=0, h_changed=0;
+    for(let i=0;i<lr;i++){
+      for(let j=0;j<lc;j++){
+        const f=fs[i][j];
+        if(f && f.indexOf('"制作中"')>=0){
+          sh.getRange(i+1,j+1).setFormula(f.split('"制作中"').join('"公開済・FB待ち"')); f_changed++;
+        } else if(!f && String(vs[i][j]).trim()==='制作中'){
+          sh.getRange(i+1,j+1).setValue('公開済・FB待ち'); h_changed++;
+        }
+      }
+    }
+    return _json({formula_changed:f_changed, header_changed:h_changed});
+  }
+
+  if(mode === 'markpublished'){
+    // 一括是正: 公開URL有 かつ 状態1空 かつ ステータス=未着手 → 『公開済・FB待ち』(本番ライブの嘘を解消)。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(KOMA_SHEET);
+    const last = sh.getLastRow(); if(last<CONFIG.FIRST_ROW) return _json({changed:0});
+    const n = last-CONFIG.FIRST_ROW+1;
+    const vals = sh.getRange(CONFIG.FIRST_ROW,1,n,45).getValues();
+    let changed=0;
+    for(let i=0;i<n;i++){
+      const r=vals[i]; if(!r[1]) continue;
+      const url=String(r[CONFIG.COL.公開URL-1]).trim();
+      const jot1=String(r[jotCol(1)-1]).trim();
+      const st=String(r[CONFIG.COL.ステータス-1]).trim();
+      if(url.indexOf('http')===0 && jot1==='' && st==='未着手'){
+        sh.getRange(CONFIG.FIRST_ROW+i, CONFIG.COL.ステータス).setValue('公開済・FB待ち'); changed++;
+      }
+    }
+    return _json({changed:changed});
   }
 
   if(mode === 'markcommonfix'){
@@ -315,7 +380,7 @@ function handleExt(mode, e, token){
     if(!sh) return _json({error:'no sheet'});
     const lr=sh.getLastRow(), lc=sh.getLastColumn();
     const vals = sh.getRange(1,1,lr,lc).getValues();
-    const formulas = (e.parameter.formulas==="1") ? sh.getRange(1,1,Math.min(lr,4),lc).getFormulas() : null;
+    const formulas = (e.parameter.formulas==="1") ? sh.getRange(1,1,lr,lc).getFormulas() : null;
     return _json({name:e.parameter.sheet, values:vals, formulas:formulas});
   }
 
@@ -324,7 +389,7 @@ function handleExt(mode, e, token){
     if(!_authed(e, token)) return _json({error:'unauthorized'});
     const apply = (e.parameter.apply === '1');
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const want = ['未着手','記入中','提出','FB対応中','要判断(オスカー)','これでOK','完了'];
+    const want = ['未着手','公開済・FB待ち','記入中','提出','FB対応中','要判断(オスカー)','これでOK','完了'];
     for(let n=1;n<=10;n++) want.push(n+'次完了');
     const report = {};
     CONFIG.CONTENT_SHEETS.forEach(function(name){
