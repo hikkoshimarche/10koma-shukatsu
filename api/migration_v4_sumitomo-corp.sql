@@ -17,7 +17,7 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sumitomo-corp', 3, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@9e93cbf/public/images/sumitomo-corp/panel_03.png', 'nana', '[nana] あれ、J:COMって…
 [haruki] そう、住友商事のグループ会社。ジュピターテレコム。
 [nana] 実家のリモコン、ずっと住友商事がかかわっていたの!?
-[haruki] それだけじゃない。SCSKもメルカリも、住友が出資してる。地味だけど、生活の中にいる。', 'J:COMもSCSKもメルカリも', 'ぜんぶ住友商事のグループ', NULL, '["[nana] あれ、J:COMって…", "[haruki] そう、住友商事のグループ会社。ジュピターテレコム。", "[nana] 実家のリモコン、ずっと住友商事がかかわっていたの!?", "[haruki] それだけじゃない。SCSKもメルカリも、住友が出資してる。地味だけど、生活の中にいる。"]', 'H2: J:COMのテレビ&リモコン', '{"location": "テレビ画面横またはリモコンの中央", "object_type": "J:COMロゴ", "brand_form": "リモコン中央のJ:COMロゴ、青と白", "attachment": "リモコン本体に印刷", "scale_note": "実在のJ:COMリモコンと同じサイズ"}');
+[haruki] それだけじゃない。SCSKもメルカリも、住友が出資してる。あまり目立たないけど、生活の中にいる。', 'J:COMもSCSKもメルカリも', 'ぜんぶ住友商事のグループ', NULL, '["[nana] あれ、J:COMって…", "[haruki] そう、住友商事のグループ会社。ジュピターテレコム。", "[nana] 実家のリモコン、ずっと住友商事がかかわっていたの!?", "[haruki] それだけじゃない。SCSKもメルカリも、住友が出資してる。あまり目立たないけど、生活の中にいる。"]', 'H2: J:COMのテレビ&リモコン', '{"location": "テレビ画面横またはリモコンの中央", "object_type": "J:COMロゴ", "brand_form": "リモコン中央のJ:COMロゴ、青と白", "attachment": "リモコン本体に印刷", "scale_note": "実在のJ:COMリモコンと同じサイズ"}');
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sumitomo-corp', 4, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@9e93cbf/public/images/sumitomo-corp/panel_04.png', 'haruki', '[haruki] 住友家は1691年、別子銅山の経営から始まった。
 [nana] 1691年!? 300年以上前…
 [haruki] 江戸時代から400年続いてる商家。井桁マークは住友家の家紋。
@@ -31,9 +31,8 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 [OB先輩] 入社5〜7年でアフリカ・中東の発電所赴任は普通にある。長期駐在を厭わない人に向く。
 [haruki] 短期で結果を出す商社じゃなくて、長く根を張る商社、ってことか…', '10年単位で人を育てる', '第一希望通る人は半分 / 5〜7年で中東・アフリカ駐在', NULL, '["[OB先輩] 9事業部門あって、第一希望そのまま通る人は半分くらい。", "[OB先輩] でも住友は『不趨浮利』。短期の派手な異動はしない。10年単位で人を育てる。", "[OB先輩] 入社5〜7年でアフリカ・中東の発電所赴任は普通にある。長期駐在を厭わない人に向く。", "[haruki] 短期で結果を出す商社じゃなくて、長く根を張る商社、ってことか…"]', 'H6: 海外発電プラント', NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sumitomo-corp', 7, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@9e93cbf/public/images/sumitomo-corp/panel_07.png', 'nana', '[OB先輩] 住友が見るのは、『自利利他公私一如』。自分の利と他人の利が一つに見えるか。
-[OB先輩] 倍率は189倍あるけど、本当に見てるのは、人と社風が合うか。
 [nana] 自利と利他が一つ、って言葉、初めて聞いた…
-[haruki] 派手じゃない、長く強い。それは社風から始まってる。', '自利利他公私一如', '倍率より社風 / 自利と利他を一つに見られる人', NULL, '["[OB先輩] 住友が見るのは、『自利利他公私一如』。自分の利と他人の利が一つに見えるか。", "[OB先輩] 倍率は189倍あるけど、本当に見てるのは、人と社風が合うか。", "[nana] 自利と利他が一つ、って言葉、初めて聞いた…", "[haruki] 派手じゃない、長く強い。それは社風から始まってる。"]', NULL, NULL);
+[haruki] 派手じゃない、長く強い。それは社風から始まっているんだね。', '自利利他公私一如', '社風が問う / 自利と利他を一つに見られる人', NULL, '["[OB先輩] 住友が見るのは、『自利利他公私一如』。自分の利と他人の利が一つに見えるか。", "[nana] 自利と利他が一つ、って言葉、初めて聞いた…", "[haruki] 派手じゃない、長く強い。それは社風から始まっているんだね。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('sumitomo-corp', 8, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@9e93cbf/public/images/sumitomo-corp/panel_08.png', 'nana', '[nana] このスナックも…ヤマザキビスケットって、住友の子会社なの?
 [haruki] そう。TBSも関連会社。テレビと、お菓子と、リモコンと、SCSKと…
 [nana] 気づいたら朝から晩まで、住友の事業に触れながら生きてた…

@@ -9,7 +9,7 @@ INSERT OR IGNORE INTO companies (id, name, industry_id, thumbnail_url) VALUES ('
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('mitsui-bussan', 1, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@99ac495/public/images/mitsui-bussan/panel_01.png', 'nana', '[nana] ハルキ、三井物産って利益の半分以上が資源権益って本当?
 [haruki] 有報に書いてある。鉄鉱石・原油・LNGの権益を自社で持つのが物産の稼ぎ方。
 [nana] 権益を『持つ』って、社員は何をしてるんだろ。今日のOB訪問で聞いてみたい。
-[haruki] それを1日同行で見る。三井物産の仕事、ここから始まる。', '資源権益を『持つ』商社の仕事とは', '三井物産 / 8031 / 1日同行ルポ', NULL, '["[nana] ハルキ、三井物産って利益の半分以上が資源権益って本当?", "[haruki] 有報に書いてある。鉄鉱石・原油・LNGの権益を自社で持つのが物産の稼ぎ方。", "[nana] 権益を『持つ』って、社員は何をしてるんだろ。今日のOB訪問で聞いてみたい。", "[haruki] それを1日同行で見る。三井物産の仕事、ここから始まる。"]', 'H2: 大手町本社ビル (朝の遠景)', NULL);
+[haruki] それを1日同行で確かめよう。行こう。', '資源権益を『持つ』商社の仕事とは', '三井物産 / 8031 / 1日同行ルポ', NULL, '["[nana] ハルキ、三井物産って利益の半分以上が資源権益って本当?", "[haruki] 有報に書いてある。鉄鉱石・原油・LNGの権益を自社で持つのが物産の稼ぎ方。", "[nana] 権益を『持つ』って、社員は何をしてるんだろ。今日のOB訪問で聞いてみたい。", "[haruki] それを1日同行で確かめよう。行こう。"]', 'H2: 大手町本社ビル (朝の遠景)', NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('mitsui-bussan', 2, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@99ac495/public/images/mitsui-bussan/panel_02.png', 'nana', '[nana] ここが大手町本社。デカい…
 [haruki] 誰が相手でも、先輩でも後輩でも『おはようございます』。挨拶が人によって変わらない。
 [nana] 自由闊達って、上下関係に縛られないだけじゃなくて、若手でも上司の案に真正面から反論できる、ってことらしい。
@@ -25,7 +25,7 @@ INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, charact
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('mitsui-bussan', 5, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@99ac495/public/images/mitsui-bussan/panel_05.png', 'nana', '[nana] 三井物産の年収って、どう積み上がってるの?
 [haruki] 有価証券報告書によると、従業員の平均年収は1,996万円で、平均年齢は42歳。
 [haruki] 構造としては、基本給に加えて業績連動賞与と海外駐在手当が乗る仕組み。駐在先の地域リスクや生活コストに応じて手当が設計されてるから、どこに行くかで総支給額がかなり変わってくる。
-[nana] 1,996万円はあくまで42歳時点の平均。若手のうちは業績賞与と駐在経験の積み上げが年収を引き上げる主なエンジンになるってことね。', '1,996万円(42歳平均／有価証券報告書)+業績連動×駐在手当の構造', '基本給×業績賞与×海外駐在手当で積み上がる年収設計', '人事データブック (出典あり)', '["[nana] 三井物産の年収って、どう積み上がってるの?", "[haruki] 有価証券報告書によると、従業員の平均年収は1,996万円で、平均年齢は42歳。", "[haruki] 構造としては、基本給に加えて業績連動賞与と海外駐在手当が乗る仕組み。駐在先の地域リスクや生活コストに応じて手当が設計されてるから、どこに行くかで総支給額がかなり変わってくる。", "[nana] 1,996万円はあくまで42歳時点の平均。若手のうちは業績賞与と駐在経験の積み上げが年収を引き上げる主なエンジンになるってことね。"]', NULL, NULL);
+[nana] 42歳時点の平均で1,996万円。若手のうちは業績賞与と駐在経験の積み上げが、年収を引き上げる主なエンジンになるってことね。', '1,996万円(42歳平均／有価証券報告書)+業績連動×駐在手当の構造', '基本給×業績賞与×海外駐在手当で積み上がる年収設計', '人事データブック (出典あり)', '["[nana] 三井物産の年収って、どう積み上がってるの?", "[haruki] 有価証券報告書によると、従業員の平均年収は1,996万円で、平均年齢は42歳。", "[haruki] 構造としては、基本給に加えて業績連動賞与と海外駐在手当が乗る仕組み。駐在先の地域リスクや生活コストに応じて手当が設計されてるから、どこに行くかで総支給額がかなり変わってくる。", "[nana] 42歳時点の平均で1,996万円。若手のうちは業績賞与と駐在経験の積み上げが、年収を引き上げる主なエンジンになるってことね。"]', NULL, NULL);
 INSERT OR REPLACE INTO company_panels (company_id, panel_num, image_url, character, dialogue, main_copy, sub_copy, source_url, script_json, visual_hook, brand_object_json) VALUES ('mitsui-bussan', 6, 'https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@99ac495/public/images/mitsui-bussan/panel_06.png', 'nana', '[nana] OB先輩、今日はありがとうございます。働き方ってどんな感じですか?
 [OB先輩] フレックス・リモートが両方使えるよ。海外取引で夜のオンライン会議は普通にあるけどね。
 [OB先輩] 福利厚生で大きいのは、社宅と海外駐在帯同手当。私もシンガポール駐在中は家族の生活もカバーされた。家計の心配なく仕事に集中できたよ。
