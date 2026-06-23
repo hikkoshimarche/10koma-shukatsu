@@ -104,26 +104,11 @@ function collectAttention(){
   return items;
 }
 
-/* ---------- 3) 1日1回 LINEダイジェスト ---------- */
-function dailyDigestToLine(){
-  const token = PropertiesService.getScriptProperties().getProperty('LINE_CHANNEL_ACCESS_TOKEN');
-  const groupId = PropertiesService.getScriptProperties().getProperty('LINE_GROUP_ID');
-  const items = collectAttention();
-  const url = SpreadsheetApp.getActiveSpreadsheet().getUrl();
-  const byContent = {};
-  items.forEach(function(it){ byContent[it.content]=(byContent[it.content]||0)+1; });
-  const head = '【トーキャリ進捗・本日】要対応 ' + items.length + '件';
-  const lines = Object.keys(byContent).map(function(k){return '・'+k+': '+byContent[k]+'件';});
-  const detail = items.slice(0,15).map(function(it){return '└ '+it.content+'/'+it.company;});
-  if(items.length>15) detail.push('…他'+(items.length-15)+'件');
-  const text = [head, lines.join('\n'), detail.join('\n'), url].filter(String).join('\n');
-  if(!token || !groupId){ Logger.log('LINE未設定。本文:\n'+text); return; }
-  UrlFetchApp.fetch('https://api.line.me/v2/bot/message/push', {
-    method:'post', contentType:'application/json',
-    headers:{ Authorization:'Bearer '+token },
-    payload: JSON.stringify({ to: groupId, messages:[{ type:'text', text: text }] })
-  });
-}
+/* ---------- 3) 1日1回 LINEダイジェスト ----------
+ * [削除 2026-06-22] dailyDigestToLine は lineMorningList(buildMorningDigest) と
+ * 朝の二重送信源だったため関数・トリガーともに撤去。朝の通知は lineMorningList(9時) に一本化。
+ * 経緯: LINE 429調査の過程でトリガーを line3hSummary×5 + lineMorningList×1 の計6本に正常化。
+ */
 
 /* ---------- 4) 今日の指示書(Markdown) ---------- */
 function generateDailyInstruction(){

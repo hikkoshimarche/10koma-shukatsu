@@ -55,6 +55,19 @@ function handleExt(mode, e, token){
     return _json({ok:true, row:sh.getLastRow()});
   }
 
+  if(mode === 'deltrigger'){
+    // 指定関数名のトリガーを削除し、残トリガーを列挙(429対策のレガシー重複除去用)。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const fn = e.parameter.fn || '';
+    let deleted = 0;
+    ScriptApp.getProjectTriggers().forEach(function(t){
+      if(t.getHandlerFunction() === fn){ ScriptApp.deleteTrigger(t); deleted++; }
+    });
+    const remain = ScriptApp.getProjectTriggers().map(function(t){ return t.getHandlerFunction(); });
+    const tally = {}; remain.forEach(function(f){ tally[f] = (tally[f]||0)+1; });
+    return _json({deleted:deleted, count:remain.length, tally:tally});
+  }
+
   if(mode === 'linequota'){
     // 実測: 当月quota(type/value) + consumption(totalUsage) + bot情報(どのチャネルか) + 生レスポンス。
     if(!_authed(e, token)) return _json({error:'unauthorized'});
