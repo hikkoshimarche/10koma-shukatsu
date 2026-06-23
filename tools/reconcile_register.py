@@ -87,7 +87,10 @@ def main():
             nomatch.append(slug); continue
         if existing_url.get(key, "").startswith("http"):
             continue  # 冪等: 既設skip
-        payload.append({"row": row, "slug": slug, "kind": "gemini" if r["v4"] == 1 else "old"})
+        # 旧ChatGPT画像(script_json無=v4でない)は FB面に出さない=quarantine(状態1=旧画像・再生成待ち)。
+        # 公開URLを付けてCFオレンジ化する事故を再発させない。Gemini完成社のみ正式登録。
+        kind = "gemini" if r["v4"] == 1 else "quarantine"
+        payload.append({"row": row, "slug": slug, "kind": kind})
     if not payload:
         log(f"未登録なし(D1 {len(d1)}社・全て掲載済 / nomatch {len(nomatch)})"); return 0
     # 4. bulkregister(25件/バッチ)

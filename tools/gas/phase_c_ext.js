@@ -103,23 +103,26 @@ function handleExt(mode, e, token){
     const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(KOMA_SHEET);
     const rows = (e.parameter.rows||'').split(';;').filter(String);
     const base = 'https://10koma-shukatsu.pages.dev/company?id=';
-    let matched=0, oranged=0, noted=0; const errs=[];
+    const QUARANTINE = '旧画像・再生成待ち';   // 機械可読・可視の状態値(非オレンジ)。セルコメントは事故原因なので不可。
+    let matched=0, oranged=0, quarantined=0; const errs=[];
     rows.forEach(function(item){
       const a=item.split('|'); const row=parseInt(a[0],10), slug=a[1], kind=a[2];
       if(!(row>=CONFIG.FIRST_ROW)){ errs.push('badrow:'+a[0]); return; }
-      sh.getRange(row, CONFIG.COL.公開URL).setValue(base+slug);
       sh.getRange(row, CONFIG.COL.最終更新).setValue(new Date());
       if(kind==='gemini'){
-        sh.getRange(row, jotCol(1)).setValue('');                 // 状態1空け→CFオレンジ(FB1待ち)
-        sh.getRange(row, CONFIG.COL.公開URL).clearNote();
+        // Gemini完成のみFB1待ち面へ: 公開URL記入 + 状態1空→CFオレンジ
+        sh.getRange(row, CONFIG.COL.公開URL).setValue(base+slug).clearNote();
+        sh.getRange(row, jotCol(1)).setValue('');
         oranged++;
       } else {
-        sh.getRange(row, CONFIG.COL.公開URL).setNote('要Gemini再生成（旧ChatGPT画像・完成扱いにしない）');
-        noted++;
+        // old/quarantine(旧ChatGPT画像): FB面に出さない。公開URL列を空に + 状態1を可視の隔離状態値に。
+        sh.getRange(row, CONFIG.COL.公開URL).setValue('').clearNote();
+        sh.getRange(row, jotCol(1)).setValue(QUARANTINE);
+        quarantined++;
       }
       matched++;
     });
-    return _json({matched:matched, oranged:oranged, noted:noted, errs:errs});
+    return _json({matched:matched, oranged:oranged, quarantined:quarantined, errs:errs});
   }
 
   if(mode === 'markcommonfix'){
