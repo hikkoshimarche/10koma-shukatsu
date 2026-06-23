@@ -123,6 +123,13 @@ def main():
         except Exception:
             ng.append(s)
     print(f"  200(panels=10): {len(todo)-len(ng)}/{len(todo)}  NG={ng or 'なし'}")
+
+    # [7] Notion台本同期(本番反映と一対・D1が正)。200確認できた社のみ。
+    ok_slugs = [s for s, _ in todo if s not in ng]
+    if ok_slugs:
+        print("\n[7] Notion台本同期(D1=正)")
+        subprocess.run([TPY, "scripts/notion_sync_d1.py", "--slugs", ",".join(ok_slugs)],
+                       cwd=str(TOK), timeout=900)
     print(f"\n✅ {args.industry}: {len(todo)-len(ng)}社 本番投入 (公開URLは毎時sheetsyncが起票)")
     if skipped:
         print(f"   画像未完 {len(skipped)}社は据置(Gemini生成待ち): {skipped}")

@@ -110,6 +110,12 @@ def main():
                 ng.append(s)
         except Exception as ex:
             print(f"  {s:18} ❌{ex}"); ng.append(s)
+    # Notion台本同期(本番反映と一対・D1が正)
+    ok_slugs = [s for s, _ in todo if s not in ng]
+    if ok_slugs:
+        print("\n[7] Notion台本同期(D1=正)")
+        subprocess.run([TPY, "scripts/notion_sync_d1.py", "--slugs", ",".join(ok_slugs)],
+                       cwd=str(TOK), timeout=900)
     print(f"\n✅ [{args.label}] 上書き {len(todo)-len(ng)}/{len(args.slugs)}社 (ChatGPT→Gemini化・公開URL生存)")
     return 0
 
