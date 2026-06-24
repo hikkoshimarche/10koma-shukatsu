@@ -140,6 +140,32 @@ function handleExt(mode, e, token){
     return _json({cleared:last-2});
   }
 
+  if(mode === 'roomtabvalidation'){
+    // 旧10コマ45列由来のプルダウン(状態1-10/反映1-10等)を全列除去し、L4新12列に必要な4種のみ再設定。
+    // 役割C=R1-R6 / ステータスH=完成・未生成 / 検証G=✓・✗ / 退職パターンF=A/B/C(R6行のみ)。冪等。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('AI OB訪問（ルーム）');
+    if(!sh) return _json({error:'no sheet'});
+    const lr = Math.max(sh.getLastRow(),2402), lc = Math.max(sh.getLastColumn(),45);
+    // (1) 既存データ検証を列挙(報告用)
+    const before = [];
+    const dvAll = sh.getRange(3,1,lr-2,lc).getDataValidations();
+    const colHit = {};
+    for(let i=0;i<dvAll.length;i++) for(let j=0;j<lc;j++){ if(dvAll[i][j]){ colHit[j+1]=(colHit[j+1]||0)+1; } }
+    Object.keys(colHit).forEach(function(c){ before.push('col'+c+':'+colHit[c]+'cells'); });
+    // (2) 全データ検証を一掃(rows3+, 全45列)
+    sh.getRange(3,1,lr-2,lc).clearDataValidations();
+    // (3) 必要4種を再設定 (allowInvalid=true=警告のみ・ブロックしない)
+    const mk = function(list){ return SpreadsheetApp.newDataValidation().requireValueInList(list,true).setAllowInvalid(true).build(); };
+    sh.getRange(3,3,lr-2,1).setDataValidation(mk(['R1','R2','R3','R4','R5','R6']));   // C 役割
+    sh.getRange(3,8,lr-2,1).setDataValidation(mk(['完成','未生成']));                  // H ステータス
+    sh.getRange(3,7,lr-2,1).setDataValidation(mk(['✓','✗']));                          // G 検証
+    // F 退職パターン: R6行のみ(データ行3起点で6行周期=row 8,14,20,...)
+    const r6 = []; for(let row=8; row<=lr; row+=6){ r6.push('F'+row); }
+    if(r6.length){ const dvF = mk(['A','B','C']); sh.getRangeList(r6).getRanges().forEach(function(rg){ rg.setDataValidation(dvF); }); }
+    return _json({ok:true, removed_before:before, set:['C役割R1-R6','Hステータス完成/未生成','G検証✓/✗','F退職A/B/C(R6行'+r6.length+'件)']});
+  }
+
   if(mode === 'bulkregister'){
     // wave投入済をスプシに一括起票(行指定=二重行ゼロ)。rows='row|slug|kind;;…' kind=gemini|old。
     // gemini: 公開URL記入+状態1空け→CFオレンジ(FB1待ち)。old: 公開URL記入+Note『要Gemini再生成』。
@@ -714,3 +740,5 @@ function setupTriggers(){
   });
   Logger.log('setupTriggers 完了: 9時=要対応 / 12,15,18,21,0時=直近3h');
 }
+
+// roomtabvalidation getRanges fix v2
