@@ -1,7 +1,9 @@
+# 自動生成スナップショット(正はD1+room_blocked_sync.py / スプシ「ルーム要個別対応」タブ)。fanout進行で増減する。
 社名,slug,lint種別,理由,手当て方針
-三菱商事,mitsubishi-corp,lint error(source_or_silence),倍率混入(プレエントリー14512名→採用139名の出典なき倍率がfactpackに混入),factsheetから倍率記述を除去 or RATIO_WHITELIST化
-東京エレクトロン,tokyo-electron,lint error(source_or_silence),倍率/出典なき数値混入,factsheet該当数値の出典確認・無ければ削除
-JFEホールディングス,jfe-hd,lint error(source_or_silence),倍率/出典なき数値混入,同上
-住友金属鉱山,sumitomo-metal-mining,lint error(source_or_silence),倍率/出典なき数値混入,同上
-東レ,toray,lint error(source_or_silence),倍率/出典なき数値混入,同上
-アステラス製薬,astellas,lint error(source_or_silence),倍率/出典なき数値混入,同上
+アステラス製薬,astellas,source_or_silence(lint5),倍率/出典なき数値混入,factpackから倍率・出典なき数値を除去 or 出典付きに置換 → 再fanoutで解消
+JFEホールディングス,jfe-hd,source_or_silence(lint5),倍率/出典なき数値混入,同上
+三菱商事,mitsubishi-corp,source_or_silence(lint5),倍率混入(プレエントリー14512名→採用139名の出典なき倍率),同上
+野村證券,nomura,source_or_silence(lint5),倍率/出典なき数値混入,同上
+住友金属鉱山,sumitomo-metal-mining,source_or_silence(lint5),倍率/出典なき数値混入,同上
+東京センチュリー,tokyo-century,source_or_silence(lint5),倍率/出典なき数値混入,同上
+東京エレクトロン,tokyo-electron,source_or_silence(lint5),倍率/出典なき数値混入,同上

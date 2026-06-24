@@ -166,6 +166,49 @@ function handleExt(mode, e, token){
     return _json({ok:true, removed_before:before, set:['C役割R1-R6','Hステータス完成/未生成','G検証✓/✗','F退職A/B/C(R6行'+r6.length+'件)']});
   }
 
+  if(mode === 'roomblockedtab'){
+    // 「ルーム要個別対応」タブ(AI OB訪問の隣)を恒久lintブロック社で再構成。
+    // 既存の状態(未対応/対応中/解消)は人の編集を保護。今回incomingに無い既存slug=解消扱いで残す。冪等。
+    // rows='会社名\tslug\tlint種別\t理由\t手当て方針;;...'
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ref = ss.getSheetByName('AI OB訪問（ルーム）');
+    let sh = ss.getSheetByName('ルーム要個別対応');
+    if(!sh){ sh = ss.insertSheet('ルーム要個別対応', ref ? ref.getIndex() : ss.getNumSheets()); }
+    const hdr=['会社名','slug','lint種別','理由','手当て方針','状態','更新日'];
+    const today = Utilities.formatDate(new Date(),'Asia/Tokyo','yyyy-MM-dd');
+    // 既存行を退避(状態=人の編集を保護)
+    const last = sh.getLastRow();
+    const prev = {};
+    if(last>=2){
+      const ex = sh.getRange(2,1,last-1,7).getValues();
+      ex.forEach(function(r){ if(r[1]) prev[String(r[1]).trim()]={name:r[0],kind:r[2],reason:r[3],plan:r[4],state:r[5]}; });
+    }
+    const incoming = (e.parameter.rows||'').split(';;').filter(String).map(function(r){ return r.split('\t'); });
+    const inSlugs={}; const out=[];
+    incoming.forEach(function(r){
+      const slug=r[1]; inSlugs[slug]=true;
+      const keep = (prev[slug] && prev[slug].state && prev[slug].state!=='解消') ? prev[slug].state : '未対応';
+      out.push([r[0],slug,r[2]||'',r[3]||'',r[4]||'',keep,today]);
+    });
+    // 今回incomingに無い既存slug = 解消(行は残す)
+    Object.keys(prev).forEach(function(slug){
+      if(!inSlugs[slug]){ const p=prev[slug]; out.push([p.name,slug,p.kind,p.reason,p.plan,'解消',today]); }
+    });
+    sh.clear();
+    sh.getRange(1,1,1,7).setValues([hdr]).setFontWeight('bold').setBackground('#cfe2f3');
+    if(out.length) sh.getRange(2,1,out.length,7).setValues(out).setFontColor('#1155cc'); // 青=自動転記
+    const n = Math.max(out.length,1);
+    const dv = SpreadsheetApp.newDataValidation().requireValueInList(['未対応','対応中','解消'],true).setAllowInvalid(true).build();
+    sh.getRange(2,6,n,1).setDataValidation(dv);  // 状態プルダウン
+    const R = sh.getRange(2,6,n,1); const rules=[];
+    rules.push(SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('解消').setBackground('#c6efce').setRanges([R]).build());
+    rules.push(SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('未対応').setBackground('#f4cccc').setRanges([R]).build());
+    rules.push(SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('対応中').setBackground('#fff2cc').setRanges([R]).build());
+    sh.setConditionalFormatRules(rules);
+    return _json({ok:true, written:out.length, resolved:out.filter(function(r){return r[5]==='解消';}).length});
+  }
+
   if(mode === 'bulkregister'){
     // wave投入済をスプシに一括起票(行指定=二重行ゼロ)。rows='row|slug|kind;;…' kind=gemini|old。
     // gemini: 公開URL記入+状態1空け→CFオレンジ(FB1待ち)。old: 公開URL記入+Note『要Gemini再生成』。
