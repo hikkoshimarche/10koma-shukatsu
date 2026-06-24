@@ -96,6 +96,50 @@ function handleExt(mode, e, token){
     return _json({ok:true, pushed:text.length});
   }
 
+  if(mode === 'roomtabheader'){
+    // L4「AI OB訪問（ルーム）」タブを新モデルに再構成: ヘッダ刷新 + CF。FBループ列は使わない。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sh = ss.getSheetByName('AI OB訪問（ルーム）');
+    if(!sh) return _json({error:'no room tab'});
+    const hdr = ['会社名','slug','役割','氏名','人格の具体(部署/経歴/語り口)','退職パターン(R6)',
+                 '検証(lint5)','ステータス','生成日','D1','Notion','要スポット確認'];
+    sh.getRange(1,1,1,2).setValues([['🎭 トーキャリ・ルーム L4（6人格・生成+lint5=完成／人FBループ無し）','']]);
+    sh.getRange(2,1,1,hdr.length).setValues([hdr]).setFontWeight('bold').setBackground('#cfe2f3'); // 青=Claude生成
+    // 既存CFを除去して新規(完成=緑/未生成=グレー/検証✗=赤) H列ステータス + G列検証
+    let rules = sh.getConditionalFormatRules().filter(function(rl){
+      try{ var rs=rl.getRanges(); return !rs.some(function(r){return r.getColumn()===8||r.getColumn()===7;}); }catch(e){return true;}
+    });
+    const R = function(col){ return sh.getRange(3,col,2400,1); };
+    rules.push(SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('完成').setBackground('#c6efce').setRanges([R(8)]).build());
+    rules.push(SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('未生成').setBackground('#d9d9d9').setRanges([R(8)]).build());
+    rules.push(SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('✗').setBackground('#f4cccc').setRanges([R(7)]).build());
+    sh.setConditionalFormatRules(rules);
+    return _json({ok:true, header:hdr.length});
+  }
+
+  if(mode === 'roomtabwrite'){
+    // 6人格行を一括書込。rows='A|B|C|...(12列タブ区切り);;...'。startRowから上書き。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('AI OB訪問（ルーム）');
+    const start = parseInt(e.parameter.start||'3',10);
+    const rows = (e.parameter.rows||'').split(';;').filter(String).map(function(r){
+      const a=r.split('\t'); while(a.length<12) a.push(''); return a.slice(0,12);
+    });
+    if(rows.length===0) return _json({written:0});
+    sh.getRange(start,1,rows.length,12).setValues(rows);
+    sh.getRange(start,1,rows.length,12).setFontColor('#1155cc'); // 入力者色=青(Claude生成)
+    return _json({written:rows.length, start:start, next:start+rows.length});
+  }
+
+  if(mode === 'roomtabclear'){
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('AI OB訪問（ルーム）');
+    const last = sh.getLastRow();
+    if(last>=3) sh.getRange(3,1,last-2,Math.max(12,sh.getLastColumn())).clearContent();
+    return _json({cleared:last-2});
+  }
+
   if(mode === 'bulkregister'){
     // wave投入済をスプシに一括起票(行指定=二重行ゼロ)。rows='row|slug|kind;;…' kind=gemini|old。
     // gemini: 公開URL記入+状態1空け→CFオレンジ(FB1待ち)。old: 公開URL記入+Note『要Gemini再生成』。
@@ -168,6 +212,32 @@ function handleExt(mode, e, token){
       }
     }
     return _json({formula_changed:f_changed, header_changed:h_changed});
+  }
+
+  if(mode === 'roomdashboard'){
+    // AI OB訪問(ルーム)行をL4機械ゲートモデルに修正: ステータスH列(完成/未生成)を6で割り社数化。
+    // 旧式はC列(役割R1-R6)を指し常に0%だった不整合を解消。人FBループ列は概念無し→「—」。
+    // 全体サマリーE7の完了数にL4完成社を算入。進捗モデル注記(人確認=3/4)を追記。母数(C7=COUNTA398)不変。冪等。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('ダッシュボード');
+    if(!sh) return _json({error:'no dashboard'});
+    const RT = "'AI OB訪問（ルーム）'!$H$3:$H$2402";  // ステータス列(完成/未生成)×2400行
+    sh.getRange('B14').setValue('AI OB訪問（ルーム）★L4機械ゲート(lint5+D1)');
+    sh.getRange('C14').setFormula('=COUNTIF('+RT+',"完成")/6');   // 完成社数=完成行/6
+    sh.getRange('D14').setValue('—');  // 公開済・FB待ち: L4は概念無し
+    sh.getRange('E14').setValue('—');  // FB対応中: 人FBループ無し
+    sh.getRange('F14').setValue('—');  // 1次完了: 人ゲート無し
+    sh.getRange('G14').setFormula('=COUNTIF('+RT+',"未生成")/6');  // 未生成社数
+    sh.getRange('H14').setFormula('=IF(C14="",0,C14/400)');        // 完成率=完成社/400
+    // 全体サマリー完了数: 旧AI OB COUNTIF"完了"(=0)をL4完成社(C14)に置換
+    sh.getRange('E7').setFormula(
+      '=COUNTIF(\'10コマ\'!$C$3:$C$405,"完了")+COUNTIF(\'企業紹介動画\'!$C$3:$C$405,"完了")'+
+      '+COUNTIF(\'決算書分析動画\'!$C$3:$C$405,"完了")+C14');
+    // 進捗モデル注記(人確認=3/4)
+    sh.getRange('B44').setValue('■ 進捗モデル');
+    sh.getRange('B45').setValue('AI OB訪問（ルーム）= L4機械ゲート: room-lint5全通過 AND D1登録 のときのみ「完成」（これでOK不要・人FBループ無し）。完成率=完成社/400。');
+    sh.getRange('B46').setValue('人確認対象 = 10コマ／企業紹介動画／決算書分析動画 の3コンテンツ（全体の3/4）。母数 C7=COUNTA 398/400 不変。');
+    return _json({ok:true, model:'L4 machine-gate row14 + E7 + 3/4 annotation'});
   }
 
   if(mode === 'markpublished'){
