@@ -31,8 +31,10 @@ GAS_TOKEN = os.environ.get("SHEET_API_TOKEN", "").strip() or "tokyari-7h2k9q4w8z
 ROLE_ORDER = ["R1", "R2", "R3", "R4", "R5", "R6"]
 
 
-def gas(params):
-    r = requests.get(GAS_URL, params={**params, "token": GAS_TOKEN}, timeout=90)
+def gas(params, post=False):
+    p = {**params, "token": GAS_TOKEN}
+    # 大きいrowsペイロードはPOST(GET URL長制限を回避)。GASはPOST formもe.parameterに入る。
+    r = requests.post(GAS_URL, data=p, timeout=120) if post else requests.get(GAS_URL, params=p, timeout=90)
     try:
         return r.json()
     except Exception:
@@ -100,13 +102,22 @@ def main():
     print("  ", gas({"mode": "roomtabheader"}))
     print("[2] 旧データclear")
     print("  ", gas({"mode": "roomtabclear"}))
-    print("[3] 6行/社 書込(30行/バッチ)")
+    # GET+10行/バッチ: 日本語はURLエンコードで~9byte/字に肥大するため、worst-case完成行でもURL長に収める。
+    print("[3] 6行/社 書込(GET・10行/バッチ)")
     start = 3
-    for i in range(0, len(rows), 30):
-        chunk = rows[i:i + 30]
+    fail = 0
+    for i in range(0, len(rows), 10):
+        chunk = rows[i:i + 10]
         payload = ";;".join("\t".join(str(c) for c in r) for r in chunk)
         res = gas({"mode": "roomtabwrite", "rows": payload, "start": str(start)})
+        if "next" not in res:
+            fail += 1
+            print(f"  ⚠ batch start={start} 失敗: {str(res)[:80]}")
         start = res.get("next", start + len(chunk))
+    if fail:
+        print(f"  ❌ 失敗バッチ {fail}件 → 要調査")
+    else:
+        print("  全バッチ成功(失敗0)")
     print(f"  書込完了 {len(rows)}行")
     print(f"\n✅ 完成 {done_companies}/400社 (6/6人格 lint5通過D1登録)。残りは未生成(fanout進行で増加)。")
     return 0

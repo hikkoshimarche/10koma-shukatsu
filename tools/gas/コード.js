@@ -127,6 +127,16 @@ function generateDailyInstruction(){
 
 /* ---------- 5) doPost：LINE Webhook（groupIdを自動保存） ---------- */
 function doPost(e){
+  // mode付きPOST(大きいrowsペイロード=GET URL長制限回避)はdoGetと同じrouterへ委譲。LINE Webhook(mode無し)は従来通り。
+  const mode = (e && e.parameter && e.parameter.mode) || '';
+  if(mode){
+    const token = PropertiesService.getScriptProperties().getProperty('SHEET_API_TOKEN');
+    if (typeof handleExt === 'function'){
+      const r = handleExt(mode, e, token);
+      if (r) return r;
+    }
+    return ContentService.createTextOutput('ok');
+  }
   try{
     const body = JSON.parse(e.postData.contents);
     (body.events||[]).forEach(function(ev){
