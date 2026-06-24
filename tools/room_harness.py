@@ -79,14 +79,15 @@ def extract_factpack(slug, company, factsheet):
         "【厳守】有効なJSONのみ出力。文字列値の中で半角ダブルクォート(\")は絶対に使わない"
         "(引用は『』を使う)。改行は文字列値の外でのみ。```で囲まない。")
     last_raw = None
-    for attempt in range(3):
+    tries = 5  # 確率的にJSON破損するため複数回(単発成功率↑)。不運な全滅を防ぐ。
+    for attempt in range(tries):
         txt = RL._anthropic(prompt, system=EXTRACT_SYS, max_tokens=8000)
         last_raw = txt
         fp = _parse_json_lenient(txt)
         if fp:
             return fp
-        if attempt < 2:
-            time.sleep(2 ** attempt)  # 1s,2s 指数バックオフ
+        if attempt < tries - 1:
+            time.sleep(min(2 ** attempt, 8))  # 指数バックオフ(上限8s)
     # 最終手段: Claude自身に「値は変えずに有効なJSONへ修復」させる(捏造でなく構文修復)
     try:
         fix = RL._anthropic(
