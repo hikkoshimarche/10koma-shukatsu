@@ -1,0 +1,7 @@
+社名,slug,lint種別,理由,手当て方針
+三菱商事,mitsubishi-corp,lint error(source_or_silence),倍率混入(プレエントリー14512名→採用139名の出典なき倍率がfactpackに混入),factsheetから倍率記述を除去 or RATIO_WHITELIST化
+東京エレクトロン,tokyo-electron,lint error(source_or_silence),倍率/出典なき数値混入,factsheet該当数値の出典確認・無ければ削除
+JFEホールディングス,jfe-hd,lint error(source_or_silence),倍率/出典なき数値混入,同上
+住友金属鉱山,sumitomo-metal-mining,lint error(source_or_silence),倍率/出典なき数値混入,同上
+東レ,toray,lint error(source_or_silence),倍率/出典なき数値混入,同上
+アステラス製薬,astellas,lint error(source_or_silence),倍率/出典なき数値混入,同上
