@@ -106,6 +106,10 @@ function handleExt(mode, e, token){
     const hdr = ['会社名','slug','役割記号','役割名','氏名','人格の具体(部署/語り口)','退職パターン(R6)',
                  '検証(lint5)','ステータス','生成日','D1','Notion','要スポット確認'];
     sh.getRange(1,1,1,2).setValues([['🎭 トーキャリ・ルーム L4（6人格・生成+lint5=完成／人FBループ無し）','']]);
+    // 旧45列由来のヘッダ残骸(14列目以降 FB3/状態3.../最終更新)を消去
+    if(sh.getLastColumn()>hdr.length){
+      sh.getRange(1,hdr.length+1,2,sh.getLastColumn()-hdr.length).clearContent();
+    }
     sh.getRange(2,1,1,hdr.length).setValues([hdr]).setFontWeight('bold').setBackground('#cfe2f3'); // 青=Claude生成
     // 既存CFを除去して新規(完成=緑/未生成=グレー/検証✗=赤) I列ステータス(9) + H列検証(8)
     let rules = sh.getConditionalFormatRules().filter(function(rl){
