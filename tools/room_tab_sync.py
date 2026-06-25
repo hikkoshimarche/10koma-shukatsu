@@ -77,10 +77,11 @@ def main():
             done_companies += 1
         for role in ROLE_ORDER:
             rdef = RL.ROLES[role]
+            yakume = rdef["label"]   # 役割名(若手エース等)
             p = prs.get(role)
             if p:
-                jin = p.get("persona_name", "")
-                gutai = f"{rdef['label']} / 語り口:{rdef['tone'][:20]}"
+                jin = p.get("persona_name", "")   # 氏名(個人名)
+                gutai = f"語り口:{rdef['tone'][:24]}"
                 retire = "A/B/C(R6のみ)" if role == "R6" else ""
                 kensho = "✓"
                 status = "完成" if complete else "未生成"
@@ -92,10 +93,11 @@ def main():
                     if h == 0:
                         spot = "要スポット確認"
             else:
-                jin = ""; gutai = rdef["label"]; retire = ""; kensho = ""; status = "未生成"; gen = ""; spot = ""
+                jin = ""; gutai = ""; retire = ""; kensho = ""; status = "未生成"; gen = ""; spot = ""
             d1link = f"room_personas:{slug}/{role}" if p else ""
             notion = f"https://www.notion.so/{pid[slug].replace('-','')}" if slug in pid else ""
-            rows.append([name, slug, role, jin, gutai, retire, kensho, status, gen, d1link, notion, spot])
+            # 13列: 会社名/slug/役割記号/役割名/氏名/人格具体/退職/検証/ステータス/生成日/D1/Notion/spot
+            rows.append([name, slug, role, yakume, jin, gutai, retire, kensho, status, gen, d1link, notion, spot])
 
     print(f"=== AI OB訪問タブ再構成: {len(companies)}社×6 = {len(rows)}行 / 完成(6/6 lint通過D1) {done_companies}社 ===")
     print("[1] ヘッダ+CF刷新")

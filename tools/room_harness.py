@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 import room_lib as RL  # noqa: E402
 import company_master as _cm  # noqa: E402
+import room_names as RN  # noqa: E402
 try:
     from dotenv import load_dotenv as _ld; _ld(ROOT / ".env")
 except Exception:
@@ -121,26 +122,22 @@ def build_persona(slug, company, role, factpack):
         "可視factのみ) ④Source-or-Silence(出典なき数字・倍率・年次年収ラダーは言わない/deflectionで正直に逃げる) "
         "⑤体験はdna_envelope内で・存在しない事業制度は創作しない ⑥NG領域は他人格に振る ⑦意思決定を歪めない+深刻相談は人へ "
         "⑧LINE向け2〜4行で短く。出力はsystem prompt本文のみ(前置き不要)。")
+    name = RN.personal_name(slug, role)  # 氏名(個人名)=決定的生成。実在の特定社員ではないAIロールの表示名。
     prompt = (
-        f"会社: {company} / 役割: {role} {rdef['label']} / 語り口: {rdef['tone']}\n"
+        f"会社: {company} / 役割: {role} {rdef['label']} / 氏名: {name} / 語り口: {rdef['tone']}\n"
         f"{('特則: '+special) if special else ''}\n"
         f"【この役割が話してよい事実(出典付き)】\n{facts_txt}\n"
         f"【deflection_rules(公式に無い→正直に逃げる)】\n{defl_txt}\n"
         f"【dna_envelope(体験の封筒)】{env_txt}\n"
         f"【NGルーティング】{rdef['ng']}\n\n{RL.GUARDRAILS}\n\n"
-        "上記を金型と同じ構造で1つのsystem promptに統合して書け。")
+        f"上記を金型と同じ構造で1つのsystem promptに統合して書け。"
+        f"最初のAI開示で『私はAIによるOB訪問シミュレーション、{company}の{rdef['label']}「{name}」です。"
+        "実在の特定社員ではなく、公式情報をもとにした人物像です』と名乗ること(実在人物を騙らない)。")
     body = RL._anthropic(prompt, system=sys_p, max_tokens=2000)
     # 設計『共通ガードレールは全6人格の必携ブロック』→ verbatim付与(envelope/AI開示/ルーティング/R6を確実に内包)。
     env_line = f"\n【封筒(dna_envelope)】体験を語るのは自由だが範囲内({env_txt})。存在しない事業・制度・固有の機密数字は創作しない。"
     full = body.strip() + "\n\n" + RL.GUARDRAILS + env_line
-    name = _extract_name(body, role)
     return full, name
-
-
-def _extract_name(prompt_body, role):
-    # L4設計上、人格は「実在の人物ではありません」と明示するAIロール=実在氏名を持たない。
-    # 旧実装は本文の最初の「」(=セリフ例)を誤って氏名に拾い汚染していた。役割ラベルを正とする。
-    return RL.ROLES[role]["label"]
 
 
 def load_state():

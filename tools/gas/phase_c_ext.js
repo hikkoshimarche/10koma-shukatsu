@@ -102,33 +102,34 @@ function handleExt(mode, e, token){
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const sh = ss.getSheetByName('AI OB訪問（ルーム）');
     if(!sh) return _json({error:'no room tab'});
-    const hdr = ['会社名','slug','役割','氏名','人格の具体(部署/経歴/語り口)','退職パターン(R6)',
+    // 3層: 役割記号(C=R1-R6)/役割名(D=若手エース等)/氏名(E=個人名)。計13列。
+    const hdr = ['会社名','slug','役割記号','役割名','氏名','人格の具体(部署/語り口)','退職パターン(R6)',
                  '検証(lint5)','ステータス','生成日','D1','Notion','要スポット確認'];
     sh.getRange(1,1,1,2).setValues([['🎭 トーキャリ・ルーム L4（6人格・生成+lint5=完成／人FBループ無し）','']]);
     sh.getRange(2,1,1,hdr.length).setValues([hdr]).setFontWeight('bold').setBackground('#cfe2f3'); // 青=Claude生成
-    // 既存CFを除去して新規(完成=緑/未生成=グレー/検証✗=赤) H列ステータス + G列検証
+    // 既存CFを除去して新規(完成=緑/未生成=グレー/検証✗=赤) I列ステータス(9) + H列検証(8)
     let rules = sh.getConditionalFormatRules().filter(function(rl){
-      try{ var rs=rl.getRanges(); return !rs.some(function(r){return r.getColumn()===8||r.getColumn()===7;}); }catch(e){return true;}
+      try{ var rs=rl.getRanges(); return !rs.some(function(r){return r.getColumn()===9||r.getColumn()===8;}); }catch(e){return true;}
     });
     const R = function(col){ return sh.getRange(3,col,2400,1); };
-    rules.push(SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('完成').setBackground('#c6efce').setRanges([R(8)]).build());
-    rules.push(SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('未生成').setBackground('#d9d9d9').setRanges([R(8)]).build());
-    rules.push(SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('✗').setBackground('#f4cccc').setRanges([R(7)]).build());
+    rules.push(SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('完成').setBackground('#c6efce').setRanges([R(9)]).build());
+    rules.push(SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('未生成').setBackground('#d9d9d9').setRanges([R(9)]).build());
+    rules.push(SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('✗').setBackground('#f4cccc').setRanges([R(8)]).build());
     sh.setConditionalFormatRules(rules);
     return _json({ok:true, header:hdr.length});
   }
 
   if(mode === 'roomtabwrite'){
-    // 6人格行を一括書込。rows='A|B|C|...(12列タブ区切り);;...'。startRowから上書き。
+    // 6人格行を一括書込。rows='A|B|...(13列タブ区切り);;...'。startRowから上書き。
     if(!_authed(e, token)) return _json({error:'unauthorized'});
     const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('AI OB訪問（ルーム）');
     const start = parseInt(e.parameter.start||'3',10);
     const rows = (e.parameter.rows||'').split(';;').filter(String).map(function(r){
-      const a=r.split('\t'); while(a.length<12) a.push(''); return a.slice(0,12);
+      const a=r.split('\t'); while(a.length<13) a.push(''); return a.slice(0,13);
     });
     if(rows.length===0) return _json({written:0});
-    sh.getRange(start,1,rows.length,12).setValues(rows);
-    sh.getRange(start,1,rows.length,12).setFontColor('#1155cc'); // 入力者色=青(Claude生成)
+    sh.getRange(start,1,rows.length,13).setValues(rows);
+    sh.getRange(start,1,rows.length,13).setFontColor('#1155cc'); // 入力者色=青(Claude生成)
     return _json({written:rows.length, start:start, next:start+rows.length});
   }
 
@@ -136,7 +137,7 @@ function handleExt(mode, e, token){
     if(!_authed(e, token)) return _json({error:'unauthorized'});
     const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('AI OB訪問（ルーム）');
     const last = sh.getLastRow();
-    if(last>=3) sh.getRange(3,1,last-2,Math.max(12,sh.getLastColumn())).clearContent();
+    if(last>=3) sh.getRange(3,1,last-2,Math.max(13,sh.getLastColumn())).clearContent();
     return _json({cleared:last-2});
   }
 
@@ -155,15 +156,15 @@ function handleExt(mode, e, token){
     Object.keys(colHit).forEach(function(c){ before.push('col'+c+':'+colHit[c]+'cells'); });
     // (2) 全データ検証を一掃(rows3+, 全45列)
     sh.getRange(3,1,lr-2,lc).clearDataValidations();
-    // (3) 必要4種を再設定 (allowInvalid=true=警告のみ・ブロックしない)
+    // (3) 必要4種を再設定 (allowInvalid=true=警告のみ・ブロックしない) ※13列化で列位置シフト
     const mk = function(list){ return SpreadsheetApp.newDataValidation().requireValueInList(list,true).setAllowInvalid(true).build(); };
-    sh.getRange(3,3,lr-2,1).setDataValidation(mk(['R1','R2','R3','R4','R5','R6']));   // C 役割
-    sh.getRange(3,8,lr-2,1).setDataValidation(mk(['完成','未生成']));                  // H ステータス
-    sh.getRange(3,7,lr-2,1).setDataValidation(mk(['✓','✗']));                          // G 検証
-    // F 退職パターン: R6行のみ(データ行3起点で6行周期=row 8,14,20,...)
-    const r6 = []; for(let row=8; row<=lr; row+=6){ r6.push('F'+row); }
+    sh.getRange(3,3,lr-2,1).setDataValidation(mk(['R1','R2','R3','R4','R5','R6']));   // C 役割記号
+    sh.getRange(3,9,lr-2,1).setDataValidation(mk(['完成','未生成']));                  // I ステータス
+    sh.getRange(3,8,lr-2,1).setDataValidation(mk(['✓','✗']));                          // H 検証
+    // G 退職パターン: R6行のみ(データ行3起点で6行周期=row 8,14,20,...)
+    const r6 = []; for(let row=8; row<=lr; row+=6){ r6.push('G'+row); }
     if(r6.length){ const dvF = mk(['A','B','C']); sh.getRangeList(r6).getRanges().forEach(function(rg){ rg.setDataValidation(dvF); }); }
-    return _json({ok:true, removed_before:before, set:['C役割R1-R6','Hステータス完成/未生成','G検証✓/✗','F退職A/B/C(R6行'+r6.length+'件)']});
+    return _json({ok:true, removed_before:before, set:['C役割記号R1-R6','Iステータス完成/未生成','H検証✓/✗','G退職A/B/C(R6行'+r6.length+'件)']});
   }
 
   if(mode === 'roomblockedtab'){
@@ -290,7 +291,7 @@ function handleExt(mode, e, token){
     if(!_authed(e, token)) return _json({error:'unauthorized'});
     const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('ダッシュボード');
     if(!sh) return _json({error:'no dashboard'});
-    const RT = "'AI OB訪問（ルーム）'!$H$3:$H$2402";  // ステータス列(完成/未生成)×2400行
+    const RT = "'AI OB訪問（ルーム）'!$I$3:$I$2402";  // ステータス列I(13列化でH→I)×2400行
     sh.getRange('B14').setValue('AI OB訪問（ルーム）★L4機械ゲート(lint5+D1)');
     sh.getRange('C14').setFormula('=COUNTIF('+RT+',"完成")/6');   // 完成社数=完成行/6
     sh.getRange('D14').setValue('—');  // 公開済・FB待ち: L4は概念無し
