@@ -22,6 +22,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import room_lib as RL  # noqa: E402
 import company_master as _cm  # noqa: E402
 import room_names as RN  # noqa: E402
+import room_industry_roles as RIR  # noqa: E402
 try:
     from dotenv import load_dotenv as _ld; _ld(ROOT / ".env")
 except Exception:
@@ -109,8 +110,12 @@ def visible_facts(factpack, role):
     return out
 
 
-def build_persona(slug, company, role, factpack):
-    rdef = RL.ROLES[role]
+def build_persona(slug, company, role, factpack, industry=""):
+    rdef = RL.ROLES[role]                      # base: special(R3擬似面接)・NG routing
+    idef = RIR.role_def(industry, role)        # 業界別: label(役割名)・gist(語ること)・tone(語り口)
+    label = idef["label"]; tone = idef["tone"]; gist = idef["gist"]
+    # NGルーティングは業界の6役割labelで再構成(他人格に振る先を業界用に整合)
+    others = "・".join(f"{r}={RIR.role_def(industry, r)['label']}" for r in RL.ROLES if r != role)
     facts = visible_facts(factpack, role)
     facts_txt = "\n".join(f"- {f.get('claim')} (出典:{f.get('出典') or f.get('source')})" for f in facts)
     defl_txt = "\n".join(f"- {d.get('topic')} → {d.get('line')}" for d in factpack.get("deflection_rules", []))
@@ -121,17 +126,19 @@ def build_persona(slug, company, role, factpack):
         "1人格のsystem promptを書く。必ず含める: ①最初の発話でAI開示 ②役割の語り口 ③話してよい会社の事実(出典付き・"
         "可視factのみ) ④Source-or-Silence(出典なき数字・倍率・年次年収ラダーは言わない/deflectionで正直に逃げる) "
         "⑤体験はdna_envelope内で・存在しない事業制度は創作しない ⑥NG領域は他人格に振る ⑦意思決定を歪めない+深刻相談は人へ "
-        "⑧LINE向け2〜4行で短く。出力はsystem prompt本文のみ(前置き不要)。")
+        "⑧LINE向け2〜4行で短く。出力はsystem prompt本文のみ(前置き不要)。"
+        "【重要】この人格は業界別の役割。実在しない属性(その業界・会社に無い職種や海外駐在等)は付けない(Source-or-Silence)。")
     name = RN.personal_name(slug, role)  # 氏名(個人名)=決定的生成。実在の特定社員ではないAIロールの表示名。
     prompt = (
-        f"会社: {company} / 役割: {role} {rdef['label']} / 氏名: {name} / 語り口: {rdef['tone']}\n"
+        f"会社: {company} / 業界: {industry} / 役割: {role} {label} / 氏名: {name} / 語り口: {tone}\n"
+        f"【この役割が主に語ること】{gist}\n"
         f"{('特則: '+special) if special else ''}\n"
         f"【この役割が話してよい事実(出典付き)】\n{facts_txt}\n"
         f"【deflection_rules(公式に無い→正直に逃げる)】\n{defl_txt}\n"
         f"【dna_envelope(体験の封筒)】{env_txt}\n"
-        f"【NGルーティング】{rdef['ng']}\n\n{RL.GUARDRAILS}\n\n"
-        f"上記を金型と同じ構造で1つのsystem promptに統合して書け。"
-        f"最初のAI開示で『私はAIによるOB訪問シミュレーション、{company}の{rdef['label']}「{name}」です。"
+        f"【NGルーティング】守備範囲外は他人格({others})へ振る\n\n{RL.GUARDRAILS}\n\n"
+        f"上記を金型と同じ構造で1つのsystem promptに統合して書け。役割「{label}」として『主に語ること』に沿う人物像にする。"
+        f"最初のAI開示で『私はAIによるOB訪問シミュレーション、{company}の{label}「{name}」です。"
         "実在の特定社員ではなく、公式情報をもとにした人物像です』と名乗ること(実在人物を騙らない)。")
     body = RL._anthropic(prompt, system=sys_p, max_tokens=2000)
     # 設計『共通ガードレールは全6人格の必携ブロック』→ verbatim付与(envelope/AI開示/ルーティング/R6を確実に内包)。
@@ -174,8 +181,8 @@ def register_d1(slug, personas, factpack):
     return True, "ok"
 
 
-def process(slug, company, force=False):
-    rec = {"slug": slug, "company": company}
+def process(slug, company, force=False, industry=""):
+    rec = {"slug": slug, "company": company, "industry": industry}
     _rev = {v: k for k, v in getattr(_cm, "TOKYARI_SLUG_OVERRIDES", {}).items()}
     tslug = _rev.get(slug, slug)
     fs = ROOT / "output" / tslug / "factsheet.md"
@@ -186,7 +193,7 @@ def process(slug, company, force=False):
     factpack = extract_factpack(slug, company, fs.read_text(encoding="utf-8"))
     if not factpack:
         rec["status"] = "skip(factpack抽出失敗)"; return rec
-    personas = {role: build_persona(slug, company, role, factpack) for role in RL.ROLES}
+    personas = {role: build_persona(slug, company, role, factpack, industry) for role in RL.ROLES}
     prompts = {r: p for r, (p, n) in personas.items()}
     report, total = RL.run_room_lints(prompts, factpack)
     rec["lint_errors"] = total
@@ -209,6 +216,7 @@ def main():
     args = ap.parse_args()
     cj = json.loads(COMPANIES_JSON.read_text(encoding="utf-8"))
     id2name = {x["id"]: x["name"] for l in cj.values() for x in l}
+    id2ind = {x["id"]: ind for ind, l in cj.items() for x in l}  # slug→18業界(role定義の引き先)
     done = load_state()
 
     if args.all:
@@ -221,7 +229,7 @@ def main():
         if not args.force and done.get(slug) == "registered":
             continue
         try:
-            rec = process(slug, company, args.force)
+            rec = process(slug, company, args.force, industry=id2ind.get(slug, ""))
         except Exception as e:
             rec = {"slug": slug, "status": f"例外:{e}"}
         st = rec.get("status", "?")
