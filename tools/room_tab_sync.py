@@ -104,12 +104,13 @@ def main():
     print("  ", gas({"mode": "roomtabheader"}))
     print("[2] 旧データclear")
     print("  ", gas({"mode": "roomtabclear"}))
-    # GET+10行/バッチ: 日本語はURLエンコードで~9byte/字に肥大するため、worst-case完成行でもURL長に収める。
-    print("[3] 6行/社 書込(GET・10行/バッチ)")
+    # GET+5行/バッチ: 13列化(役割名+氏名)で行が長くなり、日本語URLエンコード肥大でworst-case完成行が
+    # 10行だとURL長超過(Bad Request)。5行に縮小して確実に収める。
+    print("[3] 6行/社 書込(GET・5行/バッチ)")
     start = 3
     fail = 0
-    for i in range(0, len(rows), 10):
-        chunk = rows[i:i + 10]
+    for i in range(0, len(rows), 5):
+        chunk = rows[i:i + 5]
         payload = ";;".join("\t".join(str(c) for c in r) for r in chunk)
         res = gas({"mode": "roomtabwrite", "rows": payload, "start": str(start)})
         if "next" not in res:
