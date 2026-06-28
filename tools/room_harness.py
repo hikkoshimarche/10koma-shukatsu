@@ -213,6 +213,7 @@ def main():
     ap.add_argument("--name")
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--industry13", help="13分類でフィルタ(例 メーカー)。段階展開用。--all と併用")
     args = ap.parse_args()
     cj = json.loads(COMPANIES_JSON.read_text(encoding="utf-8"))
     id2name = {x["id"]: x["name"] for l in cj.values() for x in l}
@@ -221,6 +222,8 @@ def main():
 
     if args.all:
         targets = [(s, id2name.get(s, s)) for s in id2name if (ROOT / "output" / s / "factsheet.md").exists()]
+        if args.industry13:  # 段階展開: 指定13分類の社のみ
+            targets = [(s, n) for s, n in targets if RIR.map13(id2ind.get(s, "")) == args.industry13]
     else:
         targets = [(args.slug, args.name or id2name.get(args.slug, args.slug))]
 

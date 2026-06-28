@@ -55,8 +55,10 @@ def d1_personas():
 
 
 def main():
+    import room_industry_roles as RIR
     cj = json.loads((REPO10 / "public" / "companies.json").read_text(encoding="utf-8"))
     companies = [(x["id"], x["name"]) for lst in cj.values() for x in lst]
+    id2ind = {x["id"]: ind for ind, lst in cj.items() for x in lst}  # slug→18業界(業界別役割名の引き先)
     # Notion page_id
     pid = {}
     nss = ROOT / "output" / "notion_sync_state.csv"
@@ -77,7 +79,7 @@ def main():
             done_companies += 1
         for role in ROLE_ORDER:
             rdef = RL.ROLES[role]
-            yakume = rdef["label"]   # 役割名(若手エース等)
+            yakume = RIR.role_def(id2ind.get(slug, ""), role)["label"]  # 役割名=業界別(メーカー=生産技術等)
             p = prs.get(role)
             if p:
                 jin = p.get("persona_name", "")   # 氏名(個人名)
