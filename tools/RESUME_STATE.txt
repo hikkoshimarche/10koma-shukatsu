@@ -1,37 +1,41 @@
-==== 再開コマンド（外出後コピペ1発で続きから・冪等）====
-# ★ルーム6人格fanout(主タスク): 登録済324社skip→残り生成→収束後タブ自動sync
-nohup caffeinate -dims ~/oscar-ai/room_fanout_loop.sh > /dev/null 2>&1 &
+==== 再開コマンド（フライト後コピペ・冪等・続きから）====
+# ★1) メーカー業界別定義の再生成 続き(--force=全67メーカーを新定義で再生成・済11社は再実行されるが冪等)
+nohup caffeinate -dims ~/oscar-ai/tokyari-pipeline/.venv/bin/python -u \
+  ~/oscar-ai/tokyari-pipeline/scripts/room_harness.py --all --industry13 メーカー --force \
+  > ~/oscar-ai/resume_room_makers.log 2>&1 &
 
-# (任意) タブを即D1一致させたい場合のみ先に手動sync ~14分
-# cd ~/oscar-ai/tokyari-pipeline && .venv/bin/python scripts/room_tab_sync.py
+# ★2) メーカー完了後にタブ/ダッシュを業界別役割名へ更新(生産技術/研究開発を表示・~28分)
+# cd ~/oscar-ai/tokyari-pipeline && .venv/bin/python scripts/room_tab_sync.py && \
+#   curl -sL "https://script.google.com/macros/s/AKfycbyhe5TuRbl0I8zV6-BUCmDGGL3MITkoqJSJZy_JzpkgPJWtSQNuPK9E7PDsPleCaQdYbw/exec?mode=roomdashboard&token=tokyari-7h2k9q4w8z"
 
-# (参考・旧タスク) 夜間画像生成 / Notionバックフィルは下部に保管
+# (参考) 全業界フル展開はメーカー再検証→Oscar承認後。通常fanout(非メーカー残社の生成継続)は:
+#   nohup caffeinate -dims ~/oscar-ai/room_fanout_loop.sh > /dev/null 2>&1 &
 
-==== スナップショット (2026-06-25 外出のため安全停止) ====
-▼ ルームL4 6人格fanout 到達点(実測):
-- D1 room_personas 完成(6/6) = 324社 / 400 (81%)
-- 氏名列 = 全行クリーン(役割ラベル・汚染0行)。部分登録(半端)社 = 0 (削除済=クリーン)
-- 抽出失敗で未登録 = 0社 (抽出堅牢化で(a)技術問題は完全解消)
-- 倍率lintブロック = 13社(人手当て要・捏造拒否で据置):
-  アステラス製薬/ベイン/BCG/BIPROGY/EYストラテジー/IBMコンサルティング/
-  JFEホールディングス/花王/三菱商事/村田製作所/野村證券/PKSHA/住友金属鉱山
-  → スプシ「ルーム要個別対応」タブ + tools/room_blocked.csv。
-    手当て=factpackから倍率・出典なき数値を除去 or 出典付き置換 → 再fanoutで解消。
-- 残り未完成 ≈ 63社 はループ再開で回収予定 → 収束見込み ~387/400(残13=要データ手当て)
+==== スナップショット (2026-06-29 フライトのため安全停止) ====
+▼ ルームL4 業界別役割 再設計 到達点(実測):
+- D1 room_personas 完成(6/6) = 377社 / 400。部分登録(半端)=0社(クリーン)。
+- ★メーカー業界別定義の再生成: 11/67社 完了(自動車全11+ソニー)。残56社は次回--forceで続き。
+    完了済: toyota-motor/honda/suzuki/subaru/mazda/mitsubishi-motors/isuzu/aisin/denso/toyota-shokki/sony-group
+    新定義検証: sony R2=生産技術✓ R5=研究開発✓ (理系2人・海外駐在消滅)。三井(商社)R5=海外駐在維持✓(無影響)。
+- 倍率lintブロック=9社(アステラス/ベイン/電通/EY/JFE/花王/講談社/野村/住友金属鉱山)。室「要個別対応」タブ。
+- 氏名(個人名)レイヤは全社維持(役割名と別)。三井=金型6名固定。
 
-▼ スプシ整合の注意:
-- D1=324 だが「AI OB訪問（ルーム）」タブ表示=106社で乖離(=収束待ちの遅延)。
-  これは半端データでなく古い一貫スナップショット(全行 完成or未生成・空白0)。
-  再開ループが収束時に room_tab_sync+room_blocked_sync+roomdashboard を自動実行し324へ更新。
+▼ 業界別役割 設計(確定):
+- room_industry_roles.py に13分類×6役割。R2/R4/R5を業界差し替え、R1/R3/R6普遍枠。
+- メーカー: R2=生産技術 / R5=研究開発(理系2人)。コンサル: R5=現役シニア / R6=辞めた人。インフラ: R5=地域密着(海外駐在外す)。
+- Oscar確定: メーカー先行展開。ゲーム=IT・AI・SaaS / 日用品化粧品=メーカー(確定)。
+- 非メーカー(368社の大半)は旧定義のまま=フル展開は承認後に --industry13 を外して --force。
+
+▼ スプシ整合:
+- タブの役割名は未更新(メーカー再生成が途中・room_tab_syncは流していない)。再開の★2で業界別役割名へ更新。
+- D1=377 だがタブ完成表示は前回sync時点で乖離(古い一貫スナップショット・半端ではない)。
 
 ▼ プロセス/環境:
-- 停止済: room_fanout_loop.sh / room_harness.py --all / caffeinate (残0・重複なし)
-- 自走FBループ launchd com.tokyari.phasec = 触っていない(Mac起動で自動復帰)
-- clasp = 再失効(invalid_rapt)。resyncはデプロイ済GASmode呼出のみ=clasp不要。
-  GASコード変更時のみ `cd ~/projects/10koma-shukatsu/tools/gas && clasp login` で再認証。
-- API上限 = 停止時クリア(失敗系0)。ループ冪等=上限到達時も同コマンドで自動再開。
+- 停止済: room_harness --industry13 / post_makers_sync.sh / caffeinate (残0・重複なし)。
+- 自走FBループ launchd com.tokyari.phasec = 触っていない(Mac起動で自動復帰)。
+- clasp = 失効しうる(invalid_rapt)。resyncはデプロイ済GASmode呼出=clasp不要。GAS変更時のみ clasp login 再認証。
+- API上限 = 停止時クリア。全工程冪等=上限到達も同コマンドで自動再開。
 
 ==== (旧タスク保管) 夜間画像生成/Notionバックフィル ====
-# 画像: caffeinate -dims bash -c 'cd ~/oscar-ai/tokyari-pipeline; for I in "航空・運輸・物流" "広告・メディア" "不動産・建設" "IT・通信・SaaS"; do .venv/bin/python scripts/drive_images_industry.py "$I"; done' > ~/oscar-ai/resume_imggen.log 2>&1 &
+# 画像: for I in 航空・運輸・物流 広告・メディア 不動産・建設 IT・通信・SaaS; do .venv/bin/python scripts/drive_images_industry.py "$I"; done
 # Notion: notion_sync_d1.py --slugs "$SLUGS" (未同期社のみ・タイトルガード)
-# 旧スナップショット(2026-06-24 16:52): 画像 航空20/20・広告27/30・不動産7/30・IT1/44 / Notion196社 / ルーム105社
