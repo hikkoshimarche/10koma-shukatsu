@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key>
+		<string>/Users/oscardodds/.nvm/versions/node/v24.14.1/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+	</dict>
+	<key>Label</key>
+	<string>com.tokyari.phasec</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/bin/caffeinate</string>
+		<string>-dims</string>
+		<string>/Users/oscardodds/oscar-ai/tokyari-pipeline/.venv/bin/python</string>
+		<string>/Users/oscardodds/projects/10koma-shukatsu/tools/deploy_fb.py</string>
+	</array>
+	<key>RunAtLoad</key>
+	<false/>
+	<key>StandardErrorPath</key>
+	<string>/Users/oscardodds/projects/10koma-shukatsu/logs/phasec.err.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/oscardodds/projects/10koma-shukatsu/logs/phasec.out.log</string>
+	<key>StartInterval</key>
+	<integer>3600</integer>
+	<key>WorkingDirectory</key>
+	<string>/Users/oscardodds/projects/10koma-shukatsu</string>
+</dict>
+</plist>

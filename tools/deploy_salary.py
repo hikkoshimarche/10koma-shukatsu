@@ -31,9 +31,31 @@ BACKUP = REPO / ".backups"
 CANARY = "mitsui-bussan"  # 三井=対象外。変化しないことをcanaryで監視
 
 
+import shutil as _shutil
+
+
+def _npx():
+    """npx を PATH or 既知のnvm/homebrew位置から解決(launchdの最小PATHでもnpxを見つける・恒久対策)。"""
+    p = _shutil.which("npx")
+    if p:
+        return p
+    import glob
+    for pat in (str(Path.home() / ".nvm/versions/node/*/bin/npx"),
+                "/opt/homebrew/bin/npx", "/usr/local/bin/npx"):
+        hits = sorted(glob.glob(pat))
+        if hits:
+            return hits[-1]
+    return "npx"  # 最後の砦(見つからなければ従来通り→明示的にエラー)
+
+
 def wrangler(sql_args, timeout=120):
-    cmd = ["npx", "wrangler", "d1", "execute", DB, "--remote", "--config", WRANGLER_CONFIG] + sql_args
-    return subprocess.run(cmd, cwd=str(REPO), capture_output=True, text=True, timeout=timeout)
+    import os
+    npx = _npx()
+    # npxが内部で呼ぶnodeも同じbinディレクトリにある → 子プロセスPATHに注入(launchd最小PATHでも動く恒久対策)
+    env = dict(os.environ)
+    env["PATH"] = str(Path(npx).parent) + os.pathsep + env.get("PATH", "")
+    cmd = [npx, "wrangler", "d1", "execute", DB, "--remote", "--config", WRANGLER_CONFIG] + sql_args
+    return subprocess.run(cmd, cwd=str(REPO), capture_output=True, text=True, timeout=timeout, env=env)
 
 
 def d1_query(sql):
