@@ -116,6 +116,27 @@ function handleExt(mode, e, token){
     return _json({ok:true, pushed:text.length});
   }
 
+  if(mode === 'pushlinefull'){
+    // LINE push実行し、実APIレスポンス(HTTPコード + X-Line-Request-Id + sentMessages id + 送信先groupId)を返す。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const text = e.parameter.text || '';
+    if(!text) return _json({error:'no text'});
+    const props = PropertiesService.getScriptProperties();
+    const tk = props.getProperty('LINE_CHANNEL_ACCESS_TOKEN');
+    const gid = props.getProperty('LINE_GROUP_ID');
+    if(!tk || !gid) return _json({error:'LINE未設定', has_token:!!tk, has_group:!!gid});
+    const resp = UrlFetchApp.fetch('https://api.line.me/v2/bot/message/push', {
+      method:'post', contentType:'application/json',
+      headers:{ Authorization:'Bearer '+tk },
+      payload: JSON.stringify({ to: gid, messages:[{ type:'text', text: text }] }),
+      muteHttpExceptions:true
+    });
+    const hdrs = resp.getAllHeaders();
+    return _json({ code: resp.getResponseCode(), to: gid, chars: text.length,
+                   request_id: hdrs['x-line-request-id'] || hdrs['X-Line-Request-Id'] || '',
+                   body: resp.getContentText() });
+  }
+
   if(mode === 'roomtabheader'){
     // L4「AI OB訪問（ルーム）」タブを新モデルに再構成: ヘッダ刷新 + CF。FBループ列は使わない。
     if(!_authed(e, token)) return _json({error:'unauthorized'});
