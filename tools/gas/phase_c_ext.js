@@ -55,6 +55,26 @@ function handleExt(mode, e, token){
     return _json({ok:true, row:sh.getLastRow()});
   }
 
+  if(mode === 'cleanfailnoise'){
+    // 「処理失敗・要確認: ...npx」ノイズ行(launchd PATH欠落で毎時溜まった分)を共通の修正案から除去。
+    // 実FB/実judgmentは規則にこの文字列を含まないので温存。row1(見出し)は保持。冪等。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(COMMON_SHEET);
+    if(!sh) return _json({error:'no sheet'});
+    const lr=sh.getLastRow(), lc=Math.max(sh.getLastColumn(),5);
+    if(lr<2) return _json({removed:0, kept:0});
+    const vals=sh.getRange(1,1,lr,lc).getValues();
+    const keep=[vals[0]]; let removed=0;
+    for(let i=1;i<vals.length;i++){
+      const rule=String(vals[i][1]||'');
+      if(rule.indexOf('処理失敗・要確認')>=0 && rule.indexOf('npx')>=0){ removed++; continue; }
+      keep.push(vals[i]);
+    }
+    sh.getRange(1,1,lr,lc).clearContent();
+    if(keep.length) sh.getRange(1,1,keep.length,lc).setValues(keep);
+    return _json({removed:removed, kept:keep.length-1});
+  }
+
   if(mode === 'deltrigger'){
     // 指定関数名のトリガーを削除し、残トリガーを列挙(429対策のレガシー重複除去用)。
     if(!_authed(e, token)) return _json({error:'unauthorized'});
