@@ -37,7 +37,7 @@ sys.path.insert(0, str(TOKYARI / "scripts"))
 WHITELIST = {
     "fanuc":   [1, 6],   # koma1=人物/建物の縮尺, koma6=上部の白い空白帯
     "daikin":  [1, 2],   # koma1=上部の四角い空白ボックス, koma2=腕の破綻
-    "komatsu": [1, 6],   # koma1=上部の横線(空/建物分断), koma6=人物/工場の縮尺
+    "komatsu": [1, 5, 6],  # koma1=横線, koma6=縮尺 / koma5=四角い空白枠(拡張ルーブリック auto検証・未反映)
 }
 NAMES = {"fanuc": "ファナック", "daikin": "ダイキン工業", "komatsu": "コマツ（小松製作所）"}
 

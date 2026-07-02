@@ -58,9 +58,11 @@ QA_MAX = 3
 #   再生成指示に char-ref厳守＋背景フック保持＋コラージュ/文字焼き込み禁止 を必ず注入する。
 # ============================================================================
 # 全型共通で再生成指示に注入する制約 (パイロットfanuc1/komatsu6の背景すり替え・daikin2のchar逸脱の教訓)。
+# ※プロンプトlint(prompt_lints)が .jpg 等のファイル名/メタ参照を弾くため、設定画のファイル名は書かない
+#   (char-ref自体は generate_images が chars_reference を常時適用。ここでは見た目のみ規定)。
 CHAR_REF_CONSTRAINT = (
-    "【char-ref厳守】ナナ=淡い青のカーディガン、ハルキ=ダークグリーンのシャツ＋ジャケット、"
-    "2名の顔の同一性(設定画=ハルキ・ナナ.jpg)を保つ。"
+    "【キャラ一貫性を厳守】ナナ=淡い青のカーディガン、ハルキ=ダークグリーンのシャツ＋ジャケット、"
+    "2名の顔立ちをキャラ設定と同一に保つ。"
     "【背景フック保持】会社を象徴する固有の視覚フック(建物/製品/機械等)はbefore同等の形状・色で保持し、"
     "別物に描き直さない。コラージュ禁止・パネル番号/セリフの文字焼き込み禁止(文字はデータ層)。")
 
@@ -411,8 +413,9 @@ def _selftest() -> int:
         ok = ok and cond
 
     def has_constraints(instr):
-        return ("char-ref厳守" in instr and "背景フック保持" in instr
-                and "コラージュ禁止" in instr and "文字焼き込み禁止" in instr)
+        return ("キャラ一貫性を厳守" in instr and "背景フック保持" in instr
+                and "コラージュ禁止" in instr and "文字焼き込み禁止" in instr
+                and ".jpg" not in instr)  # プロンプトlint(.jpg)を踏まないこと
 
     print("[selftest] 5型が escalateせず auto・制約注入される (パイロットで詰まった型)")
     CASES = [
