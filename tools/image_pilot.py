@@ -41,6 +41,25 @@ WHITELIST = {
 }
 NAMES = {"fanuc": "ファナック", "daikin": "ダイキン工業", "komatsu": "コマツ（小松製作所）"}
 
+# v2差し戻し(Web Claude目視): char-ref厳守＋固有の背景フック保持を明示。翻訳を介さず手書き指示で再生成。
+V2_INSTRUCTIONS = {
+    ("daikin", 2): (
+        "【キャラ設定画(char-ref)を厳守】ナナ=淡い青のカーディガン、ハルキ=ダークグリーンのシャツ＋"
+        "ジャケット。2名の顔の同一性(char-ref)を保つ。前回修正した右腕/手指の破綻解消は維持し、"
+        "腕は左右各1本・肩肘手首が自然につながること。天井は業務用の天井カセット型エアコン。"
+        "コラージュ禁止・文字焼き込み禁止。"),
+    ("fanuc", 1): (
+        "【縮尺是正は維持】人物(ナナ・ハルキ)を画面高さ約1/3以下に縮小し遠近を自然化。"
+        "【背景すり替え禁止】背景はファナック固有の『黄色い工場・オフィスビル群』をbefore同等の"
+        "建物形状・黄色で保持し、別の背景に描き直さない。char-ref厳守(ナナ淡青カーデ/ハルキ緑ジャケ・"
+        "顔の同一性)。コラージュ禁止・文字焼き込み禁止。"),
+    ("komatsu", 6): (
+        "【縮尺是正は維持】人物を背景に対し自然な比率へ。【背景すり替え禁止】背景はコマツの建機"
+        "(before同等の車体形状の油圧ショベル/建設機械)を固有の視覚フックとして保持し、別形状の機械に"
+        "すり替えない。char-ref厳守(ナナ淡青カーデ/ハルキ緑ジャケ・顔の同一性)。"
+        "コラージュ禁止・文字焼き込み禁止。"),
+}
+
 # 本番へ書く関数は import すらしない(呼べないことをコードで担保)。
 
 
@@ -73,7 +92,7 @@ def _fb_detail_for(slug, koma):
     return ""
 
 
-def run_one(slug, koma, review_dir):
+def run_one(slug, koma, review_dir, custom_instruction=None, suffix=""):
     import phase_c_lib as L                 # _anthropic 等
     import phase_c_image_fix as IMG         # translate_image_fb / hard_gate / _scenario_excerpt
     import fix_and_deploy as FAD            # add_fix_instructions_to_scenario / regenerate_panel(=生成のみ)
@@ -84,7 +103,7 @@ def run_one(slug, koma, review_dir):
     png = out_dir / f"koma{koma:02d}.png"
     rec = {"slug": slug, "koma": koma, "action": None, "instruction": "",
            "qa_ok": None, "severity": None, "char_match": None, "cost": 0.0,
-           "before": None, "after": None, "note": ""}
+           "before": None, "after": None, "note": "", "suffix": suffix}
 
     detail = _fb_detail_for(slug, koma)
     rec["fb"] = detail[:200]
@@ -94,20 +113,26 @@ def run_one(slug, koma, review_dir):
     if before.exists():
         rec["before"] = str(before)
 
-    # 1) エンジンの翻訳(FB→範囲限定の再生成指示 or escalate)。判定は記録する。
-    excerpt = IMG._scenario_excerpt(tslug, koma)
-    tr = IMG.translate_image_fb(NAMES[slug], slug, koma, detail, excerpt)
-    rec["action"] = tr.get("action")
-    rec["reason"] = tr.get("reason", "")
-    # パイロットでは翻訳がescalateでも、生成能力の実証のためFB本文を指示にして強制再生成する
-    # (=「再生成でこのバグ型が直るか」をオスカーが目視できるようにする)。auto/escalateはrecに温存。
-    if tr.get("action") == "auto" and tr.get("instruction"):
-        rec["instruction"] = tr["instruction"]
-        rec["forced"] = False
-    else:
-        rec["instruction"] = f"【画像FB(強制再生成・翻訳はescalate判定)】{detail}"
+    # 1) 指示決定。custom_instruction(v2差し戻し=手書き指示)があれば翻訳を介さずそれを使う。
+    if custom_instruction:
+        rec["action"] = "custom"
+        rec["instruction"] = custom_instruction
         rec["forced"] = True
-        rec["note"] = f"翻訳=escalate({tr.get('reason','')[:50]}); FB本文で強制再生成し目視用afterを作成"
+        rec["note"] = "v2: char-ref厳守＋背景フック保持の手書き指示で再生成"
+    else:
+        # エンジンの翻訳(FB→範囲限定の再生成指示 or escalate)。判定は記録する。
+        excerpt = IMG._scenario_excerpt(tslug, koma)
+        tr = IMG.translate_image_fb(NAMES[slug], slug, koma, detail, excerpt)
+        rec["action"] = tr.get("action")
+        rec["reason"] = tr.get("reason", "")
+        # 翻訳がescalateでも、生成能力の実証のためFB本文を指示にして強制再生成する。
+        if tr.get("action") == "auto" and tr.get("instruction"):
+            rec["instruction"] = tr["instruction"]
+            rec["forced"] = False
+        else:
+            rec["instruction"] = f"【画像FB(強制再生成・翻訳はescalate判定)】{detail}"
+            rec["forced"] = True
+            rec["note"] = f"翻訳=escalate({tr.get('reason','')[:50]}); FB本文で強制再生成し目視用afterを作成"
 
     # 2) ローカルを退避(実行後に必ず戻す=本番/ローカル無改変)
     bak_scen = scen.with_suffix(".json.pilotbak")
@@ -124,8 +149,9 @@ def run_one(slug, koma, review_dir):
         rec["severity"] = sev
         rec["char_match"] = cmv
         rec["cost"] = cost
-        # 4) after を review へ保存
-        after = review_dir / slug / f"koma{koma}_after.png"
+        # 4) after を review へ保存 (suffix指定時は koma<N>_after_<suffix>.png)
+        aname = f"koma{koma}_after{('_'+suffix) if suffix else ''}.png"
+        after = review_dir / slug / aname
         if png.exists():
             shutil.copy2(png, after)
             rec["after"] = str(after)
@@ -144,11 +170,18 @@ def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--date", required=True, help="YYYYMMDD (review フォルダ名)")
     ap.add_argument("--only", help="slug:koma で1件だけ(検証用)")
+    ap.add_argument("--v2", action="store_true",
+                    help="差し戻し3枚(char-ref厳守+背景保持)をv2再生成。既存afterはafter_v1へ退避")
     args = ap.parse_args(argv)
 
     review_dir = TOKYARI / "review" / f"image_pilot_{args.date}"
     targets = []
-    if args.only:
+    if args.v2:
+        # V2_INSTRUCTIONS のキー(=差し戻し3枚)のみ。WHITELISTに全て含まれることを物理確認。
+        for (s, k) in V2_INSTRUCTIONS:
+            assert s in WHITELIST and k in WHITELIST[s], f"{s}:{k} が WHITELIST外"
+            targets.append((s, k))
+    elif args.only:
         s, k = args.only.split(":")
         if s not in WHITELIST or int(k) not in WHITELIST[s]:
             print(f"❌ {args.only} は WHITELIST 外 → 実行拒否"); return 2
@@ -162,10 +195,21 @@ def main(argv=None):
     print(f"AUTO_IMAGE_FIX_ENABLED(参考)={os.environ.get('AUTO_IMAGE_FIX_ENABLED','?')} ※本スクリプトは読むだけ/変更しない")
     results = []
     for s, k in targets:
-        print(f"\n--- {s} koma{k} ---")
+        print(f"\n--- {s} koma{k}{' [v2差し戻し]' if args.v2 else ''} ---")
         t0 = time.time()
+        custom, suffix = None, ""
+        if args.v2:
+            custom = V2_INSTRUCTIONS[(s, k)]
+            suffix = "v2"
+            # 既存 after(v1) を after_v1 へ退避(上書きしない・冪等)
+            v1 = review_dir / s / f"koma{k}_after.png"
+            v1r = review_dir / s / f"koma{k}_after_v1.png"
+            if v1.exists() and not v1r.exists():
+                import shutil as _sh
+                _sh.move(str(v1), str(v1r))
+                print(f"  v1退避: {v1.name} → {v1r.name}")
         try:
-            rec = run_one(s, k, review_dir)
+            rec = run_one(s, k, review_dir, custom_instruction=custom, suffix=suffix)
         except Exception as e:
             import traceback; traceback.print_exc()
             rec = {"slug": s, "koma": k, "note": f"例外:{e}", "action": "error"}
