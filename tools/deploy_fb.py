@@ -40,6 +40,26 @@ def gas(params):
     return requests.get(GAS_URL, params=params, timeout=60).json()
 
 
+def should_setreflected(has_overrides: bool, lint_err: int, has_pending_image: bool) -> bool:
+    """反映済にしてよいか。台本反映あり かつ lint error0 かつ 画像FB未消化なし の時のみ True。
+
+    画像FBが未消化の間に反映済化すると『直ってないのに反映済』=偽陽性となり、提出者が
+    同一FBを再送し続けるループを生む(=本不具合の主因)。それを構造的に禁じる関所。
+    """
+    return bool(has_overrides and lint_err == 0 and not has_pending_image)
+
+
+def _existing_commonfix_rules():
+    """共通の修正案タブの『未適用』ルール文字列の集合。同一FBの重複addを防ぐための照合用。"""
+    try:
+        d = gas({"mode": "commonfixes"})
+        items = d.get("items") or []
+        return {x.get("rule", "") for x in items
+                if isinstance(x, dict) and x.get("status") != "適用済"}
+    except Exception:
+        return set()
+
+
 def d1_panels(slug):
     """本番D1の現行台本(ファイル非依存の正)。"""
     return D.d1_query("SELECT panel_num,dialogue,script_json,main_copy,sub_copy "
@@ -112,7 +132,18 @@ def process_company(company, slug, fb_raw, rules):
     for op in triage.get("opinions", []):
         route(None, op if isinstance(op, str) else str(op), "感想")
     for b in triage.get("image_bugs", []):
-        image_queue.append(f"koma{b.get('koma','?')}:{b.get('detail','')[:40]}")  # 画像→再生成キュー(オスカーでない)
+        detail = b.get("detail", "")
+        koma = b.get("koma") or L.extract_koma(detail)
+        # v3.6 オーバーレイ: 「画像内テキスト/文字」系FBは焼き込みでなく main_copy/sub_copy の修正で直る。
+        # 対象コマに overlay文言(main_copy/sub_copy)があり、文字編集系FBなら台本経路へ(画像再生成不要)。
+        if (koma and koma in cur and L.is_overlay_text_fb(detail)
+                and (cur[koma].get("main_copy") or cur[koma].get("sub_copy"))):
+            by_koma.setdefault(koma, []).append(
+                "【オーバーレイ文字(main_copy/sub_copy)の修正。指摘の文字のみ最小限に削除/修正し、"
+                "数値・単位(兆/億等)や他の文言はD1現行のまま保持。生Markdown禁止】" + detail)
+            default_log.append(f"koma{koma}:overlay文字修正(画像でなく台本反映)")
+        else:
+            image_queue.append(f"koma{b.get('koma','?')}:{detail[:40]}")  # 真の画像バグ→再生成キュー
 
     overrides = {}
     for koma, details in by_koma.items():
@@ -143,7 +174,52 @@ def _map_koma(company, detail, cur):
         return None
 
 
+def selftest():
+    """ネットワーク非依存の関所テスト。STEP2(偽陽性防止) / STEP3(オーバーレイ文字振り分け)。"""
+    ok = True
+
+    def chk(name, cond):
+        nonlocal ok
+        print(("  ✅ " if cond else "  ❌ ") + name)
+        ok = ok and cond
+
+    print("[selftest] STEP2 should_setreflected (偽陽性防止の関所)")
+    chk("台本反映+lint0+画像なし → 反映済OK", should_setreflected(True, 0, False) is True)
+    chk("台本反映+画像未消化 → 反映しない(偽陽性防止)", should_setreflected(True, 0, True) is False)
+    chk("台本反映なし → 反映しない", should_setreflected(False, 0, False) is False)
+    chk("lint error>0 → 反映しない", should_setreflected(True, 1, False) is False)
+
+    print("[selftest] STEP3 is_overlay_text_fb (画像内テキスト→台本経路)")
+    # 三菱コマ2の実FB(R5/R6/R7)は台本(オーバーレイ)経路に入るべき
+    chk("三菱R7『画像内テキスト「今 売上約19億円」の「今」を削除』→台本",
+        L.is_overlay_text_fb("koma2:画像内テキスト「今 売上約19億円」の「今」を削除する") is True)
+    chk("三菱R5『画像内。テキスト「今 売上」の「今」を削除』→台本",
+        L.is_overlay_text_fb("画像内。テキスト「今 売上」の「今」を削除。") is True)
+    # 真の描画バグは画像キューのまま(誤って台本経路に入れない)
+    chk("『ナナの左手が欠けている』→画像(台本にしない)",
+        L.is_overlay_text_fb("画像内のナナの左手が欠けている。左手が見えるように修正する。") is False)
+    chk("『腕が3本』→画像", L.is_overlay_text_fb("ハルキの腕が3本になっているため修正") is False)
+    chk("『画像上部に空白』→画像", L.is_overlay_text_fb("画像上部に空白部分があるため削除する") is False)
+    chk("『吹き出し「鉄道会社…」は不要。削除』→画像(絵の吹き出し)",
+        L.is_overlay_text_fb("画像内の吹き出し「鉄道会社……？」は不要。削除する。") is False)
+
+    # STEP3 統合: overlay文字FB かつ 対象komaに overlay文言あり → 台本経路(by_koma)に入る条件
+    cur = {2: {"script": ["..."], "main_copy": "1870年代、海運から始まった",
+               "sub_copy": "今 売上 約19兆円 / 10事業グループ"}}
+    detail = "koma2:画像内テキスト「今 売上約19億円」の「今」を削除する"
+    koma = 2
+    routed_to_script = bool(koma in cur and L.is_overlay_text_fb(detail)
+                            and (cur[koma].get("main_copy") or cur[koma].get("sub_copy")))
+    print("[selftest] STEP3 統合: 三菱コマ2ケースの振り分け先")
+    chk("三菱コマ2 → 台本(D1テキスト)経路に入る", routed_to_script is True)
+
+    print("\n=== selftest: " + ("ALL PASS ✅" if ok else "FAIL ❌") + " ===")
+    return 0 if ok else 1
+
+
 def main():
+    if "--selftest" in sys.argv:
+        return selftest()
     _load_env()
     rules = (REPO / "tools" / "koma_rules.md").read_text(encoding="utf-8")
     items = [it for it in A.fetch_attention() if it.get("content") == "10コマ"]
@@ -208,25 +284,40 @@ def main():
     #  要調査未解決→据置(裏取りキュー) / 真のブランド判断のみ judgment_daily(朝9時1通に集約)。
     print("\n[書き戻し]")
     deployed_slugs = {d["slug"] for d in deployable}
-    tally = {"reflected": 0, "image": 0, "investigate": 0, "judgment": 0, "noop": 0}
+    tally = {"reflected": 0, "image": 0, "investigate": 0, "judgment": 0, "noop": 0, "held_img": 0}
+    # 【重複再投入の抑止】既存の未適用commonfixルールを集合化し、同一ruleは再addしない
+    #  (これがないと毎時同一FBを積み続け 共通の修正案タブが膨張する)。
+    existing_rules = _existing_commonfix_rules()
+
+    def add_once(scope, rule, note):
+        if rule in existing_rules:
+            return False           # 既に同一未処理エントリあり → 再投入しない
+        gas({"mode": "addcommonfix", "scope": scope, "rule": rule, "note": note})
+        existing_rules.add(rule)
+        return True
+
     for r in recs:
-        # 画像バグ→再生成キュー(オスカーでない)
+        # 画像バグ→再生成キュー(オスカーでない)。同一FBは重複addしない。
         if r.get("image_queue"):
-            gas({"mode": "addcommonfix", "scope": "system",
-                 "rule": f"[要画像再生成] {r['company']}: {'; '.join(r['image_queue'][:3])}",
-                 "note": "画像FB=Gemini再生成キュー(台本でなく画像)"})
+            add_once("system", f"[要画像再生成] {r['company']}: {'; '.join(r['image_queue'][:3])}",
+                     "画像FB=Gemini再生成キュー(台本でなく画像)")
             tally["image"] += 1
         # 真のブランド/方針判断のみ日次ダイジェストへ(per-3hでオスカーに出さない)
         if r.get("judgment"):
-            gas({"mode": "addcommonfix", "scope": "judgment_daily",
-                 "rule": f"[判断ダイジェスト] {r['company']}: {'; '.join(r['judgment'][:2])}",
-                 "note": "朝9時1通に集約(要れば後で覆せる)"})
+            add_once("judgment_daily", f"[判断ダイジェスト] {r['company']}: {'; '.join(r['judgment'][:2])}",
+                     "朝9時1通に集約(要れば後で覆せる)")
             tally["judgment"] += 1
-        if r["slug"] in deployed_slugs:
+        # 【偽陽性防止】台本を反映しても、当該社に未消化の画像FBが残る間は setreflected しない。
+        #   (画像単独FBは deployed_slugs に入らないので元々反映済化されない。ここでは
+        #    台本+画像 混在社が『台本が直った=全部反映済』と誤表示されるのを防ぐ。)
+        if r["slug"] in deployed_slugs and not r.get("image_queue"):
             res = gas({"mode": "setreflected", "company": r["company"]})
             tally["reflected"] += 1
             dl = f" [Claudeが判断して進めた: {'; '.join(r.get('default_log', [])[:2])}]" if r.get("default_log") else ""
             print(f"  {r['slug']:14} 反映済 koma{sorted(r['overrides'])}{dl}")
+        elif r["slug"] in deployed_slugs and r.get("image_queue"):
+            tally["held_img"] += 1
+            print(f"  {r['slug']:14} 台本koma{sorted(r['overrides'])}は反映も、画像FB未消化のため反映保留(偽陽性防止)")
         elif r.get("unresolved"):
             gas({"mode": "addcommonfix", "scope": "system",
                  "rule": f"[要調査] {r['company']} koma{r['unresolved']}: 公式/有報で裏取り(取れねばぼかす)",
@@ -236,8 +327,9 @@ def main():
         else:
             tally["noop"] += 1
             print(f"  {r['slug']:14} 据置(変更なし) img{len(r.get('image_queue',[]))} judg{len(r.get('judgment',[]))}")
-    print(f"\n=== 着地: 反映{tally['reflected']} / 画像キュー{tally['image']} / 要調査{tally['investigate']} "
-          f"/ 判断日次{tally['judgment']} / 変更なし{tally['noop']}  (オスカー即時エスカレ=0) ===")
+    print(f"\n=== 着地: 反映{tally['reflected']} / 画像保留{tally['held_img']} / 画像キュー{tally['image']} "
+          f"/ 要調査{tally['investigate']} / 判断日次{tally['judgment']} / 変更なし{tally['noop']}  "
+          f"(オスカー即時エスカレ=0) ===")
     print("巻き戻しは .backups/d1_*.json から。")
     return 0
 

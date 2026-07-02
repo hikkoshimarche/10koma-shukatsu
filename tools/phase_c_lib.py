@@ -229,6 +229,34 @@ def extract_koma(text: str):
     return None
 
 
+# v3.6以降の10コマは、画像上の main_copy/sub_copy を **フロント側HTMLオーバーレイ** で描画する
+# (PNGには文字を焼き込まない: public/company.html .panel-overlay)。よって「画像内テキスト/文字」を
+# 直す系のFBは Gemini再生成ではなく D1 の main_copy/sub_copy(=台本テキスト)修正で直る。
+# 描画バグ(手/指/腕/構図/色/服/空白/線 等)はここでは False にして従来どおり画像キューへ回す。
+_OVERLAY_TEXT_PAT = re.compile(
+    r"(テキスト|文字).{0,20}(削除|消して|消す|除|変更|修正|直|に変|加え|追加|統一|表記)"
+    r"|画像内.{0,6}(テキスト|文字)"
+    r"|オーバーレイ"
+    r"|「[^」]{1,40}」.{0,8}(削除|消して|消す|変更|修正)")
+_DRAW_BUG_PAT = re.compile(
+    r"(手|指|腕|足|構図|レイアウト|色|服|ジャケット|上着|空白|余白|線|背景|描画|"
+    r"縮尺|視線|位置|人物|大きさ|遠近|吹き出し|画面|スマホ|スマートフォン|耳|髪|顔|表情|"
+    r"棚|コップ|瓶|ビール|再生成|拡大)")
+
+
+def is_overlay_text_fb(detail: str) -> bool:
+    """FBが『オーバーレイ文字(main_copy/sub_copy)の編集で直る』ものか。
+
+    True  = 画像内テキスト/文字の削除・変更系 → 台本テキスト修正経路へ(画像再生成不要)。
+    False = 手/構図/色 等の描画バグ、または非該当 → 従来の画像再生成キューへ。
+    描画バグ語が含まれる場合は文字語があっても False(絵の修正が主目的とみなす)。
+    """
+    d = str(detail or "")
+    if _DRAW_BUG_PAT.search(d):
+        return False
+    return bool(_OVERLAY_TEXT_PAT.search(d))
+
+
 def fix_koma_text(slug: str, koma_num: int, instruction: str, rules: str, current: dict) -> dict:
     """D1ライブ基準でコマ台本を修正(ファイル非依存)。current={script,main_copy,sub_copy}。
 

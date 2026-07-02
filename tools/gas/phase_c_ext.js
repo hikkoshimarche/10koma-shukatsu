@@ -75,6 +75,46 @@ function handleExt(mode, e, token){
     return _json({removed:removed, kept:keep.length-1});
   }
 
+  if(mode === 'dedupecommonfix'){
+    // [要画像再生成]等の同一FB毎時再投入で膨張した重複を圧縮。冪等。row1(見出し)保持。
+    //  キー: 要画像再生成は (社+コマ番号) で正規化(数値/引用文の揺れを吸収)、その他は規則の完全一致。
+    //  未適用の重複は『最新1行』のみ残す。適用済(status=適用済)は履歴として全保持。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(COMMON_SHEET);
+    if(!sh) return _json({error:'no sheet'});
+    const lr=sh.getLastRow(), lc=Math.max(sh.getLastColumn(),5);
+    if(lr<2) return _json({removed:0, kept:0});
+    const vals=sh.getRange(1,1,lr,lc).getValues();
+    function keyOf(rule){
+      const r=String(rule||'');
+      const m=r.match(/^\[要画像再生成\]\s*([^:：]+?)[\s　]*(?:コマ|koma|:|：)/);
+      if(m){
+        const comp=m[1].trim();
+        let ks=(r.match(/(?:koma|コマ)\s*0*(\d+)/g)||[]).map(function(s){return s.replace(/\D/g,'');});
+        ks=ks.filter(function(v,i){return ks.indexOf(v)===i;}).sort();
+        return '要画像再生成|'+comp+'|'+ks.join(',');
+      }
+      return r.trim();
+    }
+    // 未適用行について keyごとの『最後の行index』を記録(最新を残す)
+    const lastIdx={};
+    for(let i=1;i<vals.length;i++){
+      if(String(vals[i][3]).trim()==='適用済') continue;
+      lastIdx[keyOf(vals[i][1])]=i;
+    }
+    const keep=[vals[0]]; let removed=0;
+    for(let i=1;i<vals.length;i++){
+      const applied=String(vals[i][3]).trim()==='適用済';
+      if(applied){ keep.push(vals[i]); continue; }      // 履歴は全保持
+      const k=keyOf(vals[i][1]);
+      if(lastIdx[k]===i){ keep.push(vals[i]); }           // key最新のみ残す
+      else { removed++; }
+    }
+    sh.getRange(1,1,lr,lc).clearContent();
+    if(keep.length) sh.getRange(1,1,keep.length,lc).setValues(keep);
+    return _json({removed:removed, kept:keep.length-1, uniqueUnapplied:Object.keys(lastIdx).length});
+  }
+
   if(mode === 'deltrigger'){
     // 指定関数名のトリガーを削除し、残トリガーを列挙(429対策のレガシー重複除去用)。
     if(!_authed(e, token)) return _json({error:'unauthorized'});
