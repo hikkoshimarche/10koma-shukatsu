@@ -2525,5 +2525,427 @@
     "sec": 284.1,
     "rate": false,
     "rc": 0
+  },
+  {
+    "slug": "sugi-hd",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 257.3,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "sumitomo-forestry",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 273.0,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "sundrug",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.794,
+    "sec": 316.0,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "taiki-sha",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 261.4,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "taisei",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 287.7,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "takasago-thermal",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 267.5,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "takenaka",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.794,
+    "sec": 300.5,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "tbm",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 268.4,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "tepco",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.866,
+    "sec": 354.0,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "toda",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 309.6,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "toho-gas",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 305.9,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "tohoku-electric",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 262.7,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "tokyo-gas",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.794,
+    "sec": 310.8,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "tsuruha-hd",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "isolate": [
+      10
+    ],
+    "copied": 9,
+    "cost": 0.866,
+    "sec": 341.3,
+    "rate": false,
+    "rc": 1
+  },
+  {
+    "slug": "turing",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.794,
+    "sec": 315.3,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "unicharm",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 284.4,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "unilever-japan",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 291.6,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "usj",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      9,
+      10
+    ],
+    "isolate": [
+      8
+    ],
+    "copied": 9,
+    "cost": 0.866,
+    "sec": 306.0,
+    "rate": false,
+    "rc": 1
+  },
+  {
+    "slug": "uzabase",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.794,
+    "sec": 327.8,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "visional",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.794,
+    "sec": 334.4,
+    "rate": false,
+    "rc": 0
   }
 ]
