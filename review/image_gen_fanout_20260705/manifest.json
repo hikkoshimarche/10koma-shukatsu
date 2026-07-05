@@ -2103,5 +2103,427 @@
     "sec": 291.0,
     "rate": false,
     "rc": 0
+  },
+  {
+    "slug": "saibu-gas",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.794,
+    "sec": 347.0,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "sakana-ai",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.866,
+    "sec": 318.5,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "salesforce-japan",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.866,
+    "sec": 338.6,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "sansan",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 307.1,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "sap-japan",
+    "ok": [
+      1,
+      2,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [
+      4
+    ],
+    "copied": 9,
+    "cost": 0.722,
+    "sec": 259.6,
+    "rate": false,
+    "rc": 1
+  },
+  {
+    "slug": "scsk",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.794,
+    "sec": 307.2,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "sekisui-house",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 280.6,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "sega-sammy",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 297.1,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "septeni-hd",
+    "ok": [
+      1,
+      2,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [
+      3
+    ],
+    "copied": 9,
+    "cost": 0.866,
+    "sec": 337.4,
+    "rate": false,
+    "rc": 1
+  },
+  {
+    "slug": "shift",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 278.1,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "shikoku-electric",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 281.5,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "shimizu",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 279.3,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "shiseido",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 270.1,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "shizuoka-gas",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 274.7,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "sky",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.794,
+    "sec": 336.1,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "smarthr",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 259.4,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "socionext",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 298.1,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "softbank",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.794,
+    "sec": 310.0,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "spiber",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.866,
+    "sec": 334.0,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "square-enix",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.794,
+    "sec": 284.1,
+    "rate": false,
+    "rc": 0
   }
 ]
