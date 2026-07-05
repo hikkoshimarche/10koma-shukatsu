@@ -1,0 +1,426 @@
+[
+  {
+    "slug": "astroscale-hd",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 268.9,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "aeon",
+    "ok": [
+      1,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [
+      2
+    ],
+    "copied": 9,
+    "cost": 0.722,
+    "sec": 269.7,
+    "rate": false,
+    "rc": 1
+  },
+  {
+    "slug": "appier",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 288.7,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "bandai-namco",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 297.1,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "benesse-hd",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 297.8,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "biccamera",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.794,
+    "sec": 348.1,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "bitflyer",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 262.7,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "biprogy",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 278.4,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "brainpad",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 281.1,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "capcom",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 277.4,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "cainz",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.794,
+    "sec": 293.5,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "chubu-electric",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 271.1,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "chugoku-electric",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 267.3,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "cosmo-energy",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 267.1,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "cosmos-pharma",
+    "ok": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [
+      1
+    ],
+    "copied": 9,
+    "cost": 0.722,
+    "sec": 233.4,
+    "rate": false,
+    "rc": 1
+  },
+  {
+    "slug": "cyberagent",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 266.6,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "daito-kentaku",
+    "ok": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [
+      1
+    ],
+    "copied": 9,
+    "cost": 0.722,
+    "sec": 244.7,
+    "rate": false,
+    "rc": 1
+  },
+  {
+    "slug": "ctc",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 284.7,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "dcm-hd",
+    "ok": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [
+      1
+    ],
+    "copied": 9,
+    "cost": 0.722,
+    "sec": 225.3,
+    "rate": false,
+    "rc": 1
+  },
+  {
+    "slug": "daiwa-house",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 265.1,
+    "rate": false,
+    "rc": 0
+  }
+]
