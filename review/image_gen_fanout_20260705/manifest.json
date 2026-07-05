@@ -842,5 +842,426 @@
     "sec": 303.7,
     "rate": false,
     "rc": 0
+  },
+  {
+    "slug": "ispace",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 271.6,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "j-power",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 292.7,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "japex",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 298.6,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "jasm",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.794,
+    "sec": 329.0,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "jgc-hd",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 285.4,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "jera",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.794,
+    "sec": 327.6,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "jmdc",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 298.4,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "kajima",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 272.3,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "kandenko",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 273.6,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "kao",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 250.4,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "kinden",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 273.7,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "kaonavi",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.866,
+    "sec": 355.8,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "kobayashi-pharma",
+    "ok": [
+      1,
+      2,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [
+      3
+    ],
+    "copied": 9,
+    "cost": 0.939,
+    "sec": 375.6,
+    "rate": false,
+    "rc": 1
+  },
+  {
+    "slug": "komeri",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 291.4,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "konami",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 271.3,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "kose",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 267.0,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "kubell",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 266.5,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "kumagai-gumi",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 281.7,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "kurita",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 298.5,
+    "rate": false,
+    "rc": 0
+  },
+  {
+    "slug": "kyushu-electric",
+    "ok": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "isolate": [],
+    "copied": 10,
+    "cost": 0.722,
+    "sec": 304.5,
+    "rate": false,
+    "rc": 0
   }
 ]
