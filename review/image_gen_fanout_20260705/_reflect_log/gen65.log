@@ -1,0 +1,491 @@
+
+===astroscale-hd rc=0===
+
+
+===bandai-namco rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] bandai-namco panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] bandai-namco panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===benesse-hd rc=0===
+
+=== character 列フォールバック警告 (1件) ===
+  [info] benesse-hd panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===bitflyer rc=0===
+
+
+===capcom rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] capcom panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] capcom panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===chubu-electric rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] chubu-electric panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] chubu-electric panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===chugoku-electric rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] chugoku-electric panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] chugoku-electric panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===cosmo-energy rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] cosmo-energy panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] cosmo-energy panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===eneos rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] eneos panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] eneos panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===erex rc=0===
+
+=== character 列フォールバック警告 (1件) ===
+  [info] erex panel_07: dialogue に未知タグ ['若手社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===euglena rc=0===
+
+=== character 列フォールバック警告 (1件) ===
+  [info] euglena panel_07: dialogue に未知タグ ['社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===gakken-hd rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] gakken-hd panel_06: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] gakken-hd panel_07: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===hokkaido-electric rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] hokkaido-electric panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] hokkaido-electric panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===hokkaido-gas rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] hokkaido-gas panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] hokkaido-gas panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===hokuriku-electric rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] hokuriku-electric panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] hokuriku-electric panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===ibm-japan rc=0===
+
+=== character 列フォールバック警告 (1件) ===
+  [info] ibm-japan panel_06: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===idemitsu rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] idemitsu panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] idemitsu panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===inpex rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] inpex panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] inpex panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===ispace rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] ispace panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] ispace panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===j-power rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] j-power panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] j-power panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===japex rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] japex panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] japex panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===jasm rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] jasm panel_06: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] jasm panel_07: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===jera rc=0===
+
+=== character 列フォールバック警告 (1件) ===
+  [info] jera panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===jgc-hd rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] jgc-hd panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] jgc-hd panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===jmdc rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] jmdc panel_06: dialogue に未知タグ ['先輩社員'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] jmdc panel_07: dialogue に未知タグ ['先輩社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===kao rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] kao panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] kao panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===konami rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] konami panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] konami panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===kose rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] kose panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] kose panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===kurita rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] kurita panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] kurita panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===kyushu-electric rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] kyushu-electric panel_06: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] kyushu-electric panel_07: dialogue に未知タグ ['ob担当者'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===lion rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] lion panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] lion panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===loreal-japan rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] loreal-japan panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] loreal-japan panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===m3 rc=0===
+
+=== character 列フォールバック警告 (1件) ===
+  [info] m3 panel_06: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===medley rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] medley panel_06: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] medley panel_07: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===metawater rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] metawater panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] metawater panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===microsoft-japan rc=0===
+
+=== character 列フォールバック警告 (1件) ===
+  [info] microsoft-japan panel_07: dialogue に未知タグ ['採用担当'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===nagase-toshin rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] nagase-toshin panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] nagase-toshin panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===nestle-japan rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] nestle-japan panel_06: dialogue に未知タグ ['インターン生'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] nestle-japan panel_07: dialogue に未知タグ ['採用担当'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===nintendo rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] nintendo panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] nintendo panel_07: dialogue に未知タグ ['人事'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===okinawa-electric rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] okinawa-electric panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] okinawa-electric panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===oracle-japan rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] oracle-japan panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] oracle-japan panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===osaka-gas rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] osaka-gas panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] osaka-gas panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===pasona-group rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] pasona-group panel_06: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] pasona-group panel_07: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===persol-hd rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] persol-hd panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] persol-hd panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===pg-japan rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] pg-japan panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] pg-japan panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===pola-orbis-hd rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] pola-orbis-hd panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] pola-orbis-hd panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===rapidus rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] rapidus panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] rapidus panel_07: dialogue に未知タグ ['採用担当'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===renova rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] renova panel_06: dialogue に未知タグ ['先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] renova panel_07: dialogue に未知タグ ['先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===saibu-gas rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] saibu-gas panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] saibu-gas panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===salesforce-japan rc=0===
+
+
+===sega-sammy rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] sega-sammy panel_06: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] sega-sammy panel_07: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===shikoku-electric rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] shikoku-electric panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] shikoku-electric panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===shiseido rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] shiseido panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] shiseido panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===shizuoka-gas rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] shizuoka-gas panel_06: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] shizuoka-gas panel_07: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===socionext rc=0===
+
+=== character 列フォールバック警告 (1件) ===
+  [info] socionext panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===spiber rc=0===
+
+
+===square-enix rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] square-enix panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] square-enix panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===tbm rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] tbm panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] tbm panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===tepco rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] tepco panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] tepco panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===toho-gas rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] toho-gas panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] toho-gas panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===tohoku-electric rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] tohoku-electric panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] tohoku-electric panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===tokyo-gas rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] tokyo-gas panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] tokyo-gas panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===unicharm rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] unicharm panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] unicharm panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===unilever-japan rc=0===
+
+=== character 列フォールバック警告 (2件) ===
+  [info] unilever-japan panel_06: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] unilever-japan panel_07: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===west-hd rc=0===
+
+=== character 列フォールバック警告 (1件) ===
+  [info] west-hd panel_07: dialogue に未知タグ ['社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+

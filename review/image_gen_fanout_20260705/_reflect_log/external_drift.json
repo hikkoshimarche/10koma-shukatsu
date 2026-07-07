@@ -1,0 +1,10 @@
+{
+  "external_drift_during_batch": [
+    {
+      "company": "subaru",
+      "cause": "com.tokyari.phasec launchd autoloop text FB",
+      "evidence": "image_url SHA @4e27cd8 unchanged; 0 rows with my SHA",
+      "collateral_from_me": false
+    }
+  ]
+}
