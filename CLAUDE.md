@@ -73,3 +73,8 @@ class LintError(RuntimeError):
         sys.stderr.write(f"\n❌ LINT GATE: {lint_failed} で error → SQL生成せず\n"); return 1
 ```
 ※ `--all` は `SLUG_MAP` のうち scenario 実在slugのみ対象に限定（テスト用 `__lint_test__` 等で batch が壊れないため）。
+
+## 【恒久ルール】オスカーへの受け渡し物の置き場所
+オスカーがChatGPT・KDP等に添付するファイル（レビュー素材zip・epub・図版・原稿等）は、必ず **`~/Desktop/kindle_受け渡し/`** に置く。全社（全編）・全スレ共通、ここ1箇所のみ。
+- **フォルダ直下＝「いま渡すもの」だけ**にする。過去の受け渡し物は `~/Desktop/kindle_受け渡し/_old/` へ退避してから新規を置く。
+- 配置後は必ず `open ~/Desktop/kindle_受け渡し/` を実行し、Finderで開いた状態にして終える。

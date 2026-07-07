@@ -128,6 +128,15 @@ function handleExt(mode, e, token){
     return _json({deleted:deleted, count:remain.length, tally:tally});
   }
 
+  if(mode === 'line3hdryrun'){
+    // line3hSummaryの送信なしドライラン。done/pendingNewFbをJSONで返す(検証用・LINEは送らない)。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const res = computeLine3h();
+    return _json({done_count:res.done.length, done:res.done,
+                  pendingNewFb_count:res.pendingNewFb.length, pendingNewFb:res.pendingNewFb,
+                  since:String(res.since)});
+  }
+
   if(mode === 'linequota'){
     // 実測: 当月quota(type/value) + consumption(totalUsage) + bot情報(どのチャネルか) + 生レスポンス。
     if(!_authed(e, token)) return _json({error:'unauthorized'});
@@ -409,7 +418,9 @@ function handleExt(mode, e, token){
       const jot1=String(r[jotCol(1)-1]).trim();
       const st=String(r[CONFIG.COL.ステータス-1]).trim();
       if(url.indexOf('http')===0 && jot1==='' && st==='未着手'){
-        sh.getRange(CONFIG.FIRST_ROW+i, CONFIG.COL.ステータス).setValue('公開済・FB待ち'); changed++;
+        sh.getRange(CONFIG.FIRST_ROW+i, CONFIG.COL.ステータス).setValue('公開済・FB待ち');
+        sh.getRange(CONFIG.FIRST_ROW+i, CONFIG.COL.最終更新).setValue(new Date());  // 公開済社を直近3hレポートに載せる
+        changed++;
       }
     }
     return _json({changed:changed});
@@ -433,6 +444,26 @@ function handleExt(mode, e, token){
     sh.getRange(row, CONFIG.COL.公開URL).setValue(e.parameter.url||'');
     sh.getRange(row, CONFIG.COL.最終更新).setValue(new Date());
     return _json({ok:true, row:row});
+  }
+
+  if(mode === 'appendrow10koma'){
+    // 10コマタブ末尾に1行追加(業界/会社名/公開URL/ステータス+最終更新)。既存モード不変の純加算。
+    // 冪等: 同名会社が既存ならスキップし existing 報告(重複行を作らない)。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(KOMA_SHEET);
+    if(!sh) return _json({error:'no sheet'});
+    const company = String(e.parameter.company||'').trim();
+    if(!company) return _json({error:'no company'});
+    const existing = _findRowByCompany(sh, company);
+    if(existing >= 0) return _json({ok:true, existing:true, row:existing, note:'既存行あり=追加せず'});
+    const before = sh.getLastRow();
+    const row = before + 1;
+    sh.getRange(row, CONFIG.COL.業界).setValue(e.parameter.industry||'');
+    sh.getRange(row, CONFIG.COL.会社名).setValue(company);
+    sh.getRange(row, CONFIG.COL.公開URL).setValue(e.parameter.url||'');
+    sh.getRange(row, CONFIG.COL.ステータス).setValue(e.parameter.status||'公開済・FB待ち');
+    sh.getRange(row, CONFIG.COL.最終更新).setValue(new Date());
+    return _json({ok:true, added:true, row:row, before:before, after:sh.getLastRow()});
   }
 
   if(mode === 'setreflected'){
@@ -824,30 +855,46 @@ function lineMorningList(){
   _pushLine(buildMorningDigest());
 }
 
-/* 12/15/18/21/0時: 直近3hでAIが反映したこと(反映済かつ最終更新が3h以内) */
-function line3hSummary(){
+/* 直近3hのAI活動を算出(送信しない・検証と本送信の共通ロジック)。
+   厳格化(2026-07-07): 「反映した社」= 最新FBラウンドが反映済 OR 公開済・FB待ち、かつ 最終更新が3h以内。
+   過去反映済&新FB未対応(=最新FBが未反映)は done から除外し pendingNewFb に分離。 */
+function computeLine3h(){
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const since = new Date(Date.now() - 3*60*60*1000);
-  const done = [];
+  const done = [], pendingNewFb = [];
   CONFIG.CONTENT_SHEETS.forEach(function(name){
     const sh = ss.getSheetByName(name); if(!sh) return;
     const last = sh.getLastRow(); if(last < CONFIG.FIRST_ROW) return;
     const vals = sh.getRange(CONFIG.FIRST_ROW,1,last-CONFIG.FIRST_ROW+1,45).getValues();
     vals.forEach(function(r){
+      if(!r[CONFIG.COL.会社名-1]) return;
       const upd = r[CONFIG.COL.最終更新-1];
-      let reflected = false;
-      for(let n=1;n<=CONFIG.ROUNDS;n++){ if(String(r[hanCol(n)-1]).trim()==='反映済') reflected=true; }
-      if(reflected && upd instanceof Date && upd >= since){
-        done.push('・'+name+'/'+r[CONFIG.COL.会社名-1]);
+      if(!(upd instanceof Date && upd >= since)) return;      // 直近3h以内のみ
+      const status = String(r[CONFIG.COL.ステータス-1]).trim();
+      let maxFbRound=0, maxReflectedRound=0;
+      for(let n=1;n<=CONFIG.ROUNDS;n++){
+        if(String(r[fbCol(n)-1]).trim()!=='')   maxFbRound=n;
+        if(String(r[hanCol(n)-1]).trim()==='反映済') maxReflectedRound=n;
       }
+      const strictReflected = (maxFbRound>0 && maxReflectedRound>=maxFbRound); // 最新FBが反映済
+      const published       = (status==='公開済・FB待ち');
+      const newFbPending    = (maxReflectedRound>0 && maxFbRound>maxReflectedRound); // 過去反映済&新FB未対応
+      const label = '・'+name+'/'+r[CONFIG.COL.会社名-1];
+      if(strictReflected || published){ done.push(label); }
+      else if(newFbPending){ pendingNewFb.push(label); }
     });
   });
-  // 根治(2026-06-23): per-3hからオスカー宛エスカレ件数を撤去。AIが自走で処理(好み/事実/明確修正/画像)。
-  // オスカー宛は朝9時の『判断ダイジェスト』(真のブランド判断のみ)に集約。
+  return {done:done, pendingNewFb:pendingNewFb, since:since};
+}
+
+/* 12/15/18/21/0時: 直近3hでAIが本番反映/公開したこと(strict)。エスカレ件数は朝9時ダイジェストに集約。 */
+function line3hSummary(){
+  const res = computeLine3h();
   const hh = Utilities.formatDate(new Date(),'Asia/Tokyo','HH:mm');
-  if(done.length===0){ _pushLine('【'+hh+' 直近3h】AIの反映はありませんでした。'); return; }
-  const p = ['【'+hh+' 直近3h・AIが本番反映した社】'+done.length+'件'];
-  p.push(done.slice(0,20).join('\n'));
+  if(res.done.length===0){ _pushLine('【'+hh+' 直近3h】AIの反映はありませんでした。'); return; }
+  const p = ['【'+hh+' 直近3h・AIが本番反映した社】'+res.done.length+'件'];
+  p.push(res.done.slice(0,20).join('\n'));
+  if(res.pendingNewFb.length>0){ p.push('(反映済・新FB対応中'+res.pendingNewFb.length+'件)'); }
   _pushLine(p.join('\n'));
 }
 
