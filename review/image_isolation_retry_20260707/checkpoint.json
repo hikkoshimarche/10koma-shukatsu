@@ -1,8 +1,8 @@
 {
   "generated": "2026-07-07",
-  "phase": "STEP2 regen paused (net cutoff)",
-  "passed_count": 10,
-  "failed_count": 1,
+  "phase": "STEP2 complete — 11/11 passed (resumed)",
+  "passed_count": 11,
+  "failed_count": 0,
   "passed": [
     "aeon",
     "cosmos-pharma",
@@ -13,11 +13,10 @@
     "septeni-hd",
     "tsuruha-hd",
     "welcia-hd",
-    "workman"
-  ],
-  "failed": [
+    "workman",
     "usj"
   ],
+  "failed": [],
   "next_resume": "STEP3 反映 for 10 passed; usj k8 candidate-URL (no image generated)",
   "results": [
     {
@@ -158,9 +157,9 @@
     {
       "slug": "usj",
       "koma": 8,
-      "strategy": "transient gen error (no image part) — 戦略変更なしで再試行",
-      "passed": false,
-      "severity": null,
+      "strategy": "IP除去(ミニオン→架空テーマパーク)で再試行",
+      "passed": true,
+      "severity": "minor",
       "attempts": [
         {
           "attempt": 1,
