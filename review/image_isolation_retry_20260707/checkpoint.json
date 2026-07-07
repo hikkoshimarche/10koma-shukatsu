@@ -1,0 +1,213 @@
+{
+  "generated": "2026-07-07",
+  "phase": "STEP2 regen paused (net cutoff)",
+  "passed_count": 10,
+  "failed_count": 1,
+  "passed": [
+    "aeon",
+    "cosmos-pharma",
+    "daito-kentaku",
+    "dcm-hd",
+    "kobayashi-pharma",
+    "sap-japan",
+    "septeni-hd",
+    "tsuruha-hd",
+    "welcia-hd",
+    "workman"
+  ],
+  "failed": [
+    "usj"
+  ],
+  "next_resume": "STEP3 反映 for 10 passed; usj k8 candidate-URL (no image generated)",
+  "results": [
+    {
+      "slug": "aeon",
+      "koma": 2,
+      "strategy": "lint-FP: 横長の建物→横に広がる建物",
+      "passed": true,
+      "severity": "minor",
+      "attempts": [
+        {
+          "attempt": 1,
+          "severity": "minor",
+          "concerns": [
+            "props_and_hands"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "cosmos-pharma",
+      "koma": 1,
+      "strategy": "lint-FP: 横長の大型サイン→横に長い",
+      "passed": true,
+      "severity": "minor",
+      "attempts": [
+        {
+          "attempt": 1,
+          "severity": "minor",
+          "concerns": [
+            "props_and_hands"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "daito-kentaku",
+      "koma": 1,
+      "strategy": "lint-FP: 横長比率→横に長い比率",
+      "passed": true,
+      "severity": "ok",
+      "attempts": [
+        {
+          "attempt": 1,
+          "severity": "ok",
+          "concerns": []
+        }
+      ]
+    },
+    {
+      "slug": "dcm-hd",
+      "koma": 1,
+      "strategy": "lint-FP: 横長の看板→横に長い看板",
+      "passed": true,
+      "severity": "ok",
+      "attempts": [
+        {
+          "attempt": 1,
+          "severity": "ok",
+          "concerns": []
+        }
+      ]
+    },
+    {
+      "slug": "kobayashi-pharma",
+      "koma": 3,
+      "strategy": "lint-FP: 横向き塗布部→ヨコ型塗布部",
+      "passed": true,
+      "severity": "minor",
+      "attempts": [
+        {
+          "attempt": 1,
+          "severity": "minor",
+          "concerns": [
+            "text_leak"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "sap-japan",
+      "koma": 4,
+      "strategy": "lint-FP: ポートレート写真→肖像写真",
+      "passed": true,
+      "severity": "minor",
+      "attempts": [
+        {
+          "attempt": 1,
+          "severity": "minor",
+          "concerns": [
+            "props_and_hands"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "septeni-hd",
+      "koma": 3,
+      "strategy": "fix_instr: 巨大浮遊スマホ禁止/手指自然/服固定",
+      "passed": true,
+      "severity": "moderate",
+      "attempts": [
+        {
+          "attempt": 1,
+          "error": "QAFailedError: QA severity severe",
+          "severity": "severe",
+          "concerns": [
+            "text_leak",
+            "brand_scale",
+            "props_and_hands"
+          ]
+        },
+        {
+          "attempt": 2,
+          "severity": "moderate",
+          "concerns": [
+            "brand_scale",
+            "props_and_hands"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "tsuruha-hd",
+      "koma": 10,
+      "strategy": "fix_instr: 分割画面禁止/ブランド看板禁止",
+      "passed": true,
+      "severity": "minor",
+      "attempts": [
+        {
+          "attempt": 1,
+          "severity": "minor",
+          "concerns": [
+            "text_leak"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "usj",
+      "koma": 8,
+      "strategy": "transient gen error (no image part) — 戦略変更なしで再試行",
+      "passed": false,
+      "severity": null,
+      "attempts": [
+        {
+          "attempt": 1,
+          "error": "RuntimeError: no image part in response (text='')"
+        },
+        {
+          "attempt": 2,
+          "error": "RuntimeError: no image part in response (text='')"
+        },
+        {
+          "attempt": 3,
+          "error": "RuntimeError: no image part in response (text='')"
+        }
+      ]
+    },
+    {
+      "slug": "welcia-hd",
+      "koma": 5,
+      "strategy": "fix_instr: ブランド看板禁止/手指自然",
+      "passed": true,
+      "severity": "moderate",
+      "attempts": [
+        {
+          "attempt": 1,
+          "severity": "moderate",
+          "concerns": [
+            "text_leak",
+            "props_and_hands"
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "workman",
+      "koma": 2,
+      "strategy": "fix_instr: ブランド看板禁止/手指腕自然",
+      "passed": true,
+      "severity": "minor",
+      "attempts": [
+        {
+          "attempt": 1,
+          "severity": "minor",
+          "concerns": [
+            "props_and_hands"
+          ]
+        }
+      ]
+    }
+  ]
+}
