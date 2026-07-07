@@ -1,0 +1,146 @@
+
+##### attempt 1 rc=1 #####
+
+ ⛅️ wrangler 4.93.0 (update available 4.107.0)
+──────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database 10koma-shukatsu-db (666d0b01-0919-437e-9644-a6b1ff8b00b2):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
+├ Checking if file needs uploading
+│
+├ 🌀 Uploading 666d0b01-0919-437e-9644-a6b1ff8b00b2.bb58a09cdd242dc7.sql
+│ 🌀 Uploading complete.
+│
+
+
+⚠️  Warning: Unsupported macOS version detected (13.3.0). The Cloudflare Workers runtime may not work correctly on macOS versions below 13.5.0. Consider upgrading to macOS 13.5.0+ or using a DevContainer setup with a supported version of Linux (glibc 2.35+ required).
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mFOREIGN KEY constraint failed: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_FOREIGNKEY)[0m
+
+
+🪵  Logs were written to "/Users/oscardodds/Library/Preferences/.wrangler/logs/wrangler-2026-07-07_01-15-26_118.log"
+
+
+##### attempt 2 rc=1 #####
+
+ ⛅️ wrangler 4.93.0 (update available 4.107.0)
+──────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database 10koma-shukatsu-db (666d0b01-0919-437e-9644-a6b1ff8b00b2):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
+├ Checking if file needs uploading
+│
+🌀 File already uploaded. Processing.
+
+
+⚠️  Warning: Unsupported macOS version detected (13.3.0). The Cloudflare Workers runtime may not work correctly on macOS versions below 13.5.0. Consider upgrading to macOS 13.5.0+ or using a DevContainer setup with a supported version of Linux (glibc 2.35+ required).
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mFOREIGN KEY constraint failed: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_FOREIGNKEY)[0m
+
+
+🪵  Logs were written to "/Users/oscardodds/Library/Preferences/.wrangler/logs/wrangler-2026-07-07_01-15-38_455.log"
+
+
+##### attempt 3 rc=1 #####
+
+ ⛅️ wrangler 4.93.0 (update available 4.107.0)
+──────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database 10koma-shukatsu-db (666d0b01-0919-437e-9644-a6b1ff8b00b2):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
+├ Checking if file needs uploading
+│
+🌀 File already uploaded. Processing.
+
+
+⚠️  Warning: Unsupported macOS version detected (13.3.0). The Cloudflare Workers runtime may not work correctly on macOS versions below 13.5.0. Consider upgrading to macOS 13.5.0+ or using a DevContainer setup with a supported version of Linux (glibc 2.35+ required).
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mFOREIGN KEY constraint failed: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_FOREIGNKEY)[0m
+
+
+🪵  Logs were written to "/Users/oscardodds/Library/Preferences/.wrangler/logs/wrangler-2026-07-07_01-15-57_773.log"
+
+
+##### attempt 4 rc=1 #####
+
+ ⛅️ wrangler 4.93.0 (update available 4.107.0)
+──────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database 10koma-shukatsu-db (666d0b01-0919-437e-9644-a6b1ff8b00b2):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
+├ Checking if file needs uploading
+│
+🌀 File already uploaded. Processing.
+
+
+⚠️  Warning: Unsupported macOS version detected (13.3.0). The Cloudflare Workers runtime may not work correctly on macOS versions below 13.5.0. Consider upgrading to macOS 13.5.0+ or using a DevContainer setup with a supported version of Linux (glibc 2.35+ required).
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mFOREIGN KEY constraint failed: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_FOREIGNKEY)[0m
+
+
+🪵  Logs were written to "/Users/oscardodds/Library/Preferences/.wrangler/logs/wrangler-2026-07-07_01-16-23_726.log"
+
+
+##### attempt 5 rc=1 #####
+
+ ⛅️ wrangler 4.93.0 (update available 4.107.0)
+──────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database 10koma-shukatsu-db (666d0b01-0919-437e-9644-a6b1ff8b00b2):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
+├ Checking if file needs uploading
+│
+🌀 File already uploaded. Processing.
+
+
+⚠️  Warning: Unsupported macOS version detected (13.3.0). The Cloudflare Workers runtime may not work correctly on macOS versions below 13.5.0. Consider upgrading to macOS 13.5.0+ or using a DevContainer setup with a supported version of Linux (glibc 2.35+ required).
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mFOREIGN KEY constraint failed: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_FOREIGNKEY)[0m
+
+
+🪵  Logs were written to "/Users/oscardodds/Library/Preferences/.wrangler/logs/wrangler-2026-07-07_01-16-59_737.log"
+
+
+##### attempt 6 rc=1 #####
+
+ ⛅️ wrangler 4.93.0 (update available 4.107.0)
+──────────────────────────────────────────────
+Resource location: remote 
+
+🌀 Executing on remote database 10koma-shukatsu-db (666d0b01-0919-437e-9644-a6b1ff8b00b2):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
+├ Checking if file needs uploading
+│
+🌀 File already uploaded. Processing.
+
+
+⚠️  Warning: Unsupported macOS version detected (13.3.0). The Cloudflare Workers runtime may not work correctly on macOS versions below 13.5.0. Consider upgrading to macOS 13.5.0+ or using a DevContainer setup with a supported version of Linux (glibc 2.35+ required).
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mFOREIGN KEY constraint failed: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_FOREIGNKEY)[0m
+
+
+🪵  Logs were written to "/Users/oscardodds/Library/Preferences/.wrangler/logs/wrangler-2026-07-07_01-17-41_770.log"
+

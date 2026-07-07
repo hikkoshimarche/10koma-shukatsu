@@ -1,0 +1,31 @@
+{
+  "batch": 1,
+  "sha": "fc471e3dabceca31b62bac89b90a71bdc51350a8",
+  "ok": [
+    "appier",
+    "astroscale-hd",
+    "bandai-namco",
+    "benesse-hd",
+    "biccamera",
+    "biprogy",
+    "bitflyer",
+    "brainpad",
+    "cainz",
+    "capcom",
+    "chubu-electric",
+    "chugoku-electric",
+    "cosmo-energy",
+    "ctc",
+    "cyberagent",
+    "daiwa-house",
+    "dena",
+    "elyza",
+    "eneos",
+    "erex",
+    "euglena",
+    "ey",
+    "freee"
+  ],
+  "lintfail": [],
+  "applied": false
+}

@@ -1,0 +1,179 @@
+wrote: /tmp/sql/appier.sql (8147 chars)
+⚠️  Warning: Unsupported macOS version detected (13.3.0). The Cloudflare Workers runtime may not work correctly on macOS versions below 13.5.0. Consider upgrading to macOS 13.5.0+ or using a DevContainer setup with a supported version of Linux (glibc 2.35+ required).
+
+ ⛅️ wrangler 4.93.0 (update available 4.107.0)
+──────────────────────────────────────────────
+Resource location: remote 
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.[0m
+
+
+🌀 Executing on remote database 10koma-shukatsu-db (666d0b01-0919-437e-9644-a6b1ff8b00b2):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
+├ Checking if file needs uploading
+│
+├ 🌀 Uploading 666d0b01-0919-437e-9644-a6b1ff8b00b2.e4b33b28e2ddff9d.sql
+│ 🌀 Uploading complete.
+│
+🌀 Starting import...
+🌀 Processed 11 queries.
+🚣 Executed 11 queries in 4.88ms (0 rows read, 22 rows written)
+   Database is currently at bookmark 00000155-0000000e-000050a1-ef6e1294eb75f012759ba91c44d5dfb0.
+[
+  {
+    "results": [
+      {
+        "Total queries executed": 11,
+        "Rows read": 0,
+        "Rows written": 22,
+        "Database size (MB)": "40.69"
+      }
+    ],
+    "success": true,
+    "finalBookmark": "00000155-0000000e-000050a1-ef6e1294eb75f012759ba91c44d5dfb0",
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "APAC",
+      "served_by_colo": "NRT",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 4.8806
+      },
+      "duration": 4.8806,
+      "changes": 12,
+      "last_row_id": 2920,
+      "changed_db": true,
+      "size_after": 40689664,
+      "rows_read": 0,
+      "rows_written": 22,
+      "num_tables": 20,
+      "total_attempts": 1
+    }
+  }
+]
+wrote: /tmp/sql/astroscale-hd.sql (8273 chars)
+⚠️  Warning: Unsupported macOS version detected (13.3.0). The Cloudflare Workers runtime may not work correctly on macOS versions below 13.5.0. Consider upgrading to macOS 13.5.0+ or using a DevContainer setup with a supported version of Linux (glibc 2.35+ required).
+
+ ⛅️ wrangler 4.93.0 (update available 4.107.0)
+──────────────────────────────────────────────
+Resource location: remote 
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.[0m
+
+
+🌀 Executing on remote database 10koma-shukatsu-db (666d0b01-0919-437e-9644-a6b1ff8b00b2):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
+├ Checking if file needs uploading
+│
+├ 🌀 Uploading 666d0b01-0919-437e-9644-a6b1ff8b00b2.42965e0b5d81f8ea.sql
+│ 🌀 Uploading complete.
+│
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mFOREIGN KEY constraint failed: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_FOREIGNKEY)[0m
+
+
+🪵  Logs were written to "/Users/oscardodds/Library/Preferences/.wrangler/logs/wrangler-2026-07-07_01-12-08_456.log"
+
+=== character 列フォールバック警告 (2件) ===
+  [info] bandai-namco panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] bandai-namco panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+wrote: /tmp/sql/bandai-namco.sql (8822 chars)
+⚠️  Warning: Unsupported macOS version detected (13.3.0). The Cloudflare Workers runtime may not work correctly on macOS versions below 13.5.0. Consider upgrading to macOS 13.5.0+ or using a DevContainer setup with a supported version of Linux (glibc 2.35+ required).
+
+ ⛅️ wrangler 4.93.0 (update available 4.107.0)
+──────────────────────────────────────────────
+Resource location: remote 
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.[0m
+
+
+🌀 Executing on remote database 10koma-shukatsu-db (666d0b01-0919-437e-9644-a6b1ff8b00b2):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
+├ Checking if file needs uploading
+│
+├ 🌀 Uploading 666d0b01-0919-437e-9644-a6b1ff8b00b2.99ab509fd7daf53a.sql
+│ 🌀 Uploading complete.
+│
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mFOREIGN KEY constraint failed: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_FOREIGNKEY)[0m
+
+
+🪵  Logs were written to "/Users/oscardodds/Library/Preferences/.wrangler/logs/wrangler-2026-07-07_01-12-10_891.log"
+
+=== character 列フォールバック警告 (1件) ===
+  [info] benesse-hd panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+wrote: /tmp/sql/benesse-hd.sql (8210 chars)
+⚠️  Warning: Unsupported macOS version detected (13.3.0). The Cloudflare Workers runtime may not work correctly on macOS versions below 13.5.0. Consider upgrading to macOS 13.5.0+ or using a DevContainer setup with a supported version of Linux (glibc 2.35+ required).
+
+ ⛅️ wrangler 4.93.0 (update available 4.107.0)
+──────────────────────────────────────────────
+Resource location: remote 
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.[0m
+
+
+🌀 Executing on remote database 10koma-shukatsu-db (666d0b01-0919-437e-9644-a6b1ff8b00b2):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
+├ Checking if file needs uploading
+│
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mA request to the Cloudflare API (/accounts/9e90af488ef94080eab3b379e9a2b89b/d1/database/666d0b01-0919-437e-9644-a6b1ff8b00b2/import) failed.[0m
+
+  Upstream service unavailable [code: 7009]
+  
+  If you think this is a bug, please open an issue at: [4mhttps://github.com/cloudflare/workers-sdk/issues/new/choose[0m
+
+
+🪵  Logs were written to "/Users/oscardodds/Library/Preferences/.wrangler/logs/wrangler-2026-07-07_01-12-17_896.log"
+
+=== character 列フォールバック警告 (1件) ===
+  [info] biccamera panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+wrote: /tmp/sql/biccamera.sql (8323 chars)
+⚠️  Warning: Unsupported macOS version detected (13.3.0). The Cloudflare Workers runtime may not work correctly on macOS versions below 13.5.0. Consider upgrading to macOS 13.5.0+ or using a DevContainer setup with a supported version of Linux (glibc 2.35+ required).
+
+ ⛅️ wrangler 4.93.0 (update available 4.107.0)
+──────────────────────────────────────────────
+Resource location: remote 
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.[0m
+
+
+🌀 Executing on remote database 10koma-shukatsu-db (666d0b01-0919-437e-9644-a6b1ff8b00b2):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
+├ Checking if file needs uploading
+│
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mA request to the Cloudflare API (/accounts/9e90af488ef94080eab3b379e9a2b89b/d1/database/666d0b01-0919-437e-9644-a6b1ff8b00b2/import) failed.[0m
+
+  Upstream service unavailable [code: 7009]
+  
+  If you think this is a bug, please open an issue at: [4mhttps://github.com/cloudflare/workers-sdk/issues/new/choose[0m
+
+
+🪵  Logs were written to "/Users/oscardodds/Library/Preferences/.wrangler/logs/wrangler-2026-07-07_01-13-18_942.log"
+
+=== character 列フォールバック警告 (1件) ===
+  [info] biprogy panel_06: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+wrote: /tmp/sql/biprogy.sql (8581 chars)
+⚠️  Warning: Unsupported macOS version detected (13.3.0). The Cloudflare Workers runtime may not work correctly on macOS versions below 13.5.0. Consider upgrading to macOS 13.5.0+ or using a DevContainer setup with a supported version of Linux (glibc 2.35+ required).
+
+ ⛅️ wrangler 4.93.0 (update available 4.107.0)
+──────────────────────────────────────────────
+Resource location: remote 
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1m⚠️ This process may take some time, during which your D1 database will be unavailable to serve queries.[0m
+
+
+🌀 Executing on remote database 10koma-shukatsu-db (666d0b01-0919-437e-9644-a6b1ff8b00b2):
+🌀 To execute on your local development database, remove the --remote flag from your wrangler command.
+Note: if the execution fails to complete, your DB will return to its original state and you can safely retry.
+├ Checking if file needs uploading

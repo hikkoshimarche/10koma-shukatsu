@@ -1,0 +1,158 @@
+
+===== appier rc=0 =====
+
+
+===== astroscale-hd rc=0 =====
+
+
+===== bandai-namco rc=0 =====
+
+=== character 列フォールバック警告 (2件) ===
+  [info] bandai-namco panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] bandai-namco panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===== benesse-hd rc=0 =====
+
+=== character 列フォールバック警告 (1件) ===
+  [info] benesse-hd panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===== biccamera rc=0 =====
+
+=== character 列フォールバック警告 (1件) ===
+  [info] biccamera panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===== biprogy rc=0 =====
+
+=== character 列フォールバック警告 (1件) ===
+  [info] biprogy panel_06: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===== bitflyer rc=0 =====
+
+
+===== brainpad rc=0 =====
+
+=== character 列フォールバック警告 (2件) ===
+  [info] brainpad panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] brainpad panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===== cainz rc=0 =====
+
+=== character 列フォールバック警告 (2件) ===
+  [info] cainz panel_06: dialogue に未知タグ ['先輩社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] cainz panel_07: dialogue に未知タグ ['採用担当者'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===== capcom rc=0 =====
+
+=== character 列フォールバック警告 (2件) ===
+  [info] capcom panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] capcom panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===== chubu-electric rc=0 =====
+
+=== character 列フォールバック警告 (2件) ===
+  [info] chubu-electric panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='haruki' に決定、dialogue 本文は保持)
+  [info] chubu-electric panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===== chugoku-electric rc=0 =====
+
+=== character 列フォールバック警告 (2件) ===
+  [info] chugoku-electric panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] chugoku-electric panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===== cosmo-energy rc=0 =====
+
+=== character 列フォールバック警告 (2件) ===
+  [info] cosmo-energy panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] cosmo-energy panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===== ctc rc=0 =====
+
+=== character 列フォールバック警告 (2件) ===
+  [info] ctc panel_06: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] ctc panel_07: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===== cyberagent rc=0 =====
+
+=== character 列フォールバック警告 (1件) ===
+  [info] cyberagent panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===== daiwa-house rc=0 =====
+
+=== character 列フォールバック警告 (2件) ===
+  [info] daiwa-house panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] daiwa-house panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===== dena rc=0 =====
+
+=== character 列フォールバック警告 (2件) ===
+  [info] dena panel_06: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] dena panel_07: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===== elyza rc=0 =====
+
+=== character 列フォールバック警告 (2件) ===
+  [info] elyza panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] elyza panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===== eneos rc=0 =====
+
+=== character 列フォールバック警告 (2件) ===
+  [info] eneos panel_06: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] eneos panel_07: dialogue に未知タグ ['ob先輩'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===== erex rc=0 =====
+
+=== character 列フォールバック警告 (1件) ===
+  [info] erex panel_07: dialogue に未知タグ ['若手社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===== euglena rc=0 =====
+
+=== character 列フォールバック警告 (1件) ===
+  [info] euglena panel_07: dialogue に未知タグ ['社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
+
+===== ey rc=0 =====
+
+
+===== freee rc=0 =====
+
+=== character 列フォールバック警告 (2件) ===
+  [info] freee panel_06: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+  [info] freee panel_07: dialogue に未知タグ ['ob社員'] が含まれます (character='nana' に決定、dialogue 本文は保持)
+============================================================
+
