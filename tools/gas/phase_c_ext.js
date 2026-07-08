@@ -378,6 +378,32 @@ function handleExt(mode, e, token){
     return _json({formula_changed:f_changed, header_changed:h_changed});
   }
 
+  if(mode === 'fixdashnjikan'){
+    // ダッシュボードの「1次完了」COUNTIFを "*次完了"(1次/2次/…/N次完了を全集約)に一般化。冪等。
+    // "*次完了" は "完了"単体(サインオフ済=別カテゴリ)に非マッチ→二重計上しない。
+    // 列見出しの "1次完了" も "1次完了以上" にリネーム(実態表記)。数式のみ・他集計不変。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('ダッシュボード');
+    if(!sh) return _json({error:'no dashboard'});
+    const lr=sh.getLastRow(), lc=sh.getLastColumn();
+    const rng=sh.getRange(1,1,lr,lc);
+    const fs=rng.getFormulas(), vs=rng.getValues();
+    const changed=[]; let hdr=0;
+    for(let i=0;i<lr;i++){
+      for(let j=0;j<lc;j++){
+        const f=fs[i][j];
+        if(f && f.indexOf('"1次完了"')>=0){
+          const nf=f.split('"1次完了"').join('"*次完了"');
+          if(nf!==f){ sh.getRange(i+1,j+1).setFormula(nf);
+            changed.push({cell:(j<26?String.fromCharCode(65+j):'A'+String.fromCharCode(65+j-26))+(i+1)}); }
+        } else if(!f && String(vs[i][j]).trim()==='1次完了'){
+          sh.getRange(i+1,j+1).setValue('1次完了以上'); hdr++;
+        }
+      }
+    }
+    return _json({formula_generalized:changed.length, changed:changed, header_relabeled:hdr});
+  }
+
   if(mode === 'roomdashboard'){
     // AI OB訪問(ルーム)行をL4機械ゲートモデルに修正: ステータスH列(完成/未生成)を6で割り社数化。
     // 旧式はC列(役割R1-R6)を指し常に0%だった不整合を解消。人FBループ列は概念無し→「—」。
