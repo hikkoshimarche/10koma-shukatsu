@@ -49,7 +49,10 @@ QA_MAX = 3
 NAME_ALIASES = {"三菱商事": "mitsubishi-corp", "伊藤忠商事": "itochu", "住友商事": "sumitomo-corp",
                 "丸紅": "marubeni", "兼松": "kanematsu", "神鋼商事": "shinkokusyoji",
                 "岩谷産業": "iwatani", "双日": "sojitz", "三井物産": "mitsui-bussan",
-                "豊田通商": "toyota-tsusho"}
+                "豊田通商": "toyota-tsusho",
+                # 進捗スプシの表記揺れ '野村証券'(証) は canonical '野村證券'(證) と 証≠證 で
+                # substring照合が外れ resolve_slug→None になり FB反映が黙って落ちるため明示alias。
+                "野村証券": "nomura"}
 # deploy slug → tokyari slug (画像生成side。既知差異のみ)
 TOKYARI_SLUG = {"itochu": "itochu-shoji"}
 
