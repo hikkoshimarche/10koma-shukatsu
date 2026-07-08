@@ -500,6 +500,50 @@ function handleExt(mode, e, token){
     return _json({ok:true, added:true, row:row, before:before, after:sh.getLastRow(), format_from:_sample});
   }
 
+  if(mode === 'setcompanyname'){
+    // 会社名セルの表記揺れ是正(マスターDB基準)。sheet上でfrom社名の行を特定→会社名セルをtoへ。
+    // 純粋なセル値変更(行移動なし=FB/状態列はそのまま)。冪等: 既にto/該当行なしはno-op報告。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(e.parameter.sheet || KOMA_SHEET);
+    if(!sh) return _json({error:'no sheet', sheet:e.parameter.sheet||''});
+    const from = String(e.parameter.from||'').trim();
+    const to = String(e.parameter.to||'').trim();
+    if(!from || !to) return _json({error:'from/to required'});
+    let row = _findRowByCompany(sh, from);
+    if(row < 0){
+      // 既にtoに是正済かも(冪等)
+      if(_findRowByCompany(sh, to) >= 0) return _json({ok:true, noop:true, note:'既にto表記=変更不要'});
+      return _json({error:'from not found', from:from, sheet:sh.getName()});
+    }
+    sh.getRange(row, CONFIG.COL.会社名).setValue(to);
+    return _json({ok:true, renamed:true, row:row, from:from, to:to, sheet:sh.getName()});
+  }
+
+  if(mode === 'appendrowsheet'){
+    // appendrow10koma の sheet 一般化版(企業紹介動画/決算書分析動画 等の欠落社追加用)。
+    // 業界/会社名/ステータス列に記入し、見本行から書式・入力規則を継承(純加算)。冪等: 同名既存はskip。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(e.parameter.sheet || KOMA_SHEET);
+    if(!sh) return _json({error:'no sheet', sheet:e.parameter.sheet||''});
+    const company = String(e.parameter.company||'').trim();
+    if(!company) return _json({error:'no company'});
+    const existing = _findRowByCompany(sh, company);
+    if(existing >= 0) return _json({ok:true, existing:true, row:existing, note:'既存行あり=追加せず', sheet:sh.getName()});
+    const before = sh.getLastRow();
+    const row = before + 1;
+    sh.getRange(row, CONFIG.COL.業界).setValue(e.parameter.industry||'');
+    sh.getRange(row, CONFIG.COL.会社名).setValue(company);
+    if(e.parameter.status) sh.getRange(row, CONFIG.COL.ステータス).setValue(e.parameter.status);
+    var _sample = parseInt(e.parameter.sample||String(CONFIG.FIRST_ROW),10);
+    var _lc = sh.getLastColumn();
+    if(_sample>=CONFIG.FIRST_ROW && _sample!==row){
+      var _src = sh.getRange(_sample,1,1,_lc);
+      _src.copyTo(sh.getRange(row,1,1,_lc), SpreadsheetApp.CopyPasteType.PASTE_FORMAT, false);
+      _src.copyTo(sh.getRange(row,1,1,_lc), SpreadsheetApp.CopyPasteType.PASTE_DATA_VALIDATION, false);
+    }
+    return _json({ok:true, added:true, row:row, before:before, after:sh.getLastRow(), sheet:sh.getName(), format_from:_sample});
+  }
+
   if(mode === 'fixrowformat'){
     // 既存の追加行(appendrow等)の書式・入力規則(プルダウン)を見本行から複製(内容は不変・純加算)。
     // 対象は company or row で指定。CFはrange方式で自動適用済ゆえ触らない(新規ルール乱造しない)。
