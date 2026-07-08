@@ -463,7 +463,41 @@ function handleExt(mode, e, token){
     sh.getRange(row, CONFIG.COL.公開URL).setValue(e.parameter.url||'');
     sh.getRange(row, CONFIG.COL.ステータス).setValue(e.parameter.status||'公開済・FB待ち');
     sh.getRange(row, CONFIG.COL.最終更新).setValue(new Date());
-    return _json({ok:true, added:true, row:row, before:before, after:sh.getLastRow()});
+    // 見本行から書式・入力規則(プルダウン)を継承(内容は不変・純加算)。CFはrange(3-2402)方式で自動適用。
+    var _sample = parseInt(e.parameter.sample||String(CONFIG.FIRST_ROW),10);
+    var _lc = sh.getLastColumn();
+    if(_sample>=CONFIG.FIRST_ROW && _sample!==row){
+      var _src = sh.getRange(_sample,1,1,_lc);
+      _src.copyTo(sh.getRange(row,1,1,_lc), SpreadsheetApp.CopyPasteType.PASTE_FORMAT, false);
+      _src.copyTo(sh.getRange(row,1,1,_lc), SpreadsheetApp.CopyPasteType.PASTE_DATA_VALIDATION, false);
+    }
+    return _json({ok:true, added:true, row:row, before:before, after:sh.getLastRow(), format_from:_sample});
+  }
+
+  if(mode === 'fixrowformat'){
+    // 既存の追加行(appendrow等)の書式・入力規則(プルダウン)を見本行から複製(内容は不変・純加算)。
+    // 対象は company or row で指定。CFはrange方式で自動適用済ゆえ触らない(新規ルール乱造しない)。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(e.parameter.sheet || KOMA_SHEET);
+    if(!sh) return _json({error:'no sheet'});
+    const sample = parseInt(e.parameter.sample||String(CONFIG.FIRST_ROW),10);
+    let target = 0;
+    if(e.parameter.row) target = parseInt(e.parameter.row,10);
+    else if(e.parameter.company) target = _findRowByCompany(sh, e.parameter.company);
+    if(!(target>=CONFIG.FIRST_ROW)) return _json({error:'target row not found', company:e.parameter.company||''});
+    if(!(sample>=CONFIG.FIRST_ROW) || sample===target) return _json({error:'bad sample'});
+    const lc = sh.getLastColumn();
+    const src = sh.getRange(sample,1,1,lc);
+    src.copyTo(sh.getRange(target,1,1,lc), SpreadsheetApp.CopyPasteType.PASTE_FORMAT, false);
+    src.copyTo(sh.getRange(target,1,1,lc), SpreadsheetApp.CopyPasteType.PASTE_DATA_VALIDATION, false);
+    const dvInfo = function(col){
+      const d = sh.getRange(target,col).getDataValidation();
+      if(!d) return 'none';
+      try{ const cv=d.getCriteriaValues(); if(cv&&cv[0]&&cv[0].map) return 'list('+cv[0].length+')'; return String(d.getCriteriaType()); }
+      catch(err){ return 'err'; }
+    };
+    return _json({ok:true, target:target, sample:sample,
+      dv_status: dvInfo(CONFIG.COL.ステータス), dv_jot1: dvInfo(jotCol(1)), dv_han1: dvInfo(hanCol(1))});
   }
 
   if(mode === 'setreflected'){
