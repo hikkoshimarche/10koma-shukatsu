@@ -10,6 +10,8 @@
  *****************************************************************/
 const COMMON_SHEET = '共通の修正案';   // A日時 B規則 Cスコープ D状態 E備考
 const KOMA_SHEET = '10コマ';
+const IMAGE_QA_SHEET = '画像人QA';   // A日時 B会社 Cslug Dコマ Esha Fレビューurl G指摘 H判定(待ち/OK/NG/反映済)
+const IMAGE_QA_HEAD = ['日時','会社','slug','コマ','sha','レビューurl','指摘','判定'];
 
 function _json(obj){
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
@@ -53,6 +55,54 @@ function handleExt(mode, e, token){
     sh.appendRow([Utilities.formatDate(new Date(),'Asia/Tokyo','yyyy-MM-dd HH:mm'),
                   e.parameter.rule||'', e.parameter.scope||'全社', '未適用', e.parameter.note||'']);
     return _json({ok:true, row:sh.getLastRow()});
+  }
+
+  // ---- 画像人QA(混在型): 候補画像を人が OK/NG で承認 → OKは次ループが全ゲート付きで反映 ----
+  if(mode === 'addimageqa'){
+    // 候補起票。同一 slug+koマ の『待ち/OK』既存行があれば sha/url/日時を上書き(重複膨張防止)。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sh = ss.getSheetByName(IMAGE_QA_SHEET);
+    if(!sh){ sh = ss.insertSheet(IMAGE_QA_SHEET); sh.appendRow(IMAGE_QA_HEAD); }
+    const slug=String(e.parameter.slug||''), koma=String(e.parameter.koma||'');
+    const now=Utilities.formatDate(new Date(),'Asia/Tokyo','yyyy-MM-dd HH:mm');
+    const row=[now, e.parameter.company||'', slug, koma, e.parameter.sha||'',
+               e.parameter.url||'', e.parameter.detail||'', '待ち'];
+    const lr=sh.getLastRow();
+    for(let r=2;r<=lr;r++){
+      const v=sh.getRange(r,1,1,8).getValues()[0];
+      if(String(v[2])===slug && String(v[3])===koma && (String(v[7])==='待ち'||String(v[7])==='OK')){
+        sh.getRange(r,1,1,8).setValues([row]); return _json({ok:true, updated:r});
+      }
+    }
+    sh.appendRow(row);
+    return _json({ok:true, row:sh.getLastRow()});
+  }
+  if(mode === 'imageqa_approved'){
+    // 人が『OK』にした候補を返す(次ループが反映する対象)。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(IMAGE_QA_SHEET);
+    const items=[];
+    if(sh){ const lr=sh.getLastRow();
+      for(let r=2;r<=lr;r++){ const v=sh.getRange(r,1,1,8).getValues()[0];
+        if(String(v[7]).trim()==='OK'){
+          items.push({row:r, company:v[1], slug:v[2], koma:v[3], sha:v[4], url:v[5], detail:v[6]});
+        }
+      }
+    }
+    return _json({count:items.length, items:items});
+  }
+  if(mode === 'setimageqa'){
+    // 反映完了した候補を『反映済』に(冪等)。slug+koma 一致行の判定列を更新。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(IMAGE_QA_SHEET);
+    if(!sh) return _json({error:'no sheet'});
+    const slug=String(e.parameter.slug||''), koma=String(e.parameter.koma||''),
+          st=String(e.parameter.status||'反映済'); let n=0; const lr=sh.getLastRow();
+    for(let r=2;r<=lr;r++){ const v=sh.getRange(r,1,1,8).getValues()[0];
+      if(String(v[2])===slug && String(v[3])===koma){ sh.getRange(r,8).setValue(st); n++; }
+    }
+    return _json({ok:true, updated:n});
   }
 
   if(mode === 'cleanfailnoise'){
@@ -991,14 +1041,39 @@ function computeLine3h(){
   return {done:done, pendingNewFb:pendingNewFb, since:since};
 }
 
-/* 12/15/18/21/0時: 直近3hでAIが本番反映/公開したこと(strict)。エスカレ件数は朝9時ダイジェストに集約。 */
+/* 画像人QA(混在型)の 待ち候補 を返す(3hレポート統合用)。人は URL を見て OK/NG を記入するだけ。 */
+function imageQaPending(){
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(IMAGE_QA_SHEET);
+  const waiting=[]; let okCount=0;
+  if(sh){ const lr=sh.getLastRow();
+    for(let r=2;r<=lr;r++){ const v=sh.getRange(r,1,1,8).getValues()[0];
+      const st=String(v[7]).trim();
+      if(st==='待ち'){ waiting.push({company:v[1], koma:v[3], url:v[5]}); }
+      else if(st==='OK'){ okCount++; }
+    }
+  }
+  return {waiting:waiting, okCount:okCount};
+}
+
+/* 12/15/18/21/0時: 直近3hでAIが本番反映/公開したこと(strict) + 画像人QA待ち(人は見てOK/NG返すだけ)。
+   エスカレ件数は朝9時ダイジェストに集約。 */
 function line3hSummary(){
   const res = computeLine3h();
   const hh = Utilities.formatDate(new Date(),'Asia/Tokyo','HH:mm');
-  if(res.done.length===0){ _pushLine('【'+hh+' 直近3h】AIの反映はありませんでした。'); return; }
-  const p = ['【'+hh+' 直近3h・AIが本番反映した社】'+res.done.length+'件'];
-  p.push(res.done.slice(0,20).join('\n'));
-  if(res.pendingNewFb.length>0){ p.push('(反映済・新FB対応中'+res.pendingNewFb.length+'件)'); }
+  const q = imageQaPending();
+  const p = [];
+  if(res.done.length===0){ p.push('【'+hh+' 直近3h】AIの反映はありませんでした。'); }
+  else {
+    p.push('【'+hh+' 直近3h・AIが本番反映した社】'+res.done.length+'件');
+    p.push(res.done.slice(0,20).join('\n'));
+    if(res.pendingNewFb.length>0){ p.push('(反映済・新FB対応中'+res.pendingNewFb.length+'件)'); }
+  }
+  // 画像人QA: 候補を見て OK/NG を返すだけ(OKは次ループが全ゲート付きで自動反映)。
+  if(q.waiting.length>0){
+    p.push('—\n🖼画像人QA待ち '+q.waiting.length+'件(URLを見てスプシ『画像人QA』にOK/NG記入で自動反映):');
+    p.push(q.waiting.slice(0,8).map(function(w){ return '・'+w.company+' コマ'+w.koma+' '+w.url; }).join('\n'));
+  }
+  if(q.okCount>0){ p.push('(OK済で次ループ反映待ち '+q.okCount+'件)'); }
   _pushLine(p.join('\n'));
 }
 

@@ -74,6 +74,7 @@ IMG_FIX_TEMPLATES = {
     "scale":      "人物(ナナ・ハルキ)の大きさを背景に対し自然な比率へ是正(人物は前景・画面高さ約1/3以下目安)。ただし背景の固有フックは形状保持し別物に描き直さない。",
     "hands":      "手指・腕の破綻(本数超過/欠損/不自然な接続)を解消し、肩・肘・手首が自然につながる正しい人体にする。",
     "accuracy":   "指摘の製品/什器/機械の形状を実物に近い正しい見た目へ是正する(出典なき誇張はしない)。",
+    "text_leak":  "画像に焼き込まれた文字要素(看板/ロゴ/ホワイトボード/貼り紙/パッケージ表面の説明文/画面内の余計な文字)を除去し、その部分を情景として自然に描き直す(文字はデータ層=overlayが持つため画像内に焼かない)。会社を象徴するブランドロゴが被写体の主役である場合は無理に消さず形状を保持する。",
 }
 
 # プライマリ5型(task指定): メタ枠/白帯/横線/縮尺 (+複合=これらや下記auxが2つ以上)
@@ -85,12 +86,18 @@ _PRIMARY_PATTERNS = [
     # 白帯/クロップ: 「白い〜」に加え、端/上部の"空白"(枠なし)や余白も拾う。※枠付きは meta_frame が優先(下で調停)。
     ("white_band", re.compile(r"白い.{0,6}(空白|部分|帯|スペース)|白帯|余白|クロップ|(上部|下部|上|端|画像上|画像上部|画像下部).{0,8}(の)?空白|空白.{0,6}(削除|消|残らない|見えない)")),
 ]
-# aux(複合検出・単独でも画像再生成で直る既存7観点系): 手指破綻 / 製品什器の形状相違
+# aux(複合検出・単独でも画像再生成で直る既存7観点系): 手指破綻 / 製品什器の形状相違 / 焼き込み文字
 _AUX_PATTERNS = [
     ("hands",    re.compile(r"(手|指|腕|足).{0,8}(破綻|不自然|欠け|[0-9０-９]本|複数|多い|削除|つながり)")),
     ("accuracy", re.compile(r"(製品|什器|空調|機器|建機|形状|見た目).{0,12}(実物|実際|異な|近い|正しく|相違|確認)")),
+    # 焼き込み文字(baked scene-text): 看板/ロゴ/ホワイトボード/貼り紙/パッケージ/画面 等に描かれた文字の除去。
+    #   ※overlay文字(main/sub_copy=データ層)は translate 冒頭の is_overlay_text_fb が先に script経路へ分岐。
+    #    ここは「画像に焼き込まれた」文字＝画像再生成でしか消せないもの。
+    ("text_leak", re.compile(r"(看板|ロゴ|ホワイトボード|白板|貼り紙|パッケージ|画面|スクリーン|ボード|見出し|バナー)"
+                             r".{0,16}(文字|テキスト|表記|見出し).{0,24}(削除|消|除去|不要|なくす)"
+                             r"|焼き込|焼き付|文字要素.{0,6}除去")),
 ]
-_TYPE_ORDER = ["meta_frame", "white_band", "hline", "scale", "hands", "accuracy"]
+_TYPE_ORDER = ["meta_frame", "white_band", "hline", "scale", "hands", "accuracy", "text_leak"]
 
 
 def classify_image_bug_cats(detail: str) -> list[str]:
@@ -192,6 +199,14 @@ def translate_image_fb(company, slug, koma, detail, scenario_excerpt=""):
          再生成指示に char-ref厳守＋背景フック保持＋コラージュ/文字焼き込み禁止 を必ず注入。
       2) 未知型のみ 従来のLLM翻訳(真に曖昧/主観はescalate)。
     """
+    # 0-pre) 焼き込み文字(baked scene-text)の優先分岐: 看板/ロゴ/ホワイトボード/貼り紙/パッケージ 等に
+    #   「描かれた」文字はデータ層(overlay)で直せない=画像再生成でしか消せない。overlay文字判定より優先。
+    _cats0 = classify_image_bug_cats(detail)
+    if "text_leak" in _cats0:
+        btype = "compound" if len(_cats0) >= 2 else "text_leak"
+        return {"action": "auto", "instruction": build_regen_instruction(detail, _cats0),
+                "reason": f"焼き込み文字(baked)={btype}", "type": btype, "cats": _cats0}
+
     # 0) 三菱型の誤分類再発防止: 画像内テキスト=オーバーレイはGemini再生成でなくD1テキスト修正。
     if L.is_overlay_text_fb(detail):
         return {"action": "escalate", "instruction": "", "route": "script",
@@ -448,6 +463,14 @@ def _selftest() -> int:
     r = translate_image_fb("(t)", "(t)", 2, "画像内テキスト「今 売上約19億円」の「今」を削除する")
     chk("overlay: route=script", r.get("route") == "script")
     chk("overlay: 画像autoにしない", r.get("action") != "auto")
+
+    print("[selftest] 焼き込み文字(baked: 看板/ロゴ/ホワイトボード/パッケージ)は画像再生成(text_leak)へ")
+    for detail in ["画像内のホワイトボードの文字「テクノプレナーシップ」を削除する",
+                   "看板のロゴ文字を除去して情景として描き直す",
+                   "パッケージ表面の説明文字を削除する"]:
+        r = translate_image_fb("(t)", "(t)", 7, detail)
+        chk(f"text_leak auto: {detail[:14]}…", r.get("action") == "auto" and "text_leak" in r.get("cats", []))
+        chk(f"text_leak 制約注入: {detail[:14]}…", has_constraints(r.get("instruction", "")))
 
     print("[selftest] 真に主観/曖昧なFBは型に該当せず(→LLM/escalate据置)")
     for detail in ["右側の画像が簡素で品質感を下げる。より質の高い描写に修正。",

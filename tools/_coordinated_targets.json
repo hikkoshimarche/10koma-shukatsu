@@ -1,0 +1,29 @@
+{
+  "_comment": "入口固有化(③)で台本+画像を協調反映する社。image_komas=画像再生成が要るコマ / text_komas=台本反映が要るコマ。phase_c_auto.coordinated_reflect_one が全ゲート(lint0 & 全QA)両立時のみ台本+画像を同一トランザクション反映。片方成立では一切反映しない。GEMINI有効のMac毎時ループで消化。",
+  "targets": [
+    {
+      "company": "富士通株式会社",
+      "slug": "fujitsu",
+      "tslug": "fujitsu",
+      "image_komas": [1],
+      "text_komas": [1, 2, 10],
+      "label": "入口FMV→富岳(k2用途/k10コールバック整合)"
+    },
+    {
+      "company": "三菱商事株式会社",
+      "slug": "mitsubishi-corp",
+      "tslug": "mitsubishi-corp",
+      "image_komas": [1],
+      "text_komas": [1, 6],
+      "label": "入口 丸の内→1969年日本初LNG(k6規模へ)"
+    },
+    {
+      "company": "双日株式会社",
+      "slug": "sojitz",
+      "tslug": "sojitz",
+      "image_komas": [1],
+      "text_komas": [1],
+      "label": "入口 民間航空機シェアNo.1先出し+同い年pivot"
+    }
+  ]
+}

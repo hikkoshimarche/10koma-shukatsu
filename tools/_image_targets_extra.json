@@ -1,0 +1,12 @@
+{
+  "_comment": "attention(intern提出FB)に無いが自動消化したい画像ターゲット(タスク由来: ChatGPTレビュー②等)。phase_c_auto.route_image_fbs が attention に加えてここも同じ translate→型分類→(安全型auto / 混在型notify) で処理する。安全型は全ゲート付きで自動反映、混在型は候補生成+人QA。",
+  "targets": [
+    {
+      "company": "株式会社ABEJA",
+      "slug": "abeja",
+      "tslug": "abeja",
+      "koma": 7,
+      "detail": "画像内のホワイトボードの文字「テクノプレナーシップ」「リベラルアーツ」「倫理観」を削除する(文字はデータ層=overlayが持つため画像内に焼かない。ホワイトボードは無地または簡素な図に描き直す)"
+    }
+  ]
+}

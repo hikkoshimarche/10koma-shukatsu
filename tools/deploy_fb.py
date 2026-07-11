@@ -331,6 +331,23 @@ def main():
           f"/ 要調査{tally['investigate']} / 判断日次{tally['judgment']} / 変更なし{tally['noop']}  "
           f"(オスカー即時エスカレ=0) ===")
     print("巻き戻しは .backups/d1_*.json から。")
+
+    # === Phase C 自動化拡張(画像系: 安全型auto/協調反映/混在型人QA) ===
+    #   既存の台本FB反映(上記)は不変。拡張分は phase_c_auto に隔離し、
+    #   master AUTO_IMAGE_FIX_ENABLED=1 の時のみライブ、既定OFF=dryで挙動不変。
+    #   1社/1件の例外がこのループ全体(台本反映の成功)を巻き戻さないよう try で隔離。
+    try:
+        import os
+        import phase_c_auto as PCA
+        live = os.environ.get("AUTO_IMAGE_FIX_ENABLED", "0") == "1"
+        print(f"\n=== [拡張] phase_c_auto 画像自動化 [{'LIVE' if live else 'dry(既定)'}] ===")
+        res = PCA.run_batch(dry=not live)
+        print(f"  協調反映 {len(res.get('coordinated',[]))} / 人QA消化 {len(res.get('human_qa',[]))} "
+              f"/ 安全型auto {len(res.get('safe',[]))} / 混在型notify {len(res.get('mixed',[]))}")
+    except Exception as ex:
+        import traceback
+        print(f"  ⚠ 画像自動化拡張でエラー(台本反映は成功済・非巻戻し): {ex}")
+        traceback.print_exc()
     return 0
 
 
