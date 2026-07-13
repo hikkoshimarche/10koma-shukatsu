@@ -231,6 +231,44 @@ function handleExt(mode, e, token){
     return _json(out);
   }
 
+  if(mode === 'judgmentdryrun'){
+    // 送信せず、修正後ロジックの判断ダイジェスト実文面(全文)を返す(検証用)。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const js = _collectJudgmentDaily();
+    const lines = ['【判断ダイジェスト(オスカー) '+Utilities.formatDate(new Date(),'Asia/Tokyo','MM/dd')+'】'+js.length+'件'];
+    if(js.length===0) lines.push('・なし(AIが自走で処理済)');
+    js.forEach(function(j){ lines.push('・'+j.text); });
+    const full = lines.join('\n');
+    return _json({unique_count:js.length, chars:full.length, line_messages:_splitForLine(full).length, payload:full});
+  }
+  if(mode === 'cleanjudgment'){
+    // 既存 judgment_daily を新ロジックで再仕分け(非破壊=status'適用済'化):
+    //   処理失敗(一過性)除去 / 機械処理可能(年数・事実誤記)は自動反映対象へ再仕分け / 真の判断は(company,安定キー)でdedup。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(COMMON_SHEET);
+    if(!sh) return _json({error:'no sheet'});
+    const YEAR=/(創業|設立)?.{0,4}「?\d{2,3}年」?.{0,8}(再計算|概数|表記|統一|約\d)/;
+    const FACT=/(社名|会社名|正しくは|誤記|と記載され).{0,20}(可能性|要確認|誤|正しく)/;
+    const KEY=/\[k:([0-9a-f]{8})\]/;
+    const COMP=/\[判断ダイジェスト\](\[k:[0-9a-f]{8}\])?\s*([^:：]+)[:：]/;
+    const last=sh.getLastRow();
+    let procfail=0, mechanical=0, deduped=0, kept=0;
+    const seenKeys={}, seenComp={};
+    for(let r=2;r<=last;r++){
+      const row=sh.getRange(r,1,1,5).getValues()[0];
+      if(String(row[2]).trim()!=='judgment_daily') continue;
+      const st=String(row[3]).trim(); if(st==='適用済'||st==='解消') continue;
+      const rule=String(row[1]||'');
+      if(rule.indexOf('処理失敗')>=0){ sh.getRange(r,4).setValue('適用済'); sh.getRange(r,5).setValue('[cleanjudgment] 一過性エラー=判断でない→除去'); procfail++; continue; }
+      if(YEAR.test(rule)||FACT.test(rule)){ sh.getRange(r,4).setValue('適用済'); sh.getRange(r,5).setValue('[cleanjudgment] 年数/事実誤記=自動反映対象へ再仕分け'); mechanical++; continue; }
+      const km=rule.match(KEY), cm=rule.match(COMP);
+      const key = km ? km[1] : (cm ? ('c:'+cm[2].trim()) : rule.slice(0,40));
+      const comp = cm ? cm[2].trim() : '?';
+      if(seenKeys[key] || seenComp[comp]){ sh.getRange(r,4).setValue('適用済'); sh.getRange(r,5).setValue('[cleanjudgment] 重複除去(同一company/安定キー)'); deduped++; continue; }
+      seenKeys[key]=1; seenComp[comp]=1; kept++;
+    }
+    return _json({procfail_removed:procfail, mechanical_reclassified:mechanical, deduped:deduped, kept_true_judgment:kept});
+  }
   if(mode === 'lineprops'){
     // 宛先分離の検証用(read-only): group/oscar の設定有無とID末尾のみ返す(全体は返さない)。
     if(!_authed(e, token)) return _json({error:'unauthorized'});
@@ -1017,14 +1055,24 @@ function _collectByStatus(statusName){
    完了・これでOK・FB無しは混ぜない(伊藤忠など完了社が"反映"に出る誤りを止める)。 */
 /* 判断ダイジェスト: 共通の修正案 scope=judgment_daily の未解消行(=真にブランド判断が要る稀なもの)。 */
 function _collectJudgmentDaily(){
+  // 安定キー [k:xxxx](無ければ会社名)でユニーク化。同一FBの再要約が複数行あっても1件に。全文(切断しない)。
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(COMMON_SHEET);
   const out = []; if(!sh) return out;
-  const last = sh.getLastRow();
+  const last = sh.getLastRow(); const seen = {};
+  const KEY=/\[k:([0-9a-f]{8})\]/, COMP=/\[判断ダイジェスト\](\[k:[0-9a-f]{8}\])?\s*([^:：]+)[:：]/;
+  const today = Utilities.formatDate(new Date(),'Asia/Tokyo','yyyy-MM-dd');
   for(let r=2; r<=last; r++){
     const row = sh.getRange(r,1,1,5).getValues()[0];
-    if(String(row[2]).trim()==='judgment_daily' && String(row[3]).trim()!=='解消' && String(row[3]).trim()!=='適用済'){
-      out.push(String(row[1]));
-    }
+    if(String(row[2]).trim()!=='judgment_daily') continue;
+    const st=String(row[3]).trim(); if(st==='解消'||st==='適用済') continue;
+    const rule=String(row[1]||'');
+    const km=rule.match(KEY), cm=rule.match(COMP);
+    const key = km ? km[1] : (cm ? cm[2].trim() : rule.slice(0,40));
+    if(seen[key]) continue; seen[key]=1;
+    // (再掲)判定: 起票日(A列)が今日でない=前日以前から未判断で残っている
+    const dstr = String(row[0]||''); const isOld = dstr && dstr.slice(0,10) < today;
+    const text = rule.replace(/^\[判断ダイジェスト\](\[k:[0-9a-f]{8}\])?\s*/,'');
+    out.push({text:(isOld?'（再掲）':'')+text, key:key});
   }
   return out;
 }
@@ -1050,19 +1098,28 @@ function buildMorningDigest(){
   if(reflTotal===0) pg.push('・なし');
   Object.keys(reflectWait).forEach(function(k){ pg.push('・'+k+': '+reflectWait[k]+'件'); });
   pg.push(url);
-  // オスカー個人向け(内部判断=グループに出さない): 判断ダイジェスト + システム停止アラート。
+  // オスカー個人向け(内部判断=グループに出さない): ユニーク判断のみ・全文(切断禁止) + システム停止アラート。
   const po = ['【判断ダイジェスト(オスカー) '+Utilities.formatDate(new Date(),'Asia/Tokyo','MM/dd')+'】'+judgments.length+'件'];
   if(judgments.length===0) po.push('・なし(AIが自走で処理済)');
-  judgments.slice(0,15).forEach(function(s){ po.push('・'+s.slice(0,70)); });
+  judgments.forEach(function(j){ po.push('・'+j.text); });   // 全文(slice(0,70)を撤廃=途中切断しない)
   stops.forEach(function(s){ po.push('⚠ '+s); });
   return {intern:pg.join('\n'), oscar:po.join('\n'), hasOscar:(judgments.length>0 || stops.length>0)};
 }
 
-/* 9時: 朝ダイジェスト。インターン部→グループ / 判断ダイジェスト・停止アラート→オスカー個人のみ。 */
+/* LINE1通上限(~5000字)超過時は行単位で分割。 */
+function _splitForLine(text, limit){
+  limit = limit || 4500; const lines = String(text).split('\n'); const out = []; let cur = '';
+  lines.forEach(function(ln){
+    if((cur+'\n'+ln).length > limit){ if(cur) out.push(cur); cur = ln; }
+    else { cur = cur ? (cur+'\n'+ln) : ln; }
+  });
+  if(cur) out.push(cur); return out;
+}
+/* 9時: 朝ダイジェスト。インターン部→グループ / 判断ダイジェスト・停止アラート→オスカー個人のみ(全文・上限超は分割)。 */
 function lineMorningList(){
   const d = buildMorningDigest();
-  if(d && d.intern) _pushLine(d.intern);
-  if(d && d.hasOscar && d.oscar) _pushLineOscar(d.oscar);
+  if(d && d.intern) _splitForLine(d.intern).forEach(function(c){ _pushLine(c); });
+  if(d && d.hasOscar && d.oscar) _splitForLine(d.oscar).forEach(function(c){ _pushLineOscar(c); });
 }
 
 /* 直近3hのAI活動を算出(送信しない・検証と本送信の共通ロジック)。

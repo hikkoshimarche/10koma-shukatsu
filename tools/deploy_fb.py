@@ -236,12 +236,15 @@ def main():
             r = process_company(company, slug, it.get("fb", ""), rules)
         except Exception as ex:
             import traceback
-            print(f"  {company:8}({slug:14}) ❌処理失敗→判断日次: {ex}")
+            print(f"  {company:8}({slug:14}) ❌処理失敗→system_error(判断ではない): {ex}")
             traceback.print_exc()
+            # 【根治】処理失敗(D1/DNS等の一過性エラー)は『判断ダイジェスト』ではない。
+            #   judgmentに入れると朝9時にオスカーへノイズが出るため proc_error へ隔離。
             recs.append({"company": company, "slug": slug, "overrides": {}, "image_queue": [],
-                         "judgment": [f"処理失敗・要確認: {ex}"], "default_log": [],
+                         "judgment": [], "proc_error": f"{ex}", "default_log": [], "raw_fb": it.get("fb", ""),
                          "investigate": [], "unresolved": [], "lint": (0, 0), "landed": f"例外:{ex}"})
             continue
+        r["raw_fb"] = it.get("fb", "")   # 安定dedupキー(company+FB本文hash)算出用
         recs.append(r)
         ck = sorted(r["overrides"])
         print(f"  {company:8}({slug:14}) 反映koma={ck} 要調査{len(r['investigate'])} 画像{len(r['image_queue'])} "
@@ -289,6 +292,26 @@ def main():
     #  (これがないと毎時同一FBを積み続け 共通の修正案タブが膨張する)。
     existing_rules = _existing_commonfix_rules()
 
+    import hashlib
+    # 【根治】判断dedupは要約文でなく安定キー (company_slug, FB本文hash)。
+    #   同一FBを毎時再要約しても既存キーがあれば新規行を作らない。既存行のキーは [k:xxxx] で埋め込む。
+    _existing_judgment_keys = set()
+    for _rule in existing_rules:
+        _m = re.search(r"\[k:([0-9a-f]{8})\]", str(_rule))
+        if _m:
+            _existing_judgment_keys.add(_m.group(1))
+
+    def _stable_key(slug, raw_fb):
+        return hashlib.md5(f"{slug}|{(raw_fb or '').strip()}".encode("utf-8")).hexdigest()[:8]
+
+    # 機械処理可能FB(=判断ではない): 年数の再計算/概数化・社名/事実の誤記。→ actionable扱い(判断に出さない)。
+    _YEAR_PAT = re.compile(r"(創業|設立)?.{0,4}「?\d{2,3}年」?.{0,8}(再計算|概数|表記|統一|約\d)")
+    _FACT_PAT = re.compile(r"(社名|会社名|正しくは|誤記|と記載され).{0,20}(可能性|要確認|誤|正しく)")
+
+    def _is_mechanical(text):
+        t = str(text or "")
+        return bool(_YEAR_PAT.search(t) or _FACT_PAT.search(t))
+
     def add_once(scope, rule, note):
         if rule in existing_rules:
             return False           # 既に同一未処理エントリあり → 再投入しない
@@ -302,11 +325,24 @@ def main():
             add_once("system", f"[要画像再生成] {r['company']}: {'; '.join(r['image_queue'][:3])}",
                      "画像FB=Gemini再生成キュー(台本でなく画像)")
             tally["image"] += 1
-        # 真のブランド/方針判断のみ日次ダイジェストへ(per-3hでオスカーに出さない)
+        # 処理失敗(一過性)は判断でなく system_error へ隔離(朝9時ダイジェストに出さない)。
+        if r.get("proc_error"):
+            add_once("system_error", f"[処理失敗] {r['company']}: {str(r['proc_error'])[:80]}",
+                     "一過性エラー(D1/DNS等)。判断ではない。次ループで自動リトライ。")
+        # 判断: 機械処理可能(年数/事実誤記)は除外し、真のブランド判断のみ・安定キーでdedup。
         if r.get("judgment"):
-            add_once("judgment_daily", f"[判断ダイジェスト] {r['company']}: {'; '.join(r['judgment'][:2])}",
-                     "朝9時1通に集約(要れば後で覆せる)")
-            tally["judgment"] += 1
+            j_full = "; ".join(r["judgment"])
+            if _is_mechanical(j_full):
+                # 年数/事実誤記 = actionable(自動反映対象)。判断ダイジェストには出さない。
+                add_once("system", f"[要修正:機械処理] {r['company']}: {j_full[:120]}",
+                         "年数再計算/事実誤記=自動反映対象(判断ではない)")
+            else:
+                key = _stable_key(r["slug"], r.get("raw_fb", ""))
+                if key not in _existing_judgment_keys:
+                    add_once("judgment_daily", f"[判断ダイジェスト][k:{key}] {r['company']}: {j_full}",
+                             "朝9時1通に集約(要れば後で覆せる)")
+                    _existing_judgment_keys.add(key)
+                    tally["judgment"] += 1
         # 【偽陽性防止】台本を反映しても、当該社に未消化の画像FBが残る間は setreflected しない。
         #   (画像単独FBは deployed_slugs に入らないので元々反映済化されない。ここでは
         #    台本+画像 混在社が『台本が直った=全部反映済』と誤表示されるのを防ぐ。)
