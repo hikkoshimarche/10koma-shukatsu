@@ -231,6 +231,22 @@ function handleExt(mode, e, token){
     return _json(out);
   }
 
+  if(mode === 'lineprops'){
+    // 宛先分離の検証用(read-only): group/oscar の設定有無とID末尾のみ返す(全体は返さない)。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const pr = PropertiesService.getScriptProperties();
+    const g = pr.getProperty('LINE_GROUP_ID')||'', o = pr.getProperty('LINE_OSCAR_ID')||'';
+    return _json({has_group:!!g, group_tail:g.slice(-6), has_oscar:!!o, oscar_tail:o.slice(-6),
+                  oscar_captured_at:pr.getProperty('LINE_OSCAR_ID_CAPTURED_AT')||''});
+  }
+  if(mode === 'pushoscar'){
+    // オスカー個人宛て送信(人QA依頼/運用アラート)。ID未設定ならグループへ送らずskip。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const text = e.parameter.text || '';
+    if(!text) return _json({error:'no text'});
+    const r = _pushLineOscar(text);
+    return _json({ok:!!(r&&r.sent), sent:!!(r&&r.sent), reason:(r&&r.reason)||''});
+  }
   if(mode === 'pushline'){
     if(!_authed(e, token)) return _json({error:'unauthorized'});
     const text = e.parameter.text || '';
@@ -927,6 +943,19 @@ function _pushLine(text){
     payload: JSON.stringify({ to: groupId, messages:[{ type:'text', text: text }] })
   });
 }
+/* オスカー個人宛て(人QA/判断/運用アラート)。LINE_OSCAR_ID未設定なら**グループへは絶対に送らず**skip(漏洩防止)。 */
+function _pushLineOscar(text){
+  const props = PropertiesService.getScriptProperties();
+  const token = props.getProperty('LINE_CHANNEL_ACCESS_TOKEN');
+  const oscarId = props.getProperty('LINE_OSCAR_ID');
+  if(!token || !oscarId){ Logger.log('LINE_OSCAR_ID未設定→グループへ送らずskip:\n'+text); return {sent:false, reason:'no_oscar_id'}; }
+  UrlFetchApp.fetch('https://api.line.me/v2/bot/message/push', {
+    method:'post', contentType:'application/json',
+    headers:{ Authorization:'Bearer '+token },
+    payload: JSON.stringify({ to: oscarId, messages:[{ type:'text', text: text }] })
+  });
+  return {sent:true};
+}
 
 /* 次ラウンドFB待ち = スプシのCFオレンジと同一条件:
    AND(反映N="反映済", OR(round(N+1)状態="", "記入中"))。最も高い開放ラウンドで集計。 */
@@ -1009,28 +1038,31 @@ function buildMorningDigest(){
   const sum = function(o){ var t=0; Object.keys(o).forEach(function(k){t+=o[k];}); return t; };
   const waitTotal = sum(fbwait), reflTotal = sum(reflectWait);
   if(waitTotal===0 && reflTotal===0 && judgments.length===0 && stops.length===0){
-    return '【おはようございます☀️】FB待ち・判断ダイジェストともに0件です 🎉';
+    return {intern:'【おはようございます☀️】FB待ちは0件です 🎉', oscar:'', hasOscar:false};
   }
-  const p = ['【おはようございます☀️ 本日】'];
-  p.push('━━【インターンの皆さんへ】次ラウンドFB待ち '+waitTotal+'社');
+  // インターングループ向け(公開情報のみ): FB待ち + AI反映予定。
+  const pg = ['【おはようございます☀️ 本日】'];
+  pg.push('━━【インターンの皆さんへ】次ラウンドFB待ち '+waitTotal+'社');
   const wk = Object.keys(fbwait);
-  if(wk.length===0) p.push('・なし');
-  wk.forEach(function(k){ const a=k.split('|'); p.push('・'+a[0]+' '+a[1]+' '+fbwait[k]+'社：'+a[2]+'をお願いします'); });
-  p.push('━━【AIが反映予定(実適用待ち)】'+reflTotal+'件');
-  if(reflTotal===0) p.push('・なし');
-  Object.keys(reflectWait).forEach(function(k){ p.push('・'+k+': '+reflectWait[k]+'件'); });
-  // オスカー宛は『判断ダイジェスト』のみ(朝9時1通に集約・好み/事実/明確修正はAIが自走で処理済)
-  p.push('━━【判断ダイジェスト(オスカー・要れば後で覆せる)】'+judgments.length+'件');
-  if(judgments.length===0) p.push('・なし(AIが自走で処理済)');
-  judgments.slice(0,15).forEach(function(s){ p.push('・'+s.slice(0,70)); });
-  stops.forEach(function(s){ p.push('⚠ '+s); });
-  p.push(url);
-  return p.join('\n');
+  if(wk.length===0) pg.push('・なし');
+  wk.forEach(function(k){ const a=k.split('|'); pg.push('・'+a[0]+' '+a[1]+' '+fbwait[k]+'社：'+a[2]+'をお願いします'); });
+  pg.push('━━【AIが反映予定(実適用待ち)】'+reflTotal+'件');
+  if(reflTotal===0) pg.push('・なし');
+  Object.keys(reflectWait).forEach(function(k){ pg.push('・'+k+': '+reflectWait[k]+'件'); });
+  pg.push(url);
+  // オスカー個人向け(内部判断=グループに出さない): 判断ダイジェスト + システム停止アラート。
+  const po = ['【判断ダイジェスト(オスカー) '+Utilities.formatDate(new Date(),'Asia/Tokyo','MM/dd')+'】'+judgments.length+'件'];
+  if(judgments.length===0) po.push('・なし(AIが自走で処理済)');
+  judgments.slice(0,15).forEach(function(s){ po.push('・'+s.slice(0,70)); });
+  stops.forEach(function(s){ po.push('⚠ '+s); });
+  return {intern:pg.join('\n'), oscar:po.join('\n'), hasOscar:(judgments.length>0 || stops.length>0)};
 }
 
-/* 9時: 朝ダイジェスト(2バケツ) */
+/* 9時: 朝ダイジェスト。インターン部→グループ / 判断ダイジェスト・停止アラート→オスカー個人のみ。 */
 function lineMorningList(){
-  _pushLine(buildMorningDigest());
+  const d = buildMorningDigest();
+  if(d && d.intern) _pushLine(d.intern);
+  if(d && d.hasOscar && d.oscar) _pushLineOscar(d.oscar);
 }
 
 /* 直近3hのAI活動を算出(送信しない・検証と本送信の共通ロジック)。
@@ -1092,13 +1124,16 @@ function line3hSummary(){
     p.push(res.done.slice(0,20).join('\n'));
     if(res.pendingNewFb.length>0){ p.push('(反映済・新FB対応中'+res.pendingNewFb.length+'件)'); }
   }
-  // 画像人QA: 候補を見て OK/NG を返すだけ(OKは次ループが全ゲート付きで自動反映)。
-  if(q.waiting.length>0){
-    p.push('—\n🖼画像人QA待ち '+q.waiting.length+'件(URLを見てスプシ『画像人QA』にOK/NG記入で自動反映):');
-    p.push(q.waiting.slice(0,8).map(function(w){ return '・'+w.company+' コマ'+w.koma+' '+w.url; }).join('\n'));
-  }
-  if(q.okCount>0){ p.push('(OK済で次ループ反映待ち '+q.okCount+'件)'); }
+  // 公開/反映サマリはインターングループへ。
   _pushLine(p.join('\n'));
+  // 🖼画像人QA(内部作業=オスカー個人のみ。グループには絶対に出さない)。ID未設定ならskip。
+  if(q.waiting.length>0 || q.okCount>0){
+    const oq = ['【🖼画像人QA '+Utilities.formatDate(new Date(),'Asia/Tokyo','HH:mm')+'】待ち'+q.waiting.length+'件'];
+    q.waiting.slice(0,8).forEach(function(w){ oq.push('・'+w.company+' コマ'+w.koma+' '+w.url); });
+    if(q.okCount>0){ oq.push('(OK済で次ループ反映待ち '+q.okCount+'件)'); }
+    oq.push('URLを見てスプシ『画像人QA』にOK/NG記入で自動反映。');
+    _pushLineOscar(oq.join('\n'));
+  }
 }
 
 /* 時刻トリガー設置(既存を消さず重複登録を防ぐ)。1回実行。夜中(3,6時)はなし。 */

@@ -145,6 +145,14 @@ function doPost(e){
         if(ev.source.type==='group' && ev.source.groupId){
           PropertiesService.getScriptProperties().setProperty('LINE_GROUP_ID', ev.source.groupId);
         }
+        // 1:1(user)メッセージ = オスカー個人userId を捕捉(人QA/判断の宛先分離用)。
+        // 監査ログに全userIdを残し、最新の1:1送信者を LINE_OSCAR_ID に設定(オスカーが1通送る運用)。
+        if(ev.source.type==='user' && ev.source.userId){
+          const pr = PropertiesService.getScriptProperties();
+          pr.setProperty('LINE_OSCAR_ID', ev.source.userId);
+          pr.setProperty('LINE_OSCAR_ID_CAPTURED_AT', new Date().toISOString());
+          Logger.log('LINE_OSCAR_ID captured: '+ev.source.userId);
+        }
       }
     });
   }catch(err){ Logger.log('doPost err: '+err); }

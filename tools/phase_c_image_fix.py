@@ -281,13 +281,15 @@ def hard_gate(tslug, koma):
 
 # ---------- LINE / ログ ----------
 def push_line(text):
+    """運用/人QA系はオスカー個人宛て(pushoscar)。インターングループには出さない(漏洩防止)。
+    LINE_OSCAR_ID未設定時はGAS側でskip(グループへは絶対に送らない)。"""
     url = _env("SHEET_WEBAPP_URL", "").strip()
     token = _env("SHEET_API_TOKEN", "").strip()
     if not url:
         print(f"[LINE未設定]\n{text}"); return
     try:
         import requests
-        requests.get(url, params={"mode": "pushline", "token": token, "text": text}, timeout=30)
+        requests.get(url, params={"mode": "pushoscar", "token": token, "text": text}, timeout=30)
     except Exception as e:
         print(f"[LINE送信失敗:{e}]\n{text}")
 
