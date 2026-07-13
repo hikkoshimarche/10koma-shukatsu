@@ -58,13 +58,38 @@ def wrangler(sql_args, timeout=120):
     return subprocess.run(cmd, cwd=str(REPO), capture_output=True, text=True, timeout=timeout, env=env)
 
 
-def d1_query(sql):
-    proc = wrangler(["--command", sql, "--json"])
-    if proc.returncode != 0:
-        raise RuntimeError(f"d1 query失敗: {proc.stderr[:300]}")
-    txt = proc.stdout
+def _parse_d1_results(proc):
+    """成功判定は exit code/stderr でなく **stdout の JSON結果** で行う。
+    macOS互換警告等の stderr ノイズ(returncode=0でも出る)を成功/失敗判定に混ぜない。
+    返り値: results(list) or None(=有効なJSON結果が無い=真の失敗)。"""
+    txt = proc.stdout or ""
     s = txt.find("[")
-    return json.loads(txt[s:])[0]["results"]
+    if s == -1:
+        return None
+    try:
+        data = json.loads(txt[s:])
+    except Exception:
+        return None
+    if isinstance(data, list) and data and isinstance(data[0], dict) and "results" in data[0]:
+        return data[0]["results"]
+    return None
+
+
+def d1_query(sql, retries=2):
+    """stdoutのJSON結果で成功判定(stderr警告は無視)。一過性失敗は最大 retries 回リトライ。"""
+    import time as _t
+    last = None
+    for attempt in range(retries + 1):
+        proc = wrangler(["--command", sql, "--json"])
+        res = _parse_d1_results(proc)
+        if res is not None:
+            return res
+        last = proc
+        if attempt < retries:
+            _t.sleep(1.5)
+    # 有効なJSON結果が最後まで得られなかった=真の失敗。原因は stdout優先で出す(stderrはmacOS警告で埋もれる)。
+    raise RuntimeError(f"d1 query失敗(rc={last.returncode}): "
+                       f"stdout={(last.stdout or '')[-200:].strip()!r} / stderr={(last.stderr or '')[-200:].strip()!r}")
 
 
 def canary_hash():
