@@ -192,11 +192,22 @@ function handleExt(mode, e, token){
   }
 
   if(mode === 'line3hdryrun'){
-    // line3hSummaryの送信なしドライラン。done/pendingNewFbをJSONで返す(検証用・LINEは送らない)。
+    // line3hSummaryの送信なしドライラン。done/pendingNewFb + 画像人QA待ち(🖼候補URL)をJSONで返す(LINEは送らない)。
     if(!_authed(e, token)) return _json({error:'unauthorized'});
     const res = computeLine3h();
+    const q = imageQaPending();
+    // line3hSummary が実際に push する 🖼 セクションと同一の文面を組み立てて payload_preview に載せる。
+    const previewLines = [];
+    if(q.waiting.length>0){
+      previewLines.push('🖼画像人QA待ち '+q.waiting.length+'件(URLを見てスプシ『画像人QA』にOK/NG記入で自動反映):');
+      q.waiting.slice(0,8).forEach(function(w){ previewLines.push('・'+w.company+' コマ'+w.koma+' '+w.url); });
+    }
+    if(q.okCount>0){ previewLines.push('(OK済で次ループ反映待ち '+q.okCount+'件)'); }
     return _json({done_count:res.done.length, done:res.done,
                   pendingNewFb_count:res.pendingNewFb.length, pendingNewFb:res.pendingNewFb,
+                  imageqa_waiting:q.waiting.length, imageqa_ok:q.okCount,
+                  imageqa_preview:q.waiting.slice(0,8),
+                  payload_3h_image_section:previewLines.join('\n'),
                   since:String(res.since)});
   }
 
