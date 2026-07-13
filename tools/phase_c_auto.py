@@ -45,6 +45,9 @@ def auto_cfg():
         "safe_types": set(s.strip() for s in _env("AUTO_SAFE_TYPES", SAFE_TYPES_DEFAULT).split(",") if s.strip()),
         "coordinated": _env("AUTO_COORDINATED", "1") == "1",
         "mixed_mode": _env("AUTO_MIXED_MODE", "notify"),   # notify | off
+        # FIX1: 混在型は 1ループ上限件数を絞る(既定3)。安全型→協調→混在の順で枠(hour上限)を配分し、
+        #   安全型が常に先に枠を取る。per_koマ到達/起票済は再生成しない(洪水=クレジット浪費の停止)。
+        "mixed_max_per_loop": int(_env("AUTO_MIXED_MAX_PER_LOOP", "3")),
     })
     return base
 
@@ -205,9 +208,26 @@ def coordinated_reflect_one(target, dry, st, c):
     if ok_all:
         PCI.gas({"mode": "setreflected", "company": target.get("company", slug)})
         rec["note"] = "協調反映成功: 台本+画像を同時反映・canary/404通過"
+        # FIX2: DoD完備 — 該当社のみ Notion同期(非破壊v41-safe)。3層一致(D1=source=Notion)。
+        rec["notion"] = _notion_sync_one(tslug, label=target.get("label", ""))
     else:
         rec["escalate"] = "API検証NG(画像URL未更新の社あり)"
     return rec
+
+
+def _notion_sync_one(tslug, label=""):
+    """該当社のみ Notion を非破壊同期(正本 notion_sync.py --v41-safe)。反映は既に成功済のため非ブロック。"""
+    import subprocess
+    try:
+        p = subprocess.run(
+            [str(TOKYARI / ".venv" / "bin" / "python"), str(TOKYARI / "scripts" / "notion_sync.py"),
+             "--v41-safe", "--slug", tslug,
+             "--version-label", "v4.1 入口固有化(協調反映)",
+             "--change-summary", (label or "入口k1差替を協調反映に伴いNotion同期")],
+            cwd=str(TOKYARI), capture_output=True, text=True, timeout=180)
+        return {"rc": p.returncode, "tail": (p.stdout or p.stderr or "")[-160:]}
+    except Exception as e:
+        return {"rc": -1, "err": str(e)[:160]}
 
 
 # ============================================================================
@@ -300,34 +320,33 @@ def _tslug(slug):
     return slug
 
 
-def _route_one_image(company, slug, tslug, koma, detail, dry, st, c, results):
-    """画像FB1件を translate→型分類→(安全型auto / 混在型notify) にルーティング。例外は隔離。"""
+def _classify_image_item(company, slug, tslug, koma, detail, c):
+    """画像FB1件を translate→型分類。返り値 {kind:'safe'|'mixed'|'skip', instruction, ...}。生成はしない。"""
     try:
         tr = PCI.translate_image_fb(company, slug, koma, detail, PCI._scenario_excerpt(tslug, koma))
     except Exception as e:
-        results["mixed"].append({"company": company, "slug": slug, "koma": koma, "escalate": f"translate失敗:{e}"})
-        return
+        return {"kind": "mixed", "company": company, "slug": slug, "tslug": tslug, "koma": koma,
+                "detail": detail, "instruction": PCI.build_regen_instruction(detail, ["scale"]),
+                "note": f"translate失敗→mixed:{e}"}
     if tr.get("route") == "script":
-        return  # overlay文字=台本D1経路(deploy_fbが処理)
+        return {"kind": "skip", "slug": slug, "koma": koma}    # overlay文字=台本経路(deploy_fbが担当)
     typ = tr.get("type", ""); cats = set(tr.get("cats", []))
     is_safe = tr.get("action") == "auto" and (
         typ in c["safe_types"] or (typ == "compound" and cats and cats <= c["safe_types"]))
-    try:
-        if is_safe:
-            results["safe"].append(PCI.run_one(company, slug, koma, detail, dry, st, c))
-        else:
-            instr = tr.get("instruction") or PCI.build_regen_instruction(detail, list(cats) or ["scale"])
-            results["mixed"].append(mixed_notify_one(company, slug, tslug, koma, detail, instr, dry, st, c))
-    except Exception as e:
-        results["mixed"].append({"company": company, "slug": slug, "koma": koma, "escalate": f"処理失敗:{e}"})
+    instr = tr.get("instruction") or PCI.build_regen_instruction(detail, list(cats) or ["scale"])
+    return {"kind": "safe" if is_safe else "mixed", "company": company, "slug": slug, "tslug": tslug,
+            "koma": koma, "detail": detail, "instruction": instr, "type": typ}
 
 
-def route_image_fbs(dry, st, c, results):
-    """attention由来の画像FB + 追加ターゲット(_image_targets_extra.json)を型別ルーティング:
-      overlay文字 → script経路(deploy_fbが担当) / 安全型 → full auto / その他 → 候補生成+人QA。
-    1件の失敗が全体を止めないよう隔離。"""
-    results.setdefault("safe", []); results.setdefault("mixed", [])
-    # (a) attention(intern提出FB)
+def collect_image_fbs(c, results):
+    """attention由来の画像FB + 追加ターゲットを収集・型分類(生成しない)。返り値 (safe_items, mixed_items)。"""
+    safe_items, mixed_items = [], []
+    def _add(company, slug, tslug, koma, detail):
+        item = _classify_image_item(company, slug, tslug, koma, detail, c)
+        if item["kind"] == "safe":
+            safe_items.append(item)
+        elif item["kind"] == "mixed":
+            mixed_items.append(item)
     try:
         import phase_c_autoloop as A
         items = [it for it in A.fetch_attention() if it.get("content") == "10コマ"]
@@ -349,16 +368,30 @@ def route_image_fbs(dry, st, c, results):
         for b in tri.get("image_bugs", []):
             koma = b.get("koma") or PCI.L.extract_koma(b.get("detail", ""))
             if koma:
-                _route_one_image(company, slug, tslug, koma, b.get("detail", ""), dry, st, c, results)
-    # (b) 追加ターゲット(タスク由来: ABEJA k7 等 attentionに無い分)
+                _add(company, slug, tslug, koma, b.get("detail", ""))
     if EXTRA_IMG_REGISTRY.exists():
         try:
             extra = json.load(open(EXTRA_IMG_REGISTRY, encoding="utf-8")).get("targets", [])
         except Exception:
             extra = []
         for t in extra:
-            _route_one_image(t.get("company", ""), t.get("slug", ""), t.get("tslug", t.get("slug", "")),
-                             int(t.get("koma", 0)), t.get("detail", ""), dry, st, c, results)
+            _add(t.get("company", ""), t.get("slug", ""), t.get("tslug", t.get("slug", "")),
+                 int(t.get("koma", 0)), t.get("detail", ""))
+    return safe_items, mixed_items
+
+
+def _ticketed_set(c):
+    """画像人QA sheet に既に 待ち/OK で起票済の {slug#koma} 集合(混在型の再通知を止める)。
+    GAS未展開時は空集合(→per_koマ状態でdedup)。"""
+    try:
+        d = PCI.gas({"mode": "imageqa_list"})
+        return set(f"{it.get('slug')}#{it.get('koma')}" for it in d.get("items", []))
+    except Exception:
+        return set()
+
+
+def _per_koma_capped(slug, koma, st, c):
+    return st["per_koma"].get(f"{slug}#{koma}", 0) >= c["per_koma_max"]
 
 
 def load_coord_targets():
@@ -379,24 +412,47 @@ def run_batch(dry=True):
           f"safe={sorted(c['safe_types'])} / coordinated={c['coordinated']} / mixed={c['mixed_mode']}")
     print(f"state day_cost=${st['day_cost']:.2f} hour={len(st['hour_events'])} paused={st['paused']}")
     print("=" * 64)
-    results = {"human_qa": [], "coordinated": [], "note": ""}
+    results = {"human_qa": [], "coordinated": [], "safe": [], "mixed": [], "note": ""}
 
-    # 1) 人QA OK候補の反映(前ラウンドで人が承認した分)
+    # 1) 人QA OK候補の反映(前ラウンド承認分) — 最安・最優先で着地
     results["human_qa"] = consume_human_qa(dry, st, c)
 
-    # 2) 協調反映(入口型)
+    # master OFF(dry)では生成系(Claude triage/画像)を走らせない(浪費防止)。協調のdry計画のみ提示。
+    if not (c["enabled"] or results.get("_force_route")):
+        results["note"] += " [safe/mixed skip: master OFF(dry)。協調はdry計画のみ]"
+        for t in load_coord_targets():
+            results["coordinated"].append(coordinated_reflect_one(t, dry, st, c))
+        return results
+
+    # 収集(型分類のみ・生成しない)
+    safe_items, mixed_items = collect_image_fbs(c, results)
+    results["counts"] = {"safe_candidates": len(safe_items), "mixed_candidates": len(mixed_items)}
+
+    # 2) 【優先1】安全型 full-auto を先に hour 枠へ(安全型が常に先に枠を取る)
+    for it in safe_items:
+        results["safe"].append(PCI.run_one(it["company"], it["slug"], it["koma"], it["detail"], dry, st, c))
+
+    # 3) 【優先2】協調反映(入口型)
     for t in load_coord_targets():
         results["coordinated"].append(coordinated_reflect_one(t, dry, st, c))
 
-    # 3) 画像FB(attention+追加ターゲット)を型別ルーティング。
-    #    ※triage/translate は Claude を使うため、master OFF(dry)の毎時ループでは走らせない
-    #      (生成しないのに62社を毎時再トリアージするのは純粋な浪費・deploy_fbのtriageと二重)。
-    #      master ON(ライブ)時のみ実行。CLI検証は --route-dry で明示。
-    if c["enabled"] or results.get("_force_route"):
-        route_image_fbs(dry, st, c, results)
-    else:
-        results["note"] += " [safe/mixed routing skip: master OFF(dry)。ライブ(flag ON)で消化]"
-        results.setdefault("safe", []); results.setdefault("mixed", [])
+    # 4) 【優先3】混在型: 1ループ上限件数・起票済/per_koマ到達は再生成しない(洪水=クレジット浪費の停止)。
+    ticketed = _ticketed_set(c)
+    mixed_done = 0
+    for it in mixed_items:
+        key = f"{it['slug']}#{it['koma']}"
+        if _per_koma_capped(it["slug"], it["koma"], st, c) or key in ticketed:
+            results["mixed"].append({"slug": it["slug"], "koma": it["koma"],
+                                     "skip": "起票済/per_koマ到達→再生成せず"})
+            continue
+        if mixed_done >= c["mixed_max_per_loop"]:
+            results["mixed"].append({"slug": it["slug"], "koma": it["koma"],
+                                     "skip": f"1ループ上限{c['mixed_max_per_loop']}件到達→次ループへ"})
+            continue
+        results["mixed"].append(
+            mixed_notify_one(it["company"], it["slug"], it["tslug"], it["koma"], it["detail"], it["instruction"], dry, st, c))
+        mixed_done += 1
+    results["counts"]["mixed_generated_this_loop"] = mixed_done
 
     if not dry:
         PCI.save_state(st)
@@ -439,6 +495,42 @@ def selftest():
     chk("master 既定OFF(未設定)", c["enabled"] is False)
     chk("safe_types 既定に text_leak 含む", "text_leak" in c["safe_types"])
     chk("mixed 既定 notify(自動反映しない)", c["mixed_mode"] == "notify")
+    chk("mixed_max_per_loop 既定3(洪水停止)", c["mixed_max_per_loop"] == 3)
+
+    print("[selftest] FIX1 混在型の洪水停止(1ループ上限・起票済/per_koマ到達skip・連続再生成なし)")
+    cc = {"per_koma_max": 2, "mixed_max_per_loop": 3}
+    st = {"per_koma": {"a#1": 2, "b#2": 0}}
+    chk("per_koマ到達 a#1 → 再生成しない(skip)", _per_koma_capped("a", 1, st, cc) is True)
+    chk("未到達 b#2 → 処理対象", _per_koma_capped("b", 2, st, cc) is False)
+
+    def simulate_loop(items, st, cc, ticketed):
+        """run_batch の混在選抜と同一ロジック(生成の代わりに起票=次ループskip)。"""
+        done, gen = 0, []
+        for it in items:
+            key = f"{it['slug']}#{it['koma']}"
+            if _per_koma_capped(it["slug"], it["koma"], st, cc) or key in ticketed:
+                continue
+            if done >= cc["mixed_max_per_loop"]:
+                continue
+            gen.append(key); done += 1
+            st["per_koma"][key] = st["per_koma"].get(key, 0) + 1
+            ticketed.add(key)      # 起票(addimageqa)→次ループでdedup
+        return gen
+    items = [{"slug": "m", "koma": k} for k in range(1, 11)]   # 混在10件
+    st2 = {"per_koma": {}}; ticketed = set()
+    g1 = simulate_loop(items, st2, cc, ticketed)
+    g2 = simulate_loop(items, st2, cc, ticketed)
+    chk("1ループ上限3件のみ生成(108件洪水を停止)", len(g1) == 3)
+    chk("loop2はloop1と別item(起票済dedup=同一項目の連続再生成なし)", set(g1).isdisjoint(g2) and len(g2) == 3)
+    st3 = {"per_koma": {}}
+    g3 = simulate_loop(items, st3, cc, {"m#1", "m#2"})
+    chk("起票済(m#1,m#2)はskipされ生成対象に入らない", "m#1" not in g3 and "m#2" not in g3)
+
+    print("[selftest] 安全型優先: run_batch は safe→協調→混在の順(安全型が先にhour枠を取る)")
+    import inspect
+    src = inspect.getsource(run_batch)
+    i_safe = src.find("優先1】安全型"); i_coord = src.find("優先2】協調"); i_mixed = src.find("優先3】混在")
+    chk("コード順が 安全型→協調→混在", 0 < i_safe < i_coord < i_mixed)
 
     print("\n=== phase_c_auto selftest: " + ("ALL PASS ✅" if ok else "FAIL ❌") + " ===")
     return 0 if ok else 1

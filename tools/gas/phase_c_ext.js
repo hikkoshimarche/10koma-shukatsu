@@ -92,6 +92,19 @@ function handleExt(mode, e, token){
     }
     return _json({count:items.length, items:items});
   }
+  if(mode === 'imageqa_list'){
+    // 起票済(待ち/OK)の {slug,koma} 一覧(混在型の再通知dedup用)。反映済は除外(再起票を許す)。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(IMAGE_QA_SHEET);
+    const items=[];
+    if(sh){ const lr=sh.getLastRow();
+      for(let r=2;r<=lr;r++){ const v=sh.getRange(r,1,1,8).getValues()[0];
+        const st=String(v[7]).trim();
+        if(st==='待ち'||st==='OK'){ items.push({slug:v[2], koma:v[3], status:st}); }
+      }
+    }
+    return _json({count:items.length, items:items});
+  }
   if(mode === 'setimageqa'){
     // 反映完了した候補を『反映済』に(冪等)。slug+koma 一致行の判定列を更新。
     if(!_authed(e, token)) return _json({error:'unauthorized'});
