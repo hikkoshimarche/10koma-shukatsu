@@ -231,6 +231,44 @@ function handleExt(mode, e, token){
     return _json(out);
   }
 
+  if(mode === 'unreflected_audit'){
+    // 全コンテンツシートから『状態=提出 かつ 反映≠反映済』の未反映FBを全件抽出(反映列の自己申告でなく実データ)。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const ss = SpreadsheetApp.getActiveSpreadsheet(); const items=[];
+    CONFIG.CONTENT_SHEETS.forEach(function(name){
+      const sh=ss.getSheetByName(name); if(!sh) return;
+      const last=sh.getLastRow(); if(last<CONFIG.FIRST_ROW) return;
+      const vals=sh.getRange(CONFIG.FIRST_ROW,1,last-CONFIG.FIRST_ROW+1,45).getValues();
+      vals.forEach(function(r){
+        const comp=r[CONFIG.COL.会社名-1]; if(!comp) return;
+        const upd=r[CONFIG.COL.最終更新-1];
+        const updStr=(upd instanceof Date)?Utilities.formatDate(upd,'Asia/Tokyo','yyyy-MM-dd HH:mm'):String(upd||'');
+        for(let n=1;n<=CONFIG.ROUNDS;n++){
+          const fb=String(r[fbCol(n)-1]||'').trim();
+          const jot=String(r[jotCol(n)-1]||'').trim();
+          const han=String(r[hanCol(n)-1]||'').trim();
+          if(fb && jot==='提出' && han!=='反映済'){
+            items.push({sheet:name, company:String(comp), round:n, owner:String(r[tanCol(n)-1]||''),
+                        fb:fb, jot:jot, han:han, updated:updStr});
+          }
+        }
+      });
+    });
+    return _json({count:items.length, items:items});
+  }
+  if(mode === 'write_audit_tab'){
+    // 監査結果を新タブ FB滞留監査_<date> に書き込む(POSTで rows= JSON配列)。ヘッダ+全行。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const tab=e.parameter.tab||('FB滞留監査_'+Utilities.formatDate(new Date(),'Asia/Tokyo','yyyyMMdd'));
+    let rows=[]; try{ rows=JSON.parse(e.parameter.rows||'[]'); }catch(err){ return _json({error:'rows parse失敗'}); }
+    const ss=SpreadsheetApp.getActiveSpreadsheet();
+    let sh=ss.getSheetByName(tab); if(sh){ sh.clear(); } else { sh=ss.insertSheet(tab,0); }
+    const head=['会社','シート','ラウンド','担当','最終更新','滞留日数','失敗理由分類','要対応(7日超)','FB要約'];
+    const out=[head];
+    rows.forEach(function(x){ out.push([x.company,x.sheet,x.round,x.owner,x.updated,x.stale_days,x.reason,x.needs_action?'⚠要対応':'',x.summary]); });
+    sh.getRange(1,1,out.length,head.length).setValues(out);
+    return _json({ok:true, tab:tab, written:rows.length});
+  }
   if(mode === 'judgmentdryrun'){
     // 送信せず、修正後ロジックの判断ダイジェスト実文面(全文)を返す(検証用)。
     if(!_authed(e, token)) return _json({error:'unauthorized'});
@@ -1053,6 +1091,29 @@ function _collectByStatus(statusName){
 
 /* ラベル是正: 反映(実適用待ち=FB対応中) / 要判断(オスカー=人へ) / FB待ち(次ラウンド) を明確分離。
    完了・これでOK・FB無しは混ぜない(伊藤忠など完了社が"反映"に出る誤りを止める)。 */
+/* 滞留アラート(再発防止): 状態=提出のまま72h超・未反映のFB。どんな新種のサイレント失敗でも必ず浮上する。 */
+function _collectStale72h(){
+  const ss=SpreadsheetApp.getActiveSpreadsheet(); const out=[]; const now=Date.now();
+  CONFIG.CONTENT_SHEETS.forEach(function(name){
+    const sh=ss.getSheetByName(name); if(!sh) return;
+    const last=sh.getLastRow(); if(last<CONFIG.FIRST_ROW) return;
+    const vals=sh.getRange(CONFIG.FIRST_ROW,1,last-CONFIG.FIRST_ROW+1,45).getValues();
+    vals.forEach(function(r){
+      const comp=r[CONFIG.COL.会社名-1]; if(!comp) return;
+      const upd=r[CONFIG.COL.最終更新-1]; if(!(upd instanceof Date)) return;
+      const days=(now-upd.getTime())/86400000; if(days<3) return;   // 72h=3日
+      let unref=false;
+      for(let n=1;n<=CONFIG.ROUNDS;n++){
+        const fb=String(r[fbCol(n)-1]||'').trim();
+        if(fb && String(r[jotCol(n)-1]||'').trim()==='提出' && String(r[hanCol(n)-1]||'').trim()!=='反映済'){ unref=true; break; }
+      }
+      if(unref) out.push({company:String(comp), days:Math.floor(days)});
+    });
+  });
+  out.sort(function(a,b){return b.days-a.days;});
+  return out;
+}
+
 /* 判断ダイジェスト: 共通の修正案 scope=judgment_daily の未解消行(=真にブランド判断が要る稀なもの)。 */
 function _collectJudgmentDaily(){
   // 安定キー [k:xxxx](無ければ会社名)でユニーク化。同一FBの再要約が複数行あっても1件に。全文(切断しない)。
@@ -1098,12 +1159,20 @@ function buildMorningDigest(){
   if(reflTotal===0) pg.push('・なし');
   Object.keys(reflectWait).forEach(function(k){ pg.push('・'+k+': '+reflectWait[k]+'件'); });
   pg.push(url);
-  // オスカー個人向け(内部判断=グループに出さない): ユニーク判断のみ・全文(切断禁止) + システム停止アラート。
-  const po = ['【判断ダイジェスト(オスカー) '+Utilities.formatDate(new Date(),'Asia/Tokyo','MM/dd')+'】'+judgments.length+'件'];
+  // オスカー個人向け(内部判断=グループに出さない): 滞留アラート + ユニーク判断 + システム停止アラート。
+  const stale = _collectStale72h();   // 状態=提出のまま72h超・未反映(サイレント滞留の構造的検出)
+  const po = [];
+  if(stale.length>0){   // 0件なら非表示
+    po.push('🚨【滞留アラート】提出のまま72h超・未反映 '+stale.length+'社(終わってないものを必ず浮上):');
+    stale.slice(0,30).forEach(function(s){ po.push('・'+s.company+' '+s.days+'日滞留'); });
+    po.push('—');
+  }
+  po.push('【判断ダイジェスト(オスカー) '+Utilities.formatDate(new Date(),'Asia/Tokyo','MM/dd')+'】'+judgments.length+'件');
   if(judgments.length===0) po.push('・なし(AIが自走で処理済)');
   judgments.forEach(function(j){ po.push('・'+j.text); });   // 全文(slice(0,70)を撤廃=途中切断しない)
   stops.forEach(function(s){ po.push('⚠ '+s); });
-  return {intern:pg.join('\n'), oscar:po.join('\n'), hasOscar:(judgments.length>0 || stops.length>0)};
+  return {intern:pg.join('\n'), oscar:po.join('\n'),
+          hasOscar:(judgments.length>0 || stops.length>0 || stale.length>0)};
 }
 
 /* LINE1通上限(~5000字)超過時は行単位で分割。 */
