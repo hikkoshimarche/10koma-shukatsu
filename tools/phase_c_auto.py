@@ -436,6 +436,90 @@ def collect_image_fbs(c, results):
     return safe_items, mixed_items
 
 
+def _pending_image_map(cf_items=None, qa_items=None):
+    """全社の未反映画像コマ map {slug: set(koma)} を1パスで構築(GAS呼び出しを最小化)。"""
+    import re as _re
+    import phase_c_autoloop as A
+    drained = _drained_set()
+    if cf_items is None:
+        cf_items = PCI.gas({"mode": "commonfixes"}).get("items", [])
+    if qa_items is None:
+        qa_items = PCI.gas({"mode": "imageqa_list"}).get("items", [])
+    m = {}
+    for x in cf_items:
+        mm = _re.match(r"\[要画像再生成\]\s*([^:：]+?)[:：]\s*(.*)", str(x.get("rule", "")), _re.S)
+        if not mm:
+            continue
+        slug = A.resolve_slug(mm.group(1).strip())
+        if not slug:
+            continue
+        for km in _re.findall(r"(?:koma|コマ)\s*0*(\d+)", mm.group(2)):
+            if f"{slug}#{int(km)}" not in drained:
+                m.setdefault(slug, set()).add(int(km))
+    for it in qa_items:
+        slug = it.get("slug"); koma = int(it.get("koma", 0))
+        if slug and f"{slug}#{koma}" not in drained:
+            m.setdefault(slug, set()).add(koma)
+    return m
+
+
+def _pending_image_komas(slug, pmap=None):
+    """slugの未反映画像コマ集合(pmap未指定なら都度構築)。"""
+    if pmap is None:
+        pmap = _pending_image_map()
+    return pmap.get(slug, set())
+
+
+def refresh_label(slug, company):
+    """【根治】画像反映イベント直後に呼ぶ: 残画像FB数を再計算し反映列ラベルを更新(stale表示の再発防止)。
+       残>0 → 『台本済・画像待ちN件』/ 残0 → 反映済。手動setpartialのズレを構造的に無くす。"""
+    # 画像人QAシートの反映済(drained)行を『反映済』化(stale待ち行の掃除)。
+    try:
+        drained = _drained_set()
+        for it in PCI.gas({"mode": "imageqa_list"}).get("items", []):
+            if it.get("slug") == slug and f"{slug}#{int(it.get('koma', 0))}" in drained:
+                PCI.gas({"mode": "setimageqa", "slug": slug, "koma": str(it.get("koma")), "status": "反映済"})
+    except Exception:
+        pass
+    n = len(_pending_image_komas(slug))
+    if n > 0:
+        PCI.gas({"mode": "setpartial", "company": company, "nimg": str(n)})
+    else:
+        PCI.gas({"mode": "setreflected", "company": company})
+    return n
+
+
+def _rebuild_audit_tab():
+    """監査タブ FB滞留監査 を最新化(画像反映で消えた行を反映)。run_batchで反映が起きた時のみ呼ぶ。"""
+    import re as _re
+    try:
+        import phase_c_autoloop as A
+        d = PCI.gas({"mode": "unreflected_audit"})
+        pmap = _pending_image_map()   # 全社1パスで構築(GAS最小化)
+        comp = {}
+        for it in d.get("items", []):
+            c = it["company"]
+            if c not in comp:
+                fb = str(it.get("fb", ""))
+                img = bool(_re.search(r"画像|イラスト|吹き出し|空白|左手|右腕|腕|指|足|位置関係|外観|本社|リアル|将来像|余白|網掛け|構図|背景", fb))
+                slug = A.resolve_slug(c)
+                pend = sorted(pmap.get(slug, set())) if slug else []
+                # 反映済(drained)コマは要約から除外=済んだコマ(例:住友k4)は監査に残さない。
+                summary = (f"画像待ちコマ: {pend}" if pend else _re.sub(r"\s+", " ", fb)[:90])
+                comp[c] = {"company": c, "sheet": it.get("sheet", "10コマ"), "round": it.get("round", ""),
+                           "owner": it.get("owner", ""), "updated": it.get("updated", ""), "stale_days": "",
+                           "reason": "画像のみ(台本反映済)" if img else "要個別確認", "needs_action": False,
+                           "summary": summary}
+        import requests, os as _os
+        url = _os.environ.get("SHEET_WEBAPP_URL", "").strip()
+        tok = _os.environ.get("SHEET_API_TOKEN", "").strip()
+        if url:
+            requests.post(url, data={"mode": "write_audit_tab", "token": tok, "tab": "FB滞留監査_20260715",
+                                     "rows": json.dumps(list(comp.values()), ensure_ascii=False)}, timeout=90)
+    except Exception:
+        pass
+
+
 def _ticketed_set(c):
     """画像人QA sheet に既に 待ち/OK で起票済の {slug#koma} 集合(混在型の再通知を止める)。
     GAS未展開時は空集合(→per_koマ状態でdedup)。"""
@@ -515,6 +599,31 @@ def run_batch(dry=True):
             mixed_notify_one(it["company"], it["slug"], it["tslug"], it["koma"], it["detail"], it["instruction"], dry, st, c))
         mixed_done += 1
     results["counts"]["mixed_generated_this_loop"] = mixed_done
+
+    # 【根治】画像反映イベント直後にラベル(setpartial/setreflected)と監査タブを自動更新(stale表示の再発防止)。
+    #   安全型ドレインが毎時動くと残数が変わるため、ここを自動化しないと反映列が毎日ズレる。
+    if not dry:
+        reflected = {}
+        for r in results.get("safe", []):
+            if isinstance(r, dict) and r.get("deployed") and r.get("slug"):
+                reflected[r["slug"]] = r.get("company") or r["slug"]
+        for r in results.get("coordinated", []):
+            if isinstance(r, dict) and r.get("reflected") and r.get("slug"):
+                reflected[r["slug"]] = r.get("company") or r["slug"]
+        for r in results.get("human_qa", []):
+            if isinstance(r, dict) and r.get("reflected") and r.get("slug"):
+                reflected[r["slug"]] = r.get("company") or r["slug"]
+        if reflected:
+            try:
+                pmap = _pending_image_map()   # 1パス構築して各社のラベル更新に使い回す
+                for slug, company in reflected.items():
+                    n = len(pmap.get(slug, set()))
+                    PCI.gas({"mode": "setpartial" if n > 0 else "setreflected",
+                             "company": company, **({"nimg": str(n)} if n > 0 else {})})
+            except Exception:
+                pass
+            _rebuild_audit_tab()
+        results["labels_refreshed"] = sorted(reflected)
 
     # 画像自動化の状態を朝9時digestへ投函(常時1行: ON/OFF・今回消化・キュー残)。低コスト(property書込)。
     try:
