@@ -754,6 +754,24 @@ function handleExt(mode, e, token){
     sh.getRange(row, CONFIG.COL.最終更新).setValue(new Date());
     return _json({ok:true, row:row, round:round});
   }
+  if(mode === 'setpartial'){
+    // 台本反映済・画像のみ待ちの社: 反映列を空欄でなく『台本済・画像待ちN件』の中間表示に(偽・未反映の可視化)。
+    // 反映済とは書かない=次ラウンドは開かない。インターンの「直ってない」誤解とオスカーの誤警報を両方防ぐ。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sh = ss.getSheetByName(KOMA_SHEET);
+    const row = _findRowByCompany(sh, e.parameter.company);
+    if(row < 0) return _json({error:'company not found', company:e.parameter.company});
+    let round = parseInt(e.parameter.round||'0',10);
+    if(!round){ const r=sh.getRange(row,1,1,45).getValues()[0];
+      for(let n=1;n<=CONFIG.ROUNDS;n++){ if(r[fbCol(n)-1]) round=n; } if(!round) round=1; }
+    const nimg = parseInt(e.parameter.nimg||'0',10);
+    const label = '台本済・画像待ち'+(nimg>0?(nimg+'件'):'');
+    sh.getRange(row, hanCol(round)).setValue(label);          // 反映列=中間表示(『反映済』ではない)
+    sh.getRange(row, CONFIG.COL.ステータス).setValue('台本済・画像待ち');
+    sh.getRange(row, CONFIG.COL.最終更新).setValue(new Date());
+    return _json({ok:true, row:row, round:round, label:label});
+  }
   if(mode === 'setescalated'){
     // 判断系(Source-or-Silence/主観/複数コマ等)=人へ。反映列は触らず status=要判断(オスカー)。
     if(!_authed(e, token)) return _json({error:'unauthorized'});

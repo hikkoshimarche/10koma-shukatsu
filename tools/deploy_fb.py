@@ -353,7 +353,10 @@ def main():
             print(f"  {r['slug']:14} 反映済 koma{sorted(r['overrides'])}{dl}")
         elif r["slug"] in deployed_slugs and r.get("image_queue"):
             tally["held_img"] += 1
-            print(f"  {r['slug']:14} 台本koma{sorted(r['overrides'])}は反映も、画像FB未消化のため反映保留(偽陽性防止)")
+            # 【偽・未反映の可視化】反映列を空欄で放置せず『台本済・画像待ちN件』の中間表示に。
+            #   反映済にはしない(次ラウンドは開かない)。インターン誤解/オスカー誤警報の両方を防ぐ。
+            gas({"mode": "setpartial", "company": r["company"], "nimg": str(len(r.get("image_queue", [])))})
+            print(f"  {r['slug']:14} 台本koma{sorted(r['overrides'])}反映→反映列『台本済・画像待ち{len(r['image_queue'])}件』(偽陽性防止)")
         elif r.get("unresolved"):
             gas({"mode": "addcommonfix", "scope": "system",
                  "rule": f"[要調査] {r['company']} koma{r['unresolved']}: 公式/有報で裏取り(取れねばぼかす)",
