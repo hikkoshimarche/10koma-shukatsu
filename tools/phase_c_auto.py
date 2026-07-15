@@ -454,6 +454,29 @@ def run_batch(dry=True):
         mixed_done += 1
     results["counts"]["mixed_generated_this_loop"] = mixed_done
 
+    # 画像自動化の状態を朝9時digestへ投函(常時1行: ON/OFF・今回消化・キュー残)。低コスト(property書込)。
+    try:
+        safe_ok = sum(1 for r in results.get("safe", []) if isinstance(r, dict) and r.get("deployed"))
+        mixed_n = sum(1 for r in results.get("mixed", []) if isinstance(r, dict) and r.get("notified"))
+        qn = 0
+        try:
+            import re as _re
+            cf = PCI.gas({"mode": "commonfixes"})
+            seen = set()
+            for x in cf.get("items", []):
+                m = _re.match(r"\[要画像再生成\]\s*([^:：]+?)[:：]\s*(.*)", str(x.get("rule", "")), _re.S)
+                if not m:
+                    continue
+                for km in _re.findall(r"(?:koma|コマ)\s*0*(\d+)", m.group(2)):
+                    seen.add((m.group(1).strip(), km))
+            qn = len(seen)
+        except Exception:
+            pass
+        status = f"{'ON' if c['enabled'] else 'OFF'}|今回:安全auto{safe_ok}/混在候補{mixed_n}|キュー残{qn}コマ"
+        PCI.gas({"mode": "setimgstatus", "status": status})
+    except Exception:
+        pass
+
     if not dry:
         PCI.save_state(st)
     return results

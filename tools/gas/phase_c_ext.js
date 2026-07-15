@@ -231,6 +231,14 @@ function handleExt(mode, e, token){
     return _json(out);
   }
 
+  if(mode === 'setimgstatus'){
+    // Macループが毎回、画像自動化の状態を投函(state/残/前日消化/ETA)。朝9時digestが常時表示する。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const pr=PropertiesService.getScriptProperties();
+    pr.setProperty('IMG_AUTOFIX_STATUS', e.parameter.status||'');   // 例: "ON|残43|前日3|ETA~7/25"
+    pr.setProperty('IMG_AUTOFIX_STATUS_AT', new Date().toISOString());
+    return _json({ok:true});
+  }
   if(mode === 'unreflected_audit'){
     // 全コンテンツシートから『状態=提出 かつ 反映≠反映済』の未反映FBを全件抽出(反映列の自己申告でなく実データ)。
     if(!_authed(e, token)) return _json({error:'unauthorized'});
@@ -1168,6 +1176,7 @@ function buildMorningDigest(){
     return {intern:'【おはようございます☀️】FB待ちは0件です 🎉', oscar:'', hasOscar:false};
   }
   // インターングループ向け(公開情報のみ): FB待ち + AI反映予定。
+  const imgStatus = PropertiesService.getScriptProperties().getProperty('IMG_AUTOFIX_STATUS')||'';
   const pg = ['【おはようございます☀️ 本日】'];
   pg.push('━━【インターンの皆さんへ】次ラウンドFB待ち '+waitTotal+'社');
   const wk = Object.keys(fbwait);
@@ -1180,6 +1189,7 @@ function buildMorningDigest(){
   // オスカー個人向け(内部判断=グループに出さない): 滞留アラート + ユニーク判断 + システム停止アラート。
   const stale = _collectStale72h();   // 状態=提出のまま72h超・未反映(サイレント滞留の構造的検出)
   const po = [];
+  if(imgStatus) po.push('🖼画像自動化: '+imgStatus);   // 常時1行(AUTO_IMAGE_FIX ON/OFF・残N・前日消化M・完了見込)
   if(stale.length>0){   // 0件なら非表示
     po.push('🚨【滞留アラート】提出のまま72h超・未反映 '+stale.length+'社(終わってないものを必ず浮上):');
     stale.slice(0,30).forEach(function(s){ po.push('・'+s.company+' '+s.days+'日滞留'); });
@@ -1190,7 +1200,7 @@ function buildMorningDigest(){
   judgments.forEach(function(j){ po.push('・'+j.text); });   // 全文(slice(0,70)を撤廃=途中切断しない)
   stops.forEach(function(s){ po.push('⚠ '+s); });
   return {intern:pg.join('\n'), oscar:po.join('\n'),
-          hasOscar:(judgments.length>0 || stops.length>0 || stale.length>0)};
+          hasOscar:(judgments.length>0 || stops.length>0 || stale.length>0 || !!imgStatus)};
 }
 
 /* LINE1通上限(~5000字)超過時は行単位で分割。 */
