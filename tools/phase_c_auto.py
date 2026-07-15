@@ -30,7 +30,26 @@ import deploy_salary as D            # noqa: E402  (update_sql/canary/backup/wra
 
 COORD_REGISTRY = REPO / "tools" / "_coordinated_targets.json"
 EXTRA_IMG_REGISTRY = REPO / "tools" / "_image_targets_extra.json"
+DRAINED_FILE = REPO / "tools" / ".image_drained.json"
 SAFE_TYPES_DEFAULT = "meta_frame,white_band,hline,text_leak"
+
+
+def _drained_set():
+    """反映成功した安全型backlog(slug#koma)の集合。再生成防止(良い画像を上書きしない)。"""
+    try:
+        return set(json.load(open(DRAINED_FILE, encoding="utf-8")))
+    except Exception:
+        return set()
+
+
+def _mark_drained(keys):
+    if not keys:
+        return
+    cur = _drained_set() | set(keys)
+    try:
+        json.dump(sorted(cur), open(DRAINED_FILE, "w", encoding="utf-8"), ensure_ascii=False)
+    except Exception:
+        pass
 
 
 # ============================================================================
@@ -377,6 +396,43 @@ def collect_image_fbs(c, results):
         for t in extra:
             _add(t.get("company", ""), t.get("slug", ""), t.get("tslug", t.get("slug", "")),
                  int(t.get("koma", 0)), t.get("detail", ""))
+    # (c) 安全型backlogドレイン: コモンフィックス[要画像再生成]の安全型のみ決定的分類で追加(LLM不使用)。
+    #     反映済(drained)は除外=良い画像を上書きしない。混在型はここでは足さない(attention+人QAで処理)。
+    import re as _re
+    try:
+        import phase_c_autoloop as A
+        drained = _drained_set()
+        cf = PCI.gas({"mode": "commonfixes"})
+        seen_bk = set(f"{it['slug']}#{it['koma']}" for it in safe_items)
+        for x in cf.get("items", []):
+            m = _re.match(r"\[要画像再生成\]\s*([^:：]+?)[:：]\s*(.*)", str(x.get("rule", "")), _re.S)
+            if not m:
+                continue
+            company = m.group(1).strip()
+            try:
+                slug = A.resolve_slug(company)
+            except Exception:
+                slug = None
+            if not slug:
+                continue
+            tslug = _tslug(slug)
+            for km in _re.split(r"(?:^|;|；)\s*(?=koma\s*\d+|コマ\s*\d+)", m.group(2)):
+                kk = _re.search(r"(?:koma|コマ)\s*0*(\d+)\s*[:：]?\s*(.*)", km, _re.S)
+                if not kk:
+                    continue
+                koma = int(kk.group(1)); detail = kk.group(2).strip()
+                key = f"{slug}#{koma}"
+                if key in seen_bk or key in drained:
+                    continue
+                cats = PCI.classify_image_bug_cats(detail)
+                if set(cats) & c["safe_types"]:      # 安全型のみ(混在/描画型は足さない)
+                    seen_bk.add(key)
+                    safe_items.append({"kind": "safe", "company": company, "slug": slug, "tslug": tslug,
+                                       "koma": koma, "detail": detail,
+                                       "instruction": PCI.build_regen_instruction(detail, cats),
+                                       "type": cats[0], "from_backlog": True})
+    except Exception as e:
+        results["note"] += f" [backlog drain失敗:{e}]"
     return safe_items, mixed_items
 
 
@@ -429,8 +485,14 @@ def run_batch(dry=True):
     results["counts"] = {"safe_candidates": len(safe_items), "mixed_candidates": len(mixed_items)}
 
     # 2) 【優先1】安全型 full-auto を先に hour 枠へ(安全型が常に先に枠を取る)
+    _drain_ok = []
     for it in safe_items:
-        results["safe"].append(PCI.run_one(it["company"], it["slug"], it["koma"], it["detail"], dry, st, c))
+        rec = PCI.run_one(it["company"], it["slug"], it["koma"], it["detail"], dry, st, c)
+        results["safe"].append(rec)
+        # backlogドレイン由来で反映成功 → drained記録(再生成防止=良い画像を上書きしない)
+        if not dry and it.get("from_backlog") and rec.get("deployed"):
+            _drain_ok.append(f"{it['slug']}#{it['koma']}")
+    _mark_drained(_drain_ok)
 
     # 3) 【優先2】協調反映(入口型)
     for t in load_coord_targets():
