@@ -1,0 +1,506 @@
+slug,status,ts
+mitsui-bussan,"例外:Expecting ',' delimiter: line 173 column 6 (char 5017)",2026-06-23 15:16
+mitsui-bussan,例外:anthropic失敗,2026-06-23 15:16
+mitsui-bussan,例外:anthropic失敗,2026-06-23 15:18
+mitsui-bussan,lint error 4→登録ブロック,2026-06-23 15:23
+mitsui-bussan,lint error 5→登録ブロック,2026-06-23 15:30
+mitsui-bussan,registered,2026-06-23 15:37
+mitsubishi-corp,lint error 6→登録ブロック,2026-06-23 15:48
+sumitomo-corp,registered,2026-06-23 15:52
+marubeni,registered,2026-06-23 15:56
+toyota-tsusho,registered,2026-06-23 16:00
+sojitz,registered,2026-06-23 16:04
+kanematsu,registered,2026-06-23 16:09
+iwatani,registered,2026-06-23 16:13
+shinkokusyoji,registered,2026-06-23 16:17
+toyota-motor,registered,2026-06-23 16:22
+honda,skip(factpack抽出失敗),2026-06-23 16:23
+nissan,registered,2026-06-23 16:28
+suzuki,lint error 1→登録ブロック,2026-06-23 16:33
+subaru,skip(factpack抽出失敗),2026-06-23 16:34
+mazda,registered,2026-06-23 16:38
+mitsubishi-motors,registered,2026-06-23 16:44
+isuzu,registered,2026-06-23 16:48
+aisin,skip(factpack抽出失敗),2026-06-23 16:48
+denso,registered,2026-06-23 16:52
+toyota-shokki,registered,2026-06-23 16:57
+sony-group,registered,2026-06-23 17:01
+mitsubishi-corp,例外:anthropic失敗,2026-06-23 22:42
+honda,例外:anthropic失敗,2026-06-23 23:55
+suzuki,例外:anthropic失敗,2026-06-24 00:11
+subaru,例外:anthropic失敗,2026-06-24 00:12
+aisin,例外:anthropic失敗,2026-06-24 00:12
+hitachi,例外:anthropic失敗,2026-06-24 00:28
+panasonic-hd,例外:anthropic失敗,2026-06-24 01:01
+mitsubishi-electric,例外:anthropic失敗,2026-06-24 01:36
+keyence,例外:anthropic失敗,2026-06-24 02:11
+murata,例外:anthropic失敗,2026-06-24 02:46
+shinetsu-chemical,例外:anthropic失敗,2026-06-24 03:36
+tokyo-electron,例外:anthropic失敗,2026-06-24 04:10
+canon,例外:anthropic失敗,2026-06-24 04:41
+fujifilm-hd,例外:anthropic失敗,2026-06-24 05:16
+kyocera,例外:anthropic失敗,2026-06-24 05:50
+mitsubishi-heavy,例外:anthropic失敗,2026-06-24 06:21
+daikin,例外:anthropic失敗,2026-06-24 06:54
+komatsu,例外:anthropic失敗,2026-06-24 07:42
+fanuc,例外:anthropic失敗,2026-06-24 08:17
+nidec,例外:anthropic失敗,2026-06-24 08:50
+tdk,例外:anthropic失敗,2026-06-24 09:24
+omron,例外:anthropic失敗,2026-06-24 09:57
+advantest,例外:anthropic失敗,2026-06-24 10:32
+renesas,例外:anthropic失敗,2026-06-24 11:04
+bridgestone,例外:anthropic失敗,2026-06-24 11:18
+kawasaki-heavy,例外:anthropic失敗,2026-06-24 11:18
+ihi,例外:anthropic失敗,2026-06-24 11:19
+kubota,例外:anthropic失敗,2026-06-24 11:19
+yaskawa,例外:anthropic失敗,2026-06-24 11:19
+shimadzu,registered,2026-06-24 09:23
+hoya,registered,2026-06-24 09:28
+nikon,registered,2026-06-24 09:33
+seiko-epson,registered,2026-06-24 09:37
+ricoh,skip(factpack抽出失敗),2026-06-24 09:38
+nippon-steel,registered,2026-06-24 09:42
+jfe-hd,lint error 6→登録ブロック,2026-06-24 09:47
+kobe-steel,registered,2026-06-24 09:52
+sumitomo-electric,skip(factpack抽出失敗),2026-06-24 09:52
+sumitomo-metal-mining,lint error 6→登録ブロック,2026-06-24 09:57
+mitsubishi-materials,registered,2026-06-24 10:01
+mitsubishi-chemical,lint error 1→登録ブロック,2026-06-24 10:06
+sumitomo-chemical,registered,2026-06-24 10:10
+asahi-kasei,skip(factpack抽出失敗),2026-06-24 10:11
+toray,lint error 6→登録ブロック,2026-06-24 10:16
+mitsui-chemical,registered,2026-06-24 10:20
+agc,skip(factpack抽出失敗),2026-06-24 10:21
+takeda,registered,2026-06-24 10:25
+astellas,lint error 6→登録ブロック,2026-06-24 10:29
+daiichi-sankyo,registered,2026-06-24 10:34
+chugai,registered,2026-06-24 10:39
+otsuka-hd,skip(factpack抽出失敗),2026-06-24 10:40
+daiichi-life,registered,2026-06-24 10:44 (D1-seed)
+daiwa,registered,2026-06-24 10:44 (D1-seed)
+eisai,registered,2026-06-24 10:44 (D1-seed)
+mizuho-fg,registered,2026-06-24 10:44 (D1-seed)
+mizuho-sec,registered,2026-06-24 10:44 (D1-seed)
+mufg,registered,2026-06-24 10:44 (D1-seed)
+mufg-ms,registered,2026-06-24 10:44 (D1-seed)
+nippon-life,registered,2026-06-24 10:44 (D1-seed)
+resona,registered,2026-06-24 10:44 (D1-seed)
+sbi-sec,registered,2026-06-24 10:44 (D1-seed)
+shionogi,registered,2026-06-24 10:44 (D1-seed)
+smbc-nikko,registered,2026-06-24 10:44 (D1-seed)
+smtb,registered,2026-06-24 10:44 (D1-seed)
+yucho,registered,2026-06-24 10:44 (D1-seed)
+mitsubishi-corp,lint error 6→登録ブロック,2026-06-24 10:49
+honda,skip(factpack抽出失敗),2026-06-24 10:50
+suzuki,registered,2026-06-24 10:55
+subaru,registered,2026-06-24 11:00
+aisin,skip(factpack抽出失敗),2026-06-24 11:00
+hitachi,registered,2026-06-24 11:05
+panasonic-hd,registered,2026-06-24 11:10
+mitsubishi-electric,registered,2026-06-24 11:15
+keyence,registered,2026-06-24 11:20
+murata,skip(factpack抽出失敗),2026-06-24 11:21
+shinetsu-chemical,lint error 1→登録ブロック,2026-06-24 11:25
+tokyo-electron,lint error 6→登録ブロック,2026-06-24 11:29
+canon,registered,2026-06-24 11:34
+fujifilm-hd,registered,2026-06-24 11:39
+kyocera,registered,2026-06-24 11:43
+mitsubishi-heavy,registered,2026-06-24 11:48
+mitsubishi-corp,lint error 6→登録ブロック,2026-06-24 11:57
+honda,skip(factpack抽出失敗),2026-06-24 11:58
+aisin,skip(factpack抽出失敗),2026-06-24 11:58
+murata,skip(factpack抽出失敗),2026-06-24 11:59
+shinetsu-chemical,registered,2026-06-24 12:03
+kao,skip(factpack抽出失敗),2026-06-24 12:15
+mitsubishi-corp,lint error 6→登録ブロック,2026-06-24 12:21
+honda,skip(factpack抽出失敗),2026-06-24 12:22
+aisin,skip(factpack抽出失敗),2026-06-24 12:23
+murata,skip(factpack抽出失敗),2026-06-24 12:23
+tokyo-electron,lint error 6→登録ブロック,2026-06-24 12:28
+daikin,registered,2026-06-24 12:33
+komatsu,registered,2026-06-24 12:38
+fanuc,registered,2026-06-24 12:42
+nidec,registered,2026-06-24 12:47
+tdk,registered,2026-06-24 12:52
+omron,registered,2026-06-24 12:56
+advantest,registered,2026-06-24 13:01
+renesas,skip(factpack抽出失敗),2026-06-24 13:02
+bridgestone,registered,2026-06-24 13:06
+kawasaki-heavy,skip(factpack抽出失敗),2026-06-24 13:07
+ihi,registered,2026-06-24 13:11
+kubota,registered,2026-06-24 13:16
+yaskawa,registered,2026-06-24 13:20
+ricoh,skip(factpack抽出失敗),2026-06-24 13:21
+jfe-hd,lint error 6→登録ブロック,2026-06-24 13:26
+sumitomo-electric,skip(factpack抽出失敗),2026-06-24 13:26
+sumitomo-metal-mining,lint error 6→登録ブロック,2026-06-24 13:31
+mitsubishi-chemical,registered,2026-06-24 13:35
+asahi-kasei,skip(factpack抽出失敗),2026-06-24 13:36
+toray,registered,2026-06-24 13:41
+agc,registered,2026-06-24 13:45
+astellas,lint error 6→登録ブロック,2026-06-24 13:49
+otsuka-hd,registered,2026-06-24 13:54
+smbc-bank,skip(factpack抽出失敗),2026-06-24 13:55
+tokio-marine,skip(factpack抽出失敗),2026-06-24 13:56
+nomura,lint error 6→登録ブロック,2026-06-24 13:59
+meiji-yasuda,registered,2026-06-24 14:04
+sumitomo-life,registered,2026-06-24 14:09
+ms-ad,registered,2026-06-24 14:13
+sompo,registered,2026-06-24 14:18
+aioi-nissay,registered,2026-06-24 14:22
+kampo,registered,2026-06-24 14:27
+taiyo-life,registered,2026-06-24 14:31
+mufg-trust,registered,2026-06-24 14:35
+orix,registered,2026-06-24 14:40
+mitsubishi-hc,registered,2026-06-24 14:45
+tokyo-century,lint error 1→登録ブロック,2026-06-24 14:49
+credit-saison,registered,2026-06-24 14:53
+orico,registered,2026-06-24 14:58
+acom,registered,2026-06-24 15:03
+hamagin,registered,2026-06-24 15:07
+chibagin,registered,2026-06-24 15:12
+shizuokagin,registered,2026-06-24 15:17
+sumishin-sbi-net,registered,2026-06-24 15:22
+rakuten-bank,registered,2026-06-24 15:26
+paypay-bank,registered,2026-06-24 15:31
+jpx,registered,2026-06-24 15:35
+dbj,registered,2026-06-24 15:39
+jbic,registered,2026-06-24 15:44
+shoko-chukin,registered,2026-06-24 15:48
+norinchukin,registered,2026-06-24 15:53
+ntt,registered,2026-06-24 15:58
+ntt-data,registered,2026-06-24 16:03
+ntt-docomo,registered,2026-06-24 16:07
+kddi,registered,2026-06-24 16:11
+softbank,registered,2026-06-24 16:16
+rakuten-group,registered,2026-06-24 16:20
+fujitsu,registered,2026-06-24 16:25
+nec,registered,2026-06-24 16:30
+otsuka-shokai,registered,2026-06-24 16:35
+tis,registered,2026-06-24 16:39
+scsk,registered,2026-06-24 16:43
+ctc,registered,2026-06-24 16:48
+ns-solutions,registered,2026-06-24 16:52
+mitsubishi-corp,lint error 6→登録ブロック,2026-06-24 17:46
+honda,skip(factpack抽出失敗),2026-06-24 17:46
+aisin,skip(factpack抽出失敗),2026-06-24 17:47
+murata,skip(factpack抽出失敗),2026-06-24 17:48
+mitsubishi-corp,lint error 6→登録ブロック,2026-06-24 18:07
+honda,registered,2026-06-24 18:12
+aisin,registered,2026-06-24 18:16
+honda,registered,2026-06-24 18:16
+mitsubishi-corp,lint error 6→登録ブロック,2026-06-24 18:22
+murata,lint error 6→登録ブロック,2026-06-24 18:27
+tokyo-electron,registered,2026-06-24 18:31
+renesas,registered,2026-06-24 18:35
+kawasaki-heavy,registered,2026-06-24 18:40
+ricoh,registered,2026-06-24 18:44
+jfe-hd,lint error 6→登録ブロック,2026-06-24 18:49
+sumitomo-electric,registered,2026-06-24 18:54
+sumitomo-metal-mining,lint error 6→登録ブロック,2026-06-24 18:59
+asahi-kasei,registered,2026-06-24 19:07
+astellas,lint error 6→登録ブロック,2026-06-24 19:11
+smbc-bank,registered,2026-06-24 19:16
+tokio-marine,registered,2026-06-24 19:20
+nomura,lint error 6→登録ブロック,2026-06-24 19:24
+tokyo-century,registered,2026-06-24 19:28
+biprogy,lint error 1→登録ブロック,2026-06-24 19:32
+sky,registered,2026-06-24 19:37
+shift,registered,2026-06-24 19:41
+recruit-hd,registered,2026-06-24 19:45
+cyberagent,registered,2026-06-24 19:50
+dena,registered,2026-06-24 19:54
+gree,registered,2026-06-24 19:58
+mixi,registered,2026-06-24 20:03
+mercari,registered,2026-06-24 20:07
+line-yahoo,registered,2026-06-24 20:12
+gmo,registered,2026-06-24 20:16
+sansan,registered,2026-06-24 20:21
+freee,registered,2026-06-24 20:25
+moneyforward,registered,2026-06-24 20:29
+rakus,registered,2026-06-24 20:34
+visional,registered,2026-06-24 20:39
+smarthr,registered,2026-06-24 20:44
+layerx,registered,2026-06-24 20:48
+kaonavi,registered,2026-06-24 20:53
+kubell,registered,2026-06-24 20:57
+uzabase,registered,2026-06-24 21:01
+plaid,registered,2026-06-24 21:06
+pref-networks,registered,2026-06-24 21:11
+sakana-ai,registered,2026-06-24 21:15
+pksha,lint error 6→登録ブロック,2026-06-24 21:20
+appier,registered,2026-06-24 21:24
+brainpad,registered,2026-06-24 21:28
+fronteo,registered,2026-06-24 21:32
+abeja,registered,2026-06-24 21:37
+elyza,registered,2026-06-24 21:41
+turing,registered,2026-06-24 21:45
+nintendo,registered,2026-06-24 21:50
+bandai-namco,registered,2026-06-24 21:54
+capcom,registered,2026-06-24 21:59
+square-enix,registered,2026-06-24 22:03
+konami,registered,2026-06-24 22:08
+sega-sammy,registered,2026-06-24 22:13
+mckinsey,registered,2026-06-24 22:17
+bcg,lint error 6→登録ブロック,2026-06-24 22:22
+bain,lint error 6→登録ブロック,2026-06-24 22:26
+accenture,registered,2026-06-24 22:31
+deloitte,registered,2026-06-24 22:36
+pwc,registered,2026-06-24 22:41
+ey,lint error 6→登録ブロック,2026-06-24 22:45
+kpmg,registered,2026-06-24 22:49
+abeam,registered,2026-06-24 22:54
+baycurrent,registered,2026-06-24 22:58
+adl,registered,2026-06-24 23:03
+roland-berger,registered,2026-06-24 23:07
+strategy-and,registered,2026-06-24 23:11
+ibm-consulting,lint error 1→登録ブロック,2026-06-24 23:17
+nri,registered,2026-06-24 23:22
+mri,registered,2026-06-24 23:26
+jri,registered,2026-06-24 23:31
+murc,registered,2026-06-24 23:36
+dream-incubator,registered,2026-06-24 23:41
+cdi,registered,2026-06-24 23:45
+medipal,registered,2026-06-24 23:51
+alfresa,registered,2026-06-24 23:55
+suzuken,registered,2026-06-24 23:59
+toho-hd,registered,2026-06-25 00:04
+mitsubishi-shokuhin,registered,2026-06-25 00:09
+kokubu,registered,2026-06-25 00:13
+kato-sangyo,registered,2026-06-25 00:16
+itochu-shokuhin,registered,2026-06-25 00:21
+metal-one,registered,2026-06-25 00:25
+hanwa,registered,2026-06-25 00:29
+jfe-shoji,registered,2026-06-25 00:34
+macnica-hd,registered,2026-06-25 00:39
+kaga-electronics,registered,2026-06-25 00:44
+lester-hd,registered,2026-06-25 00:48
+nagase,registered,2026-06-25 00:52
+inabata,registered,2026-06-25 00:56
+chori,registered,2026-06-25 01:00
+inaba-denki,registered,2026-06-25 01:04
+seika-sangyo,registered,2026-06-25 01:09
+daiichi-jitsugyo,registered,2026-06-25 01:13
+tepco,registered,2026-06-25 01:18
+kepco,registered,2026-06-25 01:22
+chubu-electric,registered,2026-06-25 01:26
+kyushu-electric,registered,2026-06-25 01:30
+tohoku-electric,registered,2026-06-25 01:35
+chugoku-electric,registered,2026-06-25 01:39
+shikoku-electric,registered,2026-06-25 01:43
+hokkaido-electric,registered,2026-06-25 01:47
+hokuriku-electric,registered,2026-06-25 01:51
+okinawa-electric,registered,2026-06-25 01:56
+j-power,registered,2026-06-25 02:00
+jera,registered,2026-06-25 02:05
+tokyo-gas,registered,2026-06-25 02:10
+osaka-gas,registered,2026-06-25 02:14
+toho-gas,registered,2026-06-25 02:18
+saibu-gas,registered,2026-06-25 02:22
+eneos,registered,2026-06-25 02:26
+idemitsu,registered,2026-06-25 02:31
+cosmo-energy,registered,2026-06-25 02:35
+inpex,registered,2026-06-25 02:39
+japex,registered,2026-06-25 02:44
+jgc-hd,registered,2026-06-25 02:49
+chiyoda,registered,2026-06-25 02:55
+renova,registered,2026-06-25 02:59
+erex,registered,2026-06-25 03:04
+west-hd,registered,2026-06-25 03:08
+kurita,registered,2026-06-25 03:12
+metawater,registered,2026-06-25 03:19
+shizuoka-gas,D1失敗:⚠️  Warning: Unsupported macOS version detected (13.3.0). The Cloudflare Workers runtime may not work correctly on macOS versions below 13.5.0. Consid,2026-06-25 03:23
+hokkaido-gas,registered,2026-06-25 03:27
+mitsui-fudosan,registered,2026-06-25 03:32
+mitsubishi-estate,registered,2026-06-25 03:36
+sumitomo-fudosan,registered,2026-06-25 03:40
+nomura-fudosan-hd,registered,2026-06-25 03:45
+tokyu-fudosan-hd,registered,2026-06-25 03:49
+mori-building,registered,2026-06-25 03:54
+hulic,registered,2026-06-25 03:58
+tokyo-tatemono,registered,2026-06-25 04:02
+daiwa-house,registered,2026-06-25 04:06
+sekisui-house,registered,2026-06-25 04:11
+sumitomo-forestry,registered,2026-06-25 04:15
+iida-group-hd,registered,2026-06-25 04:20
+open-house-group,registered,2026-06-25 04:24
+daito-kentaku,registered,2026-06-25 04:29
+kajima,registered,2026-06-25 04:33
+obayashi,registered,2026-06-25 04:37
+shimizu,registered,2026-06-25 04:41
+taisei,registered,2026-06-25 04:45
+takenaka,registered,2026-06-25 04:50
+haseko,registered,2026-06-25 04:54
+toda,registered,2026-06-25 04:58
+infroneer-hd,registered,2026-06-25 05:03
+penta-ocean,registered,2026-06-25 05:07
+kumagai-gumi,registered,2026-06-25 05:12
+nishimatsu,registered,2026-06-25 05:16
+ando-hazama,registered,2026-06-25 05:21
+kinden,registered,2026-06-25 05:27
+kandenko,registered,2026-06-25 05:32
+takasago-thermal,registered,2026-06-25 05:36
+taiki-sha,registered,2026-06-25 05:41
+seven-and-i,registered,2026-06-25 05:45
+aeon,registered,2026-06-25 05:50
+fast-retailing,registered,2026-06-25 05:54
+nitori-hd,registered,2026-06-25 05:59
+ppih,registered,2026-06-25 06:03
+ryohin-keikaku,registered,2026-06-25 06:08
+lawson,registered,2026-06-25 06:15
+familymart,registered,2026-06-25 06:19
+isetan-mitsukoshi,registered,2026-06-25 06:24
+j-front,registered,2026-06-25 06:28
+takashimaya,registered,2026-06-25 06:33
+h2o-retailing,registered,2026-06-25 06:37
+life-corp,registered,2026-06-25 06:41
+yaoko,registered,2026-06-25 06:46
+shimamura,registered,2026-06-25 06:50
+adastria,registered,2026-06-25 06:55
+workman,registered,2026-06-25 06:59
+yamada-hd,registered,2026-06-25 07:03
+biccamera,registered,2026-06-25 07:08
+yodobashi,registered,2026-06-25 07:12
+welcia-hd,registered,2026-06-25 07:16
+tsuruha-hd,registered,2026-06-25 07:20
+matsukiyococokara,registered,2026-06-25 07:24
+cosmos-pharma,registered,2026-06-25 07:28
+sugi-hd,registered,2026-06-25 07:35
+cainz,registered,2026-06-25 07:39
+dcm-hd,registered,2026-06-25 07:43
+komeri,registered,2026-06-25 07:48
+zozo,registered,2026-06-25 07:53
+sundrug,registered,2026-06-25 07:57
+suntory,registered,2026-06-25 08:02
+asahi-group,registered,2026-06-25 08:08
+kirin-hd,registered,2026-06-25 08:15
+ajinomoto,registered,2026-06-25 08:19
+meiji-hd,registered,2026-06-25 08:24
+nipponham,registered,2026-06-25 08:28
+yamazaki-pan,registered,2026-06-25 08:32
+nissin-hd,registered,2026-06-25 08:36
+kikkoman,registered,2026-06-25 08:43
+kagome,registered,2026-06-25 08:48
+ezaki-glico,registered,2026-06-25 08:52
+morinaga-seika,registered,2026-06-25 08:58
+morinaga-milk,registered,2026-06-25 09:03
+yukijirushi-megmilk,registered,2026-06-25 09:07
+house-foods,registered,2026-06-25 09:16
+itoen,registered,2026-06-25 09:20
+nichirei,registered,2026-06-25 09:24
+calbee,registered,2026-06-25 09:28
+yakult,registered,2026-06-25 09:32
+sapporo-hd,registered,2026-06-25 09:37
+kewpie,registered,2026-06-25 09:42
+fuji-oil-hd,registered,2026-06-25 09:46
+lotte,registered,2026-06-25 09:50
+kao,lint error 6→登録ブロック,2026-06-25 10:00
+shiseido,registered,2026-06-25 10:04
+kose,registered,2026-06-25 10:09
+unicharm,registered,2026-06-25 10:13
+lion,registered,2026-06-25 10:18
+pola-orbis-hd,registered,2026-06-25 10:22
+kobayashi-pharma,registered,2026-06-25 10:26
+jr-east,registered,2026-06-25 10:33
+jr-central,registered,2026-06-25 10:37
+jr-west,registered,2026-06-25 10:42
+ana-hd,registered,2026-06-25 10:46
+jal,registered,2026-06-25 10:51
+nyk,registered,2026-06-25 10:55
+mol,registered,2026-06-25 11:00
+k-line,registered,2026-06-25 11:07
+nippon-express-hd,registered,2026-06-25 11:11
+yamato-hd,registered,2026-06-25 11:15
+sg-hd,registered,2026-06-25 11:20
+seino-hd,registered,2026-06-25 11:24
+kintetsu-group-hd,registered,2026-06-25 11:29
+hankyu-hanshin-hd,registered,2026-06-25 11:33
+tokyu,registered,2026-06-25 11:38
+odakyu,registered,2026-06-25 11:42
+tobu,registered,2026-06-25 11:46
+seibu-hd,registered,2026-06-25 11:51
+meitetsu,registered,2026-06-25 11:55
+mitsubishi-corp,registered,2026-06-25 21:08
+murata,registered,2026-06-25 21:14
+jfe-hd,lint error 6→登録ブロック,2026-06-25 21:19
+sumitomo-metal-mining,lint error 6→登録ブロック,2026-06-25 21:23
+astellas,lint error 6→登録ブロック,2026-06-25 21:28
+nomura,lint error 6→登録ブロック,2026-06-25 21:32
+biprogy,registered,2026-06-25 21:36
+pksha,registered,2026-06-25 21:40
+bcg,registered,2026-06-25 21:45
+bain,lint error 6→登録ブロック,2026-06-25 21:49
+ey,lint error 6→登録ブロック,2026-06-25 21:54
+ibm-consulting,registered,2026-06-25 21:58
+shizuoka-gas,registered,2026-06-25 22:03
+kao,lint error 6→登録ブロック,2026-06-25 22:07
+keikyu,registered,2026-06-25 22:11
+dentsu,lint error 6→登録ブロック,2026-06-25 22:15
+hakuhodo-dy,registered,2026-06-25 22:19
+adk-hd,registered,2026-06-25 22:24
+ntv-hd,registered,2026-06-25 22:28
+tbs-hd,registered,2026-06-25 22:33
+fuji-media-hd,registered,2026-06-25 22:38
+tv-asahi-hd,registered,2026-06-25 22:42
+tv-tokyo-hd,registered,2026-06-25 22:47
+skyperfectjsat-hd,registered,2026-06-25 22:52
+wowow,registered,2026-06-25 22:55
+kadokawa,registered,2026-06-25 23:00
+shueisha,registered,2026-06-25 23:05
+kodansha,lint error 6→登録ブロック,2026-06-25 23:09
+shogakukan,registered,2026-06-25 23:14
+bungeishunju,registered,2026-06-25 23:18
+avex,registered,2026-06-25 23:22
+amuse,registered,2026-06-25 23:27
+yoshimoto-hd,registered,2026-06-25 23:31
+oriental-land,registered,2026-06-25 23:35
+usj,registered,2026-06-25 23:39
+sanrio,registered,2026-06-25 23:44
+round-one,registered,2026-06-25 23:48
+toho,registered,2026-06-25 23:52
+toei,registered,2026-06-25 23:57
+shochiku,registered,2026-06-26 00:01
+asahi-shimbun,registered,2026-06-26 00:05
+nikkei,registered,2026-06-26 00:10
+yomiuri-group,registered,2026-06-26 00:14
+septeni-hd,registered,2026-06-26 00:18
+pia,registered,2026-06-26 00:22
+google-japan,registered,2026-06-26 00:27
+amazon-japan,registered,2026-06-26 00:32
+microsoft-japan,registered,2026-06-26 00:36
+salesforce-japan,registered,2026-06-26 00:41
+oracle-japan,registered,2026-06-26 00:45
+ibm-japan,registered,2026-06-26 00:49
+sap-japan,registered,2026-06-26 00:53
+pg-japan,registered,2026-06-26 00:58
+loreal-japan,registered,2026-06-26 01:02
+unilever-japan,registered,2026-06-26 01:06
+nestle-japan,registered,2026-06-26 01:10
+persol-hd,registered,2026-06-26 01:15
+pasona-group,registered,2026-06-26 01:19
+benesse-hd,registered,2026-06-26 01:24
+gakken-hd,registered,2026-06-26 01:28
+nagase-toshin,registered,2026-06-26 01:32
+rapidus,registered,2026-06-26 01:36
+toyota-motor,registered,2026-06-28 21:57
+honda,registered,2026-06-28 22:01
+nissan,lint error 1→登録ブロック,2026-06-28 22:06
+suzuki,registered,2026-06-28 22:11
+subaru,registered,2026-06-28 22:16
+mazda,registered,2026-06-28 22:21
+mitsubishi-motors,registered,2026-06-28 22:26
+isuzu,registered,2026-06-28 22:30
+aisin,registered,2026-06-28 22:35
+denso,registered,2026-06-28 22:39
+toyota-shokki,registered,2026-06-28 22:44
+sony-group,registered,2026-06-28 22:49
+sumitomo-corp,registered-v3,2026-07-16 14:45
+keyence,registered-v3,2026-07-16 14:45
+nomura,registered-v3,2026-07-16 14:45
+accenture,registered-v3,2026-07-16 14:45
+euglena,registered-v3,2026-07-16 14:45
+tokyo-gas,registered-v3,2026-07-16 14:45
+dentsu,registered-v3,2026-07-16 14:45
+fast-retailing,registered-v3,2026-07-16 14:45
+base-food,registered-v3,2026-07-16 14:51
+amazon-japan,lint error 1→登録ブロック,2026-07-16 14:52
