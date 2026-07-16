@@ -6,12 +6,12 @@ cd /Users/oscardodds/projects/10koma-shukatsu
 LOG=tools/_room_v3_watch.log
 echo "[watch開始 $(date '+%m-%d %H:%M')]" >> $LOG
 while true; do
-  if pgrep -f "room_phase3_rollout" >/dev/null 2>&1; then
+  if LC_ALL=C pgrep -f "room_phase3_rollout" >/dev/null 2>&1; then
     sleep 300; continue                      # 本体稼働中(スリープ凍結含む)→待つ
   fi
   # 本体プロセスが消えた → 完走 or 途中死 を判定
   sleep 30
-  if pgrep -f "room_phase3_rollout" >/dev/null 2>&1; then continue; fi   # 再確認(誤検知回避)
+  if LC_ALL=C pgrep -f "room_phase3_rollout" >/dev/null 2>&1; then continue; fi   # 再確認(誤検知回避)
   echo "[watch $(date '+%H:%M')] 本体プロセス消滅 → 締め判定" >> $LOG
   python3 tools/room_v3_complete.py >> $LOG 2>&1
   RC=$?

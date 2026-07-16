@@ -4,7 +4,7 @@
 # 完走したら締め処理(タブ更新+LINE通知・重複防止)まで自動実行。
 cd /Users/oscardodds/projects/10koma-shukatsu
 LOG=tools/_room_phase3_resume.log
-if pgrep -f "room_phase3_rollout" >/dev/null 2>&1; then
+if LC_ALL=C pgrep -f "room_phase3_rollout" >/dev/null 2>&1; then
   echo "[resume] 本体rolloutは既に稼働中 → 再開不要" | tee -a $LOG; exit 0
 fi
 echo "[resume $(date '+%m-%d %H:%M')] rollout再開(並列3・resumable)" >> $LOG

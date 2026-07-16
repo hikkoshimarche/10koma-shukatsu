@@ -7,7 +7,7 @@ import room_v3_complete as C
 st = C.state()
 nv3, nrem, niso = len(st["v3"]), len(st["remain"]), len(st["iso"])
 last = os.environ.get("LASTSLUG", "?")
-alive = os.popen("pgrep -f room_phase3_rollout | head -1").read().strip()
+alive = os.popen("LC_ALL=C pgrep -f room_phase3_rollout | head -1").read().strip()
 now = time.strftime("%Y-%m-%d %H:%M")
 L = []
 L.append("# 🎭 ルームv3 全社展開 現在地（スリープ保全用）")
