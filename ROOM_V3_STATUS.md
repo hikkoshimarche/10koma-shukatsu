@@ -1,0 +1,53 @@
+# 🎭 ルームv3 全社展開 現在地（スリープ保全用）
+
+## 【再開コマンド】(reboot/kill でプロセスが消えていた時だけ実行)
+```bash
+cd /Users/oscardodds/projects/10koma-shukatsu
+# まず生存確認（生きていれば再開不要・スリープからは自動継続する）:
+pgrep -f room_phase3_rollout && echo '稼働中=再開不要' || \
+  ( nohup caffeinate -dimsu bash tools/room_v3_resume.sh > tools/_room_phase3_resume.log 2>&1 & )
+```
+- registered-v3スキップで**二重登録なし**・**並列3**・**三井GOLD除外**・**room-lint5ゲート**・**429→並列2自動降格**・20社毎push を維持。
+- 完走すると自動で タブ/ダッシュボード更新 + LINE完了通知(重複防止) まで走る。
+- 完走監視は `room_v3_watch.sh`(別プロセス)が担当。スリープ中は本体もwatcherも凍結し、復帰で自動再開。
+
+## 現在地（2026-07-16 22:10 時点・実D1）
+- **v3登録済: 221/400社**（三井GOLD別枠1・不可侵）
+- **残: 178社**（factsheetあり・未v3。本体rolloutが処理中）
+- **隔離(room-lint5未通過): 9社**
+- 最終処理slug: `jal`
+- 本体rollout pid: 49541
+
+### アーキタイプ別 v3登録
+- IT・AI・SaaS・ゲーム: 57社
+- インフラ・エネルギー: 30社
+- 小売・流通: 27社
+- 広告・メディア: 26社
+- 専門商社: 20社
+- コンサル: 19社
+- 医療・ヘルスケア: 9社
+- 総合商社: 9社
+- メーカー: 7社
+- 教育・人材: 5社
+- スタートアップ: 4社
+- 航空・運輸・物流: 3社
+- ディープテック・宇宙・AI: 3社
+- 食品・飲料: 1社
+- 銀行・証券・保険: 1社
+
+### 隔離社（要個別対応・再fanoutで回復し得る）
+- cosmos-pharma (小売・流通) — lint error 1→登録ブロック
+- matsukiyococokara (小売・流通) — lint error 1→登録ブロック
+- ryohin-keikaku (小売・流通) — lint error 1→登録ブロック
+- asahi-shimbun (広告・メディア) — lint error 1→登録ブロック
+- nikkei (広告・メディア) — lint error 1→登録ブロック
+- shueisha (広告・メディア) — lint error 1→登録ブロック
+- usj (広告・メディア) — lint error 1→登録ブロック
+- fujitsu (IT・AI・SaaS・ゲーム) — lint error 1→登録ブロック
+- jri (コンサル) — lint error 1→登録ブロック
+
+### 単社の再fanout(隔離社の回収など)
+```bash
+cd /Users/oscardodds/projects/10koma-shukatsu
+nohup caffeinate -dimsu python3 -u tools/room_phase3_rollout.py --slugs '<slug1,slug2>' --no-git --no-tabsync --conc 3 > tools/_room_refanout.log 2>&1 &
+```

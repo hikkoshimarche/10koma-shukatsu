@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import sys, os, time
+sys.path.insert(0, os.path.expanduser("~/oscar-ai/tokyari-pipeline/scripts"))
+sys.path.insert(0, "tools")
+import room_v3_complete as C
+st = C.state()
+nv3, nrem, niso = len(st["v3"]), len(st["remain"]), len(st["iso"])
+last = os.environ.get("LASTSLUG", "?")
+alive = os.popen("pgrep -f room_phase3_rollout | head -1").read().strip()
+now = time.strftime("%Y-%m-%d %H:%M")
+L = []
+L.append("# 🎭 ルームv3 全社展開 現在地（スリープ保全用）")
+L.append("")
+L.append("## 【再開コマンド】(reboot/kill でプロセスが消えていた時だけ実行)")
+L.append("```bash")
+L.append("cd /Users/oscardodds/projects/10koma-shukatsu")
+L.append("# まず生存確認（生きていれば再開不要・スリープからは自動継続する）:")
+L.append("pgrep -f room_phase3_rollout && echo '稼働中=再開不要' || \\")
+L.append("  ( nohup caffeinate -dimsu bash tools/room_v3_resume.sh > tools/_room_phase3_resume.log 2>&1 & )")
+L.append("```")
+L.append("- registered-v3スキップで**二重登録なし**・**並列3**・**三井GOLD除外**・**room-lint5ゲート**・**429→並列2自動降格**・20社毎push を維持。")
+L.append("- 完走すると自動で タブ/ダッシュボード更新 + LINE完了通知(重複防止) まで走る。")
+L.append("- 完走監視は `room_v3_watch.sh`(別プロセス)が担当。スリープ中は本体もwatcherも凍結し、復帰で自動再開。")
+L.append("")
+L.append(f"## 現在地（{now} 時点・実D1）")
+L.append(f"- **v3登録済: {nv3}/400社**（三井GOLD別枠1・不可侵）")
+L.append(f"- **残: {nrem}社**（factsheetあり・未v3。本体rolloutが処理中）")
+L.append(f"- **隔離(room-lint5未通過): {niso}社**")
+L.append(f"- 最終処理slug: `{last}`")
+L.append(f"- 本体rollout pid: {alive or '(停止)'}")
+L.append("")
+L.append("### アーキタイプ別 v3登録")
+for a, n in st["dist"].most_common():
+    L.append(f"- {a}: {n}社")
+L.append("")
+L.append("### 隔離社（要個別対応・再fanoutで回復し得る）")
+if st["iso"]:
+    for it in st["iso"]:
+        L.append(f"- {it['slug']} ({it.get('arch','?')}) — {it.get('reason','?')}")
+else:
+    L.append("- なし")
+L.append("")
+L.append("### 単社の再fanout(隔離社の回収など)")
+L.append("```bash")
+L.append("cd /Users/oscardodds/projects/10koma-shukatsu")
+L.append("nohup caffeinate -dimsu python3 -u tools/room_phase3_rollout.py --slugs '<slug1,slug2>' --no-git --no-tabsync --conc 3 > tools/_room_refanout.log 2>&1 &")
+L.append("```")
+open("ROOM_V3_STATUS.md", "w", encoding="utf-8").write("\n".join(L) + "\n")
+print(f"ROOM_V3_STATUS.md 生成: v3={nv3} 残={nrem} 隔離={niso} last={last} pid={alive or '停止'}")
