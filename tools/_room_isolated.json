@@ -108,5 +108,23 @@
         "OB: 批判しすぎない+感謝 が無い"
       ]
     }
+  },
+  {
+    "slug": "takeda",
+    "name": "武田薬品工業",
+    "arch": "医療・ヘルスケア",
+    "reason": "lint error 1→登録ブロック",
+    "detail": {
+      "R6": [
+        "OB: 批判しすぎない+感謝 が無い"
+      ]
+    }
+  },
+  {
+    "slug": "jr-east",
+    "name": "JR東日本（東日本旅客鉄道）",
+    "arch": "航空・運輸・物流",
+    "reason": "D1失敗:⚠️  Warning: Unsupported macOS vers",
+    "detail": {}
   }
 ]
