@@ -55,10 +55,10 @@ def d1_personas():
 
 
 def main():
-    import room_industry_roles as RIR
+    import room_industry_roles_v3 as RIRV3
     cj = json.loads((REPO10 / "public" / "companies.json").read_text(encoding="utf-8"))
     companies = [(x["id"], x["name"]) for lst in cj.values() for x in lst]
-    id2ind = {x["id"]: ind for ind, lst in cj.items() for x in lst}  # slug→18業界(業界別役割名の引き先)
+    id2ind = {x["id"]: ind for ind, lst in cj.items() for x in lst}  # slug→18業界(v3ロースターの引き先)
     # Notion page_id
     pid = {}
     nss = ROOT / "output" / "notion_sync_state.csv"
@@ -68,47 +68,51 @@ def main():
                 pid[r[0]] = r[1]
     d1 = d1_personas()
 
-    # スポット確認: 完成社の一部(R3/R6)に初回フラグ(全社でない)
+    # スポット確認: 完成社の一部(擬似面接=事業部長/OB)に初回フラグ(全社でない)
     import hashlib
     rows = []
     done_companies = 0
     for slug, name in companies:
         prs = d1.get(slug, {})
-        complete = len([r for r in ROLE_ORDER if r in prs]) == 6
+        roster = RIRV3.roles_for18(id2ind.get(slug, ""))  # 人数可変: この社の期待ロースター
+        exp = len(roster)
+        # 完成 = 期待人数ぶんD1に揃っている(÷6固定を廃止・社ごとの実人数集計)
+        complete = exp > 0 and len([r for r in roster if r["role_key"] in prs]) == exp
         if complete:
             done_companies += 1
-        for role in ROLE_ORDER:
-            rdef = RL.ROLES[role]
-            yakume = RIR.role_def(id2ind.get(slug, ""), role)["label"]  # 役割名=業界別(メーカー=生産技術等)
+        for rd in roster:
+            role = rd["role_key"]
+            yakume = rd["label"]           # 役割名=v3(人数可変)
             p = prs.get(role)
             if p:
                 jin = p.get("persona_name", "")   # 氏名(個人名)
-                gutai = f"語り口:{rdef['tone'][:24]}"
-                retire = "A/B/C(R6のみ)" if role == "R6" else ""
+                gutai = f"語り口:{rd['tone'][:24]}"
+                retire = "退職OB" if rd.get("ob") else ("擬似面接" if rd.get("pseudo_interview") else "")
                 kensho = "✓"
                 status = "完成" if complete else "未生成"
                 gen = (p.get("created_at") or "")[:10]
-                # スポット: 完成社のR3/R6を ~10% フラグ(決定的: slugハッシュ)
+                # スポット: 完成社の擬似面接/OB役を ~10% フラグ(決定的: slugハッシュ)
                 spot = ""
-                if complete and role in ("R3", "R6"):
+                if complete and (rd.get("pseudo_interview") or rd.get("ob")):
                     h = int(hashlib.md5(slug.encode()).hexdigest(), 16) % 10
                     if h == 0:
                         spot = "要スポット確認"
             else:
-                jin = ""; gutai = ""; retire = ""; kensho = ""; status = "未生成"; gen = ""; spot = ""
+                jin = ""; gutai = ""; retire = "退職OB" if rd.get("ob") else ""; kensho = ""; status = "未生成"; gen = ""; spot = ""
             d1link = f"room_personas:{slug}/{role}" if p else ""
             notion = f"https://www.notion.so/{pid[slug].replace('-','')}" if slug in pid else ""
             # 13列: 会社名/slug/役割記号/役割名/氏名/人格具体/退職/検証/ステータス/生成日/D1/Notion/spot
             rows.append([name, slug, role, yakume, jin, gutai, retire, kensho, status, gen, d1link, notion, spot])
 
-    print(f"=== AI OB訪問タブ再構成: {len(companies)}社×6 = {len(rows)}行 / 完成(6/6 lint通過D1) {done_companies}社 ===")
+    avg = (len(rows) / max(len(companies), 1))
+    print(f"=== AI OB訪問タブ再構成: {len(companies)}社(人数可変・平均{avg:.1f}人) = {len(rows)}行 / 完成 {done_companies}社 ===")
     print("[1] ヘッダ+CF刷新")
     print("  ", gas({"mode": "roomtabheader"}))
     print("[2] 旧データclear")
     print("  ", gas({"mode": "roomtabclear"}))
     # GET+5行/バッチ: 13列化(役割名+氏名)で行が長くなり、日本語URLエンコード肥大でworst-case完成行が
     # 10行だとURL長超過(Bad Request)。5行に縮小して確実に収める。
-    print("[3] 6行/社 書込(GET・5行/バッチ)")
+    print("[3] N行/社 書込(人数可変・GET・5行/バッチ)")
     start = 3
     fail = 0
     for i in range(0, len(rows), 5):
@@ -124,7 +128,7 @@ def main():
     else:
         print("  全バッチ成功(失敗0)")
     print(f"  書込完了 {len(rows)}行")
-    print(f"\n✅ 完成 {done_companies}/400社 (6/6人格 lint5通過D1登録)。残りは未生成(fanout進行で増加)。")
+    print(f"\n✅ 完成 {done_companies}/{len(companies)}社 (期待人数ぶんlint5通過D1登録・人数可変)。残りは未生成(fanout進行で増加)。")
     return 0
 
 

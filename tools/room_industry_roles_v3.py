@@ -163,16 +163,88 @@ INDUSTRY_ROLES_V3 = {
 }
 
 
+# ---- 語り口(tone): v2 room_industry_roles(_T)継承。役割属性から決定的に付与 ----
+# 位置/フラグから語り口を割当(6固定に依存しない): 事業部長=落ち着き含み笑い(擬似面接)/退職者=客観/
+# 女性=等身大/先頭(若手)=カジュアル/中堅=論理的/専門・研究=専門職の語り口。
+_TONE = {
+    "pi": "落ち着いた敬語・含み笑い「君が言いたいのは〜だね」(擬似面接モード有)",
+    "ob": "客観「正直、外から見ると」「振り返ってみると」",
+    "fem": "等身大「私の場合はね」優しめ(模範生にしない)",
+    "young": "カジュアル寄り敬語「いやー正直」「ぶっちゃけ」",
+    "mid": "論理的「結論から言うと」「数字で見ると」",
+    "pro": "専門職の語り口・誠実「現場では〜」",
+}
+
+
+def _tone_for(r, idx):
+    """役割属性→語り口(決定的)。6固定に非依存。"""
+    if r.get("pseudo_interview"):
+        return _TONE["pi"]
+    if r.get("ob"):
+        return _TONE["ob"]
+    if r.get("female"):
+        return _TONE["fem"]
+    label = r.get("label", "")
+    if any(k in label for k in ("研究", "エンジニア", "技術", "専門職", "施工", "設計",
+                                "開発", "医療専門", "PdM", "プロダクトマネージャー", "バイヤー",
+                                "クリエイティブ", "デジタル", "データ", "運用")):
+        return _TONE["pro"]
+    if idx == 0 or "若手" in label:
+        return _TONE["young"]
+    return _TONE["mid"]
+
+
 def roles_for(industry13):
-    """業界13分類名 → v3役割リスト(role key R1..RN付き)。未知は総合商社型にフォールバックせず空。"""
+    """業界13分類名 → v3役割リスト(role key R1..RN・tone付き)。未知は空(総合商社にフォールバックしない)。"""
     lst = INDUSTRY_ROLES_V3.get(industry13)
     if not lst:
         return []
-    return [dict(role_key=f"R{i+1}", **r) for i, r in enumerate(lst)]
+    return [dict(role_key=f"R{i+1}", tone=_tone_for(r, i), **r) for i, r in enumerate(lst)]
 
 
 def industry_size(industry13):
     return len(INDUSTRY_ROLES_V3.get(industry13, []))
+
+
+# ---- companies.json の18業界 → v3の16アーキタイプ ----
+# v2(room_industry_roles.IND18_TO_13)を土台に、v3で分割/統合された分を再マッピング。
+# 迷う先(推測でなく既定値)は PROVISIONAL_IND18_V3 で明示し、レポートで可視化する。
+IND18_TO_V3 = {
+    "総合商社": "総合商社",
+    "自動車・モビリティ": "メーカー",
+    "電機・精密・重工": "メーカー",
+    "鉄鋼・素材・化学": "メーカー",
+    "製薬・ヘルスケア": "医療・ヘルスケア",   # v3で医療・ヘルスケア新設(創薬研究職/MR/医療データ)→製薬はこちらが適合
+    "銀行・証券・保険": "銀行・証券・保険",
+    "IT・通信・SaaS": "IT・AI・SaaS・ゲーム",
+    "コンサル": "コンサル",
+    "専門商社": "専門商社",
+    "インフラ・エネルギー": "インフラ・エネルギー",
+    "不動産・建設": "不動産・建設",
+    "小売・流通": "小売・流通",
+    "食品・飲料": "食品・飲料",
+    "航空・運輸・物流": "航空・運輸・物流",
+    "広告・メディア": "広告・メディア",
+    "その他（外資・新興等）": "スタートアップ",     # 汎用フォールバック(少人数・ドメイン可変・流動性高)
+    "ゲーム・エンタメ": "IT・AI・SaaS・ゲーム",       # spec⑥がゲームを内包
+    "日用品・化粧品": "メーカー",                    # 花王/資生堂=研究開発あり→メーカー
+}
+# 暫定(要オスカー確定・推測でなく既定値)のフラグ
+PROVISIONAL_IND18_V3 = {"製薬・ヘルスケア", "その他（外資・新興等）", "ゲーム・エンタメ", "日用品・化粧品"}
+
+
+def map18_v3(industry18):
+    """companies.jsonの18業界 → v3アーキタイプ名。未知は総合商社(汎用JTC)に戻す。"""
+    return IND18_TO_V3.get(industry18, "総合商社")
+
+
+def roles_for18(industry18):
+    """18業界 → v3役割リスト(role_key/tone付き・人数可変)。"""
+    return roles_for(map18_v3(industry18))
+
+
+def expected_size18(industry18):
+    return industry_size(map18_v3(industry18))
 
 
 if __name__ == "__main__":

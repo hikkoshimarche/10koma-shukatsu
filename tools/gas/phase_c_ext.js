@@ -422,7 +422,7 @@ function handleExt(mode, e, token){
     // 3層: 役割記号(C=R1-R6)/役割名(D=若手エース等)/氏名(E=個人名)。計13列。
     const hdr = ['会社名','slug','役割記号','役割名','氏名','人格の具体(部署/語り口)','退職パターン(R6)',
                  '検証(lint5)','ステータス','生成日','D1','Notion','要スポット確認'];
-    sh.getRange(1,1,1,2).setValues([['🎭 トーキャリ・ルーム L4（6人格・生成+lint5=完成／人FBループ無し）','']]);
+    sh.getRange(1,1,1,2).setValues([['🎭 トーキャリ・ルーム L4（人数可変6〜9人・生成+lint5=完成／人FBループ無し）','']]);
     // 旧45列由来のヘッダ残骸(14列目以降 FB3/状態3.../最終更新)を消去
     if(sh.getLastColumn()>hdr.length){
       sh.getRange(1,hdr.length+1,2,sh.getLastColumn()-hdr.length).clearContent();
@@ -479,13 +479,11 @@ function handleExt(mode, e, token){
     sh.getRange(3,1,lr-2,lc).clearDataValidations();
     // (3) 必要4種を再設定 (allowInvalid=true=警告のみ・ブロックしない) ※13列化で列位置シフト
     const mk = function(list){ return SpreadsheetApp.newDataValidation().requireValueInList(list,true).setAllowInvalid(true).build(); };
-    sh.getRange(3,3,lr-2,1).setDataValidation(mk(['R1','R2','R3','R4','R5','R6']));   // C 役割記号
+    // ★人数可変: 役割記号は R1..R9(6固定廃止)。退職パターンの6行周期プルダウンも廃止(OB行は役割名で判別)。
+    sh.getRange(3,3,lr-2,1).setDataValidation(mk(['R1','R2','R3','R4','R5','R6','R7','R8','R9']));  // C 役割記号
     sh.getRange(3,9,lr-2,1).setDataValidation(mk(['完成','未生成']));                  // I ステータス
     sh.getRange(3,8,lr-2,1).setDataValidation(mk(['✓','✗']));                          // H 検証
-    // G 退職パターン: R6行のみ(データ行3起点で6行周期=row 8,14,20,...)
-    const r6 = []; for(let row=8; row<=lr; row+=6){ r6.push('G'+row); }
-    if(r6.length){ const dvF = mk(['A','B','C']); sh.getRangeList(r6).getRanges().forEach(function(rg){ rg.setDataValidation(dvF); }); }
-    return _json({ok:true, removed_before:before, set:['C役割記号R1-R6','Iステータス完成/未生成','H検証✓/✗','G退職A/B/C(R6行'+r6.length+'件)']});
+    return _json({ok:true, removed_before:before, set:['C役割記号R1-R9(人数可変)','Iステータス完成/未生成','H検証✓/✗']});
   }
 
   if(mode === 'roomblockedtab'){
@@ -632,29 +630,39 @@ function handleExt(mode, e, token){
   }
 
   if(mode === 'roomdashboard'){
-    // AI OB訪問(ルーム)行をL4機械ゲートモデルに修正: ステータスH列(完成/未生成)を6で割り社数化。
-    // 旧式はC列(役割R1-R6)を指し常に0%だった不整合を解消。人FBループ列は概念無し→「—」。
-    // 全体サマリーE7の完了数にL4完成社を算入。進捗モデル注記(人確認=3/4)を追記。母数(C7=COUNTA398)不変。冪等。
+    // AI OB訪問(ルーム)を L4機械ゲートモデルで社数化。★人数可変対応: ÷6固定を廃止し、
+    // slug列(B)×ステータス列(I)から「完成/未生成の"実社数"(DISTINCT slug)」を集計(社ごと実人数に非依存)。
+    // 人FBループ列は概念無し→「—」。全体サマリーE7に完成社を算入。冪等。
     if(!_authed(e, token)) return _json({error:'unauthorized'});
-    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('ダッシュボード');
-    if(!sh) return _json({error:'no dashboard'});
-    const RT = "'AI OB訪問（ルーム）'!$I$3:$I$2402";  // ステータス列I(13列化でH→I)×2400行
-    sh.getRange('B14').setValue('AI OB訪問（ルーム）★L4機械ゲート(lint5+D1)');
-    sh.getRange('C14').setFormula('=COUNTIF('+RT+',"完成")/6');   // 完成社数=完成行/6
-    sh.getRange('D14').setValue('—');  // 公開済・FB待ち: L4は概念無し
-    sh.getRange('E14').setValue('—');  // FB対応中: 人FBループ無し
-    sh.getRange('F14').setValue('—');  // 1次完了: 人ゲート無し
-    sh.getRange('G14').setFormula('=COUNTIF('+RT+',"未生成")/6');  // 未生成社数
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sh = ss.getSheetByName('ダッシュボード');
+    const rt = ss.getSheetByName('AI OB訪問（ルーム）');
+    if(!sh || !rt) return _json({error:'no dashboard/room tab'});
+    // 実社数集計(DISTINCT slug): B=slug(2), I=ステータス(9)。÷6ではなく社単位で数える。
+    const lr = rt.getLastRow(); let doneN=0, waitN=0;
+    if(lr>=3){
+      const bcol = rt.getRange(3,2,lr-2,1).getValues();  // slug
+      const icol = rt.getRange(3,9,lr-2,1).getValues();  // status
+      const doneS={}, waitS={};
+      for(let i=0;i<bcol.length;i++){ const s=String(bcol[i][0]).trim(); if(!s) continue;
+        const st=String(icol[i][0]).trim();
+        if(st==='完成') doneS[s]=1; else if(st==='未生成') waitS[s]=1; }
+      doneN=Object.keys(doneS).length; waitN=Object.keys(waitS).length;
+    }
+    sh.getRange('B14').setValue('AI OB訪問（ルーム）★L4機械ゲート(lint5+D1・人数可変)');
+    sh.getRange('C14').setValue(doneN);   // 完成社数(DISTINCT slug・実社数)
+    sh.getRange('D14').setValue('—');
+    sh.getRange('E14').setValue('—');
+    sh.getRange('F14').setValue('—');
+    sh.getRange('G14').setValue(waitN);   // 未生成社数(DISTINCT slug)
     sh.getRange('H14').setFormula('=IF(C14="",0,C14/400)');        // 完成率=完成社/400
-    // 全体サマリー完了数: 旧AI OB COUNTIF"完了"(=0)をL4完成社(C14)に置換
     sh.getRange('E7').setFormula(
       '=COUNTIF(\'10コマ\'!$C$3:$C$405,"完了")+COUNTIF(\'企業紹介動画\'!$C$3:$C$405,"完了")'+
       '+COUNTIF(\'決算書分析動画\'!$C$3:$C$405,"完了")+C14');
-    // 進捗モデル注記(人確認=3/4)
     sh.getRange('B44').setValue('■ 進捗モデル');
-    sh.getRange('B45').setValue('AI OB訪問（ルーム）= L4機械ゲート: room-lint5全通過 AND D1登録 のときのみ「完成」（これでOK不要・人FBループ無し）。完成率=完成社/400。');
+    sh.getRange('B45').setValue('AI OB訪問（ルーム）= L4機械ゲート: room-lint5全通過 AND D1登録 のときのみ「完成」。人数可変(業界別6〜9人)ゆえ完成/未生成は"実社数(DISTINCT slug)"で集計。完成率=完成社/400。');
     sh.getRange('B46').setValue('人確認対象 = 10コマ／企業紹介動画／決算書分析動画 の3コンテンツ（全体の3/4）。母数 C7=COUNTA 398/400 不変。');
-    return _json({ok:true, model:'L4 machine-gate row14 + E7 + 3/4 annotation'});
+    return _json({ok:true, model:'L4 machine-gate row14 (DISTINCT slug・人数可変)', done:doneN, wait:waitN});
   }
 
   if(mode === 'markpublished'){

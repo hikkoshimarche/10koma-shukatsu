@@ -34,13 +34,16 @@ GIVEN_FEMALE = [
 GIVEN_MALE = [g for g in GIVEN_MALE if "省略" not in g]
 
 
-def personal_name(slug, role):
-    """slug+role で決定的に氏名生成。三井は金型固定。R4=女性名。"""
+def personal_name(slug, role, female=None):
+    """slug+role で決定的に氏名生成(再syncで不変)。三井は金型固定。
+    female: v3は女性フラグ(role名に依存しない)。None時は後方互換で role=='R4' を女性とみなす。"""
     if slug == "mitsui-bussan" and role in MITSUI_ROSTER:
         return MITSUI_ROSTER[role]
+    if female is None:
+        female = (role == "R4")
     h = hashlib.md5(f"{slug}/{role}".encode("utf-8")).hexdigest()
     s = SURNAMES[int(h[:8], 16) % len(SURNAMES)]
-    pool = GIVEN_FEMALE if role == "R4" else GIVEN_MALE
+    pool = GIVEN_FEMALE if female else GIVEN_MALE
     g = pool[int(h[8:16], 16) % len(pool)]
     return f"{s} {g}"
 

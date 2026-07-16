@@ -2,7 +2,15 @@
 # --all を最大4巡。各巡でskip社(不運な抽出ゆらぎ)をretry。D1完成数が増えなくなったら終了。
 cd ~/oscar-ai/tokyari-pipeline
 WCONF=/Users/oscardodds/projects/10koma-shukatsu/api/wrangler.toml
-d1count(){ cd /Users/oscardodds/projects/10koma-shukatsu; npx wrangler d1 execute 10koma-shukatsu-db --remote --config "$WCONF" --command "SELECT COUNT(DISTINCT company_slug) s FROM room_personas GROUP BY company_slug HAVING COUNT(*)=6" --json 2>/dev/null | python3 -c "import json,sys;print(len(json.load(sys.stdin)[0]['results']))"; cd ~/oscar-ai/tokyari-pipeline; }
+# 完成社数 = 期待人数(業界別v3・人数可変)ぶんD1に揃っている社(÷6固定を廃止)。三井GOLDは対象外。
+d1count(){ cd /Users/oscardodds/projects/10koma-shukatsu; npx wrangler d1 execute 10koma-shukatsu-db --remote --config "$WCONF" --command "SELECT company_slug, COUNT(*) n FROM room_personas GROUP BY company_slug" --json 2>/dev/null | PYTHONPATH=tools python3 -c "
+import json,sys
+import room_industry_roles_v3 as V3
+cj=json.load(open('public/companies.json'))
+id2ind={x['id']:ind for ind,l in cj.items() for x in l}
+rows=json.load(sys.stdin)[0]['results']
+done=sum(1 for r in rows if r['company_slug']!='mitsui-bussan' and V3.expected_size18(id2ind.get(r['company_slug'],''))>0 and r['n']==V3.expected_size18(id2ind.get(r['company_slug'],'')))
+print(done)"; cd ~/oscar-ai/tokyari-pipeline; }
 for pass in 1 2 3 4; do
   before=$(d1count)
   echo "[$(date '+%m-%d %H:%M')] === fanout pass $pass 開始 (D1=$before) ===" >> ~/oscar-ai/resume_room.log
