@@ -68,3 +68,18 @@ nohup caffeinate -dimsu python3 -u tools/room_phase3_rollout.py --slugs '<slug1,
 - v3 staged品質は良好（astroscale-hd: 5人格・氏名3層・全人格AI開示あり・出典付きSoS）だが**ライブ未反映**。
 
 **要対応（次アクション・要オスカー判断）**: room_personas → personas への同期（role→role_code/persona_name→display_name等のスキーマ写像＋不足列 age/department/position/short_description/image_url/voice_config の補完）か、ライブAPIを room_personas 読みに再ポイント。これをやって初めて228社がユーザーに見える。
+
+---
+## ✅ ライブ化パイロット: astroscale-hd (2026-07-17) — room_personas→personas 同期
+**方式**: per-slug写像同期(1社パイロット)。三井GOLD不可侵(hash無変化で証明)。rolloutは並行staging継続。
+- 実ライブAPI `/api/room/personas/astroscale-hd`: **HTTP200 / 5人格描画**(氏名3層・position=v3ラベル・desc=v3 gist)。chat用system_prompt 5本(3251〜3363字・全AI開示あり・SoS/人格差入り)も投入済=会話も動く。
+- 三井GOLD(mitsui_corp 6行): **hash `fdda70df…` 反映前後で完全一致=無変化**。persona_id空間が別(`astroscale-hd_rN` vs `mitsui_rN_xxx`)で衝突不能。
+- 冪等: 再実行しても5行のまま(INSERT OR REPLACE・重複なし)。
+- **写像で埋めた列**: persona_id/company_id/role_code/display_name/position/short_description/system_prompt/is_active。
+- **NULL(欠損)列と実害**:
+  - `image_url`(アバター): room.htmlは`onerror`で非表示化=**破損アイコンは出ないが写真なしの空カード**。GOLD並みには 228社×N枚のアバター生成が要る。
+  - `age`(年齢): カード名行が`${p.age}歳`→**「null歳」と表示される既知バグ**(要データ or フロント側`p.age?…:''`ガード)。
+  - `voice_config`(音声): chat.htmlのTTS▶ボタンは出るが押すと失敗(読み上げ不可)。要 voice割当 or ボタン非表示。
+  - `department`/`kana`: 空表示(graceful・実害小)。
+- **判定材料**: テキストの室(人格選択+会話・品質良好)は**今すぐ228社で動く**。ただしGOLD並み(アバター/音声/年齢/部署)には追加対応が要る。最小で出すなら フロント3点(null歳ガード/アバター既定/voice無しはTTS非表示)で足りる。
+- **ゲート停止**: 228社一括同期は未実施(オスカー+Web Claude判断待ち)。
