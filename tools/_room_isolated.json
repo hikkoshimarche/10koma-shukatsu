@@ -137,5 +137,38 @@
         "OB: 批判しすぎない+感謝 が無い"
       ]
     }
+  },
+  {
+    "slug": "mitsubishi-estate",
+    "name": "三菱地所",
+    "arch": "不動産・建設",
+    "reason": "lint error 1→登録ブロック",
+    "detail": {
+      "R8": [
+        "OB: 批判しすぎない+感謝 が無い"
+      ]
+    }
+  },
+  {
+    "slug": "obayashi",
+    "name": "大林組",
+    "arch": "不動産・建設",
+    "reason": "lint error 1→登録ブロック",
+    "detail": {
+      "R8": [
+        "OB: 批判しすぎない+感謝 が無い"
+      ]
+    }
+  },
+  {
+    "slug": "taiki-sha",
+    "name": "大気社",
+    "arch": "不動産・建設",
+    "reason": "lint error 1→登録ブロック",
+    "detail": {
+      "R7": [
+        "OB: 批判しすぎない+感謝 が無い"
+      ]
+    }
   }
 ]
