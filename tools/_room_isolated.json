@@ -86,5 +86,16 @@
         "OB: 批判しすぎない+感謝 が無い"
       ]
     }
+  },
+  {
+    "slug": "fujitsu",
+    "name": "富士通",
+    "arch": "IT・AI・SaaS・ゲーム",
+    "reason": "lint error 1→登録ブロック",
+    "detail": {
+      "R7": [
+        "OB: 批判しすぎない+感謝 が無い"
+      ]
+    }
   }
 ]
