@@ -110,15 +110,15 @@ def main():
     print("  ", gas({"mode": "roomtabheader"}))
     print("[2] 旧データclear")
     print("  ", gas({"mode": "roomtabclear"}))
-    # GET+5行/バッチ: 13列化(役割名+氏名)で行が長くなり、日本語URLエンコード肥大でworst-case完成行が
-    # 10行だとURL長超過(Bad Request)。5行に縮小して確実に収める。
-    print("[3] N行/社 書込(人数可変・GET・5行/バッチ)")
+    # ★POST+40行/バッチ: GET(5行)だと~550回HTTPで15分超→タイムアウト。POSTはURL長制限が無いので
+    # 大バッチ可(~2740行を~70回で書込・数十秒)。roomtabwriteはdoPost経由でも e.parameter.rows を読む。
+    print("[3] N行/社 書込(人数可変・POST・40行/バッチ)")
     start = 3
     fail = 0
-    for i in range(0, len(rows), 5):
-        chunk = rows[i:i + 5]
+    for i in range(0, len(rows), 40):
+        chunk = rows[i:i + 40]
         payload = ";;".join("\t".join(str(c) for c in r) for r in chunk)
-        res = gas({"mode": "roomtabwrite", "rows": payload, "start": str(start)})
+        res = gas({"mode": "roomtabwrite", "rows": payload, "start": str(start)}, post=True)
         if "next" not in res:
             fail += 1
             print(f"  ⚠ batch start={start} 失敗: {str(res)[:80]}")

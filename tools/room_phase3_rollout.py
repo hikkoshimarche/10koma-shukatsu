@@ -109,7 +109,7 @@ def checkpoint(msg, isolated, reg, blocked, total, t0):
 def run_tab_sync():
     try:
         subprocess.run([sys.executable, str(SCR / "room_tab_sync.py")], cwd=str(SCR),
-                       capture_output=True, text=True, timeout=900)
+                       capture_output=True, text=True, timeout=1800)  # POST大バッチ化で通常~数十秒
         if GAS_URL:
             requests.get(GAS_URL, params={"mode": "roomdashboard", "token": GAS_TOKEN}, timeout=90)
     except Exception as e:
