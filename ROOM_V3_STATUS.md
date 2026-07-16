@@ -53,3 +53,18 @@ pgrep -f room_phase3_rollout && echo '稼働中=再開不要' || \
 cd /Users/oscardodds/projects/10koma-shukatsu
 nohup caffeinate -dimsu python3 -u tools/room_phase3_rollout.py --slugs '<slug1,slug2>' --no-git --no-tabsync --conc 3 > tools/_room_refanout.log 2>&1 &
 ```
+
+---
+## ⚠️ 重大: ライブ描画ギャップ（2026-07-17 実証）— D1登録 ≠ ライブ描画
+**「roomtab未デプロイ型」の再発**。実LINE/LIFFルームAPIで実証した結果：
+
+- ライブ室APIは `/api/room/personas/:id`（と /message）で **`personas`テーブル** を読む（rich schema: display_name/role_code/department/position/short_description/image_url/voice_config）。
+- v3展開先は **`room_personas`テーブル**（company_slug/role/persona_name/system_prompt/fact_pack_json）。**APIはroom_personasを一切読まない**。room_personas→personas の**同期は存在しない**。
+- 実測（本番 10koma-shukatsu-api.oscar-dodds.workers.dev）：
+  - `mitsui_corp`: HTTP200 / **6人格**（唯一ライブ描画）。
+  - astroscale-hd / sap-japan / k-line / meitetsu（v3登録済）: HTTP200 / **0人格（空）**。
+  - 未処理社も同様に空。
+- **今この瞬間LINEからルームを開いて「動く室」が出る社数 = 1（三井GOLDのみ）**。v3新版=0 / 旧6人版=0 / 未表示(空)=399。
+- v3 staged品質は良好（astroscale-hd: 5人格・氏名3層・全人格AI開示あり・出典付きSoS）だが**ライブ未反映**。
+
+**要対応（次アクション・要オスカー判断）**: room_personas → personas への同期（role→role_code/persona_name→display_name等のスキーマ写像＋不足列 age/department/position/short_description/image_url/voice_config の補完）か、ライブAPIを room_personas 読みに再ポイント。これをやって初めて228社がユーザーに見える。
