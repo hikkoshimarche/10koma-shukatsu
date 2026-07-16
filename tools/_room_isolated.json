@@ -126,5 +126,16 @@
     "arch": "航空・運輸・物流",
     "reason": "D1失敗:⚠️  Warning: Unsupported macOS vers",
     "detail": {}
+  },
+  {
+    "slug": "odakyu",
+    "name": "小田急電鉄",
+    "arch": "航空・運輸・物流",
+    "reason": "lint error 1→登録ブロック",
+    "detail": {
+      "R7": [
+        "OB: 批判しすぎない+感謝 が無い"
+      ]
+    }
   }
 ]
