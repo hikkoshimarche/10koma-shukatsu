@@ -86,6 +86,9 @@ def main():
             requests.get(GAS_URL, params={"mode": "roomdashboard", "token": GAS_TOKEN}, timeout=90)
         except Exception:
             pass
+    # ①.5 ライブ化: 全registered-v3 を personas へ最終同期 + room_liff_id付与(最終400社まで取りこぼしなし)
+    subprocess.run([sys.executable, str(REPO / "tools" / "room_personas_to_live.py"), "--all", "--set-liff"],
+                   cwd=str(REPO), capture_output=True, text=True, timeout=2400)
     cost = nv3 * COST_PER
     # ③LINE完了通知(重複防止)
     line_result = "skip(既送信)"

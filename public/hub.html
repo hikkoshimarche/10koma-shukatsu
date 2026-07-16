@@ -158,7 +158,7 @@ function buildContents(c, industry, from) {
     '10koma': { label: '10コマで知る',            icon: '📱', url: `https://liff.line.me/${c.jukoma_liff_id}?company=${c.id}&industry=${ind}&from=${fr}`, type: 'liff',    active: true },
     'video':  { label: '企業動画を見る',          icon: '📺', url: c.video_url,                                                                            type: 'youtube', active: !!c.video_url },
     'kessan': { label: '決算書動画を見る',        icon: '📊', url: c.kessan_url,                                                                           type: 'youtube', active: !!c.kessan_url },
-    'room':   { label: 'トーキャリ・ルーム（AI OB訪問）に入る', icon: '🚪', url: c.room_liff_id ? `https://liff.line.me/${c.room_liff_id}?company=${c.id}&industry=${ind}` : null, type: 'liff', active: !!c.room_liff_id }
+    'room':   { label: 'トーキャリ・ルーム（AI OB訪問）に入る', icon: '🚪', url: c.room_liff_id ? `https://liff.line.me/${c.room_liff_id}?company=${c.id}&industry=${ind}&name=${encodeURIComponent(c.name)}` : null, type: 'liff', active: !!c.room_liff_id }
   };
 }
 

@@ -22,6 +22,9 @@
 <script>
 const LIFF_ID = '2010075487-d4TJ2xZc';
 const API_BASE = 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+// 既定アバター(image_url無しの人格用・クリーンなプレースホルダ)。写真が付けば自動で本物に切替。
+const DEFAULT_AVATAR = 'data:image/svg+xml,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#e8eaed"/><circle cx="50" cy="40" r="17" fill="#bcc0c4"/><path d="M22 86a28 28 0 0 1 56 0z" fill="#bcc0c4"/></svg>');
 
 function esc(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -31,6 +34,10 @@ async function main() {
   const params   = new URLSearchParams(location.search);
   const company  = params.get('company') ?? '';
   const industry = params.get('industry') ?? '';
+  // ライブ室のcompany_id(=personas.company_id)。三井GOLDのみ id=mitsui-bussan → personas=mitsui_corp に写像。
+  // v3社は companies.json id(slug) == personas.company_id なのでそのまま。company未指定も三井(後方互換)。
+  const companyId = (company && company !== 'mitsui-bussan') ? company : 'mitsui_corp';
+  const companyName = params.get('name') || (companyId === 'mitsui_corp' ? '三井物産' : company);
 
   document.getElementById('btn-back').addEventListener('click', () => {
     if (company) {
@@ -45,25 +52,25 @@ async function main() {
     await liff.init({ liffId: LIFF_ID });
     if (!liff.isLoggedIn()) { liff.login(); return; }
 
-    const res = await fetch(`${API_BASE}/api/room/personas/mitsui_corp`);
+    const res = await fetch(`${API_BASE}/api/room/personas/${encodeURIComponent(companyId)}`);
     if (!res.ok) throw new Error(`API error ${res.status}`);
     const personas = await res.json();
 
     app.innerHTML = `
       <div class="room-company-header">
-        <p class="room-company-name">三井物産</p>
+        <p class="room-company-name">${esc(companyName)}</p>
         <p class="room-company-sub">OBに直接話しかけてみよう</p>
       </div>
       <div class="room-grid">
         ${personas.map(p => `
           <div class="room-card" data-persona-id="${esc(p.persona_id)}">
             <div class="room-card-img-wrap">
-              <img class="room-card-img" src="${esc(p.image_url ?? '')}" alt="${esc(p.display_name)}"
+              <img class="room-card-img" src="${p.image_url ? esc(p.image_url) : DEFAULT_AVATAR}" alt="${esc(p.display_name)}"
                 onerror="this.style.display='none'">
             </div>
             <div class="room-card-body">
               <p class="room-card-name">
-                ${esc(p.display_name)}<span class="room-card-age">${p.age}歳</span>
+                ${esc(p.display_name)}${p.age ? `<span class="room-card-age">${p.age}歳</span>` : ''}
               </p>
               <p class="room-card-dept">${esc(p.department ?? '')}</p>
               <p class="room-card-desc">${esc(p.short_description ?? '')}</p>

@@ -7,6 +7,8 @@ LOG=tools/_room_v3_watch.log
 echo "[watch開始 $(date '+%m-%d %H:%M')]" >> $LOG
 while true; do
   if LC_ALL=C pgrep -f "room_phase3_rollout" >/dev/null 2>&1; then
+    # 本体稼働中: 新規stagingをライブ(personas)へ随時同期=取りこぼしなし(--new-only=未同期のみ・軽量)
+    python3 tools/room_personas_to_live.py --new-only >> tools/_room_to_live.log 2>&1
     sleep 300; continue                      # 本体稼働中(スリープ凍結含む)→待つ
   fi
   # 本体プロセスが消えた → 完走 or 途中死 を判定

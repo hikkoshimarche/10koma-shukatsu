@@ -31,6 +31,8 @@
 <script>
 const LIFF_ID = '2010075487-d4TJ2xZc';
 const API_BASE = 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+const DEFAULT_AVATAR = 'data:image/svg+xml,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#e8eaed"/><circle cx="50" cy="40" r="17" fill="#bcc0c4"/><path d="M22 86a28 28 0 0 1 56 0z" fill="#bcc0c4"/></svg>');
 
 function goBack() {
   const params   = new URLSearchParams(location.search);
@@ -64,22 +66,26 @@ function buildMsgHtml(role, content) {
       </div>
     </div>`;
   }
-  const imgSrc = persona ? esc(persona.image_url ?? '') : '';
+  const imgSrc = (persona && persona.image_url) ? esc(persona.image_url) : DEFAULT_AVATAR;
+  // TTS▶は voice_config がある人格だけ表示(無ければ押して失敗を防ぐ=非表示)。写真/音声は後から上乗せで自動復活。
+  const ttsBtn = (persona && persona.voice_config)
+    ? `<button class="chat-tts-btn" data-state="idle" data-text="${esc(content)}" onclick="playTts(this)" aria-label="音声再生">▶</button>`
+    : '';
   return `<div class="chat-msg-row assistant">
-    ${imgSrc ? `<img class="chat-msg-avatar" src="${imgSrc}" alt="${esc(persona?.display_name ?? '')}" onerror="this.style.display='none'">` : ''}
+    <img class="chat-msg-avatar" src="${imgSrc}" alt="${esc(persona?.display_name ?? '')}" onerror="this.style.display='none'">
     <div class="chat-bubble-wrap">
       <div class="chat-bubble-with-audio">
         <div class="chat-bubble assistant">${escText(content)}</div>
-        <button class="chat-tts-btn" data-state="idle" data-text="${esc(content)}" onclick="playTts(this)" aria-label="音声再生">▶</button>
+        ${ttsBtn}
       </div>
     </div>
   </div>`;
 }
 
 function typingHtml() {
-  const imgSrc = persona ? esc(persona.image_url ?? '') : '';
+  const imgSrc = (persona && persona.image_url) ? esc(persona.image_url) : DEFAULT_AVATAR;
   return `<div class="chat-msg-row assistant" id="chat-typing">
-    ${imgSrc ? `<img class="chat-msg-avatar" src="${imgSrc}" alt="" onerror="this.style.display='none'">` : ''}
+    <img class="chat-msg-avatar" src="${imgSrc}" alt="" onerror="this.style.display='none'">
     <div class="chat-typing-dots">
       <span></span><span></span><span></span>
     </div>
@@ -236,17 +242,17 @@ async function main() {
     const profile = await liff.getProfile();
     lineUserId = profile.userId;
 
-    // ペルソナ情報取得
-    const personasRes = await fetch(`${API_BASE}/api/room/personas/mitsui_corp`);
+    // ペルソナ情報取得(company=slug でその社の人格一覧を引く・三井は mitsui-bussan→mitsui_corp 写像・未指定は三井)
+    const _cp = new URLSearchParams(location.search).get('company') || '';
+    const chatCompany = (_cp && _cp !== 'mitsui-bussan') ? _cp : 'mitsui_corp';
+    const personasRes = await fetch(`${API_BASE}/api/room/personas/${encodeURIComponent(chatCompany)}`);
     const personas = await personasRes.json();
     persona = personas.find(p => p.persona_id === personaId);
     if (!persona) { location.href = 'room.html'; return; }
 
     // ヘッダー更新
     document.getElementById('chat-header-center').innerHTML = `
-      ${persona.image_url
-        ? `<img class="chat-header-avatar" src="${esc(persona.image_url)}" alt="" onerror="this.style.display='none'">`
-        : ''}
+      <img class="chat-header-avatar" src="${persona.image_url ? esc(persona.image_url) : DEFAULT_AVATAR}" alt="" onerror="this.style.display='none'">
       <span class="chat-header-name">${esc(persona.display_name)}</span>`;
     document.title = `${persona.display_name} | トーキャリ・ルーム`;
 
