@@ -83,3 +83,15 @@ nohup caffeinate -dimsu python3 -u tools/room_phase3_rollout.py --slugs '<slug1,
   - `department`/`kana`: 空表示(graceful・実害小)。
 - **判定材料**: テキストの室(人格選択+会話・品質良好)は**今すぐ228社で動く**。ただしGOLD並み(アバター/音声/年齢/部署)には追加対応が要る。最小で出すなら フロント3点(null歳ガード/アバター既定/voice無しはTTS非表示)で足りる。
 - **ゲート停止**: 228社一括同期は未実施(オスカー+Web Claude判断待ち)。
+
+---
+## ✅ 最小GO: ルームv3ライブ化 完了(2026-07-17) — 動く室 1→260社
+D1登録≠ライブ描画の全チェーンを結線。**今LINEで開ける室 = 260社(v3 259 + 三井GOLD 1)**。
+- **フロント配線**(room.html/chat.html/hub.html・pages deploy済 9e50195): mitsui_corpハードコード→?company=slugパラメータ化(三井は写像でGOLD保持)。3修正=null歳非表示/既定SVGアバター/voice無TTS非表示。
+- **personas同期**: 259社(role→role_code等の写像・冪等・孤児DELETE)。三井GOLD hash無変化。
+- **room_liff_id**: companies.json 260社付与(共用LIFF `2010075487-d4TJ2xZc`)=hub室ボタン表示。pages deploy済。
+- **自動化**: watcher periodic --new-only(API即ライブ)+ 完了フック --all --set-liff + companies.json commit/push(pages自動deploy)=最終400社まで取りこぼしなし。
+- **ライブ対象外(要フルGO前是正)**:
+  - 隔離12社(room-lint5未通過): fujitsu/takeda/nikkei/shueisha/usj/jri/odakyu/ryohin-keikaku/cosmos-pharma/matsukiyococokara/asahi-shimbun 等。
+  - フルネーム重複2社: daiichi-sankyo(岡田 直樹×2)・sugi-hd(西村 啓介×2)。姓のみ重複106社は軽微(識別可)。
+- **欠損(フルGO=②で上乗せ)**: image_url(写真)/voice_config(音声)/age/department。フロントは既定アバター+TTS非表示でクリーンに処理済。②で生成し上書き加算すればライブ室がその場でGOLD化。
