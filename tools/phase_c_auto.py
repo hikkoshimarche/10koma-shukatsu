@@ -52,6 +52,36 @@ def _mark_drained(keys):
         pass
 
 
+def _unmark_drained(keys):
+    cur = _drained_set() - set(keys)
+    try:
+        json.dump(sorted(cur), open(DRAINED_FILE, "w", encoding="utf-8"), ensure_ascii=False)
+    except Exception:
+        pass
+
+
+NG_HINTS_FILE = REPO / "tools" / ".image_ng_hints.json"
+
+
+def _set_ng_hint(slug, koma, comment):
+    try:
+        h = json.load(open(NG_HINTS_FILE, encoding="utf-8"))
+    except Exception:
+        h = {}
+    h[f"{slug}#{koma}"] = comment
+    try:
+        json.dump(h, open(NG_HINTS_FILE, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    except Exception:
+        pass
+
+
+def _get_ng_hint(slug, koma):
+    try:
+        return json.load(open(NG_HINTS_FILE, encoding="utf-8")).get(f"{slug}#{koma}", "")
+    except Exception:
+        return ""
+
+
 # ============================================================================
 # 型別フラグ
 # ============================================================================
@@ -273,7 +303,9 @@ def mixed_notify_one(company, slug, tslug, koma, detail, instruction, dry, st, c
     allowed, reason, showcase = PCI.guard(slug, koma, st, c)
     if not allowed:
         rec["escalate"] = f"ガード不可: {reason}"; return rec
-    FAD.add_fix_instructions_to_scenario(tslug, koma, [instruction])
+    ng_hint = _get_ng_hint(slug, koma)   # 前回NG理由があれば次プロンプトに反映
+    instr2 = (instruction + f" 【前回のNG指摘を必ず反映】{ng_hint}") if ng_hint else instruction
+    FAD.add_fix_instructions_to_scenario(tslug, koma, [instr2])
     gate_ok = False
     for attempt in range(1, PCI.QA_MAX + 1):
         FAD.regenerate_panel(tslug, koma)
@@ -322,7 +354,25 @@ def consume_human_qa(dry, st, c):
         rec["reflected"] = FAD.verify_api_url_updated(slug, koma, sha)
         if rec["reflected"]:
             PCI.gas({"mode": "setimageqa", "slug": slug, "koma": str(koma), "status": "反映済"})
+            _mark_drained([f"{slug}#{koma}"])   # 反映済=以後再生成しない/pending集計から除外
         out.append(rec)
+    # NG → 再生成キューへ差し戻し(NG理由を次プロンプトに反映)。
+    try:
+        ng = PCI.gas({"mode": "imageqa_ng"}).get("items", [])
+    except Exception:
+        ng = []
+    for it in ng:
+        slug = it.get("slug"); koma = int(it.get("koma", 0)); comment = str(it.get("comment", "")).strip()
+        if not (slug and koma):
+            continue
+        rec = {"mode": "human_qa_ng", "slug": slug, "koma": koma, "requeued": False}
+        if dry or not c["enabled"]:
+            rec["note"] = f"DRY: NG {slug}#{koma} を再生成キューへ(理由:{comment[:40]})"; out.append(rec); continue
+        _set_ng_hint(slug, koma, comment)                       # NG理由を次生成プロンプトへ
+        st["per_koma"].pop(f"{slug}#{koma}", None)              # cap解除=再生成を許可
+        _unmark_drained([f"{slug}#{koma}"])                     # 再びpending対象に
+        PCI.gas({"mode": "setimageqa", "slug": slug, "koma": str(koma), "status": "再生成待ち"})
+        rec["requeued"] = True; out.append(rec)
     return out
 
 

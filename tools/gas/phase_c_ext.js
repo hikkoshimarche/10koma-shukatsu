@@ -10,8 +10,8 @@
  *****************************************************************/
 const COMMON_SHEET = '共通の修正案';   // A日時 B規則 Cスコープ D状態 E備考
 const KOMA_SHEET = '10コマ';
-const IMAGE_QA_SHEET = '画像人QA';   // A日時 B会社 Cslug Dコマ Esha Fレビューurl G指摘 H判定(待ち/OK/NG/反映済)
-const IMAGE_QA_HEAD = ['日時','会社','slug','コマ','sha','レビューurl','指摘','判定'];
+const IMAGE_QA_SHEET = '画像人QA';   // A日時 B会社 Cslug Dコマ Esha Fレビューurl G指摘 H判定 I担当 Jコメント
+const IMAGE_QA_HEAD = ['日時','会社','slug','コマ','sha','レビューurl','指摘','判定','担当','コメント'];
 
 function _json(obj){
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
@@ -77,6 +77,51 @@ function handleExt(mode, e, token){
     }
     sh.appendRow(row);
     return _json({ok:true, row:sh.getLastRow()});
+  }
+  if(mode === 'rebuild_imageqa'){
+    // 混在型QAタブをインターンがコマ単位でOK/NG判定できる形に再構成。rows=JSON(POST)。
+    //  列: 会社/コマ/候補画像URL(クリック可)/判定(OK/NGプルダウン)/コメント/担当 を見せ、slug/sha/指摘は内部列で非表示。
+    //  候補画像URL有=先頭・「生成待ち」を末尾。判定・コメントは既存値があれば温存(rowsに含める)。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    var rows=[]; try{ rows=JSON.parse(e.parameter.rows||'[]'); }catch(err){ return _json({error:'rows parse失敗'}); }
+    var ss=SpreadsheetApp.getActiveSpreadsheet();
+    var sh=ss.getSheetByName(IMAGE_QA_SHEET); if(sh){ sh.clear(); sh.clearFormats(); } else { sh=ss.insertSheet(IMAGE_QA_SHEET,0); }
+    var out=[IMAGE_QA_HEAD];
+    rows.forEach(function(x){
+      var url=x.url||'';
+      var urlCell = url ? ('=HYPERLINK("'+url+'","候補を見る")') : '生成待ち';
+      out.push([x.date||'', x.company||'', x.slug||'', x.koma||'', x.sha||'', urlCell, x.detail||'',
+                x.status||(url?'待ち':''), x.owner||'', x.comment||'']);
+    });
+    sh.getRange(1,1,out.length,IMAGE_QA_HEAD.length).setValues(out);
+    // 判定(H)にOK/NGプルダウン
+    if(out.length>1){
+      var dv=SpreadsheetApp.newDataValidation().requireValueInList(['待ち','OK','NG','反映済','生成待ち'],true).setAllowInvalid(true).build();
+      sh.getRange(2,8,out.length-1,1).setDataValidation(dv);
+      // 条件付き書式: OK=緑 NG=赤 反映済=薄緑 生成待ち=灰
+      var R=sh.getRange(2,8,out.length-1,1); var rules=[];
+      rules.push(SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('OK').setBackground('#c6efce').setRanges([R]).build());
+      rules.push(SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('NG').setBackground('#f4cccc').setRanges([R]).build());
+      rules.push(SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('反映済').setBackground('#d9ead3').setRanges([R]).build());
+      var Rc=sh.getRange(2,6,out.length-1,1);
+      rules.push(SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo('生成待ち').setBackground('#d9d9d9').setRanges([Rc]).build());
+      sh.setConditionalFormatRules(rules);
+    }
+    sh.setFrozenRows(1);
+    sh.hideColumns(3); sh.hideColumns(5); sh.hideColumns(7);   // slug/sha/指摘は内部(非表示)
+    sh.getRange(1,1,1,IMAGE_QA_HEAD.length).setFontWeight('bold').setBackground('#fff2cc');
+    return _json({ok:true, written:rows.length});
+  }
+  if(mode === 'imageqa_ng'){
+    // NG判定行を返す(再生成差し戻し用・NG理由コメント付き)。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    var sh=SpreadsheetApp.getActiveSpreadsheet().getSheetByName(IMAGE_QA_SHEET); var items=[];
+    if(sh){ var lr=sh.getLastRow();
+      for(var r=2;r<=lr;r++){ var v=sh.getRange(r,1,1,10).getValues()[0];
+        if(String(v[7]).trim()==='NG'){ items.push({row:r, company:v[1], slug:v[2], koma:v[3], comment:v[9]||''}); }
+      }
+    }
+    return _json({count:items.length, items:items});
   }
   if(mode === 'imageqa_approved'){
     // 人が『OK』にした候補を返す(次ループが反映する対象)。
