@@ -570,6 +570,12 @@ def refresh_label(slug, company):
         PCI.gas({"mode": "setpartial", "company": company, "nimg": str(n)})
     else:
         PCI.gas({"mode": "setreflected", "company": company})
+    # 【恒久結線】反映イベント→監査タブ自動追従。手動/out-of-band反映でもFB滞留監査タブのstaleを防ぐ
+    # (run_batchは末尾で_rebuild_audit_tabを別途呼ぶが、refresh_labelはバッチ外では未追従だった=今回のstale原因)。
+    try:
+        _rebuild_audit_tab()
+    except Exception:
+        pass
     return n
 
 
