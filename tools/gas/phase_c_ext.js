@@ -231,6 +231,14 @@ function handleExt(mode, e, token){
     return _json(out);
   }
 
+  if(mode === 'setimgstall'){
+    // Macループが毎回、pending画像数が72h以上減っていない社を投函(最終更新bumpに依らない停滞検知)。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const pr=PropertiesService.getScriptProperties();
+    pr.setProperty('IMG_PENDING_STALL', e.parameter.stall||'');
+    pr.setProperty('IMG_PENDING_STALL_AT', new Date().toISOString());
+    return _json({ok:true});
+  }
   if(mode === 'setimgstatus'){
     // Macループが毎回、画像自動化の状態を投函(state/残/前日消化/ETA)。朝9時digestが常時表示する。
     if(!_authed(e, token)) return _json({error:'unauthorized'});
@@ -1195,12 +1203,19 @@ function buildMorningDigest(){
     stale.slice(0,30).forEach(function(s){ po.push('・'+s.company+' '+s.days+'日滞留'); });
     po.push('—');
   }
+  // pending停滞アラート: 画像pending数が72h以上減っていない社(最終更新bumpで滞留アラートから漏れる分を必ず拾う)。
+  var imgStall=(PropertiesService.getScriptProperties().getProperty('IMG_PENDING_STALL')||'').trim();
+  if(imgStall){
+    po.push('🧊【画像pending停滞】72h以上pendingが減っていない社(安全型がまた静かに詰まっても3日で浮上):');
+    imgStall.split('|').slice(0,20).forEach(function(x){ if(x) po.push('・'+x.replace(':','  ')); });
+    po.push('—');
+  }
   po.push('【判断ダイジェスト(オスカー) '+Utilities.formatDate(new Date(),'Asia/Tokyo','MM/dd')+'】'+judgments.length+'件');
   if(judgments.length===0) po.push('・なし(AIが自走で処理済)');
   judgments.forEach(function(j){ po.push('・'+j.text); });   // 全文(slice(0,70)を撤廃=途中切断しない)
   stops.forEach(function(s){ po.push('⚠ '+s); });
   return {intern:pg.join('\n'), oscar:po.join('\n'),
-          hasOscar:(judgments.length>0 || stops.length>0 || stale.length>0 || !!imgStatus)};
+          hasOscar:(judgments.length>0 || stops.length>0 || stale.length>0 || !!imgStatus || !!imgStall)};
 }
 
 /* LINE1通上限(~5000字)超過時は行単位で分割。 */
