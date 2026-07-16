@@ -9,5 +9,38 @@
         "OB: 批判しすぎない+感謝 が無い"
       ]
     }
+  },
+  {
+    "slug": "cosmos-pharma",
+    "name": "コスモス薬品",
+    "arch": "小売・流通",
+    "reason": "lint error 1→登録ブロック",
+    "detail": {
+      "R6": [
+        "OB: 批判しすぎない+感謝 が無い"
+      ]
+    }
+  },
+  {
+    "slug": "matsukiyococokara",
+    "name": "マツキヨココカラ＆カンパニー",
+    "arch": "小売・流通",
+    "reason": "lint error 1→登録ブロック",
+    "detail": {
+      "R6": [
+        "OB: 批判しすぎない+感謝 が無い"
+      ]
+    }
+  },
+  {
+    "slug": "ryohin-keikaku",
+    "name": "良品計画",
+    "arch": "小売・流通",
+    "reason": "lint error 1→登録ブロック",
+    "detail": {
+      "R6": [
+        "OB: 批判しすぎない+感謝 が無い"
+      ]
+    }
   }
 ]
