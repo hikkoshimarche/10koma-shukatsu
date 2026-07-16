@@ -1,8 +1,8 @@
 {
-  "reg": 3,
-  "blocked": 1,
-  "total": 391,
+  "reg": 20,
+  "blocked": 0,
+  "total": 364,
   "conc": 3,
   "r429": 0,
-  "elapsed_min": 60
+  "elapsed_min": 36
 }
