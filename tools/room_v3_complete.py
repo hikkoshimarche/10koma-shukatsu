@@ -54,21 +54,21 @@ def state():
         return (ROOT / "output" / s / "factsheet.md").exists()
     cand = [s for s in id2ind if s != "mitsui-bussan" and hasfs(s)]
     remain = [s for s in cand if done.get(s) != "registered-v3"]
-    rows = wrangler_json("SELECT company_slug, COUNT(*) n, MAX(created_at) last FROM room_personas GROUP BY company_slug")
-    v3 = [r for r in rows if r["last"][:10] == "2026-07-16" and r["company_slug"] != "mitsui-bussan"]
+    # v3判定は state CSV(registered-v3)基準=日付非依存(深夜跨ぎでも正しくカウント)。三井GOLDは別枠で除外。
+    v3 = [s for s in cand if done.get(s) == "registered-v3"]
     from collections import Counter
-    dist = Counter(V3.archetype_for(r["company_slug"], id2ind.get(r["company_slug"], "")) for r in v3)
+    dist = Counter(V3.archetype_for(s, id2ind.get(s, "")) for s in v3)
     iso = []
     isof = REPO / "tools" / "_room_isolated.json"
     if isof.exists():
-        d1n = {r["company_slug"]: r for r in rows}
+        seen = set()
         for it in json.loads(isof.read_text()):
             s = it["slug"]
-            exp = V3.expected_size_company(s, id2ind.get(s, ""))
-            x = d1n.get(s)
-            recovered = bool(x and x["last"][:10] == "2026-07-16" and x["n"] in (exp, exp - 1))
-            if not recovered:
-                iso.append(it)
+            # 回復判定=state基準(registered-v3なら回復済で隔離から除外)・重複slug除去
+            if done.get(s) == "registered-v3" or s in seen:
+                continue
+            seen.add(s)
+            iso.append(it)
     return dict(id2name=id2name, id2ind=id2ind, cand=cand, remain=remain, v3=v3, dist=dist, iso=iso)
 
 
