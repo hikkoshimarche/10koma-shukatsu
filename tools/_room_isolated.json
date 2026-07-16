@@ -53,5 +53,38 @@
         "OB: 批判しすぎない+感謝 が無い"
       ]
     }
+  },
+  {
+    "slug": "nikkei",
+    "name": "日本経済新聞社",
+    "arch": "広告・メディア",
+    "reason": "lint error 1→登録ブロック",
+    "detail": {
+      "R6": [
+        "OB: 批判しすぎない+感謝 が無い"
+      ]
+    }
+  },
+  {
+    "slug": "shueisha",
+    "name": "集英社",
+    "arch": "広告・メディア",
+    "reason": "lint error 1→登録ブロック",
+    "detail": {
+      "R6": [
+        "OB: 批判しすぎない+感謝 が無い"
+      ]
+    }
+  },
+  {
+    "slug": "usj",
+    "name": "合同会社ユー・エス・ジェイ（USJ）",
+    "arch": "広告・メディア",
+    "reason": "lint error 1→登録ブロック",
+    "detail": {
+      "R6": [
+        "OB: 批判しすぎない+感謝 が無い"
+      ]
+    }
   }
 ]
