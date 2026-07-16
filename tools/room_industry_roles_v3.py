@@ -233,9 +233,58 @@ IND18_TO_V3 = {
 PROVISIONAL_IND18_V3 = {"製薬・ヘルスケア", "その他（外資・新興等）", "ゲーム・エンタメ", "日用品・化粧品"}
 
 
+# ---- 「その他（外資・新興等）」バケツの決定的サブ分類(per-slug override) ----
+# companies.json も マスターDB も「その他」は無差別catch-all。外資大手がスタートアップに落ちる誤バケツを
+# 防ぐため、slug単位で正しいアーキタイプへ決定的に割当てる(実態ベースの明示テーブル・監査可能)。
+# 真の新興のみ⑯スタートアップ。外資大手IT→⑥IT。半導体/外資消費財→メーカー/食品。教育人材→⑮。医療PF→⑭。宇宙/素材研究→⑬。
+OTHER_SLUG_ARCHETYPE = {
+    # 外資大手IT(spec⑥『外資IT=中途/外資の働き方』)
+    "amazon-japan": "IT・AI・SaaS・ゲーム", "google-japan": "IT・AI・SaaS・ゲーム",
+    "ibm-japan": "IT・AI・SaaS・ゲーム", "microsoft-japan": "IT・AI・SaaS・ゲーム",
+    "openai-japan": "IT・AI・SaaS・ゲーム", "oracle-japan": "IT・AI・SaaS・ゲーム",
+    "salesforce-japan": "IT・AI・SaaS・ゲーム", "sap-japan": "IT・AI・SaaS・ゲーム",
+    # 半導体(製造/設計)→メーカー(理系)
+    "jasm": "メーカー", "rapidus": "メーカー", "socionext": "メーカー",
+    # 外資消費財→メーカー(日用品/化粧品) / 食品
+    "loreal-japan": "メーカー", "pg-japan": "メーカー", "unilever-japan": "メーカー",
+    "nestle-japan": "食品・飲料",
+    # 教育・人材
+    "benesse-hd": "教育・人材", "gakken-hd": "教育・人材", "nagase-toshin": "教育・人材",
+    "pasona-group": "教育・人材", "persol-hd": "教育・人材",
+    # 医療プラットフォーム/データ→医療・ヘルスケア
+    "m3": "医療・ヘルスケア", "jmdc": "医療・ヘルスケア", "medley": "医療・ヘルスケア",
+    # ディープテック(宇宙/素材研究)
+    "ispace": "ディープテック・宇宙・AI", "astroscale-hd": "ディープテック・宇宙・AI",
+    "spiber": "ディープテック・宇宙・AI",
+    # 真の新興(消費財/フィンテック/バイオ素材ベンチャー)→スタートアップ
+    "euglena": "スタートアップ", "base-food": "スタートアップ",
+    "bitflyer": "スタートアップ", "tbm": "スタートアップ",
+}
+_OTHER_BUCKET = "その他（外資・新興等）"
+
+
 def map18_v3(industry18):
-    """companies.jsonの18業界 → v3アーキタイプ名。未知は総合商社(汎用JTC)に戻す。"""
+    """companies.jsonの18業界 → v3アーキタイプ名。未知は総合商社(汎用JTC)に戻す。
+    ※「その他」バケツはslug非依存で既定スタートアップ。slug単位の正しい割当は archetype_for を使う。"""
     return IND18_TO_V3.get(industry18, "総合商社")
+
+
+def archetype_for(slug, industry18):
+    """★slug対応の決定的アーキタイプ解決。「その他」バケツはper-slug override優先(外資大手の誤バケツ防止)。"""
+    if slug in OTHER_SLUG_ARCHETYPE:
+        return OTHER_SLUG_ARCHETYPE[slug]
+    a = map18_v3(industry18)
+    # 「その他」バケツで override 未登録slug → 既定スタートアップ(推測でなく既定値・要オスカー確定)
+    return a
+
+
+def roles_for_company(slug, industry18):
+    """slug対応: そのアーキタイプの役割リスト(role_key/tone付き・人数可変)。"""
+    return roles_for(archetype_for(slug, industry18))
+
+
+def expected_size_company(slug, industry18):
+    return industry_size(archetype_for(slug, industry18))
 
 
 def roles_for18(industry18):

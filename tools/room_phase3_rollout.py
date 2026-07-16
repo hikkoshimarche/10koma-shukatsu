@@ -132,7 +132,11 @@ def main():
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--push-every", type=int, default=20)
     ap.add_argument("--conc", type=int, default=3)
+    ap.add_argument("--slugs", help="対象slugをカンマ区切りで限定(再fanout用・registered-v3でも強制処理)")
+    ap.add_argument("--no-git", action="store_true", help="gitチェックポイントを行わない(本体rollout並走時の競合回避)")
+    ap.add_argument("--no-tabsync", action="store_true", help="業界完了時のタブ同期を行わない(本体並走時の競合回避)")
     args = ap.parse_args()
+    only = set(s.strip() for s in args.slugs.split(",")) if args.slugs else None
     global CONC
     CONC = threading.Semaphore(args.conc)
 
@@ -144,16 +148,21 @@ def main():
 
     targets = []
     for s, ind in id2ind.items():
-        if s == "mitsui-bussan" or done.get(s) == "registered-v3":
+        if s == "mitsui-bussan":
+            continue
+        if only is not None:
+            if s not in only:
+                continue                      # 再fanout: 指定slugのみ(registered-v3でも強制)
+        elif done.get(s) == "registered-v3":
             continue
         tslug = _rev.get(s, s)
         if not ((H.ROOT / "output" / tslug / "factsheet.md").exists() or (H.ROOT / "output" / s / "factsheet.md").exists()):
             continue
-        arch = V3.map18_v3(ind)
+        arch = V3.archetype_for(s, ind)   # ★slug対応(「その他」外資大手の誤バケツ防止)
         if args.industry and arch != args.industry:
             continue
         targets.append((s, id2name.get(s, s), ind, arch))
-    targets.sort(key=lambda t: (V3.expected_size18(t[2]), t[3], t[0]))
+    targets.sort(key=lambda t: (V3.expected_size_company(t[0], t[2]), t[3], t[0]))
     by_arch = {}
     for t in targets:
         by_arch.setdefault(t[3], []).append(t)
@@ -201,19 +210,23 @@ def main():
                         H.save_state(slug, st)
                         print(f"  ⚠ 隔離 {slug:<18} {st[:40]}", flush=True)
                     done_n = ctr["reg"] + ctr["blocked"]
-                if done_n % args.push_every == 0:
+                if not args.no_git and done_n % args.push_every == 0:
                     checkpoint(f"chore(room-v3): Phase3 checkpoint {ctr['reg']}登録/{ctr['blocked']}隔離 (/{total})",
                                isolated, ctr["reg"], ctr["blocked"], total, t0)
                 if args.limit and done_n >= args.limit:
                     break
         push_isolated(arch_iso)
-        run_tab_sync()
+        if not args.no_tabsync:
+            run_tab_sync()
         print(f"  [業界 {arch} 完了] 累計 登録{ctr['reg']}/隔離{ctr['blocked']} 経過{round((time.time()-t0)/60)}分 並列{'2' if _STATE['downgraded'] else str(args.conc)}", flush=True)
         if args.limit and (ctr["reg"] + ctr["blocked"]) >= args.limit:
             break
 
-    checkpoint(f"chore(room-v3): Phase3 完了 {ctr['reg']}登録/{ctr['blocked']}隔離 (/{total})",
-               isolated, ctr["reg"], ctr["blocked"], total, t0)
+    if not args.no_git:
+        checkpoint(f"chore(room-v3): Phase3 完了 {ctr['reg']}登録/{ctr['blocked']}隔離 (/{total})",
+                   isolated, ctr["reg"], ctr["blocked"], total, t0)
+    else:
+        ISO_FILE.write_text(json.dumps(isolated, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"\n=== Phase3 完了: 登録{ctr['reg']} / 隔離{ctr['blocked']} / 対象{total} "
           f"経過{round((time.time()-t0)/60)}分 429={_STATE['r429']} 最終並列{'2' if _STATE['downgraded'] else str(args.conc)} ===", flush=True)
     return 0

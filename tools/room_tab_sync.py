@@ -74,7 +74,7 @@ def main():
     done_companies = 0
     for slug, name in companies:
         prs = d1.get(slug, {})
-        roster = RIRV3.roles_for18(id2ind.get(slug, ""))  # 人数可変: この社の期待ロースター
+        roster = RIRV3.roles_for_company(slug, id2ind.get(slug, ""))  # 人数可変・slug対応(「その他」誤バケツ防止)
         exp = len(roster)
         # 完成 = 期待人数ぶんD1に揃っている(÷6固定を廃止・社ごとの実人数集計)
         complete = exp > 0 and len([r for r in roster if r["role_key"] in prs]) == exp

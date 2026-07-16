@@ -9,7 +9,7 @@ import room_industry_roles_v3 as V3
 cj=json.load(open('public/companies.json'))
 id2ind={x['id']:ind for ind,l in cj.items() for x in l}
 rows=json.load(sys.stdin)[0]['results']
-done=sum(1 for r in rows if r['company_slug']!='mitsui-bussan' and V3.expected_size18(id2ind.get(r['company_slug'],''))>0 and r['n']==V3.expected_size18(id2ind.get(r['company_slug'],'')))
+done=sum(1 for r in rows if r['company_slug']!='mitsui-bussan' and V3.expected_size_company(r['company_slug'],id2ind.get(r['company_slug'],''))>0 and r['n']==V3.expected_size_company(r['company_slug'],id2ind.get(r['company_slug'],'')))
 print(done)"; cd ~/oscar-ai/tokyari-pipeline; }
 for pass in 1 2 3 4; do
   before=$(d1count)

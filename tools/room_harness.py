@@ -266,7 +266,7 @@ def process(slug, company, force=False, industry=""):
     rec = {"slug": slug, "company": company, "industry": industry}
     if slug == "mitsui-bussan":
         rec["status"] = "skip(三井GOLD=不可侵)"; return rec        # showcase保護(二重の安全弁)
-    roster = RIRV3.roles_for18(industry)
+    roster = RIRV3.roles_for_company(slug, industry)   # ★slug対応(「その他」外資大手の誤バケツ防止)
     if not roster:
         rec["status"] = f"skip(未知アーキタイプ:{industry})"; return rec
     # cond=research_only: 研究記述の無い会社では落とす(Source-or-Silence=実在しない職種を作らない)。factpack取得後に判定。
@@ -286,7 +286,7 @@ def process(slug, company, force=False, industry=""):
         dropped = [r["role_key"] for r in roster if r.get("cond") == "research_only"]
         roster = [r for r in roster if r.get("cond") != "research_only"]
         roster = [dict(r, role_key=f"R{i+1}") for i, r in enumerate(roster)]  # role_key詰め直し
-    rec["archetype"] = RIRV3.map18_v3(industry); rec["n_roles"] = len(roster)
+    rec["archetype"] = RIRV3.archetype_for(slug, industry); rec["n_roles"] = len(roster)
     if dropped:
         rec["dropped_cond"] = dropped
     personas = {r["role_key"]: build_persona(slug, company, r, factpack, industry, roster) for r in roster}
@@ -321,8 +321,8 @@ def main():
     if args.all:
         targets = [(s, id2name.get(s, s)) for s in id2name if (ROOT / "output" / s / "factsheet.md").exists()]
         targets = [(s, n) for s, n in targets if s != "mitsui-bussan"]  # 三井GOLD=不可侵(showcase)
-        if args.industry:   # v3段階展開: 指定アーキタイプの社のみ
-            targets = [(s, n) for s, n in targets if RIRV3.map18_v3(id2ind.get(s, "")) == args.industry]
+        if args.industry:   # v3段階展開: 指定アーキタイプの社のみ(slug対応)
+            targets = [(s, n) for s, n in targets if RIRV3.archetype_for(s, id2ind.get(s, "")) == args.industry]
         elif args.industry13:  # 旧v2フィルタ(互換)
             targets = [(s, n) for s, n in targets if RIR.map13(id2ind.get(s, "")) == args.industry13]
     else:
