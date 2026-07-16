@@ -11,12 +11,12 @@ pgrep -f room_phase3_rollout && echo '稼働中=再開不要' || \
 - 完走すると自動で タブ/ダッシュボード更新 + LINE完了通知(重複防止) まで走る。
 - 完走監視は `room_v3_watch.sh`(別プロセス)が担当。スリープ中は本体もwatcherも凍結し、復帰で自動再開。
 
-## 現在地（2026-07-16 22:11 時点・実D1）
-- **v3登録済: 220/400社**（三井GOLD別枠1・不可侵）
-- **残: 178社**（factsheetあり・未v3。本体rolloutが処理中）
-- **隔離(room-lint5未通過): 9社**
-- 最終処理slug: `jal`
-- 本体rollout pid: 49541
+## 現在地（2026-07-17 06:50 時点・実D1）
+- **v3登録済: 227/400社**（三井GOLD別枠1・不可侵）
+- **残: 171社**（factsheetあり・未v3。本体rolloutが処理中）
+- **隔離(room-lint5未通過): 11社**
+- 最終処理slug: `mol`
+- 本体rollout pid: (停止)
 
 ### アーキタイプ別 v3登録
 - IT・AI・SaaS・ゲーム: 57社
@@ -25,12 +25,12 @@ pgrep -f room_phase3_rollout && echo '稼働中=再開不要' || \
 - 広告・メディア: 26社
 - 専門商社: 20社
 - コンサル: 19社
+- 航空・運輸・物流: 10社
 - 医療・ヘルスケア: 9社
 - 総合商社: 8社
 - メーカー: 7社
 - 教育・人材: 5社
 - スタートアップ: 4社
-- 航空・運輸・物流: 3社
 - ディープテック・宇宙・AI: 3社
 - 銀行・証券・保険: 1社
 - 食品・飲料: 1社
@@ -45,6 +45,8 @@ pgrep -f room_phase3_rollout && echo '稼働中=再開不要' || \
 - usj (広告・メディア) — lint error 1→登録ブロック
 - fujitsu (IT・AI・SaaS・ゲーム) — lint error 1→登録ブロック
 - jri (コンサル) — lint error 1→登録ブロック
+- takeda (医療・ヘルスケア) — lint error 1→登録ブロック
+- jr-east (航空・運輸・物流) — D1失敗:⚠️  Warning: Unsupported macOS vers
 
 ### 単社の再fanout(隔離社の回収など)
 ```bash
