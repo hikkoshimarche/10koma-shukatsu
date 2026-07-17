@@ -192,5 +192,12 @@
         "OB: 批判しすぎない+感謝 が無い"
       ]
     }
+  },
+  {
+    "slug": "sumitomo-chemical",
+    "name": "住友化学",
+    "arch": "メーカー",
+    "reason": "D1失敗:⚠️  Warning: Unsupported macOS vers",
+    "detail": {}
   }
 ]
