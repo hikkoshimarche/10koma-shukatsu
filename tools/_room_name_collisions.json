@@ -1,19 +1,20 @@
 [
   {
-    "slug": "kyocera",
+    "slug": "sony-group",
     "n": 9,
     "ok": true,
     "surname_collision": [
-      "中島"
+      "小林"
     ],
     "fullname_collision": []
   },
   {
-    "slug": "kubota",
+    "slug": "shiseido",
     "n": 9,
     "ok": true,
     "surname_collision": [
-      "渡辺"
+      "山本",
+      "岡田"
     ],
     "fullname_collision": []
   }

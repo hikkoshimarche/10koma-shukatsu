@@ -176,3 +176,62 @@
 氏名衝突あり(要フルGO前是正): 2社
   kyocera: 姓重複['中島'] フルネーム重複[]
   kubota: 姓重複['渡辺'] フルネーム重複[]
+=== room_personas→personas 一括同期: 対象1社 (registered-v3・三井除外) ===
+
+同期成功: 1/1社
+氏名衝突あり(要フルGO前是正): 1社
+  lion: 姓重複['佐藤'] フルネーム重複[]
+=== room_personas→personas 一括同期: 対象3社 (registered-v3・三井除外) ===
+
+同期成功: 3/3社
+氏名衝突あり(要フルGO前是正): 2社
+  mazda: 姓重複['斎藤', '松本'] フルネーム重複[]
+  mitsubishi-chemical: 姓重複['阿部'] フルネーム重複[]
+=== room_personas→personas 一括同期: 対象3社 (registered-v3・三井除外) ===
+
+同期成功: 3/3社
+氏名衝突あり(要フルGO前是正): 3社
+  mitsubishi-motors: 姓重複['渡辺'] フルネーム重複[]
+  mitsubishi-heavy: 姓重複['井上'] フルネーム重複[]
+  mitsubishi-materials: 姓重複['中島', '佐藤'] フルネーム重複[]
+=== room_personas→personas 一括同期: 対象2社 (registered-v3・三井除外) ===
+
+同期成功: 2/2社
+氏名衝突あり(要フルGO前是正): 2社
+  murata: 姓重複['山本'] フルネーム重複[]
+  mitsui-chemical: 姓重複['山口'] フルネーム重複['山口 誠']
+=== room_personas→personas 一括同期: 対象3社 (registered-v3・三井除外) ===
+
+同期成功: 3/3社
+氏名衝突あり(要フルGO前是正): 2社
+  nidec: 姓重複['中島', '加藤', '鈴木'] フルネーム重複[]
+  nikon: 姓重複['中島'] フルネーム重複[]
+=== room_personas→personas 一括同期: 対象2社 (registered-v3・三井除外) ===
+
+同期成功: 2/2社
+氏名衝突あり(要フルGO前是正): 1社
+  nissan: 姓重複['岡田'] フルネーム重複[]
+=== room_personas→personas 一括同期: 対象2社 (registered-v3・三井除外) ===
+
+同期成功: 2/2社
+氏名衝突あり(要フルGO前是正): 1社
+  panasonic-hd: 姓重複['青木'] フルネーム重複[]
+=== room_personas→personas 一括同期: 対象3社 (registered-v3・三井除外) ===
+
+同期成功: 3/3社
+氏名衝突あり(要フルGO前是正): 3社
+  renesas: 姓重複['井上', '吉田', '阿部'] フルネーム重複[]
+  seiko-epson: 姓重複['斎藤'] フルネーム重複[]
+  ricoh: 姓重複['松本', '石川'] フルネーム重複[]
+=== room_personas→personas 一括同期: 対象2社 (registered-v3・三井除外) ===
+
+同期成功: 2/2社
+氏名衝突あり(要フルGO前是正): 2社
+  shinetsu-chemical: 姓重複['山田'] フルネーム重複[]
+  shimadzu: 姓重複['森'] フルネーム重複[]
+=== room_personas→personas 一括同期: 対象3社 (registered-v3・三井除外) ===
+
+同期成功: 3/3社
+氏名衝突あり(要フルGO前是正): 2社
+  sony-group: 姓重複['小林'] フルネーム重複[]
+  shiseido: 姓重複['山本', '岡田'] フルネーム重複[]
