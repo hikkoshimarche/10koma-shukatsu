@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "slug": "kyocera",
+    "n": 9,
+    "ok": true,
+    "surname_collision": [
+      "中島"
+    ],
+    "fullname_collision": []
+  },
+  {
+    "slug": "kubota",
+    "n": 9,
+    "ok": true,
+    "surname_collision": [
+      "渡辺"
+    ],
+    "fullname_collision": []
+  }
+]
