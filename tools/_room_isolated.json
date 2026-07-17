@@ -170,5 +170,27 @@
         "OB: 批判しすぎない+感謝 が無い"
       ]
     }
+  },
+  {
+    "slug": "asahi-kasei",
+    "name": "旭化成",
+    "arch": "メーカー",
+    "reason": "lint error 1→登録ブロック",
+    "detail": {
+      "R9": [
+        "OB: 批判しすぎない+感謝 が無い"
+      ]
+    }
+  },
+  {
+    "slug": "canon",
+    "name": "キヤノン",
+    "arch": "メーカー",
+    "reason": "lint error 1→登録ブロック",
+    "detail": {
+      "R8": [
+        "OB: 批判しすぎない+感謝 が無い"
+      ]
+    }
   }
 ]
