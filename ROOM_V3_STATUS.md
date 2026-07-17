@@ -1,5 +1,13 @@
 # 🎭 ルームv3 全社展開 現在地（スリープ保全用）
 
+> ## 📌 最新チェックポイント (2026-07-17 PC閉じる前)
+> - ①**今ライブの室**: 287社(実描画=personas在籍・room_liff_id付与でLINEから開ける)。
+> - ②**rollout**: 254/364登録(staged 396/399)。自走継続中。
+> - ③**②フルGOアバター/音声**: 未起動(0社/0枚・コスト実測なし)。次セッションで開始予定。
+> - ④**再開コマンド**(reboot/kill時のみ): 下記【再開コマンド】。アバター②は未起動のため再開不要。
+> - **sleep挙動**: rollout/watcher/caffeinateは蓋を閉じると凍結→開くと自動継続。手動再開はreboot/kill時のみ。
+
+
 ## 【再開コマンド】(reboot/kill でプロセスが消えていた時だけ実行)
 ```bash
 cd /Users/oscardodds/projects/10koma-shukatsu

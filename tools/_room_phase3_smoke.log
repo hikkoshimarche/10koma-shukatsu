@@ -1,0 +1,11 @@
+=== Phase3 全社展開(並列3): 対象391社 / 14アーキタイプ (三井除外・resumable) ===
+
+--- 業界: スタートアップ (29社) 並列3 ---
+  ✅ base-food          6人 スタートアップ (255s) [1登録/1済/391]
+  ⚠ 隔離 amazon-japan       lint error 1→登録ブロック
+  ✅ astroscale-hd      6人 スタートアップ (269s) [2登録/3済/391]
+  ✅ benesse-hd         6人 スタートアップ (275s) [3登録/4済/391]
+  ⚠ tab_sync失敗: Command '['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/oscardodds/oscar-ai/tokyari-pipeline/scripts/room_tab_sync.py']' timed out after 900 seconds
+  [業界 スタートアップ 完了] 累計 登録3/隔離1 経過60分 並列3
+
+=== Phase3 完了: 登録3 / 隔離1 / 対象391 経過60分 429=0 最終並列3 ===

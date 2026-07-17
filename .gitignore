@@ -39,3 +39,6 @@ tools/_mitsubishi_proposals.json
 tools/.image_fix_state.json
 tools/_close_shosha_result.json
 outputs/
+
+tools/.env.phase_c.bak*
+tools/*.pid

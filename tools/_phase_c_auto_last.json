@@ -1,0 +1,66 @@
+{
+  "human_qa": [],
+  "coordinated": [
+    {
+      "mode": "coordinated",
+      "slug": "fujitsu",
+      "tslug": "fujitsu",
+      "image_komas": [
+        1
+      ],
+      "text_komas": [
+        1,
+        2,
+        10
+      ],
+      "label": "入口FMV→富岳(k2用途/k10コールバック整合)",
+      "lint_err": 0,
+      "qa_pass": null,
+      "decision": "dry_plan",
+      "reflected": false,
+      "escalate": null,
+      "qa": [],
+      "note": "DRY: 台本lint_err=0(OK). ライブなら 画像[1]再生成→QA→(lint0 & 全QA両立時のみ)台本[1, 2, 10]+画像[1]を同一トランザクション反映→canary→404。片方成立では一切反映しない。"
+    },
+    {
+      "mode": "coordinated",
+      "slug": "mitsubishi-corp",
+      "tslug": "mitsubishi-corp",
+      "image_komas": [
+        1
+      ],
+      "text_komas": [
+        1,
+        6
+      ],
+      "label": "入口 丸の内→1969年日本初LNG(k6規模へ)",
+      "lint_err": 0,
+      "qa_pass": null,
+      "decision": "dry_plan",
+      "reflected": false,
+      "escalate": null,
+      "qa": [],
+      "note": "DRY: 台本lint_err=0(OK). ライブなら 画像[1]再生成→QA→(lint0 & 全QA両立時のみ)台本[1, 6]+画像[1]を同一トランザクション反映→canary→404。片方成立では一切反映しない。"
+    },
+    {
+      "mode": "coordinated",
+      "slug": "sojitz",
+      "tslug": "sojitz",
+      "image_komas": [
+        1
+      ],
+      "text_komas": [
+        1
+      ],
+      "label": "入口 民間航空機シェアNo.1先出し+同い年pivot",
+      "lint_err": 0,
+      "qa_pass": null,
+      "decision": "dry_plan",
+      "reflected": false,
+      "escalate": null,
+      "qa": [],
+      "note": "DRY: 台本lint_err=0(OK). ライブなら 画像[1]再生成→QA→(lint0 & 全QA両立時のみ)台本[1]+画像[1]を同一トランザクション反映→canary→404。片方成立では一切反映しない。"
+    }
+  ],
+  "note": ""
+}

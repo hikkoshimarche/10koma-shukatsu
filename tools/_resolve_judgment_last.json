@@ -1,0 +1,157 @@
+[
+  {
+    "company": "三菱商事",
+    "slug": "mitsubishi-corp",
+    "a": 0,
+    "b": 0,
+    "c": 0,
+    "komas": [],
+    "caveats": 0,
+    "reflected": false,
+    "note": "lint err=0 / 反映0(変更なし)",
+    "lint": 0
+  },
+  {
+    "company": "パナソニック ホールディングス",
+    "slug": "panasonic-hd",
+    "a": 4,
+    "b": 1,
+    "c": 0,
+    "komas": [
+      1,
+      4,
+      5,
+      7,
+      8
+    ],
+    "caveats": 0,
+    "reflected": true,
+    "note": "",
+    "lint": 0,
+    "api200": true
+  },
+  {
+    "company": "三菱電機",
+    "slug": "mitsubishi-electric",
+    "a": 8,
+    "b": 0,
+    "c": 0,
+    "komas": [
+      1,
+      5,
+      9,
+      10,
+      6,
+      7,
+      3,
+      4
+    ],
+    "caveats": 0,
+    "reflected": true,
+    "note": "",
+    "lint": 0,
+    "api200": true
+  },
+  {
+    "company": "村田製作所",
+    "slug": "murata",
+    "a": 5,
+    "b": 1,
+    "c": 0,
+    "komas": [
+      1,
+      2,
+      4,
+      7,
+      8
+    ],
+    "caveats": 0,
+    "reflected": true,
+    "note": "",
+    "lint": 0,
+    "api200": true
+  },
+  {
+    "company": "信越化学工業",
+    "slug": "shinetsu-chemical",
+    "a": 5,
+    "b": 0,
+    "c": 0,
+    "komas": [
+      1,
+      3,
+      7
+    ],
+    "caveats": 0,
+    "reflected": true,
+    "note": "",
+    "lint": 0,
+    "api200": true
+  },
+  {
+    "company": "東京エレクトロン",
+    "slug": "tokyo-electron",
+    "a": 9,
+    "b": 0,
+    "c": 0,
+    "komas": [
+      3,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "caveats": 0,
+    "reflected": true,
+    "note": "",
+    "lint": 0,
+    "api200": true
+  },
+  {
+    "company": "富士フイルムホールディングス",
+    "slug": "fujifilm-hd",
+    "a": 6,
+    "b": 0,
+    "c": 0,
+    "komas": [
+      1,
+      5,
+      10
+    ],
+    "caveats": 0,
+    "reflected": true,
+    "note": "",
+    "lint": 0,
+    "api200": true
+  },
+  {
+    "company": "京セラ",
+    "slug": "kyocera",
+    "note": "例外:HTTPSConnectionPool(host='script.google.com', port=443): Read timed out. (read timeout=60)",
+    "reflected": false,
+    "a": 0,
+    "b": 0,
+    "c": 0,
+    "komas": [],
+    "caveats": 0
+  },
+  {
+    "company": "ダイキン工業",
+    "slug": "daikin",
+    "a": 2,
+    "b": 2,
+    "c": 0,
+    "komas": [
+      10,
+      1,
+      6,
+      9
+    ],
+    "caveats": 0,
+    "reflected": true,
+    "note": "",
+    "lint": 0,
+    "api200": true
+  }
+]
