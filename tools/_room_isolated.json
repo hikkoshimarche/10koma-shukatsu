@@ -199,5 +199,27 @@
     "arch": "メーカー",
     "reason": "D1失敗:⚠️  Warning: Unsupported macOS vers",
     "detail": {}
+  },
+  {
+    "slug": "jpx",
+    "name": "日本取引所グループ（JPX）",
+    "arch": "銀行・証券・保険",
+    "reason": "lint error 1→登録ブロック",
+    "detail": {
+      "R8": [
+        "OB: 批判しすぎない+感謝 が無い"
+      ]
+    }
+  },
+  {
+    "slug": "mitsubishi-hc",
+    "name": "三菱HCキャピタル",
+    "arch": "銀行・証券・保険",
+    "reason": "lint error 1→登録ブロック",
+    "detail": {
+      "R8": [
+        "OB: 批判しすぎない+感謝 が無い"
+      ]
+    }
   }
 ]
