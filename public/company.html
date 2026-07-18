@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>企業詳細 | トーキャリ</title>
+  <!-- コマ画像CDN(jsDelivr)への接続を先出し(LCP短縮) -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Reggae+One&family=Kaisei+Decol:wght@400;500;700&display=swap');
@@ -766,9 +769,17 @@ async function main() {
     const panelLikes = company.panel_likes ?? {};
     const recommends = company.recommends ?? [];
 
+    // 1コマ目(LCP候補)を最優先プリロード（残りコマは lazy でスクロール時に読み込む）
+    if (panels[0]?.image_url) {
+      const l = document.createElement('link');
+      l.rel = 'preload'; l.as = 'image'; l.href = panels[0].image_url;
+      l.setAttribute('fetchpriority', 'high');
+      document.head.appendChild(l);
+    }
+
     const panelsHtml = panels.length === 0
       ? '<p class="empty-text">パネルデータはまだありません</p>'
-      : panels.map(p => {
+      : panels.map((p, idx) => {
           const liked = !!panelLikes[p.panel_num];
           const scriptArr = parseScriptJson(p.script_json);
 
@@ -807,7 +818,9 @@ async function main() {
             <div class="panel">
               <div class="panel-num">${String(p.panel_num).padStart(2, '0')} / ${String(panels.length).padStart(2, '0')}</div>
               <div class="panel-image-wrap">
-                <img src="${esc(p.image_url)}" alt="コマ${p.panel_num}" onerror="this.style.display='none'">
+                <img src="${esc(p.image_url)}" alt="コマ${p.panel_num}" width="900" height="1200"
+                     ${idx === 0 ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'} decoding="async"
+                     onerror="this.style.display='none'">
                 ${overlayHtml}
               </div>
               ${bubbleHtml}
