@@ -103,3 +103,6 @@ D1登録≠ライブ描画の全チェーンを結線。**今LINEで開ける室
   - 隔離12社(room-lint5未通過): fujitsu/takeda/nikkei/shueisha/usj/jri/odakyu/ryohin-keikaku/cosmos-pharma/matsukiyococokara/asahi-shimbun 等。
   - フルネーム重複2社: daiichi-sankyo(岡田 直樹×2)・sugi-hd(西村 啓介×2)。姓のみ重複106社は軽微(識別可)。
 - **欠損(フルGO=②で上乗せ)**: image_url(写真)/voice_config(音声)/age/department。フロントは既定アバター+TTS非表示でクリーンに処理済。②で生成し上書き加算すればライブ室がその場でGOLD化。
+
+## ⏸ 2026-07-17 15:36 本体停止を検知(未完走)
+再開: 先頭の【再開コマンド】を実行してください。registered-v3スキップで二重登録なし。
