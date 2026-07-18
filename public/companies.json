@@ -474,7 +474,7 @@
       "id": "sumitomo-chemical",
       "name": "住友化学",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
@@ -482,7 +482,7 @@
       "id": "asahi-kasei",
       "name": "旭化成",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
@@ -516,7 +516,7 @@
       "id": "takeda",
       "name": "武田薬品工業",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
@@ -710,7 +710,7 @@
       "id": "ms-ad",
       "name": "三井住友海上火災保険",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
@@ -766,7 +766,7 @@
       "id": "mitsubishi-hc",
       "name": "三菱HCキャピタル",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
@@ -854,7 +854,7 @@
       "id": "jpx",
       "name": "日本取引所グループ（JPX）",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
@@ -944,7 +944,7 @@
       "id": "fujitsu",
       "name": "富士通",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
@@ -1428,7 +1428,7 @@
       "id": "jri",
       "name": "日本総合研究所（JRI）",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
@@ -1874,7 +1874,7 @@
       "id": "mitsubishi-estate",
       "name": "三菱地所",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
@@ -1986,7 +1986,7 @@
       "id": "obayashi",
       "name": "大林組",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
@@ -2098,7 +2098,7 @@
       "id": "taiki-sha",
       "name": "大気社",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     }
@@ -2148,7 +2148,7 @@
       "id": "ryohin-keikaku",
       "name": "良品計画",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
@@ -2284,7 +2284,7 @@
       "id": "matsukiyococokara",
       "name": "マツキヨココカラ＆カンパニー",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
@@ -2292,7 +2292,7 @@
       "id": "cosmos-pharma",
       "name": "コスモス薬品",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
@@ -2594,7 +2594,7 @@
       "id": "jr-east",
       "name": "JR東日本（東日本旅客鉄道）",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
@@ -2714,7 +2714,7 @@
       "id": "odakyu",
       "name": "小田急電鉄",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
@@ -2844,7 +2844,7 @@
       "id": "shueisha",
       "name": "集英社",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
@@ -2908,7 +2908,7 @@
       "id": "usj",
       "name": "合同会社ユー・エス・ジェイ（USJ）",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
@@ -2956,7 +2956,7 @@
       "id": "asahi-shimbun",
       "name": "朝日新聞社",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
@@ -2964,7 +2964,7 @@
       "id": "nikkei",
       "name": "日本経済新聞社",
       "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": null,
+      "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null
     },
