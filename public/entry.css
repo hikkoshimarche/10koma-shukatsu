@@ -342,6 +342,24 @@ body {
   margin-top: 3px;
 }
 
+/* ===== ブランドロゴ（横長ワードマーク画像・暗い背景で埋もれないよう淡い白角丸パネルに載せる） ===== */
+.brand-panel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.22);
+  max-width: 100%;
+}
+.brand-logo { display: block; width: auto; max-width: 100%; height: auto; }
+/* フッター */
+.e-footer .brand-panel { padding: 7px 14px; border-radius: 10px; }
+.e-footer .brand-logo { height: 30px; }
+/* スプラッシュ（入口の顔） */
+.splash .brand-panel { padding: 14px 22px; border-radius: 18px; box-shadow: 0 6px 22px rgba(0,0,0,0.30); }
+.splash .brand-logo { height: 60px; }
+
 .error-text {
   color: rgba(255,255,255,0.78);
   text-align: center;

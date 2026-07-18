@@ -84,6 +84,30 @@ body {
   text-shadow: 1px 1px 0 var(--accent-red);
 }
 
+/* ヘッダーのブランドロゴ（暗いヘッダーで埋もれないよう淡い白角丸パネルに載せる）＋「ルーム」表記 */
+.header-title.brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.header-brand-panel {
+  display: inline-flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 8px;
+  padding: 5px 9px;
+  box-shadow: 0 2px 7px rgba(0,0,0,0.32);
+}
+.header-brand-logo { display: block; height: 26px; width: auto; }
+.header-suffix {
+  font-family: "Reggae One", "Kaisei Decol", sans-serif;
+  font-size: 18px;
+  color: var(--paper);
+  letter-spacing: 0.06em;
+  text-shadow: 1px 1px 0 var(--accent-red);
+}
+
 .btn-back {
   background: none;
   border: 2px solid var(--paper);
