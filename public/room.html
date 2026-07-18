@@ -6,6 +6,7 @@
   <title>トーキャリ・ルーム</title>
   <link rel="stylesheet" href="shared.css">
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="config.js"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -15,27 +16,76 @@
     <div class="header-spacer"></div>
   </header>
   <div id="app">
-    <div class="loading-wrap"><p class="loading-text">読み込み中...</p></div>
+    <div class="room-skeleton">
+      <div class="sk-hero"></div>
+      <div class="sk-card"></div><div class="sk-card"></div><div class="sk-card"></div>
+    </div>
   </div>
 </div>
 
 <script>
-const LIFF_ID = '2010075487-d4TJ2xZc';
-const API_BASE = 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
-// 既定アバター(image_url無しの人格用・クリーンなプレースホルダ)。写真が付けば自動で本物に切替。
-const DEFAULT_AVATAR = 'data:image/svg+xml,' + encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#e8eaed"/><circle cx="50" cy="40" r="17" fill="#bcc0c4"/><path d="M22 86a28 28 0 0 1 56 0z" fill="#bcc0c4"/></svg>');
+const CFG       = window.TOKYARI || {};
+const LIFF_ID   = CFG.LIFF_ROOM || '2010075487-d4TJ2xZc';
+const API_BASE  = CFG.API_BASE  || 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+
+// 役割ごとの色（役割ひと目・アバター無し時のプレースホルダにも使う）
+const ROLE_COLORS = {
+  R1: '#2d8659', R2: '#2f6fb0', R3: '#7d3c98',
+  R4: '#c77d1a', R5: '#0f8a8a', R6: '#c0392b',
+};
+function roleColor(code) {
+  return ROLE_COLORS[String(code || '').toUpperCase()] || '#4a6b8a';
+}
 
 function esc(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// 写真が無い人格でも魅力的に見せる：役割色グラデ＋頭文字のアバター
+function avatarHtml(p) {
+  const initial = esc((p.display_name || '？').trim().charAt(0));
+  const col = roleColor(p.role_code);
+  if (p.image_url) {
+    return `<div class="room-card-av" style="--rc:${col}">
+      <img class="room-card-av-img" src="${esc(p.image_url)}" alt="${esc(p.display_name)}"
+           onerror="this.parentElement.classList.add('noimg');this.remove();">
+      <span class="room-card-av-fallback">${initial}</span>
+    </div>`;
+  }
+  return `<div class="room-card-av noimg" style="--rc:${col}">
+    <span class="room-card-av-fallback">${initial}</span>
+  </div>`;
+}
+
+// メタ行（年齢・部署は在るときだけ）
+function metaLine(p) {
+  const bits = [];
+  if (p.age) bits.push(`${esc(p.age)}歳`);
+  if (p.department) bits.push(esc(p.department));
+  return bits.length ? `<p class="room-card-meta">${bits.join(' ・ ')}</p>` : '';
+}
+
+function cardHtml(p) {
+  const col = roleColor(p.role_code);
+  return `
+    <button class="room-card" data-persona-id="${esc(p.persona_id)}" style="--rc:${col}">
+      ${avatarHtml(p)}
+      <div class="room-card-body">
+        <span class="room-card-role">${esc(p.position || '社員')}</span>
+        <p class="room-card-name">${esc(p.display_name)}</p>
+        ${metaLine(p)}
+        <p class="room-card-desc">${esc(p.short_description ?? '')}</p>
+      </div>
+      <span class="room-card-go" aria-hidden="true">話す<b>›</b></span>
+    </button>`;
 }
 
 async function main() {
   const params   = new URLSearchParams(location.search);
   const company  = params.get('company') ?? '';
   const industry = params.get('industry') ?? '';
-  // ライブ室のcompany_id(=personas.company_id)。三井GOLDのみ id=mitsui-bussan → personas=mitsui_corp に写像。
-  // v3社は companies.json id(slug) == personas.company_id なのでそのまま。company未指定も三井(後方互換)。
+  // ライブ室のcompany_id。三井GOLDのみ id=mitsui-bussan → personas=mitsui_corp に写像。
+  // v3社は companies.json id(slug) == personas.company_id。company未指定も三井(後方互換)。
   const companyId = (company && company !== 'mitsui-bussan') ? company : 'mitsui_corp';
   const companyName = params.get('name') || (companyId === 'mitsui_corp' ? '三井物産' : company);
 
@@ -48,38 +98,36 @@ async function main() {
   });
 
   const app = document.getElementById('app');
+
+  // LIFF: 本番(LINE内・ログイン済)は従来どおり。外部ブラウザ(プレビュー)はログインを強制せず表示だけ通す。
   try {
     await liff.init({ liffId: LIFF_ID });
-    if (!liff.isLoggedIn()) { liff.login(); return; }
+    if (!liff.isLoggedIn() && liff.isInClient()) { liff.login(); return; }
+  } catch (e) {
+    console.warn('LIFF init skipped (preview/external browser):', e);
+  }
 
+  try {
     const res = await fetch(`${API_BASE}/api/room/personas/${encodeURIComponent(companyId)}`);
     if (!res.ok) throw new Error(`API error ${res.status}`);
     const personas = await res.json();
 
+    if (!personas.length) {
+      app.innerHTML = `<p class="empty-text">この会社のOB・OGは準備中です。<br>もう少しお待ちください。</p>`;
+      return;
+    }
+
     app.innerHTML = `
-      <div class="room-company-header">
-        <p class="room-company-name">${esc(companyName)}</p>
-        <p class="room-company-sub">OBに直接話しかけてみよう</p>
+      <div class="room-hero">
+        <p class="room-hero-company">${esc(companyName)}</p>
+        <p class="room-hero-title">会いに行くOB・OGを選ぼう</p>
+        <p class="room-hero-note">🤖 公開情報をもとにした<b>AIのOB・OG訪問シミュレーション</b>です。気軽に何でも聞いてみてください。</p>
       </div>
-      <div class="room-grid">
-        ${personas.map(p => `
-          <div class="room-card" data-persona-id="${esc(p.persona_id)}">
-            <div class="room-card-img-wrap">
-              <img class="room-card-img" src="${p.image_url ? esc(p.image_url) : DEFAULT_AVATAR}" alt="${esc(p.display_name)}"
-                onerror="this.style.display='none'">
-            </div>
-            <div class="room-card-body">
-              <p class="room-card-name">
-                ${esc(p.display_name)}${p.age ? `<span class="room-card-age">${p.age}歳</span>` : ''}
-              </p>
-              <p class="room-card-dept">${esc(p.department ?? '')}</p>
-              <p class="room-card-desc">${esc(p.short_description ?? '')}</p>
-            </div>
-          </div>
-        `).join('')}
+      <div class="room-list">
+        ${personas.map(cardHtml).join('')}
       </div>`;
 
-    app.addEventListener('click', e => {
+    app.querySelector('.room-list').addEventListener('click', e => {
       const card = e.target.closest('.room-card');
       if (!card) return;
       let url = `chat.html?persona_id=${encodeURIComponent(card.dataset.personaId)}`;

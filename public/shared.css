@@ -49,6 +49,7 @@ body {
   max-width: 480px;
   margin: 0 auto;
   min-height: 100vh;
+  overflow-x: hidden;   /* モバイル: 横スクロール/はみ出しを防ぐ保険 */
   background: var(--paper);
   background-image:
     radial-gradient(circle at 25% 30%, rgba(0,0,0,0.025) 1px, transparent 2px),
@@ -697,99 +698,204 @@ body {
    トーキャリ・ルーム (room.html / chat.html)
    ========================================================= */
 
-/* === room.html: ペルソナ選択画面 === */
+/* === room.html: ペルソナ選択画面（トーキャリ・リデザイン） === */
 
-.room-company-header {
-  text-align: center;
-  padding: 20px 16px 14px;
-  border-bottom: 2px dashed var(--ink);
+/* --- ヒーロー（会社名＋温かい導入＋AI開示） --- */
+.room-hero {
+  padding: 20px 18px 16px;
 }
 
-.room-company-name {
-  font-family: "Reggae One", sans-serif;
+.room-hero-company {
+  display: inline-block;
+  font-family: "Kaisei Decol", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--paper);
+  background: var(--ink);
+  padding: 3px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.03em;
+}
+
+.room-hero-title {
+  font-family: "Reggae One", "Kaisei Decol", sans-serif;
   font-size: 22px;
-  letter-spacing: 0.04em;
-  text-shadow: 1px 1px 0 var(--accent-red);
+  line-height: 1.35;
+  margin-top: 10px;
+  color: var(--ink);
+  text-shadow: 1.5px 1.5px 0 rgba(214,48,49,0.25);
 }
 
-.room-company-sub {
+.room-hero-note {
+  margin-top: 12px;
   font-size: 12px;
-  color: var(--ink-mute);
-  margin-top: 5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: var(--shadow-sm);
 }
+.room-hero-note b { color: var(--accent-red); font-weight: 700; }
 
-.room-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+/* --- ペルソナカード（横並び・役割ひと目） --- */
+.room-list {
+  display: flex;
+  flex-direction: column;
   gap: 12px;
-  padding: 14px;
+  padding: 4px 14px 24px;
 }
 
 .room-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
   background: #fff;
   border: 2.5px solid var(--ink);
-  border-radius: 4px;
-  overflow: hidden;
+  border-radius: 14px;
+  padding: 12px;
   cursor: pointer;
   box-shadow: var(--shadow-sm);
   transition: transform 0.1s, box-shadow 0.1s;
   -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
+  position: relative;
+  overflow: hidden;
 }
-
+/* 左端に役割色のライン */
+.room-card::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 5px;
+  background: var(--rc, var(--accent-red));
+}
 .room-card:active {
   transform: translate(2px, 2px);
   box-shadow: none;
 }
 
-.room-card-img-wrap {
-  width: 100%;
-  aspect-ratio: 1 / 1;
+.room-card-av {
+  position: relative;
+  width: 62px;
+  height: 62px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2.5px solid var(--ink);
   overflow: hidden;
-  background: var(--paper-dark);
-  border-bottom: 2px solid var(--ink);
+  background: var(--rc, #4a6b8a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
-.room-card-img {
+.room-card-av-img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
+  z-index: 1;
+}
+.room-card-av-fallback {
+  font-family: "Reggae One", sans-serif;
+  font-size: 26px;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  z-index: 0;
+}
+/* 写真読み込み失敗/未生成時は頭文字＋役割色グラデを表示 */
+.room-card-av.noimg {
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.35), var(--rc, #4a6b8a));
 }
 
 .room-card-body {
-  padding: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.room-card-role {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--rc, var(--accent-red));
+  padding: 2px 9px;
+  border-radius: 999px;
+  line-height: 1.5;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .room-card-name {
   font-family: "Kaisei Decol", sans-serif;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--ink);
   line-height: 1.3;
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  flex-wrap: wrap;
+  margin-top: 5px;
 }
 
-.room-card-age {
+.room-card-meta {
   font-size: 11px;
   color: var(--ink-mute);
-  font-weight: 400;
-}
-
-.room-card-dept {
-  font-size: 10px;
-  color: var(--ink-mute);
-  margin-top: 3px;
+  margin-top: 2px;
   line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .room-card-desc {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--ink-soft);
-  margin-top: 4px;
-  line-height: 1.4;
+  margin-top: 5px;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.room-card-go {
+  flex-shrink: 0;
+  align-self: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--rc, var(--accent-red));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  gap: 2px;
+}
+.room-card-go b { font-size: 20px; line-height: 1; }
+
+/* --- ロード中スケルトン --- */
+.room-skeleton { padding: 20px 14px; }
+.sk-hero {
+  height: 88px;
+  border-radius: 12px;
+  margin: 0 4px 16px;
+}
+.sk-card {
+  height: 88px;
+  border-radius: 14px;
+  margin-bottom: 12px;
+}
+.sk-hero, .sk-card {
+  background: linear-gradient(100deg, var(--paper-dark) 30%, #fff 50%, var(--paper-dark) 70%);
+  background-size: 200% 100%;
+  animation: skShimmer 1.3s infinite;
+  border: 2px solid rgba(26,26,26,0.12);
+}
+@keyframes skShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* === chat.html: チャット画面 === */
@@ -821,12 +927,43 @@ body {
 }
 
 .chat-header-avatar {
-  width: 30px;
-  height: 30px;
+  position: relative;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  object-fit: cover;
+  overflow: hidden;
   border: 2px solid var(--paper);
   flex-shrink: 0;
+  background: var(--rc, #4a6b8a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.chat-header-avatar img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+.chat-header-avatar b {
+  font-family: "Reggae One", sans-serif;
+  font-weight: 400;
+  font-size: 15px;
+  color: #fff;
+  z-index: 0;
+}
+.chat-header-avatar.noimg {
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.35), var(--rc, #4a6b8a));
+}
+
+.chat-header-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  line-height: 1.15;
 }
 
 .chat-header-name {
@@ -837,6 +974,29 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 62vw;
+}
+
+.chat-header-role {
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(245,239,224,0.72);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 62vw;
+}
+
+/* AI開示チップ（会話冒頭に常時） */
+.chat-disclosure {
+  align-self: center;
+  font-size: 11px;
+  color: var(--ink-soft);
+  background: rgba(255,255,255,0.7);
+  border: 1.5px dashed var(--ink-mute);
+  border-radius: 999px;
+  padding: 5px 14px;
+  margin: 2px auto 4px;
 }
 
 .chat-messages {
@@ -860,13 +1020,36 @@ body {
 }
 
 .chat-msg-avatar {
-  width: 36px;
-  height: 36px;
+  position: relative;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  object-fit: cover;
+  overflow: hidden;
   border: 2px solid var(--ink);
   flex-shrink: 0;
   align-self: flex-start;
+  background: var(--rc, #4a6b8a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.chat-msg-avatar img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+.chat-msg-avatar b {
+  font-family: "Reggae One", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: #fff;
+  z-index: 0;
+}
+.chat-msg-avatar.noimg {
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.35), var(--rc, #4a6b8a));
 }
 
 .chat-bubble-wrap {

@@ -6,6 +6,7 @@
   <title>トーキャリ・ルーム チャット</title>
   <link rel="stylesheet" href="shared.css">
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="config.js"></script>
 </head>
 <body class="chat-body">
 <div class="chat-layout">
@@ -19,20 +20,29 @@
   </header>
 
   <!-- メッセージエリア -->
-  <div id="chat-messages" class="chat-messages"></div>
+  <div id="chat-messages" class="chat-messages">
+    <div class="chat-disclosure">🤖 AIによるOB・OG訪問シミュレーションです</div>
+  </div>
 
   <!-- 入力エリア -->
   <div class="chat-input-area">
-    <textarea id="chat-input" class="chat-input" placeholder="メッセージを入力..." rows="1"></textarea>
-    <button id="chat-send-btn" class="chat-send-btn" disabled aria-label="送信">▶</button>
+    <textarea id="chat-input" class="chat-input" placeholder="気になることを聞いてみよう..." rows="1"></textarea>
+    <button id="chat-send-btn" class="chat-send-btn" disabled aria-label="送信">➤</button>
   </div>
 </div>
 
 <script>
-const LIFF_ID = '2010075487-d4TJ2xZc';
-const API_BASE = 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
-const DEFAULT_AVATAR = 'data:image/svg+xml,' + encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#e8eaed"/><circle cx="50" cy="40" r="17" fill="#bcc0c4"/><path d="M22 86a28 28 0 0 1 56 0z" fill="#bcc0c4"/></svg>');
+const CFG       = window.TOKYARI || {};
+const LIFF_ID   = CFG.LIFF_ROOM || '2010075487-d4TJ2xZc';
+const API_BASE  = CFG.API_BASE  || 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+
+const ROLE_COLORS = {
+  R1: '#2d8659', R2: '#2f6fb0', R3: '#7d3c98',
+  R4: '#c77d1a', R5: '#0f8a8a', R6: '#c0392b',
+};
+function roleColor(code) {
+  return ROLE_COLORS[String(code || '').toUpperCase()] || '#4a6b8a';
+}
 
 function goBack() {
   const params   = new URLSearchParams(location.search);
@@ -58,6 +68,18 @@ function escText(s) {
   return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+// 写真が無い人格用：役割色＋頭文字アバター（room.htmlと統一）
+function avatarSmall(cls) {
+  const initial = esc((persona?.display_name || '？').trim().charAt(0));
+  const col = roleColor(persona?.role_code);
+  if (persona && persona.image_url) {
+    return `<span class="${cls}" style="--rc:${col}">
+      <img src="${esc(persona.image_url)}" alt="" onerror="this.parentElement.classList.add('noimg');this.remove();">
+      <b>${initial}</b></span>`;
+  }
+  return `<span class="${cls} noimg" style="--rc:${col}"><b>${initial}</b></span>`;
+}
+
 function buildMsgHtml(role, content) {
   if (role === 'user') {
     return `<div class="chat-msg-row user">
@@ -66,13 +88,12 @@ function buildMsgHtml(role, content) {
       </div>
     </div>`;
   }
-  const imgSrc = (persona && persona.image_url) ? esc(persona.image_url) : DEFAULT_AVATAR;
-  // TTS▶は voice_config がある人格だけ表示(無ければ押して失敗を防ぐ=非表示)。写真/音声は後から上乗せで自動復活。
+  // TTS➤は voice_config がある人格だけ表示(無ければ押して失敗を防ぐ=非表示)。写真/音声は後から上乗せで自動復活。
   const ttsBtn = (persona && persona.voice_config)
     ? `<button class="chat-tts-btn" data-state="idle" data-text="${esc(content)}" onclick="playTts(this)" aria-label="音声再生">▶</button>`
     : '';
   return `<div class="chat-msg-row assistant">
-    <img class="chat-msg-avatar" src="${imgSrc}" alt="${esc(persona?.display_name ?? '')}" onerror="this.style.display='none'">
+    ${avatarSmall('chat-msg-avatar')}
     <div class="chat-bubble-wrap">
       <div class="chat-bubble-with-audio">
         <div class="chat-bubble assistant">${escText(content)}</div>
@@ -83,9 +104,8 @@ function buildMsgHtml(role, content) {
 }
 
 function typingHtml() {
-  const imgSrc = (persona && persona.image_url) ? esc(persona.image_url) : DEFAULT_AVATAR;
   return `<div class="chat-msg-row assistant" id="chat-typing">
-    <img class="chat-msg-avatar" src="${imgSrc}" alt="" onerror="this.style.display='none'">
+    ${avatarSmall('chat-msg-avatar')}
     <div class="chat-typing-dots">
       <span></span><span></span><span></span>
     </div>
@@ -237,10 +257,19 @@ async function main() {
   setupInput();
 
   try {
-    await liff.init({ liffId: LIFF_ID });
-    if (!liff.isLoggedIn()) { liff.login(); return; }
-    const profile = await liff.getProfile();
-    lineUserId = profile.userId;
+    // LIFF: 本番(LINE内)は従来どおりログイン。外部ブラウザ(プレビュー)はゲストとして通す。
+    lineUserId = 'guest-preview';
+    try {
+      await liff.init({ liffId: LIFF_ID });
+      if (liff.isLoggedIn()) {
+        const profile = await liff.getProfile();
+        lineUserId = profile.userId;
+      } else if (liff.isInClient()) {
+        liff.login(); return;
+      }
+    } catch (e) {
+      console.warn('LIFF init skipped (preview/external browser):', e);
+    }
 
     // ペルソナ情報取得(company=slug でその社の人格一覧を引く・三井は mitsui-bussan→mitsui_corp 写像・未指定は三井)
     const _cp = new URLSearchParams(location.search).get('company') || '';
@@ -250,10 +279,13 @@ async function main() {
     persona = personas.find(p => p.persona_id === personaId);
     if (!persona) { location.href = 'room.html'; return; }
 
-    // ヘッダー更新
+    // ヘッダー更新（アバター＋氏名＋役割）
     document.getElementById('chat-header-center').innerHTML = `
-      <img class="chat-header-avatar" src="${persona.image_url ? esc(persona.image_url) : DEFAULT_AVATAR}" alt="" onerror="this.style.display='none'">
-      <span class="chat-header-name">${esc(persona.display_name)}</span>`;
+      ${avatarSmall('chat-header-avatar')}
+      <span class="chat-header-text">
+        <span class="chat-header-name">${esc(persona.display_name)}</span>
+        ${persona.position ? `<span class="chat-header-role">${esc(persona.position)}</span>` : ''}
+      </span>`;
     document.title = `${persona.display_name} | トーキャリ・ルーム`;
 
     // 会話取得・作成
