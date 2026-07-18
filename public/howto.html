@@ -234,6 +234,13 @@
       letter-spacing: 0.12em;
       border-top: 2px dashed var(--ink-soft);
     }
+    /* 紙背景(明色)なのでロゴは白パネル不要・そのまま可読 */
+    .page-footer .footer-logo {
+      display: inline-block;
+      height: 34px;
+      width: auto;
+      max-width: 100%;
+    }
   </style>
 </head>
 <body>
@@ -358,7 +365,7 @@
     </div>
   </div>
 
-  <div class="page-footer">トーキャリ TALK CAREER</div>
+  <div class="page-footer"><img class="footer-logo" src="/images/brand/tokyari_logo_wide.png" alt="トーキャリ"></div>
 
 </div>
 
