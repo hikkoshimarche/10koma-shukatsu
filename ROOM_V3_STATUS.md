@@ -143,3 +143,15 @@ D1登録≠ライブ描画の全チェーンを結線。**今LINEで開ける室
   4. 実API/CDNで全社アバター表示を検証
   5. ループ再開
 - 恒久ルール: 内部文書（レポート/コスト/人員/Notion内部ID/内部パス）はこのpublic repoに二度とcommitしない（ローカル~/oscar-ai/かNotionのみ）。
+
+---
+## 🎨 アバター本走 チェックポイント (2026-07-18 PC再起動前)
+- アバター生成済: **345/398社**（[345/398]で単位完了停止）・**アバター付きライブ室 346社**（personas.image_url=実URL・jsDelivr 200実証済）。残 ~52社。
+- 実費: **$196.71**（$300ガード内・残$103）・二段QA(写実+解剖)reject吸収済・429=0。
+- 全生成画像 commit@40bee575dca2 push済（無損失・画像はディスク保全＋git保全の二重）。
+- **【アバター再開コマンド】(再起動後)**:
+```bash
+cd /Users/oscardodds/projects/10koma-shukatsu
+nohup caffeinate -dimsu python3 -u tools/room_avatar_gen.py --all >> tools/_room_avatar.log 2>&1 &
+```
+  resumable=既存画像skip（345社は即skip・残~52社のみ生成）・二重生成なし・20社毎checkpoint image_url反映・$300ガード。
