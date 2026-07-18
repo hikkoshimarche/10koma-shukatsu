@@ -48,6 +48,32 @@ def personal_name(slug, role, female=None):
     return f"{s} {g}"
 
 
+def company_roster_names(slug, roles):
+    """1社の全人格の氏名を『社内でフルネーム・姓が重複しない』ように決定的生成。
+    roles = [(role_key, female_bool), ...] 表示順。三井は金型固定。
+    各roleの hash から姓/名を引き、既に社内で使った姓/フルネームなら決定的に次候補へずらす(衝突回避)。"""
+    if slug == "mitsui-bussan":
+        return {r: MITSUI_ROSTER.get(r, personal_name(slug, r)) for r, _ in roles}
+    used_sur, used_full, out = set(), set(), {}
+    for role, female in roles:
+        h = hashlib.md5(f"{slug}/{role}".encode("utf-8")).hexdigest()
+        base_s, base_g = int(h[:8], 16), int(h[8:16], 16)
+        # 姓: 社内未使用になるまで決定的にずらす(候補>役割数なので必ず解ける)
+        s = SURNAMES[base_s % len(SURNAMES)]
+        for k in range(len(SURNAMES)):
+            cand = SURNAMES[(base_s + k) % len(SURNAMES)]
+            if cand not in used_sur:
+                s = cand; break
+        pool = GIVEN_FEMALE if female else GIVEN_MALE
+        g = pool[base_g % len(pool)]
+        for j in range(len(pool)):
+            cand = pool[(base_g + j) % len(pool)]
+            if f"{s} {cand}" not in used_full:
+                g = cand; break
+        used_sur.add(s); used_full.add(f"{s} {g}"); out[role] = f"{s} {g}"
+    return out
+
+
 if __name__ == "__main__":
     for sl in ["mitsui-bussan", "honda", "sony-group", "kao"]:
         print(sl, {r: personal_name(sl, r) for r in ["R1", "R2", "R3", "R4", "R5", "R6"]})
