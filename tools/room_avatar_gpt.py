@@ -62,11 +62,16 @@ def company_specs(company, industry, roster):
 
 
 def gen_gpt(appearance, out_path):
-    # ★『Japanese』をハードコード強制(specがethnicity省略しても東アジア顔がぶれない=住友行の白人寄りドリフト根治)。
-    prompt = (f"A professional corporate headshot photograph of a fictional JAPANESE person (East Asian features). "
+    # ★絵作りテンプレを三井GOLDに統一(白背景/ハイキー柔光/胸から上・広め・ヘッドルーム多め/広告写真調)。
+    #   顔キャスティング(appearance)と『Japanese』無条件強制は維持。変えるのは art-direction のみ。
+    prompt = (f"A clean high-key corporate portrait photograph of a fictional JAPANESE person (East Asian features), "
+              f"in the polished style of a premium Japanese company's recruiting-website profile photo. "
               f"{appearance} The person is clearly Japanese. "
-              "Warm friendly natural smile, head-and-shoulders, facing camera, soft studio lighting, plain white "
-              "seamless background (like the mitsui reference). Photorealistic corporate profile photo. "
+              "Framing: from the chest up, slightly wide with generous headroom above the head, subject centered and "
+              "facing the camera, warm friendly natural smile. "
+              "Lighting: bright HIGH-KEY soft and even studio lighting, minimal shadows, clean and airy. "
+              "Background: pure seamless WHITE (bright, near-pure white, no gray gradient, no props, no vignette). "
+              "Finish: crisp clean advertising-quality corporate portrait, photorealistic, sharp focus on the face. "
               "A fictional generic person, NOT a real identifiable individual or celebrity. No text, logos or watermarks.")
     for att in range(1, 4):
         try:
