@@ -3,96 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>業界選択 | トーキャリ</title>
+  <title>業界をえらぶ | トーキャリ</title>
+  <link rel="stylesheet" href="entry.css">
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: #003F7D;
-      min-height: 100vh;
-      font-family: -apple-system, 'Hiragino Sans', sans-serif;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .page-header {
-      padding: 48px 24px 24px;
-      text-align: center;
-    }
-
-    .page-title {
-      font-size: 22px;
-      font-weight: 700;
-      line-height: 1.4;
-    }
-
-    .cards {
-      flex: 1;
-      padding: 8px 20px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .card {
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      padding: 20px 20px;
-      color: #003F7D;
-      cursor: pointer;
-      transition: transform 0.12s, opacity 0.12s;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .card:active {
-      transform: scale(0.97);
-      opacity: 0.85;
-    }
-
-    .card-label {
-      flex: 1;
-      font-size: 17px;
-      font-weight: 600;
-    }
-
-    .card-arrow {
-      font-size: 20px;
-      opacity: 0.5;
-    }
-
-    .footer {
-      padding: 20px 24px env(safe-area-inset-bottom, 16px);
-      text-align: center;
-      font-size: 12px;
-      opacity: 0.5;
-      letter-spacing: 0.1em;
-    }
-
-    .error-text {
-      color: rgba(255,255,255,0.75);
-      text-align: center;
-      padding: 24px;
-    }
-  </style>
+  <script src="entry.js"></script>
 </head>
 <body>
+<div class="e-wrap">
+  <header class="e-header">
+    <p class="e-kicker">STEP 1 ／ 業界をえらぶ</p>
+    <h1 class="e-title">気になる業界から<br>のぞいてみよう</h1>
+    <div id="guide"></div>
+  </header>
 
-<div class="page-header">
-  <h1 class="page-title">どの業界の会社を探しますか？</h1>
+  <div class="e-list" id="cards">
+    <div class="e-skel"></div><div class="e-skel"></div><div class="e-skel"></div>
+  </div>
+
+  <footer class="e-footer">
+    <span class="wm">トーキャリ</span>
+    <span class="tag">TALK CAREER</span>
+  </footer>
 </div>
-
-<div class="cards" id="cards"></div>
-
-<div class="footer">トーキャリ TALK CAREER</div>
 
 <script>
 const LIFF_ID = '2010075487-89AJxZnA';
 
+const IND = {
+  '総合商社':             {icon:'🌐', color:'#2f6fb0'},
+  '自動車・モビリティ':    {icon:'🚗', color:'#c0392b'},
+  '電機・精密・重工':      {icon:'⚙️', color:'#4a6b8a'},
+  '鉄鋼・素材・化学':      {icon:'🏭', color:'#8a6d3b'},
+  '製薬・ヘルスケア':      {icon:'💊', color:'#16a085'},
+  '銀行・証券・保険':      {icon:'🏦', color:'#1f6f54'},
+  'IT・通信・SaaS':       {icon:'💻', color:'#3b5bdb'},
+  'ゲーム・エンタメ':      {icon:'🎮', color:'#7d3c98'},
+  'コンサル':             {icon:'📈', color:'#2c6fa8'},
+  '専門商社':             {icon:'📦', color:'#b8823a'},
+  'インフラ・エネルギー':  {icon:'⚡', color:'#d17d00'},
+  '不動産・建設':          {icon:'🏗️', color:'#9a6a2f'},
+  '小売・流通':            {icon:'🛍️', color:'#c0448a'},
+  '食品・飲料':            {icon:'🍽️', color:'#d1495b'},
+  '日用品・化粧品':        {icon:'🧴', color:'#c85a9c'},
+  '航空・運輸・物流':      {icon:'✈️', color:'#2f8fbf'},
+  '広告・メディア':        {icon:'📣', color:'#e0913a'},
+  'その他（外資・新興等）': {icon:'🌱', color:'#3a9d6b'},
+};
+
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
 async function main() {
+  mountGuide('どの業界から<br>見にいく？');
+
   const params = new URLSearchParams(location.search);
   const from = params.get('from') ?? '';
   const cardsEl = document.getElementById('cards');
@@ -108,28 +70,33 @@ async function main() {
       return;
     }
 
-    cardsEl.innerHTML = industries.map(name => `
-      <div class="card" data-industry="${encodeURIComponent(name)}">
-        <span class="card-label">${name}</span>
-        <span class="card-arrow">›</span>
-      </div>`).join('');
+    cardsEl.innerHTML = industries.map(name => {
+      const meta = IND[name] || {icon:'🏢', color:'#4a90d9'};
+      const count = Array.isArray(data[name]) ? data[name].length : 0;
+      return `
+        <button class="e-card" data-industry="${esc(encodeURIComponent(name))}" style="--acc:${meta.color}">
+          <span class="e-icon">${meta.icon}</span>
+          <span class="e-card-body">
+            <span class="e-card-label">${esc(name)}</span>
+            <span class="e-card-sub">${count}社をのぞける</span>
+          </span>
+          <span class="e-card-arrow">›</span>
+        </button>`;
+    }).join('');
 
     cardsEl.addEventListener('click', e => {
-      const card = e.target.closest('.card');
+      const card = e.target.closest('.e-card');
       if (!card) return;
       const industry = decodeURIComponent(card.dataset.industry);
       location.href = `/company-list?industry=${encodeURIComponent(industry)}&from=${encodeURIComponent(from)}`;
     });
   } catch (err) {
-    cardsEl.innerHTML = `<p class="error-text">エラー: ${err.message}</p>`;
+    cardsEl.innerHTML = `<p class="error-text">エラー: ${esc(err.message)}</p>`;
     console.error(err);
   }
 
-  try {
-    await liff.init({ liffId: LIFF_ID });
-  } catch (e) {
-    console.warn('LIFF init failed:', e.message);
-  }
+  try { await liff.init({ liffId: LIFF_ID }); }
+  catch (e) { console.warn('LIFF init skipped:', e.message); }
 }
 
 main();

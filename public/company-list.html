@@ -3,112 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>会社選択 | トーキャリ</title>
+  <title>会社をえらぶ | トーキャリ</title>
+  <link rel="stylesheet" href="entry.css">
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: #003F7D;
-      min-height: 100vh;
-      font-family: -apple-system, 'Hiragino Sans', sans-serif;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .page-header {
-      padding: 48px 24px 24px;
-      position: relative;
-    }
-
-    .btn-back {
-      position: absolute;
-      top: 48px;
-      left: 16px;
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 24px;
-      cursor: pointer;
-      padding: 8px;
-      line-height: 1;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .page-title {
-      font-size: 20px;
-      font-weight: 700;
-      line-height: 1.4;
-      text-align: center;
-    }
-
-    .cards {
-      flex: 1;
-      padding: 8px 20px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .card {
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      padding: 20px 20px;
-      color: #003F7D;
-      cursor: pointer;
-      transition: transform 0.12s, opacity 0.12s;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .card:active {
-      transform: scale(0.97);
-      opacity: 0.85;
-    }
-
-    .card-label {
-      flex: 1;
-      font-size: 17px;
-      font-weight: 600;
-    }
-
-    .card-arrow {
-      font-size: 20px;
-      opacity: 0.5;
-    }
-
-    .footer {
-      padding: 20px 24px env(safe-area-inset-bottom, 16px);
-      text-align: center;
-      font-size: 12px;
-      opacity: 0.5;
-      letter-spacing: 0.1em;
-    }
-
-    .error-text {
-      color: rgba(255,255,255,0.75);
-      text-align: center;
-      padding: 24px;
-    }
-  </style>
+  <script src="entry.js"></script>
 </head>
 <body>
+<div class="e-wrap">
+  <header class="e-header has-back">
+    <button class="e-back" id="btn-back" aria-label="戻る">‹</button>
+    <p class="e-kicker">STEP 2 ／ 会社をえらぶ</p>
+    <h1 class="e-title" id="page-title">会社をえらぶ</h1>
+    <div id="guide"></div>
+  </header>
 
-<div class="page-header">
-  <button class="btn-back" id="btn-back" aria-label="戻る">←</button>
-  <h1 class="page-title" id="page-title">会社を選んでください</h1>
+  <div class="e-list" id="cards">
+    <div class="e-skel"></div><div class="e-skel"></div><div class="e-skel"></div>
+  </div>
+
+  <footer class="e-footer">
+    <span class="wm">トーキャリ</span>
+    <span class="tag">TALK CAREER</span>
+  </footer>
 </div>
-
-<div class="cards" id="cards"></div>
-
-<div class="footer">トーキャリ TALK CAREER</div>
 
 <script>
 const LIFF_ID = '2010075487-89AJxZnA';
+const PAL = ['#2f6fb0','#c0392b','#7d3c98','#16a085','#d17d00','#2d8659','#c0448a','#3b5bdb','#b8823a','#2f8fbf'];
+function hue(id){let h=0;for(const ch of String(id))h=(h*31+ch.charCodeAt(0))>>>0;return PAL[h%PAL.length];}
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function contentHint(c){
+  const t = ['10コマ'];
+  if (c.video_url)   t.push('動画');
+  if (c.kessan_url)  t.push('決算書');
+  if (c.room_liff_id) t.push('AI OB訪問');
+  return t.join(' ・ ');
+}
 
 async function main() {
+  mountGuide('気になる会社を<br>タップ！');
+
   const params = new URLSearchParams(location.search);
   const industry = params.get('industry') ?? '';
   const from = params.get('from') ?? '';
@@ -123,7 +58,7 @@ async function main() {
     return;
   }
 
-  document.getElementById('page-title').textContent = `${industry}の会社を選んでください`;
+  document.getElementById('page-title').innerHTML = `${esc(industry)}<br>の会社をえらぶ`;
   document.title = `${industry} | トーキャリ`;
 
   try {
@@ -137,28 +72,32 @@ async function main() {
       return;
     }
 
-    cardsEl.innerHTML = companies.map(c => `
-      <div class="card" data-id="${encodeURIComponent(c.id)}">
-        <span class="card-label">${c.name}</span>
-        <span class="card-arrow">›</span>
-      </div>`).join('');
+    cardsEl.innerHTML = companies.map(c => {
+      const initial = esc(String(c.name || '？').trim().charAt(0));
+      return `
+        <button class="e-card" data-id="${esc(encodeURIComponent(c.id))}" style="--acc:${hue(c.id)}">
+          <span class="e-badge">${initial}</span>
+          <span class="e-card-body">
+            <span class="e-card-label">${esc(c.name)}</span>
+            <span class="e-card-sub">${contentHint(c)}</span>
+          </span>
+          <span class="e-card-arrow">›</span>
+        </button>`;
+    }).join('');
 
     cardsEl.addEventListener('click', e => {
-      const card = e.target.closest('.card');
+      const card = e.target.closest('.e-card');
       if (!card) return;
       const id = decodeURIComponent(card.dataset.id);
       location.href = `/hub?company=${encodeURIComponent(id)}&from=${encodeURIComponent(from)}&industry=${encodeURIComponent(industry)}`;
     });
   } catch (err) {
-    cardsEl.innerHTML = `<p class="error-text">エラー: ${err.message}</p>`;
+    cardsEl.innerHTML = `<p class="error-text">エラー: ${esc(err.message)}</p>`;
     console.error(err);
   }
 
-  try {
-    await liff.init({ liffId: LIFF_ID });
-  } catch (e) {
-    console.warn('LIFF init failed:', e.message);
-  }
+  try { await liff.init({ liffId: LIFF_ID }); }
+  catch (e) { console.warn('LIFF init skipped:', e.message); }
 }
 
 main();

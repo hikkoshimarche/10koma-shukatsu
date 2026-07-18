@@ -3,68 +3,68 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>10コマ就活</title>
+  <title>トーキャリ</title>
+  <link rel="stylesheet" href="entry.css">
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: #003F7D;
-      min-height: 100vh;
-      font-family: -apple-system, 'Hiragino Sans', sans-serif;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .loading-text {
-      font-size: 16px;
-      opacity: 0.75;
-      letter-spacing: 0.1em;
-    }
-  </style>
 </head>
 <body>
-  <p class="loading-text" id="status">読み込み中…</p>
+<div class="e-wrap">
+  <div class="splash">
+    <div class="logo">トー<span class="accent">キャリ</span></div>
+    <div class="sub" id="status">読み込み中…</div>
+    <div class="spinner" id="spinner"></div>
+  </div>
+  <footer class="e-footer">
+    <span class="wm">トーキャリ</span>
+    <span class="tag">TALK CAREER</span>
+  </footer>
+</div>
 
 <script>
 const LIFF_ID = '2010075487-89AJxZnA';
 const API_BASE = 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
 
+function routeOnward() {
+  const params = new URLSearchParams(location.search);
+  const companyId = params.get('company');
+  if (companyId) {
+    const industry = params.get('industry') ?? '';
+    const from     = params.get('from') ?? '';
+    let dest = `/company.html?id=${encodeURIComponent(companyId)}`;
+    if (industry) dest += `&industry=${encodeURIComponent(industry)}`;
+    if (from)     dest += `&from=${encodeURIComponent(from)}`;
+    location.href = dest;
+  } else {
+    // リッチメニュー枠1 から直接開いた場合: 業界選択フローへ
+    location.href = '/industry?from=10koma';
+  }
+}
+
 async function main() {
   try {
     await liff.init({ liffId: LIFF_ID });
-    if (!liff.isLoggedIn()) { liff.login(); return; }
 
-    const profile = await liff.getProfile();
-    fetch(`${API_BASE}/api/users/upsert`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        line_user_id: profile.userId,
-        display_name: profile.displayName,
-        picture_url: profile.pictureUrl
-      })
-    }).catch(() => {});
-
-    const params = new URLSearchParams(location.search);
-    const companyId = params.get('company');
-
-    if (companyId) {
-      const industry = params.get('industry') ?? '';
-      const from     = params.get('from') ?? '';
-      let dest = `/company.html?id=${encodeURIComponent(companyId)}`;
-      if (industry) dest += `&industry=${encodeURIComponent(industry)}`;
-      if (from)     dest += `&from=${encodeURIComponent(from)}`;
-      location.href = dest;
-    } else {
-      // リッチメニュー枠1 から直接開いた場合: 業界選択フローへ
-      location.href = '/industry?from=10koma';
+    if (liff.isLoggedIn()) {
+      const profile = await liff.getProfile();
+      fetch(`${API_BASE}/api/users/upsert`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          line_user_id: profile.userId,
+          display_name: profile.displayName,
+          picture_url: profile.pictureUrl
+        })
+      }).catch(() => {});
+    } else if (liff.isInClient()) {
+      liff.login();
+      return;
     }
+    // 外部ブラウザ(プレビュー等)は未ログインでもフローを進める
+    routeOnward();
   } catch (err) {
-    document.getElementById('status').textContent = 'エラー: ' + err.message;
-    console.error(err);
+    // LIFF不可(非LINE環境)でも入口フローは見られるように前進
+    console.warn('LIFF init skipped:', err && err.message);
+    routeOnward();
   }
 }
 
