@@ -42,3 +42,10 @@ outputs/
 
 tools/.env.phase_c.bak*
 tools/*.pid
+
+# 内部文書は public repo に commit しない（内部成果物はローカル~/oscar-ai/ か Notion のみ）
+l2_l3_video_pilot/
+REPORT.md
+*_REPORT.md
+*ゲート報告*
+*_internal.md
