@@ -118,6 +118,20 @@ def _qa_photoreal(img_bytes):
         return True  # QA自体が落ちたら通す(生成は保持)
 
 
+def _qa_anatomy(img_bytes):
+    """解剖学チェック(10コマQA流用): 手指/腕/耳の重大な破綻が無いか。Trueなら合格。"""
+    try:
+        r = client.models.generate_content(
+            model=QA_MODEL,
+            contents=[types.Part.from_bytes(data=img_bytes, mime_type="image/png"),
+                      "Look only at anatomy. Does this portrait have any SEVERE anatomical defect — malformed or "
+                      "extra/missing fingers or hands, deformed or extra ears, extra limbs, or a distorted face? "
+                      "Answer only 'severe' if there is a clear severe defect, otherwise 'ok'."])
+        return "severe" not in (r.text or "").strip().lower()
+    except Exception:
+        return True
+
+
 def _guard_ok(cost_next):
     with _LOCK:
         return (_STATE["spent"] + cost_next) <= TOTAL_COST_GUARD_USD
@@ -129,6 +143,9 @@ def gen_one(company, slug, role, name, label, female, pilot_dir=None):
     out_dir = REPO / "public/images" / slug / "personas"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"{role.lower()}.png"
+    if out_path.exists() and out_path.stat().st_size > 50000:   # resumable: 既存はスキップ(電源断でも二重生成なし)
+        return {"role": role, "ok": True, "name": name, "label": label, "path": str(out_path),
+                "bytes": out_path.stat().st_size, "attempts": 0, "skipped": True}
     prompt = build_prompt(slug, name, label, female, role)   # ★参照画像なし=三井GOLD不可侵・佐藤瓜二つ根治
     CONC.acquire()
     try:
@@ -148,10 +165,12 @@ def gen_one(company, slug, role, name, label, female, pilot_dir=None):
                 Image.open(io.BytesIO(img_bytes)).verify()
                 with _LOCK:
                     _STATE["spent"] += COST_PER_IMAGE      # 生成した時点で課金(QA前)
-                # ★スタイルQA: 写実でない(漫画/イラスト)なら破棄→再生成
-                if not _qa_photoreal(img_bytes):
+                # ★二段QA: ①写実(漫画→破棄) ②解剖学(手指/耳/腕のsevere破綻→破棄)。両方通過のみ採用。
+                with _LOCK:
+                    _STATE["spent"] += 0.01   # QA2回ぶん(vision)
+                if not (_qa_photoreal(img_bytes) and _qa_anatomy(img_bytes)):
                     with _LOCK:
-                        _STATE["rejected"] += 1; _STATE["spent"] += 0.005
+                        _STATE["rejected"] += 1
                     if attempt < RETRY:
                         continue
                 out_path.write_bytes(img_bytes)
@@ -192,6 +211,63 @@ def roster_for(slug):
     return id2name.get(slug, slug), out
 
 
+def _git(*a):
+    return subprocess.run(["git", *a], cwd=str(REPO), capture_output=True, text=True, timeout=180)
+
+
+def _reflect_image_urls(slugs):
+    """checkpoint: public/images を commit+push → HEAD sha で personas.image_url を更新(空アバター→本物)。三井は触らない。"""
+    _git("add", "public/images")
+    c = _git("commit", "-m", f"feat(room-avatar): batch {len(slugs)}社 アバター生成 (checkpoint)")
+    if c.returncode == 0:
+        _git("push", "origin", "main")
+    sha = _git("rev-parse", "HEAD").stdout.strip()[:12]
+    for slug in slugs:
+        _, roster = roster_for(slug)
+        stmts = []
+        for role, name, label, female in roster:
+            f = REPO / "public/images" / slug / "personas" / f"{role.lower()}.png"
+            if f.exists():
+                url = f"https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@{sha}/public/images/{slug}/personas/{role.lower()}.png"
+                stmts.append(f"UPDATE personas SET image_url='{url}' WHERE company_id='{slug}' AND role_code='{role}'")
+        if stmts:
+            subprocess.run(["npx", "wrangler", "d1", "execute", "10koma-shukatsu-db", "--remote", "--config", str(WCONF),
+                            "--command", ";\n".join(stmts)], cwd=str(REPO), capture_output=True, text=True, timeout=120)
+    return sha
+
+
+def run_all():
+    # ライブ社(personas在籍・三井GOLD除外)を全件。resumable(既存画像スキップ)・checkpoint 20社毎。
+    p = subprocess.run(["npx", "wrangler", "d1", "execute", "10koma-shukatsu-db", "--remote", "--config", str(WCONF),
+                        "--json", "--command", "SELECT DISTINCT company_id FROM personas WHERE company_id!='mitsui_corp'"],
+                       cwd=str(REPO), capture_output=True, text=True, timeout=90)
+    slugs = sorted(x["company_id"] for x in json.loads(p.stdout[p.stdout.find("["):])[0]["results"])
+    print(f"=== アバター本走: {len(slugs)}社 (三井GOLD除外・resumable・並列{PARALLEL}) ===", flush=True)
+    t0 = time.time(); done_slugs = []; pending_reflect = []
+    for i, slug in enumerate(slugs):
+        company, roster = roster_for(slug)
+        with ThreadPoolExecutor(max_workers=PARALLEL) as ex:
+            futs = [ex.submit(gen_one, company, slug, role, name, label, female)
+                    for role, name, label, female in roster]
+            rs = [f.result() for f in as_completed(futs)]
+        nok = sum(1 for r in rs if r["ok"])
+        done_slugs.append(slug); pending_reflect.append(slug)
+        skipped = sum(1 for r in rs if r.get("skipped"))
+        print(f"  [{i+1}/{len(slugs)}] {slug} {nok}/{len(roster)}枚 (skip{skipped}) 累計${_STATE['spent']:.2f} reject{_STATE['rejected']} 429={_STATE['r429']}", flush=True)
+        if _STATE["spent"] >= TOTAL_COST_GUARD_USD:
+            print(f"  🛑 総額ガード${TOTAL_COST_GUARD_USD}到達→停止", flush=True); break
+        if len(pending_reflect) >= 20:
+            sha = _reflect_image_urls(pending_reflect)
+            print(f"  💾 checkpoint: {len(pending_reflect)}社 image_url→@{sha} push済", flush=True)
+            pending_reflect = []
+    if pending_reflect:
+        sha = _reflect_image_urls(pending_reflect)
+        print(f"  💾 最終checkpoint: {len(pending_reflect)}社 @{sha}", flush=True)
+    print(f"\n=== 本走完了: {_STATE['n_ok']}枚 / 実費${_STATE['spent']:.2f} / reject{_STATE['rejected']} / "
+          f"{round((time.time()-t0)/60)}分 / 429={_STATE['r429']} ===", flush=True)
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--slug")
@@ -205,6 +281,8 @@ def main():
     print(f"  日次$キャップ={'なし(一気に回す)' if NO_DAILY_CAP else 'あり'} / 時間枚数上限=なし / 総額ガード=${TOTAL_COST_GUARD_USD}(超で停止)")
     if args.show_limits:
         return 0
+    if args.all:
+        return run_all()
 
     slug = args.slug or "sumitomo-corp"
     company, roster = roster_for(slug)
