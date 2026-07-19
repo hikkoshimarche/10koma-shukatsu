@@ -116,6 +116,7 @@ body {
   background: #fff;
 }
 .mascot svg { display: block; width: 100%; height: 100%; border-radius: 50%; }
+.mascot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 22%; border-radius: 50%; }
 
 .guide-bubble {
   position: relative;
@@ -356,9 +357,17 @@ body {
 /* フッター */
 .e-footer .brand-panel { padding: 7px 14px; border-radius: 10px; }
 .e-footer .brand-logo { height: 30px; }
-/* スプラッシュ（入口の顔） */
+/* スプラッシュ（入口の顔）: 丸ロゴを白い円パネルに載せる（紺地に白四角を出さない） */
 .splash .brand-panel { padding: 14px 22px; border-radius: 18px; box-shadow: 0 6px 22px rgba(0,0,0,0.30); }
 .splash .brand-logo { height: 60px; }
+.splash .brand-circle {
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 22px rgba(0,0,0,0.30);
+}
+.splash .brand-circle img { width: 90%; height: 90%; object-fit: contain; border-radius: 50%; display: block; }
 
 .error-text {
   color: rgba(255,255,255,0.78);

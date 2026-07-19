@@ -29,8 +29,8 @@ const HARUKI_SVG = `
 function guideHTML(text) {
   return `<div class="guide">
     <div class="guide-faces">
-      <span class="mascot">${NANA_SVG}</span>
-      <span class="mascot">${HARUKI_SVG}</span>
+      <span class="mascot"><img src="/images/brand/char_nana.jpg" alt="ナナ" decoding="async"></span>
+      <span class="mascot"><img src="/images/brand/char_haruki.jpg" alt="ハルキ" decoding="async"></span>
     </div>
     <div class="guide-bubble">${text}</div>
   </div>`;
