@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>トーキャリ・ルーム チャット</title>
   <link rel="stylesheet" href="shared.css">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="config.js"></script>
 </head>
@@ -74,7 +76,7 @@ function avatarSmall(cls) {
   const col = roleColor(persona?.role_code);
   if (persona && persona.image_url) {
     return `<span class="${cls}" style="--rc:${col}">
-      <img src="${esc(persona.image_url)}" alt="" onerror="this.parentElement.classList.add('noimg');this.remove();">
+      <img src="${esc(persona.image_url)}" alt="" width="76" height="76" decoding="async" fetchpriority="high" onerror="this.parentElement.classList.add('noimg');this.remove();">
       <b>${initial}</b></span>`;
   }
   return `<span class="${cls} noimg" style="--rc:${col}"><b>${initial}</b></span>`;

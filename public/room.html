@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>トーキャリ・ルーム</title>
   <link rel="stylesheet" href="shared.css">
+  <!-- アバターCDN(jsDelivr)への接続を先出し(LCP短縮) -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="config.js"></script>
 </head>
@@ -45,12 +48,15 @@ function esc(s) {
 }
 
 // 写真が無い人格でも魅力的に見せる：役割色グラデ＋頭文字のアバター
-function avatarHtml(p) {
+// idx: 先頭2枚(ファーストビュー)は eager+高優先度、以降は lazy でスクロール時に読み込む
+function avatarHtml(p, idx) {
   const initial = esc((p.display_name || '？').trim().charAt(0));
   const col = roleColor(p.role_code);
   if (p.image_url) {
+    const load = idx < 2 ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
     return `<div class="room-card-av" style="--rc:${col}">
       <img class="room-card-av-img" src="${esc(p.image_url)}" alt="${esc(p.display_name)}"
+           width="124" height="124" ${load} decoding="async"
            onerror="this.parentElement.classList.add('noimg');this.remove();">
       <span class="room-card-av-fallback">${initial}</span>
     </div>`;
@@ -68,11 +74,11 @@ function metaLine(p) {
   return bits.length ? `<p class="room-card-meta">${bits.join(' ・ ')}</p>` : '';
 }
 
-function cardHtml(p) {
+function cardHtml(p, idx) {
   const col = roleColor(p.role_code);
   return `
     <button class="room-card" data-persona-id="${esc(p.persona_id)}" style="--rc:${col}">
-      ${avatarHtml(p)}
+      ${avatarHtml(p, idx)}
       <div class="room-card-body">
         <span class="room-card-role">${esc(p.position || '社員')}</span>
         <p class="room-card-name">${esc(p.display_name)}</p>
@@ -115,6 +121,14 @@ async function main() {
     if (!res.ok) throw new Error(`API error ${res.status}`);
     const personas = await res.json();
 
+    // 先頭アバター(LCP候補)を最優先プリロード
+    if (personas[0]?.image_url) {
+      const l = document.createElement('link');
+      l.rel = 'preload'; l.as = 'image'; l.href = personas[0].image_url;
+      l.setAttribute('fetchpriority', 'high');
+      document.head.appendChild(l);
+    }
+
     if (!personas.length) {
       app.innerHTML = `<p class="empty-text">この会社のOB・OGは準備中です。<br>もう少しお待ちください。</p>`;
       return;
@@ -127,7 +141,7 @@ async function main() {
         <p class="room-hero-note">🤖 公開情報をもとにした<b>AIのOB・OG訪問シミュレーション</b>です。気軽に何でも聞いてみてください。</p>
       </div>
       <div class="room-list">
-        ${personas.map(cardHtml).join('')}
+        ${personas.map((p, i) => cardHtml(p, i)).join('')}
       </div>`;
 
     app.querySelector('.room-list').addEventListener('click', e => {
