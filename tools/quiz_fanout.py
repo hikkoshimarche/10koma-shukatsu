@@ -1,0 +1,740 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""quiz_fanout.py — 理解度クイズ 400社+16業界 自動収束ファンアウト(人手なし)。
+
+二層ゲート: ① quiz_lint(数値/日付のverbatim出典照合) ② OpenAI独立レビュー(R1-R6)。
+各社: corpus取得(DDG検索→curl/PyMuPDF)→OpenAI生成30問→lint収束(不可は破棄blocked)。
+20社CP毎: サンプルK問をOpenAIレビュー→pass率/systemic→自動修正/HALT/卒業→commit/push→LINE実値。
+安全弁: 総額コストガード / resumable / caffeinate想定 / HALTで即LINE。
+本番反映はしない: 出力は output/<slug>/quiz_30q.json まで。
+
+使い方:
+  python quiz_fanout.py --validate 3      # 少数社を同期実行して検証(背景化しない)
+  python quiz_fanout.py --run             # 本番: 全社(resumable, 並列3, CP毎処理)
+  環境: OPENAI_API_KEY / SHEET_WEBAPP_URL / SHEET_API_TOKEN (.env, .env.phase_c)
+"""
+import os, re, sys, json, csv, time, html, subprocess, threading, argparse, hashlib
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+import requests
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.expanduser("~/oscar-ai/tokyari-pipeline/.env"))
+    load_dotenv(os.path.expanduser("~/projects/10koma-shukatsu/tools/.env.phase_c"))
+except Exception:
+    pass
+
+sys.path.insert(0, os.path.expanduser("~/projects/10koma-shukatsu/tools"))
+import quiz_lint as QL
+
+REPO = os.path.expanduser("~/projects/10koma-shukatsu")
+PIPE = os.path.expanduser("~/oscar-ai/tokyari-pipeline")
+OUT = os.path.join(PIPE, "output")
+HANDOFF = os.path.expanduser("~/Desktop/kindle_受け渡し/quiz_pilot")
+STATE_PATH = os.path.join(PIPE, "output", "_quiz_fanout_state.json")
+BLOCKED_CSV = os.path.join(PIPE, "output", "quiz_blocked.csv")
+COMPANIES = os.path.join(REPO, "public/companies.json")
+
+OPENAI_KEY = os.environ.get("OPENAI_API_KEY", "").strip()
+GEN_MODEL = "gpt-4o"
+REVIEW_MODEL = "gpt-4o"
+# gpt-4o 価格(USD/1M tok)
+PRICE_IN, PRICE_OUT = 2.50, 10.00
+MAX_USD = float(os.environ.get("QUIZ_MAX_USD", "75"))   # 総額コストガード(Web Claude承認$75)
+PARALLEL = 3
+CHECKPOINT_EVERY = 20
+REVIEW_K = 12
+GRAD_PASS = 0.98
+AGGREGATORS = ("nikkei.com", "yahoo", "biggo", "disclosure.tokyo", "daiwair", "ifis.co",
+               "amazonaws", "edinet", "ullet", "buffett-code", "minkabu", "kabutan",
+               "wikipedia", "wikinvest", "salesnow", "sincereed", "gbiz", "irbank",
+               "reuters", "bloomberg", "quick", "tdnet")
+
+_lock = threading.Lock()
+_cost = {"usd": 0.0, "in": 0, "out": 0, "calls": 0}
+
+
+# ── コスト/LINE/git ──────────────────────────────────────
+def add_cost(u):
+    with _lock:
+        pt = u.get("prompt_tokens", 0); ct = u.get("completion_tokens", 0)
+        _cost["in"] += pt; _cost["out"] += ct; _cost["calls"] += 1
+        _cost["usd"] += pt / 1e6 * PRICE_IN + ct / 1e6 * PRICE_OUT
+
+def cost_ok():
+    with _lock:
+        return _cost["usd"] < MAX_USD
+
+def line(msg):
+    url = os.environ.get("SHEET_WEBAPP_URL", "").strip()
+    tok = os.environ.get("SHEET_API_TOKEN", "").strip()
+    if not url:
+        print("[LINE未送信]", msg); return
+    try:
+        requests.post(url, data={"mode": "pushlinefull", "token": tok, "text": msg}, timeout=60)
+    except Exception as e:
+        print("[LINE ERR]", e)
+
+def git(*a, cwd=REPO):
+    return subprocess.run(["git", *a], cwd=cwd, capture_output=True, text=True, timeout=180)
+
+
+# ── OpenAI ───────────────────────────────────────────────
+def openai_chat(messages, model=GEN_MODEL, max_tokens=4000, json_mode=True, temperature=0.3):
+    if not cost_ok():
+        raise RuntimeError(f"COST_GUARD: ${_cost['usd']:.2f} >= ${MAX_USD}")
+    body = {"model": model, "messages": messages, "max_tokens": max_tokens, "temperature": temperature}
+    if json_mode:
+        body["response_format"] = {"type": "json_object"}
+    for attempt in range(4):
+        try:
+            r = requests.post("https://api.openai.com/v1/chat/completions",
+                              headers={"Authorization": f"Bearer {OPENAI_KEY}"}, json=body, timeout=180)
+            if r.status_code == 429 or r.status_code >= 500:
+                time.sleep(4 * (attempt + 1)); continue
+            d = r.json()
+            if "choices" not in d:
+                time.sleep(3 * (attempt + 1)); continue
+            add_cost(d.get("usage", {}))
+            return d["choices"][0]["message"]["content"]
+        except Exception:
+            time.sleep(3 * (attempt + 1))
+    raise RuntimeError("openai_chat failed after retries")
+
+
+# ── corpus 取得(DDG検索→curl→PyMuPDF/HTML) ───────────────
+def clean_html(t):
+    t = re.sub(r"<script.*?</script>", " ", t, flags=re.S | re.I)
+    t = re.sub(r"<style.*?</style>", " ", t, flags=re.S | re.I)
+    t = re.sub(r"<(br|/p|/div|/li|/tr|/h[1-6])[^>]*>", "\n", t, flags=re.I)
+    t = re.sub(r"<[^>]+>", " ", t)
+    t = html.unescape(t)
+    t = re.sub(r"[ \t　]+", " ", t)
+    return re.sub(r"\n\s*\n+", "\n", t).strip()
+
+def fetch_url(url):
+    try:
+        r = subprocess.run(["curl", "-sL", "--max-time", "40", "-A", "Mozilla/5.0", url],
+                           capture_output=True, timeout=55)
+        data = r.stdout
+        if url.lower().split("?")[0].endswith(".pdf") or data[:5] == b"%PDF-":
+            import fitz
+            fn = f"/tmp/_qz_{hashlib.md5(url.encode()).hexdigest()[:8]}.pdf"
+            open(fn, "wb").write(data)
+            doc = fitz.open(fn); txt = "\n".join(p.get_text() for p in doc); doc.close()
+            os.remove(fn)
+            return re.sub(r"\n\s*\n+", "\n", re.sub(r"[ \t　]+", " ", txt)).strip()
+        return clean_html(data.decode("utf-8", "ignore"))
+    except Exception:
+        return ""
+
+def ddg(query, want_pdf=False, limit=12):
+    try:
+        r = subprocess.run(["curl", "-s", "--max-time", "25",
+                            "-A", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+                            "https://html.duckduckgo.com/html/", "--data-urlencode", f"q={query}"],
+                           capture_output=True, timeout=35)
+        t = r.stdout.decode("utf-8", "ignore")
+        import urllib.parse
+        urls = [urllib.parse.unquote(u) for u in re.findall(r"uddg=([^&\"]+)", t)]
+        seen, out = set(), []
+        for u in urls:
+            if u in seen: continue
+            seen.add(u)
+            if want_pdf and not u.lower().split("?")[0].endswith(".pdf"): continue
+            if any(a in u.lower() for a in AGGREGATORS): continue
+            out.append(u)
+            if len(out) >= limit: break
+        return out
+    except Exception:
+        return []
+
+MANIFEST_PATH = os.path.join(OUT, "_quiz_source_manifest.json")
+def _manifest():
+    try:
+        return json.load(open(MANIFEST_PATH, encoding="utf-8"))
+    except Exception:
+        return {}
+
+# ── Notion ファクトシート由来の公式URL取得 (notion_sync同等の認証) ──
+NOTION_TOKEN = os.environ.get("NOTION_TOKEN", "").strip()
+NH = {"Authorization": f"Bearer {NOTION_TOKEN}", "Notion-Version": "2022-06-28"}
+BLOCK = ("nikkei", "yahoo", "irbank", "gaishishukatsu", "salesnow", "note.com", "kabuyoho",
+         "bloomberg", "reuters", "diamond.jp", "toyokeizai", "openwork", "en-japan",
+         "rikunabi", "mynavi", "onecareer", "talentsquare", "sincereed", "cafe-dc",
+         "newswitch", "minkabu", "kabutan", "buffett-code", "ullet", "quick.com",
+         "notion.so", "notion.com", "app.notion", "youtube", "youtu.be", "twitter",
+         "x.com", "facebook", "linkedin", "prtimes", "wikipedia", "jbic.go.jp",
+         "google", "amazonaws", "hatena", "ameblo", "livedoor", "wantedly")
+GOOD_HINT = ("ir", "library", "meeting", "securities", "tanshin", "kessan", "financial",
+             "company", "outline", "profile", "corporate", "about", "recruit", "saiyo",
+             "release", "news", "pdf")
+
+def _page_id_map():
+    m = {}
+    p = os.path.join(OUT, "notion_sync_state.csv")
+    if os.path.exists(p):
+        for row in csv.DictReader(open(p, encoding="utf-8")):
+            if row.get("notion_page_id"):
+                m[row["slug"]] = row["notion_page_id"]
+    return m
+_PID = _page_id_map()
+
+def _notion_children(bid):
+    out, cur = [], None
+    for _ in range(60):
+        params = {"page_size": 100}
+        if cur: params["start_cursor"] = cur
+        try:
+            r = requests.get(f"https://api.notion.com/v1/blocks/{bid}/children", headers=NH,
+                             params=params, timeout=30).json()
+        except Exception:
+            break
+        out += r.get("results", [])
+        if not r.get("has_more"): break
+        cur = r.get("next_cursor")
+        time.sleep(0.35)  # Notion rate limit
+    return out
+
+def _notion_walk(bid, depth=0, acc=None):
+    if acc is None: acc = []
+    if depth > 3 or len(acc) > 2500: return acc
+    for b in _notion_children(bid):
+        acc.append(b)
+        if b.get("has_children"): _notion_walk(b["id"], depth + 1, acc)
+    return acc
+
+def _notion_search_pid(name):
+    try:
+        r = requests.post("https://api.notion.com/v1/search", headers=NH,
+                          json={"query": f"{name} ファクトシート",
+                                "filter": {"property": "object", "value": "page"}}, timeout=30).json()
+        for res in r.get("results", []):
+            title = "".join(t.get("plain_text", "") for t in
+                            res.get("properties", {}).get("title", {}).get("title", []))
+            if "ファクトシート" in title and (name in title):
+                return res["id"]
+    except Exception:
+        pass
+    return None
+
+def _reg_domain(host):
+    labels = host.split(".")
+    if len(labels) >= 3 and labels[-2] in ("co", "or", "ne", "ac", "go", "ad", "com", "gr"):
+        return ".".join(labels[-3:])
+    return ".".join(labels[-2:])
+
+def _factsheet_official_urls(slug, name):
+    pid = _PID.get(slug) or _notion_search_pid(name)
+    if not pid:
+        return [], None
+    urls = set()
+    for b in _notion_walk(pid):
+        t = b.get("type"); o = b.get(t, {})
+        rt = o.get("rich_text", []) if isinstance(o, dict) else []
+        for x in rt:
+            if x.get("href"): urls.add(x["href"])
+        txt = "".join(x.get("plain_text", "") for x in rt)
+        for u in re.findall(r"https?://[^\s)\]\"'>」）]+", txt):
+            urls.add(u)
+    cand, score = [], {}
+    for u in urls:
+        m = re.match(r"https?://([^/]+)(/[^\s]*)?", u)
+        if not m: continue
+        host = m.group(1).lower(); path = (m.group(2) or "").lower()
+        if any(b in host for b in BLOCK): continue
+        rd = _reg_domain(host)
+        cand.append((rd, path, u))
+        s = score.setdefault(rd, [0, 0]); s[0] += 1
+        s[1] += sum(1 for h in GOOD_HINT if h in path)
+    if not cand:
+        return [], None
+    official = max(score, key=lambda k: (score[k][0] + score[k][1]))
+    def prio(u):
+        ul = u.lower()
+        if ul.split("?")[0].endswith(".pdf"): return 0
+        if "securities" in ul: return 1
+        if any(k in ul for k in ("outline", "profile", "company", "corporate", "about")): return 2
+        if "/ir" in ul or "library" in ul: return 3
+        if any(k in ul for k in ("recruit", "saiyo", "career")): return 4
+        return 5
+    picked = sorted({u for rd, path, u in cand if rd == official}, key=prio)
+    return picked, official
+
+def acquire_corpus(name, slug=None):
+    """公式一次情報の corpus 化。①Notionファクトシート由来の公式ドメインURL(主) + ②manifest(補助)。
+    第三者サイトは除外。curl生取得→PyMuPDF/HTML verbatim抽出。公式URL無しなら空(→needs_source)。"""
+    corpus = {}
+    urls, _dom = _factsheet_official_urls(slug or "", name)
+    urls = list(urls)[:5]                      # コスト/時間のため最大5本
+    for u in _manifest().get(slug or "", []):  # 既知の追加seed(あれば補助)
+        if u not in urls: urls.append(u)
+    for u in urls:
+        body = fetch_url(u)
+        if len(body) > 700:
+            corpus[u] = body
+        time.sleep(0.3)
+    return corpus
+
+
+# ── 生成(OpenAI, corpus厳密紐付け) ───────────────────────
+GEN_SYS = (
+ "あなたは日本企業の就活生向け『理解度チェッククイズ』を、提供された一次情報の本文だけを根拠に作る出題者です。"
+ "絶対規則(Source-or-Silence): 設問文・4つの選択肢・解説に登場する数値と日付は、指定された source 本文に"
+ "『文字列として実在』するものだけを使う。存在しない数値・概算・別表記(兆億へ換算等)は禁止。"
+ "誤答(不正解の3択)の数値も必ず同じ source 本文内の別の実数(別年度・別項目・別セグメント)を使う。"
+ "各設問には category を付す(財務数値/会社概要/事業セグメント/沿革/製品・サービス/人名・役員/業界順位/その他)。"
+ "数字を含む設問には必ず as_of(時期)を付す。倍率は禁止。総会開催日・配当支払日・有報提出日などの日程トリビアは禁止。"
+ "日付は必ず完全形(例 2024年7月1日)で本文と一致させる。EPS等の株数依存指標を会社間で比較する順位設問は禁止"
+ "(順位は収益・利益額・ROEで作る)。ミックス規定: 財務数値は最大15問、残りは事業セグメント・会社概要・沿革・製品/サービス。"
+)
+GEN_USER_TMPL = (
+ "対象企業: {name}\n"
+ "以下は許可された source 本文(URL付き)。ここに実在する文字列だけを根拠に、4択クイズを{n}問、JSONで出力。\n\n"
+ "{sources}\n\n"
+ "出力JSON形式(厳守):\n"
+ '{{"questions":[{{"category":"財務数値","q_text":"...","options":["A","B","C","D"],"correct":0,'
+ '"explanation":"...","source_url":"<上記URLのいずれか>","as_of":"2025年3月期"}}]}}\n'
+ "各設問: options は必ず4つ・correct は0-3の整数・source_url は上記の該当URL。"
+ "数値/日付は必ず source 本文に実在する表記のまま(百万円・円・%・完全な日付)。捏造禁止。"
+)
+
+def _sources_block(corpus, max_chars=14000):
+    blocks, budget = [], max_chars
+    for url, body in corpus.items():
+        take = body[:min(len(body), budget)]
+        blocks.append(f"===== source_url: {url} =====\n{take}")
+        budget -= len(take)
+        if budget <= 0: break
+    return "\n\n".join(blocks)
+
+def generate(name, corpus, n=30):
+    user = GEN_USER_TMPL.format(name=name, n=n, sources=_sources_block(corpus))
+    txt = openai_chat([{"role": "system", "content": GEN_SYS}, {"role": "user", "content": user}],
+                      model=GEN_MODEL, max_tokens=6000)
+    try:
+        data = json.loads(txt)
+    except Exception:
+        m = re.search(r"\{.*\}", txt, re.S)
+        data = json.loads(m.group(0)) if m else {"questions": []}
+    return data.get("questions", []) if isinstance(data, dict) else []
+
+def fix_failures(name, corpus, failed):
+    """lintで落ちた設問を、その理由付きで再生成(バッチ)。"""
+    fb = json.dumps([{"q": f["q"], "lint_errors": f["errs"]} for f in failed], ensure_ascii=False)
+    user = (GEN_USER_TMPL.format(name=name, n=len(failed), sources=_sources_block(corpus))
+            + "\n\n以下は前回lintで不合格になった設問と理由。根拠が本文に無いものは別の実在数値で作り直すか、"
+              "本文で確実に裏取りできる別テーマ(セグメント/沿革/製品/会社概要)に差し替えて再出力:\n" + fb)
+    txt = openai_chat([{"role": "system", "content": GEN_SYS}, {"role": "user", "content": user}],
+                      model=GEN_MODEL, max_tokens=4000)
+    try:
+        return json.loads(txt).get("questions", [])
+    except Exception:
+        return []
+
+
+# ── lint収束 ─────────────────────────────────────────────
+def lint_one(q, corpus):
+    r = QL.run_quiz_lints([q], corpus)
+    errs = [f"{f['lint']}:{f['detail']}" for f in r["findings"] if f["severity"] == "error"]
+    return errs
+
+def converge(slug, name, corpus, target=30, max_fix=2):
+    """生成→lint→不合格は最大2回fix→なお不合格は破棄。(passed[], dropped_count)"""
+    passed, pool = [], generate(name, corpus, target)
+    for _round in range(max_fix + 1):
+        survivors, failed = [], []
+        for q in pool:
+            q.setdefault("id", "")
+            errs = lint_one(q, corpus)
+            (survivors if not errs else failed).append((q, errs))
+        for q, _e in survivors:
+            passed.append(q)
+        passed = _dedup(passed)
+        if len(passed) >= target or not failed or _round == max_fix:
+            break
+        pool = fix_failures(name, corpus, [{"q": q, "errs": e} for q, e in failed])
+    # id 採番
+    final = []
+    for i, q in enumerate(passed[:target], 1):
+        q["id"] = f"{slug}_{i:02d}"
+        final.append(q)
+    # 再lintで最終保証(id重複等)
+    r = QL.run_quiz_lints(final, corpus)
+    if r["errors"] > 0:  # 念のため error 残存は除去
+        good = []
+        for q in final:
+            if not lint_one(q, corpus):
+                good.append(q)
+        final = [{**q, "id": f"{slug}_{i:02d}"} for i, q in enumerate(good, 1)]
+    dropped = target - len(final)
+    return final, max(0, dropped)
+
+def _dedup(qs):
+    seen, out = set(), []
+    for q in qs:
+        k = q.get("q_text", "").strip()[:40]
+        if k in seen: continue
+        seen.add(k); out.append(q)
+    return out
+
+
+# ── OpenAI レビュー(R1-R6) ───────────────────────────────
+REVIEW_SYS = (
+ "あなたはクイズ品質の独立審査員。各設問を提供された source スニペットのみに照らし、次のルーブリックで採点:\n"
+ "R1 正解と解説が引用スニペットと論理的に整合(問う項目と数値種別が一致・税引前利益と当期利益等の取り違えを検出)\n"
+ "R2 暗記トリビア(総会日・配当支払日等の日程)は不合格\n"
+ "R3 順位/最大/最高設問は全競合の数値+比較が揃っているか。EPS等株数依存指標の社間比較は不合格\n"
+ "R4 バッチの設問ミックス(財務≤15/30、残りは事業・会社概要・沿革・製品) を評価\n"
+ "R5 誤答3つが同一source内実数で妥当\n"
+ "R6 正解ちょうど1つ・正解が実際に正しい\n"
+ "出力JSON: {\"results\":[{\"id\":\"..\",\"pass\":true,\"reasons\":\"..\"}],"
+ "\"systemic_flags\":[\"..\"],\"pass_rate\":0.0}. systemic_flags は同一ルール違反が多発した場合のみ、"
+ "該当ルール名(R1..R6)と要約を入れる。")
+
+def review_batch(items):
+    """items: [{id,q_text,options,correct,explanation,source_url,category,snippets}]"""
+    payload = json.dumps(items, ensure_ascii=False)[:24000]
+    txt = openai_chat([{"role": "system", "content": REVIEW_SYS},
+                       {"role": "user", "content": "採点対象:\n" + payload}],
+                      model=REVIEW_MODEL, max_tokens=3000)
+    try:
+        d = json.loads(txt)
+    except Exception:
+        d = {"results": [], "systemic_flags": ["review_parse_error"], "pass_rate": 0.0}
+    return d
+
+def _flex_ctx(body, needle, width=60):
+    chars = [c for c in needle if not c.isspace() and c not in ",，"]
+    if len(chars) < 2:
+        return None
+    m = re.search(r"[\s,，]*".join(re.escape(c) for c in chars), body)
+    if not m:
+        return None
+    return re.sub(r"\s+", " ", body[max(0, m.start() - width): m.end() + width])
+
+def snippets_for(q, corpus, width=60):
+    """レビュー用の証拠スニペット。数値設問は該当数値の周辺、非数値設問は正解語の周辺を引用。
+    どうしても取れなければ corpus 先頭抜粋を渡す(reviewerが評価不能にならないように)。"""
+    body = corpus.get(q.get("source_url"), "")
+    out = []
+    # ① 各選択肢の主要数値(>=3桁)の周辺
+    for o in q.get("options", []):
+        for m in QL.NUM_RE.finditer(str(o)):
+            tok = QL._norm_num(m.group(0))
+            if len(tok.replace(".", "")) < 3:
+                continue
+            if re.search(r"[\s,，]*".join(re.escape(c) for c in tok), QL._norm_num(body)):
+                c = _flex_ctx(body, tok, width)
+                if c:
+                    out.append(c)
+            break
+    # ② 非数値設問: 正解の語句の周辺(セグメント名/製品/人名/会社概要 等)
+    if not out:
+        corr = str(q.get("options", ["", "", "", ""])[q.get("correct", 0)]).strip()
+        c = _flex_ctx(body, corr.replace(" ", ""), width + 20)
+        if c:
+            out.append(c)
+    # ③ フォールバック: corpus 先頭抜粋(reviewerが「証拠なし」で機械的にfailしないため)
+    if not out and body:
+        out.append(re.sub(r"\s+", " ", body[:280]))
+    # 重複除去
+    seen, uniq = set(), []
+    for s in out:
+        if s in seen:
+            continue
+        seen.add(s); uniq.append(s)
+    return uniq[:4]
+
+
+# ── 対象リスト ───────────────────────────────────────────
+def load_targets():
+    d = json.load(open(COMPANIES, encoding="utf-8"))
+    companies, industries = [], []
+    for industry, lst in d.items():
+        members = [(c["id"], c["name"]) for c in lst if c.get("id") and c.get("name")]
+        for cid, cname in members:
+            companies.append({"kind": "company", "slug": cid, "name": cname, "industry": industry})
+        industries.append({"kind": "industry", "slug": f"industry__{_ind_slug(industry)}",
+                           "name": industry, "members": members[:5]})
+    return companies, industries
+
+def _ind_slug(s):
+    return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-") or hashlib.md5(s.encode()).hexdigest()[:6]
+
+
+# ── 状態(resumable) ──────────────────────────────────────
+def load_state():
+    if os.path.exists(STATE_PATH):
+        return json.load(open(STATE_PATH, encoding="utf-8"))
+    return {"done": [], "blocked": [], "counts": {"q": 0, "dropped": 0},
+            "checkpoints": [], "grad_streak": 0, "graduated": False,
+            "rule_tuning": 0, "halted": False, "cost_usd": 0.0}
+
+def save_state(st):
+    st["cost_usd"] = round(_cost["usd"], 4)
+    json.dump(st, open(STATE_PATH, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+
+def record_blocked(slug, name, got, reason):
+    newfile = not os.path.exists(BLOCKED_CSV)
+    with open(BLOCKED_CSV, "a", encoding="utf-8", newline="") as fh:
+        w = csv.writer(fh)
+        if newfile: w.writerow(["slug", "name", "got", "reason", "ts"])
+        w.writerow([slug, name, got, reason, int(time.time())])
+
+NEEDS_CSV = os.path.join(OUT, "quiz_needs_source.csv")
+def record_needs_source(slug, name, got, reason):
+    """公式一次情報が無い/薄い社(roomの倍率ブロック同方式・後で手当て)。"""
+    newfile = not os.path.exists(NEEDS_CSV)
+    with open(NEEDS_CSV, "a", encoding="utf-8", newline="") as fh:
+        w = csv.writer(fh)
+        if newfile: w.writerow(["slug", "name", "got", "reason", "ts"])
+        w.writerow([slug, name, got, reason, int(time.time())])
+
+
+# ── 1社処理 ──────────────────────────────────────────────
+def process_one(tgt):
+    slug, name, kind = tgt["slug"], tgt["name"], tgt["kind"]
+    outdir = os.path.join(OUT, slug)
+    os.makedirs(outdir, exist_ok=True)
+    out_q = os.path.join(outdir, "quiz_30q.json")
+    if os.path.exists(out_q):
+        try:
+            nq = len(json.load(open(out_q)))
+            return {"slug": slug, "name": name, "n": nq, "dropped": 0, "blocked": False,
+                    "skipped": True, "corpus_ok": True, "needs_source": False, "kind": kind}
+        except Exception:
+            pass
+    try:
+        if kind == "industry":
+            corpus = {}
+            for cid, cname in tgt.get("members", []):
+                corpus.update(acquire_corpus(cname, cid))
+                if not cost_ok(): break
+        else:
+            corpus = acquire_corpus(name, slug)
+        if not corpus:
+            record_needs_source(slug, name, 0, "no_official_url(ファクトシートに公式ドメインURL無し/薄い)")
+            return {"slug": slug, "name": name, "n": 0, "dropped": 0, "blocked": True,
+                    "needs_source": True, "corpus_ok": False, "kind": kind}
+        final, dropped = converge(slug, name, corpus, target=30)
+        json.dump(final, open(out_q, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+        json.dump(corpus, open(os.path.join(outdir, "quiz_corpus.json"), "w", encoding="utf-8"),
+                  ensure_ascii=False)
+        if len(final) < 30:
+            record_needs_source(slug, name, len(final), f"under30(公式URLは有るがcorpus薄い: {len(final)}/30)")
+        return {"slug": slug, "name": name, "n": len(final), "dropped": dropped,
+                "blocked": len(final) < 30, "needs_source": len(final) < 30, "corpus_ok": True,
+                "kind": kind, "corpus_urls": list(corpus.keys())}
+    except Exception as e:
+        record_needs_source(slug, name, 0, f"error:{type(e).__name__}:{str(e)[:80]}")
+        return {"slug": slug, "name": name, "n": 0, "dropped": 0, "blocked": True,
+                "needs_source": True, "corpus_ok": False, "kind": kind, "err": str(e)[:120]}
+
+
+# ── チェックポイント(レビュー+report+commit+LINE) ────────
+def checkpoint(st, batch_results, cp_idx):
+    # レビュー対象サンプル抽出(順位・非財務・新規社優先)
+    sample = []
+    for res in batch_results:
+        if res.get("blocked") or res.get("n", 0) == 0: continue
+        try:
+            qs = json.load(open(os.path.join(OUT, res["slug"], "quiz_30q.json")))
+            corpus = json.load(open(os.path.join(OUT, res["slug"], "quiz_corpus.json")))
+        except Exception:
+            continue
+        ranked = [q for q in qs if q.get("type") == "rank" or q.get("category") == "業界順位"]
+        nonfin = [q for q in qs if q.get("category") not in ("財務数値", "業界順位")]
+        pick = (ranked[:2] + nonfin[:2] + qs[:1])
+        for q in pick:
+            sample.append({"id": q["id"], "q_text": q["q_text"], "options": q["options"],
+                           "correct": q["correct"], "explanation": q.get("explanation", ""),
+                           "category": q.get("category"), "source_url": q.get("source_url"),
+                           "snippets": snippets_for(q, corpus)})
+        if len(sample) >= REVIEW_K: break
+    sample = sample[:REVIEW_K]
+    review = review_batch(sample) if (sample and not st["graduated"]) else {"results": [], "systemic_flags": [], "pass_rate": 1.0}
+    pass_rate = review.get("pass_rate", 1.0)
+    sysflags = review.get("systemic_flags", [])
+    # lint統計(バッチ)
+    lint_err = 0
+    for res in batch_results:
+        if res.get("blocked"): continue
+        try:
+            qs = json.load(open(os.path.join(OUT, res["slug"], "quiz_30q.json")))
+            corpus = json.load(open(os.path.join(OUT, res["slug"], "quiz_corpus.json")))
+            lint_err += QL.run_quiz_lints(qs, corpus)["errors"]
+        except Exception:
+            pass
+    # このバッチの 公式URL取得成否
+    b_corpus_ok = sum(1 for r in batch_results if r.get("corpus_ok"))
+    b_needs = sum(1 for r in batch_results if r.get("needs_source"))
+    cp = {"cp": cp_idx, "done": len(st["done"]), "q": st["counts"]["q"],
+          "dropped": st["counts"]["dropped"], "blocked": len(st["blocked"]),
+          "batch_corpus_ok": b_corpus_ok, "batch_needs_source": b_needs,
+          "lint_err": lint_err, "pass_rate": pass_rate, "systemic": sysflags,
+          "cost": round(_cost["usd"], 2)}
+    st["checkpoints"].append(cp)
+    # 卒業判定
+    if lint_err == 0 and pass_rate >= GRAD_PASS and not sysflags:
+        st["grad_streak"] += 1
+        if st["grad_streak"] >= 3 and not st["graduated"]:
+            st["graduated"] = True
+    else:
+        st["grad_streak"] = 0
+    # サンプルreview.md(1社)を受け渡しフォルダへ
+    try:
+        _write_sample_review(batch_results, cp_idx)
+    except Exception:
+        pass
+    # HALT判定: 単発のレビュー偽陽性で全体を止めないため、真の恒常systemicに限定。
+    #   (1) バッチ全体でpass率が崩れた(<0.85) -> 即HALT
+    #   (2) 同種systemicが2チェックポイント連続 -> HALT(恒常systemic)
+    #   (3) 既知ノブ(R2/R3/R4/date/rank/eps/mix)由来は tuning(最大2)で吸収し止めない
+    halt = False
+    known = ("R2", "R3", "R4", "date", "rank", "eps", "mix")
+    persistent_sys = bool(sysflags) and bool(st.get("prev_sysflags"))
+    if sysflags and any(any(k in str(f) for k in known) for f in sysflags) and st["rule_tuning"] < 2:
+        st["rule_tuning"] += 1   # 既知ノブ->プロンプト強化余地(lintは既に強化済)
+    elif persistent_sys:
+        halt = True              # 2CP連続の未知systemic=恒常->停止して相談
+    if pass_rate < 0.85:
+        halt = True
+    st["prev_sysflags"] = sysflags
+    st["halted"] = halt
+    save_state(st)
+    # commit/push (privateのtokyari-pipeline側に成果, 10koma側にコード/状態は別途)
+    _commit_push(cp_idx, cp)
+    msg = (f"[quiz CP{cp_idx}] 完了{cp['done']}社 / 公式URL取得{b_corpus_ok}・needs_source{b_needs} / "
+           f"生成{cp['q']}問 / 破棄{cp['dropped']} / lint_err{lint_err} / pass{pass_rate:.0%} / ${cp['cost']}"
+           + (" / ★卒業(以降lint主体)" if st["graduated"] else "")
+           + (f" / ⚠HALT systemic={sysflags}" if halt else ""))
+    line(msg)
+    return halt
+
+def _write_sample_review(batch_results, cp_idx):
+    cand = [r for r in batch_results if not r.get("blocked") and r.get("n", 0) >= 20]
+    if not cand: return
+    res = cand[0]
+    qs = json.load(open(os.path.join(OUT, res["slug"], "quiz_30q.json")))
+    corpus = json.load(open(os.path.join(OUT, res["slug"], "quiz_corpus.json")))
+    md = [f"# quiz 検分サンプル CP{cp_idx}: {res['name']} ({res['slug']})", ""]
+    for i, q in enumerate(qs, 1):
+        md.append(f"### {i}. {q['id']} — {q.get('category')}")
+        md.append(f"**設問**: {q['q_text']}")
+        for j, o in enumerate(q["options"]):
+            md.append(f"- {'★' if j == q['correct'] else '　'} {o}")
+        md.append(f"as_of: {q.get('as_of')} / source: {q.get('source_url')}")
+        for s in snippets_for(q, corpus):
+            md.append(f"  - 裏取り: …{s}…")
+        md.append("")
+    os.makedirs(HANDOFF, exist_ok=True)
+    open(os.path.join(HANDOFF, f"quiz_sample_CP{cp_idx}_{res['slug']}.md"), "w",
+         encoding="utf-8").write("\n".join(md))
+
+def _commit_push(cp_idx, cp):
+    # コードと状態は 10koma(public) にはコード/レポートのみ。成果JSONは private tokyari-pipeline に。
+    try:
+        # quiz関連のみをstage(無関係な output 変更を巻き込まない)
+        git("add", "output/_quiz_fanout_state.json", "output/quiz_blocked.csv",
+            "output/quiz_needs_source.csv", "output/*/quiz_30q.json", "output/*/quiz_corpus.json", cwd=PIPE)
+        git("-c", "user.email=quiz@local", "-c", "user.name=quiz-fanout",
+            "commit", "-q", "-m", f"quiz-fanout CP{cp_idx}: done={cp['done']} q={cp['q']} blocked={cp['blocked']} pass={cp['pass_rate']}", cwd=PIPE)
+        git("push", "-q", "origin", "HEAD", cwd=PIPE)
+    except Exception as e:
+        print("[commit ERR]", e)
+
+
+# ── メイン ───────────────────────────────────────────────
+def run(targets, st, is_validate=False):
+    # ローリング投入: 全タスクを一括submitするとexecutor drainでHALT/コストガードが
+    # 実効しない。同時にPARALLEL件だけ走らせ、stop判断後は新規投入を止める(超過は最大PARALLEL-1)。
+    from concurrent.futures import wait, FIRST_COMPLETED
+    doneset = set(st["done"])
+    blk = set(b if isinstance(b, str) else b.get("slug") for b in st["blocked"])
+    pending = [t for t in targets if t["slug"] not in doneset and t["slug"] not in blk]
+    print(f"対象 {len(targets)} / 未処理 {len(pending)} / done {len(st['done'])}", flush=True)
+    batch = []
+    stop_reason = None
+    it = iter(pending)
+    with ThreadPoolExecutor(max_workers=PARALLEL) as ex:
+        inflight = {}
+        for _ in range(PARALLEL):
+            t = next(it, None)
+            if t: inflight[ex.submit(process_one, t)] = t
+        while inflight:
+            done, _pend = wait(list(inflight), return_when=FIRST_COMPLETED)
+            for fut in done:
+                inflight.pop(fut, None)
+                res = fut.result()
+                with _lock:
+                    if res["slug"] not in st["done"]:
+                        st["done"].append(res["slug"])
+                    st["counts"]["q"] += res.get("n", 0)
+                    st["counts"]["dropped"] += res.get("dropped", 0)
+                    if res.get("blocked"):
+                        st["blocked"].append({"slug": res["slug"], "name": res["name"], "n": res.get("n", 0)})
+                batch.append(res)
+                print(f"  {'SKIP' if res.get('skipped') else 'DONE'} {res['slug']}: n={res.get('n')} "
+                      f"blocked={res.get('blocked')} ${_cost['usd']:.2f}", flush=True)
+                if not cost_ok():
+                    stop_reason = "cost_stop"
+                if len(batch) >= CHECKPOINT_EVERY and not is_validate:
+                    cp_idx = len(st["checkpoints"]) + 1
+                    halt = checkpoint(st, batch, cp_idx)
+                    batch = []
+                    if halt:
+                        line(f"⚠️ HALT CP{cp_idx}: systemic恒常化。ファンアウト一時停止。")
+                        stop_reason = "halt"
+                if stop_reason is None:  # 新規投入は stop でない時のみ(超過を防ぐ)
+                    nt = next(it, None)
+                    if nt: inflight[ex.submit(process_one, nt)] = nt
+            if stop_reason:
+                break  # 新規投入停止。inflight(<=PARALLEL)はwith脱出時にdrainされるが最大2件
+    if stop_reason == "cost_stop":
+        save_state(st); line(f"⚠️ COST_GUARD ${_cost['usd']:.2f}>=${MAX_USD} 停止。done={len(st['done'])}")
+        return "cost_stop"
+    if stop_reason == "halt":
+        save_state(st); return "halt"
+    if batch and not is_validate:
+        checkpoint(st, batch, len(st["checkpoints"]) + 1)
+    save_state(st)
+    return "done"
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--validate", type=int, default=0, help="少数社を同期検証(背景化しない)")
+    ap.add_argument("--run", action="store_true", help="本番: 全社(company→industry)")
+    ap.add_argument("--industries-only", action="store_true")
+    args = ap.parse_args()
+    if not OPENAI_KEY:
+        print("NO OPENAI_API_KEY"); return 2
+    companies, industries = load_targets()
+    st = load_state()
+    if args.validate:
+        targets = companies[:args.validate]
+        st2 = {"done": [], "blocked": [], "counts": {"q": 0, "dropped": 0}, "checkpoints": [],
+               "grad_streak": 0, "graduated": False, "rule_tuning": 0, "halted": False, "cost_usd": 0.0}
+        run(targets, st2, is_validate=True)
+        print("\n=== VALIDATE 集計 ===")
+        print(json.dumps({"done": len(st2["done"]), "q": st2["counts"]["q"],
+                          "dropped": st2["counts"]["dropped"], "blocked": st2["blocked"],
+                          "cost_usd": round(_cost["usd"], 3)}, ensure_ascii=False, indent=1))
+        return 0
+    if args.run:
+        targets = ([] if args.industries_only else companies) + industries
+        status = run(targets, st, is_validate=False)
+        # 最終集約
+        agg = {"status": status, "done": len(st["done"]), "q": st["counts"]["q"],
+               "dropped": st["counts"]["dropped"], "blocked": len(st["blocked"]),
+               "checkpoints": st["checkpoints"], "cost_usd": round(_cost["usd"], 2)}
+        json.dump(agg, open(os.path.join(HANDOFF, "quiz_fanout_summary.json"), "w", encoding="utf-8"),
+                  ensure_ascii=False, indent=1)
+        line(f"[quiz FINAL {status}] 完了{agg['done']} / 問{agg['q']} / blocked{agg['blocked']} / ${agg['cost_usd']}")
+        return 0
+    ap.print_help(); return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
