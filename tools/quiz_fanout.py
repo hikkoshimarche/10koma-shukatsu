@@ -367,13 +367,13 @@ GEN_USER_TMPL = (
  "数値/日付は必ず source 本文に実在する表記のまま(百万円・円・%・完全な日付)。捏造禁止。"
 )
 
-def _sources_block(corpus, max_chars=14000):
-    blocks, budget = [], max_chars
+def _sources_block(corpus, max_chars=16000):
+    # 予算を各ソースに均等配分(先頭PDFで埋め尽くさない=非財務ページも必ず生成に見せる)。
+    n = max(1, len(corpus))
+    per = max(1800, max_chars // n)
+    blocks = []
     for url, body in corpus.items():
-        take = body[:min(len(body), budget)]
-        blocks.append(f"===== source_url: {url} =====\n{take}")
-        budget -= len(take)
-        if budget <= 0: break
+        blocks.append(f"===== source_url: {url} =====\n{body[:per]}")
     return "\n\n".join(blocks)
 
 def generate(name, corpus, n=30, extra=""):
@@ -464,18 +464,23 @@ def _review_pass_ids(qs, corpus):
     rate = (len(passed) / graded) if graded else 1.0
     return passed, rate
 
-def converge_locked(slug, name, corpus, target=30, max_round=3, extra=""):
-    """品質固定: 生成→lint収束→OpenAI R1-R6レビュー→pass分のみ採用。不足は再生成でbackfill。
-    返り: (final[], dropped, review_pass_rate)。final は lint error=0 かつ review pass。"""
-    accepted, seen_q = [], set()
+def converge_locked(slug, name, corpus, target=30, max_round=4, extra=""):
+    """品質固定: 生成→lint収束→OpenAI R1-R6レビュー→pass分のみ採用。ミックス強制(財務≤target/2)。
+    不足は非財務優先で再生成backfill。返り: (final[], dropped, review_pass_rate)。lint error=0 かつ review pass。"""
+    FIN = "財務数値"
+    fin_cap = target // 2      # 財務は最大15/30
+    accepted, seen_q, fin_n = [], set(), 0
     last_rate = 1.0
     for rnd in range(max_round):
         need = target - len(accepted)
         if need <= 0:
             break
-        pool = generate(name, corpus, max(need + 6, 12), extra=extra) if rnd == 0 else \
-               generate(name, corpus, max(need + 6, 10), extra=extra)
-        # lintゲート
+        # 財務が上限なら、以降は非財務のみを要求(ミックス担保)
+        dyn = extra
+        if fin_n >= fin_cap:
+            dyn = (extra + "\n【重要】財務数値の設問は上限に達した。ここからは財務数値を一切作らず、"
+                   "必ず 事業セグメント/会社概要/沿革/製品・サービス/人名・役員 のカテゴリだけで作ること。")
+        pool = generate(name, corpus, max(need + 6, 12), extra=dyn)
         lint_ok = []
         for q in pool:
             q.setdefault("id", "")
@@ -486,18 +491,21 @@ def converge_locked(slug, name, corpus, target=30, max_round=3, extra=""):
         if not lint_ok:
             if not cost_ok(): break
             continue
-        # 仮id付与(レビュー用)
         for j, q in enumerate(lint_ok):
             q["id"] = f"{slug}_r{rnd}_{j:02d}"
-        # レビューゲート
         passed_ids, rate = _review_pass_ids(lint_ok, corpus)
         last_rate = rate
-        for q in lint_ok:
-            if q["id"] in passed_ids:
-                accepted.append(q)
+        # 非財務を優先採用し、財務は fin_cap で打ち止め
+        for q in sorted(lint_ok, key=lambda x: 1 if x.get("category") == FIN else 0):
+            if q["id"] not in passed_ids or len(accepted) >= target:
+                continue
+            if q.get("category") == FIN:
+                if fin_n >= fin_cap:
+                    continue
+                fin_n += 1
+            accepted.append(q)
         if not cost_ok():
             break
-    # 通し番号
     final = [{**q, "id": f"{slug}_{i:02d}"} for i, q in enumerate(accepted[:target], 1)]
     dropped = target - len(final)
     return final, max(0, dropped), round(last_rate, 3)
