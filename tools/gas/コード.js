@@ -142,16 +142,24 @@ function doPost(e){
     (body.events||[]).forEach(function(ev){
       if(ev.source){
         Logger.log('source: '+JSON.stringify(ev.source));
+        // 【SECURITY 2026-07-21 漏洩是正】@249zmkldは一般ユーザーが友だち追加する公開bot。
+        // webhookのsourceを無条件でLINE_GROUP_ID/LINE_OSCAR_IDに保存すると、外部ユーザーの
+        // DM/グループ招待が運営宛先を"乗っ取り"、運営レポート(判断ダイジェスト等)が外部の
+        // 個人LINEへ漏洩する(実害: 2026-07-13〜07-21, LINE_OSCAR_IDが外部ID …aca1b1 に乗っ取られた)。
+        // → 自動捕捉は廃止。宛先は認証付き mode=setlineoscar / setlinegroup でのみ設定する。
+        // LINE_GROUP_ID は「未設定時の初回bootstrap」に限り許可(上書き禁止)。以下は監査ログのみ。
         if(ev.source.type==='group' && ev.source.groupId){
-          PropertiesService.getScriptProperties().setProperty('LINE_GROUP_ID', ev.source.groupId);
-        }
-        // 1:1(user)メッセージ = オスカー個人userId を捕捉(人QA/判断の宛先分離用)。
-        // 監査ログに全userIdを残し、最新の1:1送信者を LINE_OSCAR_ID に設定(オスカーが1通送る運用)。
-        if(ev.source.type==='user' && ev.source.userId){
           const pr = PropertiesService.getScriptProperties();
-          pr.setProperty('LINE_OSCAR_ID', ev.source.userId);
-          pr.setProperty('LINE_OSCAR_ID_CAPTURED_AT', new Date().toISOString());
-          Logger.log('LINE_OSCAR_ID captured: '+ev.source.userId);
+          if(!pr.getProperty('LINE_GROUP_ID')){
+            pr.setProperty('LINE_GROUP_ID', ev.source.groupId);          // bootstrapのみ
+            Logger.log('LINE_GROUP_ID bootstrap set: '+ev.source.groupId);
+          } else {
+            Logger.log('group event ignored (already set, 乗っ取り防止): '+ev.source.groupId);
+          }
+        }
+        if(ev.source.type==='user' && ev.source.userId){
+          // 自動捕捉は廃止(乗っ取り防止)。監査ログのみ残す。LINE_OSCAR_IDは変更しない。
+          Logger.log('user 1:1 event (NOT captured — security; audit only): '+ev.source.userId);
         }
       }
     });

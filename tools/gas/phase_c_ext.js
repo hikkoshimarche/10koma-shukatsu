@@ -265,9 +265,15 @@ function handleExt(mode, e, token){
     if(!tk) return _json({error:'no token in ScriptProperties'});
     const hdr = { headers:{ Authorization:'Bearer '+tk }, muteHttpExceptions:true };
     const out = { token_tail: tk.slice(-6), group_id: (gid||'') };
-    [['quota','https://api.line.me/v2/bot/message/quota'],
+    var _eps = [['quota','https://api.line.me/v2/bot/message/quota'],
      ['consumption','https://api.line.me/v2/bot/message/quota/consumption'],
-     ['botinfo','https://api.line.me/v2/bot/info']].forEach(function(p){
+     ['botinfo','https://api.line.me/v2/bot/info']];
+    // 漏洩調査(2026-07-21): group宛pushの実受信者数を特定するため members/count と summary を read-only で取得
+    if(gid){
+      _eps.push(['group_members_count','https://api.line.me/v2/bot/group/'+gid+'/members/count']);
+      _eps.push(['group_summary','https://api.line.me/v2/bot/group/'+gid+'/summary']);
+    }
+    _eps.forEach(function(p){
       try{
         const r = UrlFetchApp.fetch(p[1], hdr);
         out[p[0]] = { code:r.getResponseCode(), body:r.getContentText() };
@@ -375,6 +381,24 @@ function handleExt(mode, e, token){
     const g = pr.getProperty('LINE_GROUP_ID')||'', o = pr.getProperty('LINE_OSCAR_ID')||'';
     return _json({has_group:!!g, group_tail:g.slice(-6), has_oscar:!!o, oscar_tail:o.slice(-6),
                   oscar_captured_at:pr.getProperty('LINE_OSCAR_ID_CAPTURED_AT')||''});
+  }
+  if(mode === 'setlineoscar'){
+    // 【SECURITY 2026-07-21】LINE_OSCAR_ID は認証付きでのみ設定/解除(旧: webhook自動捕捉=乗っ取り可)。
+    // id空=解除(_pushLineOscarはskip=送信停止)。id指定=そのIDへ設定。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const v = (e.parameter.id||'').trim();
+    const pr = PropertiesService.getScriptProperties();
+    if(v){ pr.setProperty('LINE_OSCAR_ID', v); pr.setProperty('LINE_OSCAR_ID_CAPTURED_AT', new Date().toISOString()); }
+    else { pr.deleteProperty('LINE_OSCAR_ID'); }
+    return _json({ok:true, set:!!v, tail:v.slice(-6)});
+  }
+  if(mode === 'setlinegroup'){
+    // 【SECURITY 2026-07-21】LINE_GROUP_ID を認証付きで固定設定(旧: webhook自動保存=乗っ取り可)。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const v = (e.parameter.id||'').trim();
+    if(!v) return _json({error:'no id'});
+    PropertiesService.getScriptProperties().setProperty('LINE_GROUP_ID', v);
+    return _json({ok:true, tail:v.slice(-6)});
   }
   if(mode === 'pushoscar'){
     // オスカー個人宛て送信(人QA依頼/運用アラート)。ID未設定ならグループへ送らずskip。
@@ -1094,7 +1118,13 @@ function handleExt(mode, e, token){
   return null; // 未知mode → 既存doGetのfallbackへ
 }
 
-/* ---------- LINE 共通 ---------- */
+/* ---------- LINE 共通 ----------
+ * 【送信規約 / SECURITY】LINE送信はこの2関数(_pushLine=運営グループ宛 / _pushLineOscar=オスカー個人宛)に集約する。
+ *   ・宛先は必ず ScriptProperties の LINE_GROUP_ID / LINE_OSCAR_ID(=to引数)を使う push のみ。
+ *   ・/v2/bot/message/broadcast および /multicast の使用は【禁止】(公開bot=全友だちへ漏洩する)。
+ *   ・新規に api.line.me を直叩きするコードを足さない。必ずこの共通関数を経由する。
+ *   ・宛先IDの webhook自動捕捉は廃止済み(コード.js doPost)。設定は mode=setlineoscar/setlinegroup(認証付き)のみ。
+ */
 function _pushLine(text){
   const props = PropertiesService.getScriptProperties();
   const token = props.getProperty('LINE_CHANNEL_ACCESS_TOKEN');
