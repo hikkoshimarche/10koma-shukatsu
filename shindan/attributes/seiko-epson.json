@@ -1,0 +1,85 @@
+{
+ "slug": "seiko-epson",
+ "name": "セイコーエプソン",
+ "industry": "電機・精密・重工",
+ "soft": {
+  "tenkin_do": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "kaigai_do": {
+   "value": 5,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "stability": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "growth": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "remote_flex": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "young_discretion": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "bunri": {
+   "value": "理系寄り",
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "job_tags": {
+   "value": [
+    "研究・開発",
+    "生産・技術",
+    "営業"
+   ],
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  }
+ },
+ "facts": {
+  "avg_salary": null,
+  "starting_salary": {
+   "value": 239000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://typeshukatsu.jp/company/1580/recruitment/143/",
+    "quote": "**初任給**: 学部卒 239,000円、修士了 264,000円（2023年4月実績）[出典](https://typeshukatsu.jp/company/1580/recruitment/143/)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
+  "industry": {
+   "value": "電機・精密・重工",
+   "estimated": false
+  }
+ },
+ "trend_note": "海外売上83%で国際展開が強く、精密機器開発の継続成長で海外駐在機会が豊富。老舗の安定基盤を保ちながら新規事業展開も積極",
+ "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
+ "lint": {
+  "errors": [],
+  "notes": [
+   "avg_salary: 有報grade出典なし→null(定性提案)"
+  ]
+ }
+}

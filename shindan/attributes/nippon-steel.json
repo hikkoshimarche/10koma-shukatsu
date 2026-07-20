@@ -1,0 +1,85 @@
+{
+ "slug": "nippon-steel",
+ "name": "日本製鉄",
+ "industry": "鉄鋼・素材・化学",
+ "soft": {
+  "tenkin_do": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "kaigai_do": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "stability": {
+   "value": 5,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "growth": {
+   "value": 2,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "remote_flex": {
+   "value": 2,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "young_discretion": {
+   "value": 2,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "bunri": {
+   "value": "理系寄り",
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "job_tags": {
+   "value": [
+    "研究・開発",
+    "生産・技術",
+    "品質管理"
+   ],
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  }
+ },
+ "facts": {
+  "avg_salary": null,
+  "starting_salary": {
+   "value": 265000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://salary.migi-nanameue.co.jp/column/nihonseitetsu/",
+    "quote": "**初任給**: 学士265,000円/月、修士290,000円/月（2025年度） [出典](https://salary.migi-nanameue.co.jp/column/nihonseitetsu/)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
+  "industry": {
+   "value": "鉄鋼・素材・化学",
+   "estimated": false
+  }
+ },
+ "trend_note": "老舗インフラ企業として安定性極高。一方近期利益減・成長率低迷傾向。製鉄所転勤は必須、若手裁量は限定的。理系技術職向け。",
+ "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
+ "lint": {
+  "errors": [],
+  "notes": [
+   "avg_salary: 有報grade出典なし→null(定性提案)"
+  ]
+ }
+}
