@@ -167,7 +167,12 @@ BLOCK = ("nikkei", "yahoo", "irbank", "gaishishukatsu", "salesnow", "note.com", 
          "x.com", "facebook", "linkedin", "prtimes", "wikipedia", "jbic.go.jp",
          "google", "amazonaws", "hatena", "ameblo", "livedoor", "wantedly",
          "jobree", "job.", "tenshoku", "hataraku", "career-", "shukatsu", "vorkers",
-         "lightworks", "unistyle", "job-", "/tips/")
+         "lightworks", "unistyle", "job-", "/tips/",
+         # v3-3 主要メディア/情報サイト(本体誤認防止・strong signal判定と二重で)
+         "impress", "itmedia", "response.jp", "carview", "goo-net", "autoc", "clicccar",
+         "webcg", "president.jp", "sbbit", "gigazine", "famitsu", "4gamer", "carsensor",
+         "kakaku", "watch.impress", "nikkeibp", "xtech", "gamer.ne", "automesse",
+         "coralcap", "strainer", "logmi", "businessinsider", "forbes", "newspicks")
 GOOD_HINT = ("ir", "library", "meeting", "securities", "tanshin", "kessan", "financial",
              "company", "outline", "profile", "corporate", "about", "recruit", "saiyo",
              "release", "news", "pdf")
@@ -239,19 +244,33 @@ def _factsheet_official_urls(slug, name):
         txt = "".join(x.get("plain_text", "") for x in rt)
         for u in re.findall(r"https?://[^\s)\]\"'>」）]+", txt):
             urls.add(u)
-    cand, score = [], {}
+    # ★v3-3 公式ドメイン判定: IR/会社概要/短信PDF/有報の“強いシグナル”を持つドメインのみ公式とみなす。
+    #   第三者メディア(impress/watch等 /news/だけ)を本体に誤認しない。強シグナルが無ければ needs_source。
+    def _strong(path, is_pdf):
+        if is_pdf: return 3
+        if any(k in path for k in ("securities", "yuho", "yuka", "有報")): return 3
+        if any(k in path for k in ("/ir/", "/ir?", "/ir#", "ir/library", "library", "financial",
+                                   "tanshin", "kessan", "earnings", "/investor")): return 2
+        if any(k in path for k in ("/company", "/outline", "/profile", "/corporate", "/about",
+                                   "/companyinfo", "/overview", "/philosophy", "/idea")): return 2
+        if any(k in path for k in ("recruit", "saiyo", "career", "/jobs", "/csr", "/sustainab")): return 1
+        return 0
+    cand, strong, count = [], {}, {}
     for u in urls:
         m = re.match(r"https?://([^/]+)(/[^\s]*)?", u)
         if not m: continue
         host = m.group(1).lower(); path = (m.group(2) or "").lower()
         if any(b in host for b in BLOCK): continue
         rd = _reg_domain(host)
+        is_pdf = u.lower().split("?")[0].endswith(".pdf")
         cand.append((rd, path, u))
-        s = score.setdefault(rd, [0, 0]); s[0] += 1
-        s[1] += sum(1 for h in GOOD_HINT if h in path)
-    if not cand:
-        return [], None
-    official = max(score, key=lambda k: (score[k][0] + score[k][1]))
+        strong[rd] = max(strong.get(rd, 0), _strong(path, is_pdf))
+        count[rd] = count.get(rd, 0) + 1
+    # 強シグナル(>=2: IR/会社概要/PDF/有報)を持つドメインだけ公式候補に
+    qualified = {rd for rd in strong if strong[rd] >= 2}
+    if not qualified:
+        return [], None            # 公式ドメイン不明 → メディアを使わず needs_source
+    official = max(qualified, key=lambda k: (strong[k], count[k]))
     def prio(u):
         ul = u.lower()
         if ul.split("?")[0].endswith(".pdf"): return 0
