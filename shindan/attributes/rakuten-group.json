@@ -1,0 +1,77 @@
+{
+ "slug": "rakuten-group",
+ "name": "楽天グループ",
+ "industry": "IT・通信・SaaS",
+ "soft": {
+  "tenkin_do": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "kaigai_do": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "stability": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "growth": {
+   "value": 5,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "remote_flex": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "young_discretion": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "bunri": {
+   "value": "文理両方",
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "job_tags": {
+   "value": [
+    "エンジニア・IT",
+    "企画・マーケティング",
+    "営業",
+    "金融・フィンテック"
+   ],
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  }
+ },
+ "facts": {
+  "avg_salary": null,
+  "starting_salary": null,
+  "industry": {
+   "value": "IT・通信・SaaS",
+   "estimated": false
+  }
+ },
+ "trend_note": "グローバル展開・多事業ポートフォリオで海外駐在機会豊富。モバイル黒字化・ポイント生態系で急速成長中。若手抜擢文化＆リモー",
+ "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
+ "lint": {
+  "errors": [],
+  "notes": [
+   "avg_salary: 有報grade出典なし→null(定性提案)",
+   "starting_salary: 抽出/照合不可→null"
+  ]
+ }
+}
