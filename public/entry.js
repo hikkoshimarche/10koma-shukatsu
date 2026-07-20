@@ -48,6 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
     el.style.cursor = 'pointer';
     el.setAttribute('role', 'link');
     el.setAttribute('aria-label', 'ホームへ');
-    el.addEventListener('click', () => { location.href = '/index.html'; });
+    el.addEventListener('click', () => { location.href = '/home.html'; });
   });
 });

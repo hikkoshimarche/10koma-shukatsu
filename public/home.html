@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>ホーム | トーキャリ</title>
+  <link rel="stylesheet" href="entry.css">
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="config.js"></script>
+  <script src="entry.js"></script>
+  <style>
+    .home-hero { display:flex; flex-direction:column; align-items:center; padding:26px 18px 6px; }
+    .home-circle {
+      width:96px; height:96px; border-radius:50%; background:#fff;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 5px 18px rgba(0,0,0,0.28); margin-bottom:6px;
+    }
+    .home-circle img { width:88%; height:88%; object-fit:contain; border-radius:50%; }
+
+    .home-sec { padding:16px 16px 2px; }
+    .home-sec-head { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:9px; }
+    .home-sec-title { font-size:15px; font-weight:700; color:#fff; }
+    .home-sec-title .em { color:var(--gold); }
+    .home-sec-more { font-size:12px; font-weight:700; color:rgba(255,255,255,0.8); text-decoration:none; }
+
+    /* 続きから: 横スクロール */
+    .home-row { display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; -webkit-overflow-scrolling:touch; }
+    .home-mini {
+      flex:0 0 auto; width:130px; background:#fff; color:var(--ink); border-radius:14px;
+      padding:12px; text-decoration:none; box-shadow:0 3px 10px rgba(0,0,0,0.16);
+    }
+    .home-mini .badge {
+      width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center;
+      font-family:"Reggae One",sans-serif; font-size:19px; color:#fff; margin-bottom:8px;
+      background-color:var(--acc); background-image:linear-gradient(135deg,rgba(255,255,255,0.3),rgba(255,255,255,0) 62%);
+    }
+    .home-mini .nm { font-size:13.5px; font-weight:700; line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .home-mini .sub { font-size:11px; color:#8792a3; margin-top:3px; }
+
+    /* 復習バナー */
+    .home-review {
+      display:flex; align-items:center; gap:12px; background:linear-gradient(135deg,#12457f,#0a2f5c);
+      border:1.5px solid rgba(231,184,75,0.5); border-radius:16px; padding:14px 16px;
+      color:#fff; text-decoration:none; box-shadow:0 6px 18px rgba(3,20,44,0.4);
+    }
+    .home-review .ic { width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--gold-deep));
+      display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0; }
+    .home-review .tx b { font-size:15px; } .home-review .tx span { display:block; font-size:12px; color:rgba(255,255,255,0.82); margin-top:2px; }
+    .home-review .arrow { margin-left:auto; color:var(--gold); font-weight:700; font-size:20px; }
+
+    /* エントリーカード(企業研究/業界研究/クイズ) */
+    .home-entries { display:flex; flex-direction:column; gap:11px; padding:6px 16px 8px; }
+    .home-entry {
+      display:flex; align-items:center; gap:14px; width:100%; text-align:left;
+      background:#fff; color:var(--ink); border:none; border-radius:16px; padding:15px 16px;
+      cursor:pointer; font-family:inherit; box-shadow:0 3px 12px rgba(0,0,0,0.16);
+      -webkit-tap-highlight-color:transparent; text-decoration:none;
+    }
+    .home-entry .eic { width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:25px;flex-shrink:0; background:#eef3f9; }
+    .home-entry .el { font-size:16px; font-weight:700; } .home-entry .es { font-size:12px; color:#6a7686; margin-top:2px; }
+    .home-entry .ea { margin-left:auto; color:#c3ccd6; font-size:20px; font-weight:700; }
+  </style>
+</head>
+<body>
+<div class="e-wrap">
+  <header class="e-header">
+    <div class="home-hero">
+      <span class="home-circle"><img src="/images/brand/tokyari_logo_mark.jpg" alt="トーキャリ"></span>
+      <div id="guide"></div>
+    </div>
+  </header>
+
+  <div id="continue" class="home-sec" style="display:none"></div>
+  <div id="review" class="home-sec" style="display:none"></div>
+  <div id="favorites" class="home-sec" style="display:none"></div>
+
+  <div class="home-sec"><div class="home-sec-head"><span class="home-sec-title">コンテンツから<span class="em">えらぶ</span></span></div></div>
+  <div class="home-entries" id="entries"></div>
+
+  <div id="notice" class="home-sec" style="display:none"></div>
+
+  <footer class="e-footer">
+    <span class="brand-panel"><img class="brand-logo" src="/images/brand/tokyari_logo_wide.png" alt="トーキャリ"></span>
+  </footer>
+</div>
+
+<script>
+const CFG      = window.TOKYARI || {};
+const LIFF_ID  = CFG.LIFF_HUB || '2010075487-89AJxZnA';
+const API_BASE = CFG.API_BASE  || 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+let lineUserId = null, displayName = '';
+
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+const PAL=['#2f6fb0','#c0392b','#7d3c98','#16a085','#d17d00','#2d8659','#c0448a','#3b5bdb','#b8823a','#2f8fbf'];
+function hue(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return PAL[h%PAL.length];}
+
+// ⑤ コンテンツ入口（常時表示）
+function renderEntries(){
+  const items=[
+    {href:'/industry',   ic:'🏢', l:'企業研究',   s:'業界→会社を10コマ＋AI OB訪問'},
+    {href:'/gyokai',     ic:'🌐', l:'業界研究',   s:'業界を丸ごと10コマ＋クイズ'},
+    {href:'/quiz.html',  ic:'🧠', l:'理解度クイズ', s:'会社別・業界別・復習で腕試し'},
+  ];
+  document.getElementById('entries').innerHTML = items.map(i=>`
+    <a class="home-entry" href="${i.href}">
+      <span class="eic">${i.ic}</span>
+      <span style="flex:1;min-width:0"><span class="el">${i.l}</span><span class="es">${i.s}</span></span>
+      <span class="ea">›</span></a>`).join('');
+}
+
+// ② 続きから
+async function renderContinue(){
+  try{
+    const r=await fetch(`${API_BASE}/api/recent-companies?user_id=${encodeURIComponent(lineUserId)}&limit=6`);
+    const list=r.ok?await r.json():[];
+    if(!list.length) return;
+    const el=document.getElementById('continue');
+    el.innerHTML=`<div class="home-sec-head"><span class="home-sec-title">続きから<span class="em">見る</span></span></div>
+      <div class="home-row">${list.map(c=>`
+        <a class="home-mini" href="/company.html?id=${encodeURIComponent(c.id)}">
+          <span class="badge" style="--acc:${hue(c.id)}">${esc(String(c.name||'？').charAt(0))}</span>
+          <span class="nm">${esc(c.name)}</span><span class="sub">最近見た企業</span></a>`).join('')}</div>`;
+    el.style.display='';
+  }catch(e){}
+}
+
+// ③ あなたの復習（間違いがあれば）
+async function renderReview(){
+  try{
+    const r=await fetch(`${API_BASE}/api/quiz/review?user_id=${encodeURIComponent(lineUserId)}&mode=recent`);
+    const list=r.ok?await r.json():[];
+    if(!list.length) return;
+    const el=document.getElementById('review');
+    el.innerHTML=`<a class="home-review" href="/quiz.html#review">
+      <span class="ic">🎯</span>
+      <span class="tx"><b>あなたの復習</b><span>間違えた問題を${list.length}問おさらい</span></span>
+      <span class="arrow">›</span></a>`;
+    el.style.display='';
+  }catch(e){}
+}
+
+// ④ お気に入り
+async function renderFavorites(){
+  try{
+    const r=await fetch(`${API_BASE}/api/bookmarks?user_id=${encodeURIComponent(lineUserId)}`);
+    const list=r.ok?await r.json():[];
+    if(!list.length) return;
+    const el=document.getElementById('favorites');
+    el.innerHTML=`<div class="home-sec-head"><span class="home-sec-title">お気に入り<span class="em">の企業</span></span>
+        <a class="home-sec-more" href="/bookmarks.html">すべて見る (${list.length}) ›</a></div>
+      <div class="home-row">${list.slice(0,6).map(c=>`
+        <a class="home-mini" href="/company.html?id=${encodeURIComponent(c.id)}">
+          <span class="badge" style="--acc:${hue(c.id)}">${esc(String(c.name||'？').charAt(0))}</span>
+          <span class="nm">${esc(c.name)}</span><span class="sub">★ 保存済み</span></a>`).join('')}</div>`;
+    el.style.display='';
+  }catch(e){}
+}
+
+async function main(){
+  renderEntries();
+  const params=new URLSearchParams(location.search);
+  lineUserId = params.get('u') || 'guest-preview';   // ?u= はQA用オーバーライド
+  try{
+    await liff.init({liffId:LIFF_ID});
+    if(liff.isLoggedIn()){ const p=await liff.getProfile(); lineUserId=params.get('u')||p.userId; displayName=p.displayName||''; }
+    else if(liff.isInClient()){ liff.login(); return; }
+  }catch(e){ console.warn('LIFF skipped (preview):', e && e.message); }
+
+  mountGuide(displayName ? `こんにちは、${esc(displayName)}さん！<br>今日はどこから見る？` : 'ようこそ！<br>今日はどこから見る？');
+
+  // ②③④は並行取得（無ければ各自非表示）。⑥お知らせは中身が来るまで非表示。
+  renderContinue(); renderReview(); renderFavorites();
+}
+main();
+</script>
+</body>
+</html>
