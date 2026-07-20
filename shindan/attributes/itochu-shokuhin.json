@@ -1,0 +1,93 @@
+{
+ "slug": "itochu-shokuhin",
+ "name": "伊藤忠食品",
+ "industry": "専門商社",
+ "soft": {
+  "tenkin_do": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "kaigai_do": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "stability": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "growth": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "remote_flex": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "young_discretion": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "bunri": {
+   "value": "文系寄り",
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "job_tags": {
+   "value": [
+    "営業",
+    "貿易・物流",
+    "商品企画"
+   ],
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  }
+ },
+ "facts": {
+  "avg_salary": {
+   "value": 1805,
+   "unit": "万円",
+   "evidence": {
+    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=8001",
+    "quote": "伊藤忠商事(8001) 平均年収 約1,805万円（有報単体平均年収）"
+   },
+   "as_of": "2025年3月期",
+   "confidence": "high",
+   "estimated": false
+  },
+  "starting_salary": {
+   "value": 240000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=2692",
+    "quote": "**初任給**: 学部卒240,000円/月（2024年実績） [出典](https://www.nikkei.com/nkd/company/salary/?scode=2692) [出典](https://caricuru.jp/recruitment/24110/?media=24110)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
+  "industry": {
+   "value": "専門商社",
+   "estimated": false
+  }
+ },
+ "trend_note": "140年の老舗で親会社完全子会社化に伴う経営安定性向上。全国4,000メーカー・1,000小売の広大なネットワーク維持に",
+ "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
+ "lint": {
+  "errors": [],
+  "notes": []
+ }
+}

@@ -1,0 +1,77 @@
+{
+ "slug": "toho-hd",
+ "name": "東邦ホールディングス",
+ "industry": "専門商社",
+ "soft": {
+  "tenkin_do": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "kaigai_do": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "stability": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "growth": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "remote_flex": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "young_discretion": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "bunri": {
+   "value": "文系寄り",
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "job_tags": {
+   "value": [
+    "営業",
+    "貿易・物流",
+    "医療営業",
+    "事業企画"
+   ],
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  }
+ },
+ "facts": {
+  "avg_salary": null,
+  "starting_salary": null,
+  "industry": {
+   "value": "専門商社",
+   "estimated": false
+  }
+ },
+ "trend_note": "医療・健康分野の中核卸売で安定基盤。全国調剤薬局ネットワーク展開と若手向けチャレンジ風土が特徴。MS営業は訪問型で転勤多",
+ "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
+ "lint": {
+  "errors": [],
+  "notes": [
+   "avg_salary: 有報grade出典なし→null(定性提案)",
+   "starting_salary: 抽出/照合不可→null"
+  ]
+ }
+}
