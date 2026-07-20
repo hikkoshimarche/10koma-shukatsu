@@ -748,6 +748,16 @@ def record_needs_source(slug, name, got, reason):
         if newfile: w.writerow(["slug", "name", "got", "reason", "ts"])
         w.writerow([slug, name, got, reason, int(time.time())])
 
+SHIP_MIN = 15   # 出荷基準: lint+review通過の良問が15問以上の社のみ出荷(質を下げて埋めない)
+THIN_CSV = os.path.join(OUT, "quiz_thin.csv")
+def record_thin(slug, name, got, industry=""):
+    """良問が15未満=保留。後でcorpus増強→再生成。"""
+    newfile = not os.path.exists(THIN_CSV)
+    with open(THIN_CSV, "a", encoding="utf-8", newline="") as fh:
+        w = csv.writer(fh)
+        if newfile: w.writerow(["slug", "name", "got", "industry", "ts"])
+        w.writerow([slug, name, got, industry, int(time.time())])
+
 
 # ── 1社処理 ──────────────────────────────────────────────
 def process_one(tgt):
@@ -1067,6 +1077,160 @@ def run_locked(industry_name, lockdir="sogo_shosha_locked", suf="locked"):
     return 0
 
 
+LOCKED_STATE = os.path.join(OUT, "_quiz_locked_state.json")
+def _load_locked_state():
+    if os.path.exists(LOCKED_STATE):
+        return json.load(open(LOCKED_STATE, encoding="utf-8"))
+    return {"done": [], "shipped": [], "thin": [], "needs": [], "q": 0,
+            "checkpoints": [], "prev_low": False, "cost_usd": 0.0}
+def _save_locked_state(st):
+    st["cost_usd"] = round(_cost["usd"], 4)
+    json.dump(st, open(LOCKED_STATE, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+
+def _locked_reviewmd(slug, name, qs, corpus, outdir):
+    md = [f"# quiz(品質固定v3): {name} ({slug})", "",
+          f"全{len(qs)}問 / v3 lint error=0 + 事実レビューpass / corpus=本体公式ドメインのみ", ""]
+    for i, q in enumerate(qs, 1):
+        md.append(f"### {i}. {q['id']} — {q.get('category')}")
+        md.append(f"**設問**: {q['q_text']}")
+        for j, o in enumerate(q["options"]):
+            md.append(f"- {'★' if j == q['correct'] else '　'} {o}")
+        md.append(f"as_of: {q.get('as_of')} / source: {q.get('source_url')}")
+        for s in snippets_for(q, corpus)[:2]:
+            md.append(f"  - 裏取り: …{s[:140]}…")
+        md.append("")
+    open(os.path.join(outdir, f"review_{slug}.md"), "w", encoding="utf-8").write("\n".join(md))
+
+def run_all_locked():
+    """全16業界の品質固定ロック。各業界=所属全社(厚corpus+二層ゲート+出荷基準≥15)。
+    夜間規律: ローリング投入・20社毎CP(lint統計+サンプル1社+commit/push+LINE)・resumable・
+    コストガード$75・systemic劣化でHALT。本番反映(D1)はしない。"""
+    from concurrent.futures import wait, FIRST_COMPLETED
+    companies, industries = load_targets()
+    HROOT = os.path.join(HANDOFF, "gyokai_locked_v3")
+    os.makedirs(HROOT, exist_ok=True)
+    st = _load_locked_state()
+    doneset = set(st["done"])
+    pending = [c for c in companies if c["slug"] not in doneset]
+    line(f"🔒 quiz全業界ロック開始/再開: 全{len(companies)}社 / 未処理{len(pending)} / 出荷済{len(st['shipped'])} / "
+         f"並列{PARALLEL}・${MAX_USD}ガード・出荷基準≥{SHIP_MIN}問")
+
+    def ind_slug(nm): return _ind_slug(nm)
+    def work(tgt):
+        slug, name, ind = tgt["slug"], tgt["name"], tgt["industry"]
+        outp = os.path.join(OUT, slug, "quiz_30q_locked_v3.json")
+        if os.path.exists(outp):   # 冪等
+            try:
+                return {"slug": slug, "name": name, "ind": ind, "n": len(json.load(open(outp))),
+                        "status": "shipped", "skipped": True, "pass": None}
+            except Exception:
+                pass
+        try:
+            corpus = acquire_corpus_thick(name, slug)
+            if not corpus:
+                record_needs_source(slug, name, 0, "locked_all:no_official_url")
+                return {"slug": slug, "name": name, "ind": ind, "n": 0, "status": "needs", "pass": None}
+            final, dropped, rate = converge_locked(slug, name, corpus, target=30)
+            if len(final) < SHIP_MIN:
+                record_thin(slug, name, len(final), ind)
+                return {"slug": slug, "name": name, "ind": ind, "n": len(final), "status": "thin", "pass": rate}
+            os.makedirs(os.path.dirname(outp), exist_ok=True)
+            json.dump(final, open(outp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+            json.dump(corpus, open(os.path.join(OUT, slug, "quiz_corpus_locked_v3.json"), "w", encoding="utf-8"), ensure_ascii=False)
+            hd = os.path.join(HROOT, ind_slug(ind)); os.makedirs(hd, exist_ok=True)
+            json.dump(final, open(os.path.join(hd, f"{slug}_quiz.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+            return {"slug": slug, "name": name, "ind": ind, "n": len(final), "status": "shipped", "pass": rate}
+        except Exception as e:
+            record_needs_source(slug, name, 0, f"locked_all:error:{type(e).__name__}:{str(e)[:50]}")
+            return {"slug": slug, "name": name, "ind": ind, "n": 0, "status": "needs", "pass": None, "err": str(e)[:80]}
+
+    def checkpoint(batch, cp_idx):
+        shipped = [r for r in batch if r["status"] == "shipped"]
+        passes = [r["pass"] for r in batch if r.get("pass") is not None]
+        avg = round(sum(passes) / len(passes), 3) if passes else None
+        # lint統計(バッチの出荷分)
+        lint_err = 0
+        for r in shipped:
+            try:
+                qs = json.load(open(os.path.join(OUT, r["slug"], "quiz_30q_locked_v3.json")))
+                c = json.load(open(os.path.join(OUT, r["slug"], "quiz_corpus_locked_v3.json")))
+                lint_err += QL.run_quiz_lints(qs, c)["errors"]
+            except Exception:
+                pass
+        # サンプル1社の review.md を受け渡しフォルダへ
+        for r in shipped:
+            if r["n"] >= SHIP_MIN:
+                try:
+                    qs = json.load(open(os.path.join(OUT, r["slug"], "quiz_30q_locked_v3.json")))
+                    c = json.load(open(os.path.join(OUT, r["slug"], "quiz_corpus_locked_v3.json")))
+                    _locked_reviewmd(r["slug"], r["name"], qs, c, HROOT)
+                except Exception:
+                    pass
+                break
+        cp = {"cp": cp_idx, "done": len(st["done"]), "shipped": len(st["shipped"]),
+              "thin": len(st["thin"]), "needs": len(st["needs"]), "q": st["q"],
+              "batch_avg_pass": avg, "lint_err": lint_err, "cost": round(_cost["usd"], 2)}
+        st["checkpoints"].append(cp)
+        # HALT: systemic劣化(バッチ平均pass<0.70 が2CP連続 or lint error残)
+        low = (avg is not None and avg < 0.70) or lint_err > 0
+        halt = low and st.get("prev_low", False)
+        st["prev_low"] = low
+        _save_locked_state(st)
+        # commit/push(private tokyari-pipeline)
+        try:
+            git("add", "output/_quiz_locked_state.json", "output/quiz_thin.csv", "output/quiz_needs_source.csv",
+                "output/*/quiz_30q_locked_v3.json", "output/*/quiz_corpus_locked_v3.json", cwd=PIPE)
+            git("-c", "user.email=quiz@local", "-c", "user.name=quiz-locked",
+                "commit", "-q", "-m", f"quiz-locked-all CP{cp_idx}: 出荷{len(st['shipped'])} 保留{len(st['thin'])} needs{len(st['needs'])} q{st['q']} pass{avg}", cwd=PIPE)
+            git("push", "-q", "origin", "HEAD", cwd=PIPE)
+        except Exception as e:
+            print("[commit ERR]", e)
+        line(f"[quiz-all CP{cp_idx}] 完了{cp['done']}社 / 出荷{cp['shipped']}・保留{cp['thin']}・needs{cp['needs']} / "
+             f"問{cp['q']} / batch pass{avg} / lint_err{lint_err} / ${cp['cost']}" + (" / ⚠HALT" if halt else ""))
+        return halt
+
+    batch, stop = [], None
+    it = iter(pending); inflight = {}
+    with ThreadPoolExecutor(max_workers=PARALLEL) as ex:
+        for _ in range(PARALLEL):
+            t = next(it, None)
+            if t: inflight[ex.submit(work, t)] = t
+        while inflight:
+            done, _p = wait(list(inflight), return_when=FIRST_COMPLETED)
+            for fut in done:
+                inflight.pop(fut, None)
+                r = fut.result()
+                with _lock:
+                    if r["slug"] not in st["done"]: st["done"].append(r["slug"])
+                    st["q"] += r.get("n", 0)
+                    tgt = {"shipped": "shipped", "thin": "thin", "needs": "needs"}.get(r["status"])
+                    if tgt and r["slug"] not in st[tgt]: st[tgt].append(r["slug"])
+                batch.append(r)
+                print(f"  {r['status']:7} {r['slug']:16} n={r.get('n')} pass={r.get('pass')} ${_cost['usd']:.2f}", flush=True)
+                if not cost_ok(): stop = "cost"
+                if len(batch) >= CHECKPOINT_EVERY:
+                    if checkpoint(batch, len(st["checkpoints"]) + 1): stop = "halt"
+                    batch = []
+                if stop is None:
+                    nt = next(it, None)
+                    if nt: inflight[ex.submit(work, nt)] = nt
+            if stop: break
+    if batch and not stop:
+        checkpoint(batch, len(st["checkpoints"]) + 1)
+    _save_locked_state(st)
+    # 集約レポート
+    agg = {"shipped": len(st["shipped"]), "thin": len(st["thin"]), "needs": len(st["needs"]),
+           "total_q": st["q"], "checkpoints": st["checkpoints"], "cost_usd": round(_cost["usd"], 2),
+           "stop": stop or "done"}
+    passes = [cp["batch_avg_pass"] for cp in st["checkpoints"] if cp.get("batch_avg_pass")]
+    agg["avg_pass"] = round(sum(passes) / len(passes), 3) if passes else None
+    json.dump(agg, open(os.path.join(HROOT, "AGG_SUMMARY.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    line(f"[quiz-all {agg['stop']}] 出荷{agg['shipped']}社 / 保留{agg['thin']} / needs{agg['needs']} / "
+         f"総問{agg['total_q']} / 平均pass{agg['avg_pass']} / ${agg['cost_usd']} → gyokai_locked_v3/")
+    print(json.dumps(agg, ensure_ascii=False, indent=1))
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--validate", type=int, default=0, help="少数社を同期検証(背景化しない)")
@@ -1075,7 +1239,12 @@ def main():
     ap.add_argument("--lockdir", type=str, default="sogo_shosha_locked", help="locked出力の受け渡しサブフォルダ")
     ap.add_argument("--suffix", type=str, default="locked", help="locked成果ファイルのサフィックス(v1保全のため v2 等)")
     ap.add_argument("--industries-only", action="store_true")
+    ap.add_argument("--locked-all", action="store_true", help="全16業界の品質固定ロック(夜間規律・出荷基準≥15・resumable)")
     args = ap.parse_args()
+    if args.locked_all:
+        if not OPENAI_KEY:
+            print("NO OPENAI_API_KEY"); return 2
+        return run_all_locked()
     if args.locked:
         if not OPENAI_KEY:
             print("NO OPENAI_API_KEY"); return 2

@@ -73,7 +73,10 @@ BANNED_SCHEDULE_KW = ("株主総会", "配当支払開始", "配当支払予定"
                       # v3追加: 電話・上場取引所・住所(現実に存在しない誤答を生みやすい単純転記)
                       "電話番号", "tel", "電話", "上場取引所", "上場している取引所", "証券取引所",
                       "上場市場", "上場している市場", "どの取引所", "郵便番号", "丁目", "番地", "所在地の住所",
-                      "本店所在地", "本社所在地", "所在地はどこ", "本店はどこ", "本社はどこ", "住所は")
+                      "本店所在地", "本社所在地", "所在地はどこ", "本店はどこ", "本社はどこ", "住所は",
+                      # v3-3① URL・掲載場所を問う設問(兼松Q7型)を禁止
+                      "url", "どのページ", "どこに掲載", "どこに記載", "掲載場所", "掲載ページ",
+                      "何ページ", "どのリンク", "リンク先", "掲載されているページ", "どこで公開")
 
 # ★強化③ 順位主張の検出 / 株数依存(社間比較で歪む)指標の禁止
 RANK_KW = ("最も大きい", "最も高い", "最も多い", "最大", "最高", "最多", "首位", "トップ",
@@ -197,10 +200,11 @@ def lint_no_ratio(q):
 
 def lint_banned_schedule_topic(q):  # ★強化②
     qt = q.get("q_text", "") or ""
-    hit = [k for k in BANNED_SCHEDULE_KW if k in qt]
+    ql = qt.lower()
+    hit = [k for k in BANNED_SCHEDULE_KW if k in qt or k in ql]
     if hit:
         return [_f("banned_schedule_topic", "error", q.get("id"),
-                   f"日程トリビア設問は禁止: {hit} — {qt[:36]}")]
+                   f"禁止トリビア(日程/電話/取引所/住所/URL): {hit} — {qt[:36]}")]
     return []
 
 
@@ -371,9 +375,20 @@ def _fact_keys(q):
     opts = q.get("options") or []
     ci = q.get("correct")
     if isinstance(ci, int) and 0 <= ci < len(opts):
-        nums = _num_tokens(str(opts[ci]))
+        corr = str(opts[ci]).strip()
+        nums = _num_tokens(corr)
         if nums:
             keys.add("v:" + ",".join(sorted(nums)))
+        else:
+            # ★v3-3② 否定事実(含まない/やっていない)と製品・サービス名は正解名で1問に集約。
+            #   兼松の不動産3連発、同一製品名(KG ZAICO等)の重複を捕捉。順位設問(社名が
+            #   指標ごとに正当に繰り返す)は対象外にして誤検出を避ける。
+            qt = q.get("q_text", "") or ""
+            is_neg = any(k in qt for k in ("含まない", "含まれない", "やっていない", "行っていない",
+                                           "展開していない", "扱っていない", "該当しない", "していない事業"))
+            is_prod = q.get("category") == "製品・サービス"
+            if q.get("type") != "rank" and c != "業界順位" and (is_neg or is_prod):
+                keys.add("name:" + re.sub(r"\s", "", corr))
     return keys
 
 def lint_concept_dedup(quiz):
@@ -614,7 +629,18 @@ def selftest():
           {**base, "id": "out", "category": "事業セグメント", "q_text": "事業セグメントに含まれないものはどれか？", "options": ["A", "B", "C", "D"], "as_of": ""}]
     fired_lm = any(f["lint"] == "list_membership_dedup" for f in run_quiz_lints(lm, corpus)["findings"])
     print(f"  {'OK ' if fired_lm else 'NG '} list_membership_dedup(含む/含まない): {'発火' if fired_lm else 'NG'}")
-    ok = ok and fired_val and fired_phone and fired_pc and fired_dv and fired_lm
+    urlq = {**base, "id": "u", "category": "会社概要", "q_text": "会社概要はどのURLに掲載されているか？", "options": ["A", "B", "C", "D"], "as_of": ""}
+    fired_url = any(f["lint"] == "banned_schedule_topic" for f in run_quiz_lints([urlq], corpus)["findings"])
+    print(f"  {'OK ' if fired_url else 'NG '} banned(URL/掲載場所): {'発火' if fired_url else 'NG'}")
+    neg = [{**base, "id": "n1", "category": "事業セグメント", "q_text": "兼松が展開していない事業はどれか？", "options": ["不動産", "電子", "食料", "鉄鋼"], "as_of": ""},
+           {**base, "id": "n2", "category": "事業セグメント", "q_text": "兼松の事業に含まれないものはどれか？", "options": ["不動産", "電子", "食料", "鉄鋼"], "as_of": ""}]
+    fired_neg = any(f["lint"] == "concept_dedup" for f in run_quiz_lints(neg, corpus)["findings"])
+    print(f"  {'OK ' if fired_neg else 'NG '} name_dedup(否定事実:不動産×2): {'発火' if fired_neg else 'NG'}")
+    prod = [{**base, "id": "p1", "category": "製品・サービス", "q_text": "兼松の在庫管理サービスは？", "options": ["KG ZAICO", "A社", "B社", "C社"], "as_of": ""},
+            {**base, "id": "p2", "category": "製品・サービス", "q_text": "兼松が提供するSaaSはどれか？", "options": ["KG ZAICO", "X", "Y", "Z"], "as_of": ""}]
+    fired_prod = any(f["lint"] == "concept_dedup" for f in run_quiz_lints(prod, corpus)["findings"])
+    print(f"  {'OK ' if fired_prod else 'NG '} name_dedup(製品名×2): {'発火' if fired_prod else 'NG'}")
+    ok = ok and fired_val and fired_phone and fired_pc and fired_dv and fired_lm and fired_url and fired_neg and fired_prod
     dry_list = [{**base, "id": f"t{i}", "q_text": q, "options": ["A", "B", "C", "D"]}
                 for i, q in enumerate(["本店所在地は？", "資本金は？", "発行済株式数は？"])]
     fired_dry = any(f["lint"] == "dry_trivia_cap" for f in run_quiz_lints(dry_list, corpus)["findings"])
