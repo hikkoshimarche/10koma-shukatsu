@@ -1,0 +1,86 @@
+{
+ "slug": "gmo",
+ "name": "GMOインターネットグループ",
+ "industry": "IT・通信・SaaS",
+ "soft": {
+  "tenkin_do": {
+   "value": 2,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "kaigai_do": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "stability": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "growth": {
+   "value": 5,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "remote_flex": {
+   "value": 5,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "young_discretion": {
+   "value": 5,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "bunri": {
+   "value": "理系寄り",
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "job_tags": {
+   "value": [
+    "エンジニア・IT",
+    "企画・マーケティング",
+    "営業",
+    "セキュリティ・インフラ"
+   ],
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  }
+ },
+ "facts": {
+  "avg_salary": {
+   "value": 693,
+   "unit": "万円",
+   "evidence": {
+    "source_url": "https://axxis.co.jp/magazine/58508",
+    "quote": "**平均年収**: 693万円（2024年12月期・有価証券報告書）[出典](https://axxis.co.jp/magazine/58508)"
+   },
+   "as_of": "",
+   "confidence": "medium",
+   "estimated": false
+  },
+  "starting_salary": null,
+  "industry": {
+   "value": "IT・通信・SaaS",
+   "estimated": false
+  }
+ },
+ "trend_note": "STEAM人財を強く求め、710万円プログラムで高度専門職を早期抜擢。スピード経営文化が若手裁量を加速させている。",
+ "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
+ "lint": {
+  "errors": [],
+  "notes": [
+   "starting_salary: 抽出/照合不可→null"
+  ]
+ }
+}
