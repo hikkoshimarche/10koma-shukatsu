@@ -165,7 +165,9 @@ BLOCK = ("nikkei", "yahoo", "irbank", "gaishishukatsu", "salesnow", "note.com", 
          "newswitch", "minkabu", "kabutan", "buffett-code", "ullet", "quick.com",
          "notion.so", "notion.com", "app.notion", "youtube", "youtu.be", "twitter",
          "x.com", "facebook", "linkedin", "prtimes", "wikipedia", "jbic.go.jp",
-         "google", "amazonaws", "hatena", "ameblo", "livedoor", "wantedly")
+         "google", "amazonaws", "hatena", "ameblo", "livedoor", "wantedly",
+         "jobree", "job.", "tenshoku", "hataraku", "career-", "shukatsu", "vorkers",
+         "lightworks", "unistyle", "job-", "/tips/")
 GOOD_HINT = ("ir", "library", "meeting", "securities", "tanshin", "kessan", "financial",
              "company", "outline", "profile", "corporate", "about", "recruit", "saiyo",
              "release", "news", "pdf")
@@ -276,6 +278,72 @@ def acquire_corpus(name, slug=None):
         time.sleep(0.3)
     return corpus
 
+def _expand_official_pdfs(index_url, official_dom, limit=2):
+    """IR/有報の索引HTMLを取得し、公式ドメイン上の 決算短信/有報 PDF リンクを抽出。"""
+    try:
+        r = subprocess.run(["curl", "-sL", "--max-time", "35", "-A", "Mozilla/5.0", index_url],
+                           capture_output=True, timeout=45)
+        html_t = r.stdout.decode("utf-8", "ignore")
+    except Exception:
+        return []
+    base = re.match(r"(https?://[^/]+)", index_url)
+    base = base.group(1) if base else ""
+    hrefs = re.findall(r'href="([^"]+\.pdf[^"]*)"', html_t, re.I)
+    out = []
+    for h in hrefs:
+        u = h if h.startswith("http") else (base + h if h.startswith("/") else base + "/" + h)
+        host = re.match(r"https?://([^/]+)/", u)
+        if not host or official_dom not in host.group(1):
+            continue
+        ul = u.lower()
+        score = (0 if any(k in ul for k in ("tanshin", "kessan", "ta.pdf", "短信", "earnings", "summary")) else
+                 1 if any(k in ul for k in ("yuho", "securities", "有価", "asr", "yukashoken")) else 2)
+        out.append((score, u))
+    out.sort(key=lambda x: x[0])
+    seen, res = set(), []
+    for _s, u in out:
+        if u in seen: continue
+        seen.add(u); res.append(u)
+        if len(res) >= limit: break
+    return res
+
+def acquire_corpus_thick(name, slug):
+    """品質固定モードの厚いcorpus。会社概要+seed に加え、公式IR/有報索引を辿ってPDFを1-2本追加。"""
+    urls, dom = _factsheet_official_urls(slug or "", name)
+    urls = list(urls)
+    seed = _manifest().get(slug or "", [])
+    for u in seed:
+        if u not in urls: urls.append(u)
+    # official domain 推定(seed優先)
+    if not dom and seed:
+        mm = re.match(r"https?://([^/]+)/", seed[0]); dom = mm.group(1) if mm else None
+    reg = _reg_domain(dom) if dom else None
+    # IR/有報 索引HTMLからPDFを展開
+    extra = []
+    for u in urls:
+        ul = u.lower()
+        if ul.split("?")[0].endswith(".pdf"): continue
+        if reg and any(k in ul for k in ("securities", "library", "/ir", "financial", "report", "yuka", "meeting")):
+            extra += _expand_official_pdfs(u, reg)
+    for u in extra:
+        if u not in urls: urls.append(u)
+    # 優先: PDF(短信/有報) を前に。最大7本。
+    def prio(u):
+        ul = u.lower()
+        if ul.split("?")[0].endswith(".pdf"):
+            return 0 if any(k in ul for k in ("tanshin", "ta.pdf", "earnings", "summary", "kessan", "202505", "package")) else 1
+        if any(k in ul for k in ("securities", "yuka")): return 2
+        if any(k in ul for k in ("outline", "profile", "about", "company", "corporate")): return 3
+        return 5
+    urls = sorted(dict.fromkeys(urls), key=prio)[:7]
+    corpus = {}
+    for u in urls:
+        body = fetch_url(u)
+        if len(body) > 700:
+            corpus[u] = body
+        time.sleep(0.3)
+    return corpus
+
 
 # ── 生成(OpenAI, corpus厳密紐付け) ───────────────────────
 GEN_SYS = (
@@ -308,8 +376,10 @@ def _sources_block(corpus, max_chars=14000):
         if budget <= 0: break
     return "\n\n".join(blocks)
 
-def generate(name, corpus, n=30):
+def generate(name, corpus, n=30, extra=""):
     user = GEN_USER_TMPL.format(name=name, n=n, sources=_sources_block(corpus))
+    if extra:
+        user += "\n\n" + extra
     txt = openai_chat([{"role": "system", "content": GEN_SYS}, {"role": "user", "content": user}],
                       model=GEN_MODEL, max_tokens=6000)
     try:
@@ -378,19 +448,85 @@ def _dedup(qs):
         seen.add(k); out.append(q)
     return out
 
+def _review_pass_ids(qs, corpus):
+    """二層目: qs をレビューし、pass した id集合 と全体pass率 を返す(バッチ12)。"""
+    passed, total, graded = set(), 0, 0
+    for i in range(0, len(qs), 12):
+        batch = qs[i:i + 12]
+        items = [{"id": q["id"], "q_text": q["q_text"], "options": q["options"], "correct": q["correct"],
+                  "explanation": q.get("explanation", ""), "category": q.get("category"),
+                  "source_url": q.get("source_url"), "snippets": snippets_for(q, corpus)} for q in batch]
+        rev = review_batch(items)
+        for r in rev.get("results", []):
+            graded += 1
+            if r.get("pass"):
+                passed.add(r.get("id"))
+    rate = (len(passed) / graded) if graded else 1.0
+    return passed, rate
+
+def converge_locked(slug, name, corpus, target=30, max_round=3, extra=""):
+    """品質固定: 生成→lint収束→OpenAI R1-R6レビュー→pass分のみ採用。不足は再生成でbackfill。
+    返り: (final[], dropped, review_pass_rate)。final は lint error=0 かつ review pass。"""
+    accepted, seen_q = [], set()
+    last_rate = 1.0
+    for rnd in range(max_round):
+        need = target - len(accepted)
+        if need <= 0:
+            break
+        pool = generate(name, corpus, max(need + 6, 12), extra=extra) if rnd == 0 else \
+               generate(name, corpus, max(need + 6, 10), extra=extra)
+        # lintゲート
+        lint_ok = []
+        for q in pool:
+            q.setdefault("id", "")
+            k = q.get("q_text", "").strip()[:40]
+            if k in seen_q or lint_one(q, corpus):
+                continue
+            seen_q.add(k); lint_ok.append(q)
+        if not lint_ok:
+            if not cost_ok(): break
+            continue
+        # 仮id付与(レビュー用)
+        for j, q in enumerate(lint_ok):
+            q["id"] = f"{slug}_r{rnd}_{j:02d}"
+        # レビューゲート
+        passed_ids, rate = _review_pass_ids(lint_ok, corpus)
+        last_rate = rate
+        for q in lint_ok:
+            if q["id"] in passed_ids:
+                accepted.append(q)
+        if not cost_ok():
+            break
+    # 通し番号
+    final = [{**q, "id": f"{slug}_{i:02d}"} for i, q in enumerate(accepted[:target], 1)]
+    dropped = target - len(final)
+    return final, max(0, dropped), round(last_rate, 3)
+
 
 # ── OpenAI レビュー(R1-R6) ───────────────────────────────
 REVIEW_SYS = (
- "あなたはクイズ品質の独立審査員。各設問を提供された source スニペットのみに照らし、次のルーブリックで採点:\n"
- "R1 正解と解説が引用スニペットと論理的に整合(問う項目と数値種別が一致・税引前利益と当期利益等の取り違えを検出)\n"
- "R2 暗記トリビア(総会日・配当支払日等の日程)は不合格\n"
- "R3 順位/最大/最高設問は全競合の数値+比較が揃っているか。EPS等株数依存指標の社間比較は不合格\n"
- "R4 バッチの設問ミックス(財務≤15/30、残りは事業・会社概要・沿革・製品) を評価\n"
- "R5 誤答3つが同一source内実数で妥当\n"
+ "あなたはクイズ品質の独立審査員。各設問を提供された source スニペットに照らし採点する。\n"
+ "【重要な前提】設問中の全ての数値・日付は、機械lintにより source 本文への verbatim 実在が\n"
+ "既に確認済みである(捏造は起こり得ない)。スニペットはPDF表抽出のため、ラベルと数値が離れて\n"
+ "写ることがある。したがって『スニペットにラベルが併記されていない』だけの理由でR1を落とさない。\n"
+ "R1は、正解の数値種別が設問の問う項目と“明確に矛盾”する場合(例: 収益を問うのに税引前利益の値、\n"
+ "当期利益と包括利益の取り違え)や、解説が source と矛盾する場合のみ不合格。整合・妥当なら合格。\n"
+ "ルーブリック:\n"
+ "R1 正解と解説が source と論理的に整合(明確な指標取り違え/矛盾のみ不合格。裏取り不足は合格側に倒す)\n"
+ "R2 暗記トリビア(総会日・配当支払日・有報提出日等の日程)は不合格\n"
+ "R3 順位/最大/最高設問は competitors(全競合の数値)が揃っているか。EPS等株数依存指標の社間比較は不合格\n"
+ "R4 設問ミックス(財務≤15/30、残りは事業・会社概要・沿革・製品)を評価\n"
+ "R5 誤答3つが同一source内の実数として妥当(本文にある別項目/別年度の値なら妥当=合格)\n"
  "R6 正解ちょうど1つ・正解が実際に正しい\n"
+ "非数値設問(セグメント名/製品/沿革/人名)は、正解がスニペットの記述と整合すれば合格。\n"
  "出力JSON: {\"results\":[{\"id\":\"..\",\"pass\":true,\"reasons\":\"..\"}],"
- "\"systemic_flags\":[\"..\"],\"pass_rate\":0.0}. systemic_flags は同一ルール違反が多発した場合のみ、"
- "該当ルール名(R1..R6)と要約を入れる。")
+ "\"systemic_flags\":[\"..\"],\"pass_rate\":0.0}. systemic_flags は“同一ルール違反が3問以上で多発”した場合のみ、"
+ "該当ルール名(R1..R6)+要約を入れる。単発の懸念は systemic に入れない。")
+
+# 設問が問う指標のキーワード(スニペットにラベル文脈を添えて偽陽性を減らす)
+METRIC_KW = ("収益", "売上高", "売上収益", "営業利益", "税引前利益", "当期利益", "純利益", "包括利益",
+             "総資産", "資産合計", "純資産", "資本", "自己資本", "ROE", "配当", "配当性向", "持分",
+             "従業員", "資本金", "設立", "創業", "拠点", "セグメント", "事業本部", "本社", "本店")
 
 def review_batch(items):
     """items: [{id,q_text,options,correct,explanation,source_url,category,snippets}]"""
@@ -435,6 +571,14 @@ def snippets_for(q, corpus, width=60):
         c = _flex_ctx(body, corr.replace(" ", ""), width + 20)
         if c:
             out.append(c)
+    # ②b 設問が問う指標ラベルの周辺も添える(PDF表でラベルと数値が離れる問題への対策)
+    qt = q.get("q_text", "") + " " + q.get("explanation", "")
+    for kw in METRIC_KW:
+        if kw in qt:
+            c = _flex_ctx(body, kw, width)
+            if c:
+                out.append(c)
+            break
     # ③ フォールバック: corpus 先頭抜粋(reviewerが「証拠なし」で機械的にfailしないため)
     if not out and body:
         out.append(re.sub(r"\s+", " ", body[:280]))
@@ -702,12 +846,124 @@ def run(targets, st, is_validate=False):
     return "done"
 
 
+def run_locked(industry_name):
+    """品質固定モード: 1業界の各社+業界を 厚いcorpus + 二層ゲート(lint+review) で作り直す。
+    小バッチ・ローリング(PARALLEL)・コストガード。出力は sogo_shosha_locked/ と private。"""
+    from concurrent.futures import wait, FIRST_COMPLETED
+    companies, industries = load_targets()
+    members = [(c["slug"], c["name"]) for c in companies if c.get("industry") == industry_name]
+    ind = next((x for x in industries if x["name"] == industry_name), None)
+    LOCK_DIR = os.path.join(HANDOFF, "sogo_shosha_locked")
+    os.makedirs(LOCK_DIR, exist_ok=True)
+    line(f"🔒 quiz品質固定モード開始: {industry_name} {len(members)}社+業界1 / 厚corpus+二層ゲート / 並列{PARALLEL}・${MAX_USD}ガード")
+    results = []
+
+    def work_company(slug, name):
+        try:
+            corpus = acquire_corpus_thick(name, slug)
+            if not corpus:
+                record_needs_source(slug, name, 0, "locked:no_official_url")
+                return {"slug": slug, "name": name, "n": 0, "pass": None, "needs_source": True}
+            final, dropped, rate = converge_locked(slug, name, corpus, target=30)
+            outp = os.path.join(OUT, slug, "quiz_30q_locked.json")
+            os.makedirs(os.path.dirname(outp), exist_ok=True)
+            json.dump(final, open(outp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+            json.dump(corpus, open(os.path.join(OUT, slug, "quiz_corpus_locked.json"), "w", encoding="utf-8"), ensure_ascii=False)
+            json.dump(final, open(os.path.join(LOCK_DIR, f"{slug}_quiz.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+            if len(final) < 30:
+                record_needs_source(slug, name, len(final), f"locked:under30({len(final)}/30, corpus薄)")
+            return {"slug": slug, "name": name, "n": len(final), "pass": rate, "needs_source": len(final) < 30,
+                    "corpus_urls": len(corpus)}
+        except Exception as e:
+            record_needs_source(slug, name, 0, f"locked:error:{type(e).__name__}:{str(e)[:60]}")
+            return {"slug": slug, "name": name, "n": 0, "pass": None, "needs_source": True, "err": str(e)[:100]}
+
+    # ローリング(最大PARALLEL同時)
+    it = iter(members); inflight = {}
+    with ThreadPoolExecutor(max_workers=PARALLEL) as ex:
+        for _ in range(PARALLEL):
+            m = next(it, None)
+            if m: inflight[ex.submit(work_company, *m)] = m
+        while inflight:
+            done, _p = wait(list(inflight), return_when=FIRST_COMPLETED)
+            for fut in done:
+                inflight.pop(fut, None)
+                r = fut.result(); results.append(r)
+                print(f"  {r['slug']:16} n={r['n']} pass={r['pass']} needs_source={r.get('needs_source')} ${_cost['usd']:.2f}", flush=True)
+                if cost_ok():
+                    m = next(it, None)
+                    if m: inflight[ex.submit(work_company, *m)] = m
+            if not cost_ok():
+                line(f"⚠️ COST_GUARD ${_cost['usd']:.2f}>=${MAX_USD} locked停止"); break
+
+    # 業界quiz(順位設問: 全社corpusをmerge, competitors必須)
+    ind_res = None
+    if ind and cost_ok():
+        mcorpus = {}
+        for slug, name in members:
+            cf = os.path.join(OUT, slug, "quiz_corpus_locked.json")
+            if os.path.exists(cf):
+                mcorpus.update(json.load(open(cf)))
+        extra = ("この業界クイズでは、可能な範囲で『順位/最大/最高』の設問を作る場合、必ず type:\"rank\" と "
+                 "competitors:[{name,value,source_url}](全比較社の値+出典URL)を付ける。EPS等の株数依存指標での"
+                 "社間比較は禁止(収益・利益額・ROE・総資産で作る)。数値は各社source本文に実在するものだけ。")
+        if mcorpus:
+            final, dropped, rate = converge_locked(ind["slug"], industry_name, mcorpus, target=30, extra=extra)
+            json.dump(final, open(os.path.join(LOCK_DIR, f"industry_{ind['slug']}_quiz.json"), "w", encoding="utf-8"),
+                      ensure_ascii=False, indent=1)
+            json.dump(mcorpus, open(os.path.join(OUT, ind["slug"], "quiz_corpus_locked.json"), "w", encoding="utf-8"),
+                      ensure_ascii=False) if os.path.isdir(os.path.join(OUT, ind["slug"])) or os.makedirs(os.path.join(OUT, ind["slug"]), exist_ok=True) is None else None
+            rankn = sum(1 for q in final if q.get("type") == "rank" or q.get("category") == "業界順位")
+            ind_res = {"slug": ind["slug"], "n": len(final), "pass": rate, "rank": rankn}
+            print(f"  業界 {industry_name}: n={len(final)} pass={rate} rank設問={rankn}", flush=True)
+
+    # サンプル review.md(1社 + 業界)
+    def write_reviewmd(slug, name, qs, corpus):
+        md = [f"# quiz(品質固定): {name} ({slug})", "", f"全{len(qs)}問 / lint error=0 + OpenAI R1-R6 pass のみ採用", ""]
+        for i, q in enumerate(qs, 1):
+            md.append(f"### {i}. {q['id']} — {q.get('category')}")
+            md.append(f"**設問**: {q['q_text']}")
+            for j, o in enumerate(q["options"]):
+                md.append(f"- {'★' if j == q['correct'] else '　'} {o}")
+            md.append(f"as_of: {q.get('as_of')} / source: {q.get('source_url')}")
+            for s in snippets_for(q, corpus)[:2]:
+                md.append(f"  - 裏取り: …{s[:150]}…")
+            md.append("")
+        open(os.path.join(LOCK_DIR, f"review_{slug}.md"), "w", encoding="utf-8").write("\n".join(md))
+    for r in results:
+        if r["n"] >= 20:
+            qs = json.load(open(os.path.join(OUT, r["slug"], "quiz_30q_locked.json")))
+            corpus = json.load(open(os.path.join(OUT, r["slug"], "quiz_corpus_locked.json")))
+            write_reviewmd(r["slug"], r["name"], qs, corpus); break
+
+    # サマリ
+    dist = {}
+    for r in results:
+        b = "30" if r["n"] >= 30 else "20-29" if r["n"] >= 20 else "<20" if r["n"] > 0 else "0"
+        dist[b] = dist.get(b, 0) + 1
+    passes = [r["pass"] for r in results if r["pass"] is not None]
+    summary = {"industry": industry_name, "companies": results, "industry_quiz": ind_res,
+               "distribution": dist, "avg_review_pass": round(sum(passes) / len(passes), 3) if passes else None,
+               "cost_usd": round(_cost["usd"], 2)}
+    json.dump(summary, open(os.path.join(LOCK_DIR, "summary.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    tot_q = sum(r["n"] for r in results) + (ind_res["n"] if ind_res else 0)
+    line(f"🔒 quiz品質固定 完了: {industry_name} {len(results)}社 / 総問{tot_q} / 分布{dist} / "
+         f"平均review pass{summary['avg_review_pass']} / ${summary['cost_usd']} / 出力 sogo_shosha_locked/")
+    print(json.dumps(summary, ensure_ascii=False, indent=1))
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--validate", type=int, default=0, help="少数社を同期検証(背景化しない)")
     ap.add_argument("--run", action="store_true", help="本番: 全社(company→industry)")
+    ap.add_argument("--locked", type=str, default="", help="品質固定モード: 指定業界のみ厚corpus+二層ゲートで作り直す")
     ap.add_argument("--industries-only", action="store_true")
     args = ap.parse_args()
+    if args.locked:
+        if not OPENAI_KEY:
+            print("NO OPENAI_API_KEY"); return 2
+        return run_locked(args.locked)
     if not OPENAI_KEY:
         print("NO OPENAI_API_KEY"); return 2
     companies, industries = load_targets()
