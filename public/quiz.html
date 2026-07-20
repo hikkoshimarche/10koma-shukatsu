@@ -145,7 +145,8 @@ const REVIEW_MODES = [
 let COMPANIES = null;
 let lineUserId = 'guest-preview';
 let mode = 'company';           // 'company' | 'industry'
-let QSET = [], qi = 0, score = 0, curLabel = '';
+let QSET = [], qi = 0, score = 0, curLabel = '', curSetType = '', curSetId = '';
+function datasheetHref(){ return (curSetType==='company' && curSetId) ? `datasheet.html?id=${encodeURIComponent(curSetId)}&name=${encodeURIComponent(curLabel||'')}` : ''; }
 
 function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 const app = () => document.getElementById('app');
@@ -223,7 +224,7 @@ async function renderCompanyList(industry){
 
 /* ---------- クイズ本体 ---------- */
 async function startQuiz(setType, setId, label){
-  curLabel = label;
+  curLabel = label; curSetType = setType; curSetId = setId;
   document.getElementById('quiz-title').textContent = label;
   document.getElementById('guide').innerHTML = '';
   app().innerHTML = `<div class="e-list"><div class="e-skel"></div><div class="e-skel"></div></div>`;
@@ -244,7 +245,7 @@ async function startQuiz(setType, setId, label){
 // 復習: user_quiz_progress をルールで集計するAPIから出題
 async function startReview(rmode){
   const LBL = { recent:'直近の間違い', frequent:'よく間違える', weak_category:'苦手カテゴリ' };
-  curLabel = `復習：${LBL[rmode] || ''}`;
+  curLabel = `復習：${LBL[rmode] || ''}`; curSetType = 'review'; curSetId = '';
   document.getElementById('quiz-title').textContent = '復習';
   document.getElementById('guide').innerHTML = '';
   app().innerHTML = `<div class="e-list"><div class="e-skel"></div><div class="e-skel"></div></div>`;
@@ -285,6 +286,7 @@ function renderQuestion(isSample){
         <div class="quiz-bar"><div class="quiz-bar-fill" style="width:${pct}%"></div></div>
         <span class="quiz-count">Q ${qi+1} / ${QSET.length}</span>
       </div>
+      ${(qi===0 && datasheetHref())?`<a class="quiz-src" style="display:block;margin:-2px 0 10px" href="${datasheetHref()}">📖 まず学んでから挑戦する（データシート）</a>`:''}
       <div class="quiz-card">
         <span class="quiz-cat">${esc(q.category||'クイズ')}</span>${isSample?'<span class="quiz-sample-tag">サンプル</span>':''}
         <p class="quiz-q">${esc(q.q_text)}</p>
@@ -315,7 +317,8 @@ function answer(chosen){
   fb.innerHTML = `
     <p class="quiz-verdict ${ok?'ok':'ng'}">${ok?'正解！':'惜しい…'}</p>
     <p class="quiz-exp">${esc(q.explanation||'')}</p>
-    ${q.source_url?`<a class="quiz-src" href="${esc(q.source_url)}" target="_blank" rel="noopener">出典を見る</a>`:''}`;
+    ${q.source_url?`<a class="quiz-src" href="${esc(q.source_url)}" target="_blank" rel="noopener">出典を見る</a>`:''}
+    ${datasheetHref()?`<a class="quiz-src" style="margin-left:14px" href="${datasheetHref()}">📖 データシートで復習</a>`:''}`;
   fb.classList.add('show');
   const nx = document.getElementById('next'); nx.classList.add('show');
   nx.onclick = ()=>{ qi++; (qi<QSET.length)?renderQuestion():renderResult(); };
@@ -333,6 +336,7 @@ function renderResult(){
       <p class="quiz-result-msg">${curLabel}｜${msg}</p>
       <div class="quiz-actions">
         <button class="quiz-btn primary" id="retry">もう一度挑戦</button>
+        ${datasheetHref()?`<a class="quiz-btn ghost" href="${datasheetHref()}" style="text-decoration:none;text-align:center;display:block">📖 データシートで復習</a>`:''}
         <button class="quiz-btn ghost" id="other">ほかのクイズを選ぶ</button>
       </div>
     </div>`;

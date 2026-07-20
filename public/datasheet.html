@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>データシート | トーキャリ</title>
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="config.js"></script>
+  <style>
+    :root{ --navy:#003F7D; --ink:#1a2733; --mute:#6a7686; --gold:#E7B84B; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;color:var(--ink);background:#eef1f5;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:480px;margin:0 auto;min-height:100vh;background:#eef1f5;overflow-x:hidden}
+    .hd{position:sticky;top:0;z-index:10;background:var(--navy);color:#fff;display:flex;align-items:center;gap:8px;padding:0 12px;height:54px}
+    .hd .bk{width:36px;height:36px;border:none;background:rgba(255,255,255,0.14);border-radius:50%;color:#fff;font-size:18px;cursor:pointer}
+    .hd .t{flex:1;text-align:center;font-weight:700;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .hd .sp{width:36px}
+    .lead{padding:16px 16px 4px}
+    .lead .nm{font-size:22px;font-weight:800;line-height:1.3}
+    .lead .kb{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--navy);padding:2px 10px;border-radius:999px;margin-bottom:6px}
+    .sample{display:inline-block;font-size:10px;font-weight:700;color:#8a6d00;background:#ffe9a8;padding:2px 8px;border-radius:999px;margin-left:6px}
+    .disc{font-size:11.5px;color:var(--mute);padding:2px 16px 8px;line-height:1.5}
+    .sec{margin:12px 16px;background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,0.08);overflow:hidden}
+    .sec-h{display:flex;align-items:center;gap:8px;padding:13px 15px;border-bottom:1px solid #eef2f6;font-weight:800;font-size:15px}
+    .sec-h .i{font-size:18px}
+    .item{padding:12px 15px;border-bottom:1px solid #f3f5f8}
+    .item:last-child{border-bottom:none}
+    .item .l{font-size:12px;color:var(--mute);font-weight:600;margin-bottom:3px}
+    .item .v{font-size:15px;line-height:1.55;font-weight:600}
+    .item .src{display:inline-block;margin-top:5px;font-size:11.5px;font-weight:700;color:#2f6fb0;text-decoration:none}
+    .item .src::after{content:" ↗"}
+    .item .trend{display:inline-block;margin-top:5px;font-size:11px;font-weight:700;color:#8a5a00;background:#fdeecb;padding:2px 8px;border-radius:999px}
+    .cta{margin:18px 16px 28px}
+    .cta a{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--gold);color:#2a1c00;font-weight:800;font-size:16px;padding:15px;border-radius:14px;text-decoration:none;box-shadow:0 4px 12px rgba(231,184,75,0.4)}
+    .empty{padding:40px 20px;text-align:center;color:var(--mute)}
+    .skel{height:90px;margin:12px 16px;border-radius:16px;background:linear-gradient(100deg,#e3e8ee 30%,#f3f6f9 50%,#e3e8ee 70%);background-size:200% 100%;animation:sk 1.3s infinite}
+    @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hd">
+    <button class="bk" onclick="history.length>1?history.back():location.href='/home.html'" aria-label="戻る">‹</button>
+    <span class="t" id="hd-title">データシート</span><span class="sp"></span>
+  </header>
+  <div id="app"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+</div>
+<script>
+const CFG=window.TOKYARI||{};
+const LIFF_ID=CFG.LIFF_HUB||'2010075487-89AJxZnA';
+const API_BASE=CFG.API_BASE||'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+const SEC_ICON={事業:'🏢',財務:'💹',社風:'🤝',沿革:'📜'};
+
+// プレビュー用サンプル（本番は /api/datasheet）。数字＝出典付きファクト / 傾向＝推定バッジ。
+const SAMPLE={ name:'サンプル企業', sample:true, sections:[
+  {title:'事業',items:[
+    {label:'主力セグメント',value:'エンタープライズアプリケーション／クラウド',source_url:'https://example.com/ir'},
+    {label:'事業領域の傾向',value:'サブスク型（クラウド）へシフト中',trend:true}]},
+  {title:'財務',items:[
+    {label:'売上高',value:'○○億円（2025年3月期）',source_url:'https://example.com/ir/financial'},
+    {label:'営業利益率',value:'○○％',source_url:'https://example.com/ir/financial'},
+    {label:'成長性の傾向',value:'高採用倍率・安定成長',trend:true}]},
+  {title:'社風',items:[
+    {label:'公表されている人材像',value:'自律・グローバル志向',source_url:'https://example.com/recruit'},
+    {label:'風土の傾向',value:'裁量が大きくフラットと言われる',trend:true}]},
+  {title:'沿革',items:[
+    {label:'設立',value:'19XX年',source_url:'https://example.com/company'},
+    {label:'主要な転換点',value:'20XX年 ○○事業を買収',source_url:'https://example.com/history'}]},
+]};
+
+function render(d, id){
+  document.getElementById('hd-title').textContent = (d.name||'企業')+' データシート';
+  const secs=(d.sections||[]).map(s=>`
+    <div class="sec">
+      <div class="sec-h"><span class="i">${SEC_ICON[s.title]||'📄'}</span>${esc(s.title)}</div>
+      ${(s.items||[]).map(it=>`
+        <div class="item">
+          <div class="l">${esc(it.label||'')}</div>
+          <div class="v">${esc(it.value||'')}</div>
+          ${it.source_url ? `<a class="src" href="${esc(it.source_url)}" target="_blank" rel="noopener">出典</a>`
+            : (it.trend ? `<span class="trend">傾向（推定）</span>` : '')}
+        </div>`).join('')}
+    </div>`).join('');
+  document.getElementById('app').innerHTML = `
+    <div class="lead"><span class="kb">データシート</span>${d.sample?'<span class="sample">サンプル</span>':''}
+      <p class="nm">${esc(d.name||'企業')}</p></div>
+    <p class="disc">※公式公開情報と業界傾向に基づく参考情報です。「出典」付きは公表ファクト、「傾向」は推定です。</p>
+    ${secs || '<div class="empty">項目が準備中です</div>'}
+    <div class="cta"><a href="/quiz.html?company=${encodeURIComponent(id)}&name=${encodeURIComponent(d.name||'')}">🧠 このままクイズに挑戦する</a></div>`;
+}
+
+async function main(){
+  const id=new URLSearchParams(location.search).get('id')||'';
+  try{ await liff.init({liffId:LIFF_ID}); if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;} }catch(e){}
+  let d=null;
+  if(id){ try{ const r=await fetch(`${API_BASE}/api/datasheet?id=${encodeURIComponent(id)}`); if(r.ok) d=await r.json(); }catch(e){} }
+  render(d && d.sections ? d : SAMPLE, id||'sap-japan');
+}
+main();
+</script>
+</body>
+</html>
