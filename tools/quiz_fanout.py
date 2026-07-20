@@ -1349,6 +1349,52 @@ def run_all_locked():
     if batch and not stop:
         checkpoint(batch, len(st["checkpoints"]) + 1)
     _save_locked_state(st)
+
+    # ── 業界セット生成(所属出荷社のcorpusをmerge・順位設問はLLMがcompetitors付きで出せた分)──
+    if not stop:
+        st.setdefault("industry_done", [])
+        for ind in industries:
+            iname = ind["name"]; islug = "industry__" + _ind_slug(iname)
+            iout = os.path.join(OUT, islug, "quiz_30q_locked_v3.json")
+            if os.path.exists(iout) or islug in st["industry_done"] or not cost_ok():
+                continue
+            mcorpus = {}
+            for c in companies:
+                if c["industry"] != iname:
+                    continue
+                cf = os.path.join(OUT, c["slug"], "quiz_corpus_locked_v3.json")
+                if os.path.exists(cf):
+                    try:
+                        mcorpus.update(json.load(open(cf)))
+                    except Exception:
+                        pass
+            if len(mcorpus) < 2:
+                continue
+            extra = ("業界クイズ。可能なら『最大/最高』の順位設問は type:\"rank\" と competitors:"
+                     "[{name,value,source_url}](全比較社の値+出典)を必須で付す。EPS等の株数依存指標の社間比較は禁止"
+                     "(収益・利益額・ROE・総資産で作る)。数値は各社source本文に実在する表記のまま。")
+            try:
+                final, _dr, rate = converge_locked(islug, iname, mcorpus, target=30, extra=extra)
+                if len(final) >= SHIP_MIN:
+                    os.makedirs(os.path.join(OUT, islug), exist_ok=True)
+                    json.dump(final, open(iout, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+                    json.dump(mcorpus, open(os.path.join(OUT, islug, "quiz_corpus_locked_v3.json"), "w", encoding="utf-8"), ensure_ascii=False)
+                    hd = os.path.join(HROOT, _ind_slug(iname)); os.makedirs(hd, exist_ok=True)
+                    json.dump(final, open(os.path.join(hd, f"industry_{islug}_quiz.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+                    rankn = sum(1 for q in final if q.get("type") == "rank" or q.get("category") == "業界順位")
+                    print(f"  [業界] {iname}: n={len(final)} rank={rankn} pass={rate}", flush=True)
+                st["industry_done"].append(islug)
+            except Exception as e:
+                print(f"  [業界ERR] {iname}: {str(e)[:60]}", flush=True)
+            _save_locked_state(st)
+        try:
+            git("add", "output/industry_*/quiz_30q_locked_v3.json", "output/_quiz_locked_state.json", cwd=PIPE)
+            git("-c", "user.email=quiz@local", "-c", "user.name=quiz-locked", "commit", "-q",
+                "-m", f"quiz-locked-all: 業界セット {len(st['industry_done'])}", cwd=PIPE)
+            git("push", "-q", "origin", "HEAD", cwd=PIPE)
+        except Exception:
+            pass
+
     # 集約レポート
     agg = {"shipped": len(st["shipped"]), "thin": len(st["thin"]), "needs": len(st["needs"]),
            "total_q": st["q"], "checkpoints": st["checkpoints"], "cost_usd": round(_cost["usd"], 2),
