@@ -1,0 +1,28 @@
+{
+  "_meta": {
+    "purpose": "① ソフト属性の業界baseline prior。全400社にestimated:trueで即カバレッジを与える土台。extract時にファクトシート記述でこの値を±1程度調整する(LLM/ルール)。confidenceは業界の均質度に応じ設定。",
+    "scale": "1-5(高=当該傾向強い)。bunri=文系寄り/理系寄り/文理両方。tags=代表職種。",
+    "as_of": "2026-07",
+    "note": "業界一般傾向であり個社差あり(estimated)。その他(外資・新興等)は混成のため個社overrideを強く推奨(confidence low)。"
+  },
+  "baselines": {
+    "総合商社":              {"tenkin_do":5,"kaigai_do":5,"stability":4,"growth":3,"remote_flex":3,"young_discretion":3,"bunri":"文系寄り","job_tags":["営業","企画・マーケティング","貿易・物流"],"confidence":"medium"},
+    "自動車・モビリティ":     {"tenkin_do":4,"kaigai_do":4,"stability":4,"growth":3,"remote_flex":3,"young_discretion":3,"bunri":"理系寄り","job_tags":["生産・技術","研究・開発","営業"],"confidence":"medium"},
+    "電機・精密・重工":       {"tenkin_do":4,"kaigai_do":4,"stability":4,"growth":3,"remote_flex":3,"young_discretion":3,"bunri":"理系寄り","job_tags":["研究・開発","生産・技術","営業"],"confidence":"medium"},
+    "鉄鋼・素材・化学":       {"tenkin_do":4,"kaigai_do":3,"stability":4,"growth":3,"remote_flex":2,"young_discretion":3,"bunri":"理系寄り","job_tags":["研究・開発","生産・技術","営業"],"confidence":"medium"},
+    "製薬・ヘルスケア":       {"tenkin_do":3,"kaigai_do":3,"stability":4,"growth":4,"remote_flex":3,"young_discretion":3,"bunri":"理系寄り","job_tags":["研究・開発","金融・専門職","営業"],"confidence":"medium"},
+    "銀行・証券・保険":       {"tenkin_do":4,"kaigai_do":3,"stability":4,"growth":2,"remote_flex":3,"young_discretion":2,"bunri":"文系寄り","job_tags":["金融・専門職","営業","企画・マーケティング"],"confidence":"medium"},
+    "IT・通信・SaaS":         {"tenkin_do":2,"kaigai_do":3,"stability":3,"growth":5,"remote_flex":5,"young_discretion":4,"bunri":"文理両方","job_tags":["エンジニア・IT","企画・マーケティング","営業"],"confidence":"low"},
+    "ゲーム・エンタメ":       {"tenkin_do":2,"kaigai_do":3,"stability":3,"growth":4,"remote_flex":4,"young_discretion":4,"bunri":"文理両方","job_tags":["企画・マーケティング","クリエイティブ","エンジニア・IT"],"confidence":"medium"},
+    "コンサル":              {"tenkin_do":2,"kaigai_do":4,"stability":3,"growth":5,"remote_flex":4,"young_discretion":5,"bunri":"文理両方","job_tags":["コンサルタント","企画・マーケティング"],"confidence":"medium"},
+    "専門商社":              {"tenkin_do":4,"kaigai_do":4,"stability":3,"growth":3,"remote_flex":3,"young_discretion":3,"bunri":"文系寄り","job_tags":["営業","貿易・物流"],"confidence":"medium"},
+    "インフラ・エネルギー":   {"tenkin_do":4,"kaigai_do":3,"stability":5,"growth":2,"remote_flex":3,"young_discretion":2,"bunri":"理系寄り","job_tags":["生産・技術","運航・オペレーション","営業"],"confidence":"medium"},
+    "不動産・建設":          {"tenkin_do":4,"kaigai_do":2,"stability":4,"growth":3,"remote_flex":2,"young_discretion":3,"bunri":"文理両方","job_tags":["営業","生産・技術","企画・マーケティング"],"confidence":"medium"},
+    "小売・流通":            {"tenkin_do":4,"kaigai_do":2,"stability":3,"growth":3,"remote_flex":2,"young_discretion":3,"bunri":"文系寄り","job_tags":["店舗・販売","企画・マーケティング","営業"],"confidence":"medium"},
+    "食品・飲料":            {"tenkin_do":4,"kaigai_do":3,"stability":4,"growth":3,"remote_flex":3,"young_discretion":3,"bunri":"文理両方","job_tags":["営業","研究・開発","企画・マーケティング"],"confidence":"medium"},
+    "日用品・化粧品":        {"tenkin_do":3,"kaigai_do":3,"stability":4,"growth":3,"remote_flex":4,"young_discretion":3,"bunri":"文理両方","job_tags":["企画・マーケティング","営業","研究・開発"],"confidence":"medium"},
+    "航空・運輸・物流":       {"tenkin_do":4,"kaigai_do":3,"stability":3,"growth":3,"remote_flex":2,"young_discretion":3,"bunri":"文理両方","job_tags":["運航・オペレーション","営業","貿易・物流"],"confidence":"medium"},
+    "広告・メディア":        {"tenkin_do":2,"kaigai_do":3,"stability":3,"growth":3,"remote_flex":4,"young_discretion":4,"bunri":"文系寄り","job_tags":["営業","企画・マーケティング","クリエイティブ"],"confidence":"medium"},
+    "その他（外資・新興等）": {"tenkin_do":2,"kaigai_do":4,"stability":2,"growth":5,"remote_flex":5,"young_discretion":5,"bunri":"文理両方","job_tags":["企画・マーケティング","エンジニア・IT","コンサルタント"],"confidence":"low"}
+  }
+}

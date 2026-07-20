@@ -1,0 +1,48 @@
+{
+  "_meta": {
+    "name": "tokyari-shindan 企業・業界診断 属性スキーマ",
+    "version": "v1 (2026-07-21)",
+    "policy": "二層構造。①ソフト属性(マッチング用)=推定OK(estimated:true・証拠任意・null可)。②表示ファクト(結果画面に数字で出す)=出典必須・verbatim照合・無ければnull(定性文で薦める)。Source-or-Silence厳守(平均年収は有報grade出典のみ)。",
+    "disclaimer": "この診断は公式公開情報と業界傾向に基づく参考提案です。断定・優劣付けではありません。",
+    "attribute_value_shape": {
+      "value": "数値/スコア/カテゴリ/リスト",
+      "evidence": {"source_url": "出典URL", "quote": "出典本文からのverbatim引用(②必須/①任意)"},
+      "as_of": "YYYY or YYYY-MM (会計年度/時点)",
+      "confidence": "high|medium|low",
+      "estimated": "true=①推定, false=②出典実測"
+    }
+  },
+
+  "soft_attributes": {
+    "_comment": "① マッチング用ソフト属性。1-5スコア(高いほど当該傾向が強い)。業界baseline priorをファクトシート記述で微調整。推定OK・estimated:true・証拠は傾向根拠の短文で可・確証なければnull。",
+    "tenkin_do":       {"type": "score1_5", "label": "転勤度",   "high_means": "全国・海外への転勤が多い", "low_means": "地域限定・転勤少ない"},
+    "kaigai_do":       {"type": "score1_5", "label": "海外度",   "high_means": "海外事業・海外勤務/駐在の機会が多い", "low_means": "国内中心"},
+    "stability":       {"type": "score1_5", "label": "安定性",   "high_means": "成熟・安定・景気耐性が高い", "low_means": "変動が大きい"},
+    "growth":          {"type": "score1_5", "label": "成長性",   "high_means": "高成長・拡大局面", "low_means": "成熟・横ばい"},
+    "remote_flex":     {"type": "score1_5", "label": "リモート/フレックス", "high_means": "リモート・フレックス等の柔軟な働き方が充実", "low_means": "出社・定時中心"},
+    "young_discretion":{"type": "score1_5", "label": "若手裁量", "high_means": "若手から裁量・責任が大きい", "low_means": "年功・下積みが長い"},
+    "bunri":           {"type": "category", "label": "文理",     "values": ["文系寄り", "理系寄り", "文理両方"]},
+    "job_tags":        {"type": "list",     "label": "職種タグ", "vocab": ["営業", "企画・マーケティング", "エンジニア・IT", "研究・開発", "生産・技術", "コンサルタント", "金融・専門職", "クリエイティブ", "店舗・販売", "貿易・物流", "コーポレート", "運航・オペレーション"]}
+  },
+
+  "display_facts": {
+    "_comment": "② 結果画面に数字で出すファクト。出典必須・verbatim照合。無ければnull(=数字を出さず定性文で薦める)。平均年収は有報grade(有価証券報告書=単体平均年収)出典のみ採用。第三者サイト推定は不採用(null)。",
+    "avg_salary": {
+      "type": "money_man_yen", "label": "平均年収(万円)",
+      "source_rule": "有報grade(有価証券報告書 単体平均年収)のみ。第三者/推定は不採用。data_caveat_list.csv(verdict=verified)優先。",
+      "verbatim": true
+    },
+    "starting_salary": {
+      "type": "money_yen_month", "label": "初任給(月給・円)",
+      "source_rule": "公式(採用ページ/会社公式)出典。ファクトシート待遇欄からverbatim抽出。",
+      "verbatim": true
+    },
+    "industry": {"type": "category", "label": "業界", "source_rule": "companies.json の業界キー(18業界)。"}
+  },
+
+  "identity": {
+    "slug": "会社スラッグ(companies.jsonのid)",
+    "name": "正式社名(companies.jsonのname)",
+    "industry": "所属業界(companies.jsonキー)"
+  }
+}
