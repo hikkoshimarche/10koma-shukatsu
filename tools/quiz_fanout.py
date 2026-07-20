@@ -449,8 +449,8 @@ def _dedup(qs):
     return out
 
 def _review_pass_ids(qs, corpus):
-    """二層目: qs をレビューし、pass した id集合 と全体pass率 を返す(バッチ12)。"""
-    passed, total, graded = set(), 0, 0
+    """二層目: qs をレビューし、pass した id集合・pass率・(graded, passed)件数 を返す(バッチ12)。"""
+    passed, graded = set(), 0
     for i in range(0, len(qs), 12):
         batch = qs[i:i + 12]
         items = [{"id": q["id"], "q_text": q["q_text"], "options": q["options"], "correct": q["correct"],
@@ -462,7 +462,7 @@ def _review_pass_ids(qs, corpus):
             if r.get("pass"):
                 passed.add(r.get("id"))
     rate = (len(passed) / graded) if graded else 1.0
-    return passed, rate
+    return passed, rate, graded, len(passed)
 
 def converge_locked(slug, name, corpus, target=30, max_round=4, extra=""):
     """品質固定: 生成→lint収束→OpenAI R1-R6レビュー→pass分のみ採用。ミックス強制(財務≤target/2)。
@@ -470,7 +470,7 @@ def converge_locked(slug, name, corpus, target=30, max_round=4, extra=""):
     FIN = "財務数値"
     fin_cap = target // 2      # 財務は最大15/30
     accepted, seen_q, fin_n = [], set(), 0
-    last_rate = 1.0
+    tot_graded, tot_passed = 0, 0
     for rnd in range(max_round):
         need = target - len(accepted)
         if need <= 0:
@@ -493,8 +493,8 @@ def converge_locked(slug, name, corpus, target=30, max_round=4, extra=""):
             continue
         for j, q in enumerate(lint_ok):
             q["id"] = f"{slug}_r{rnd}_{j:02d}"
-        passed_ids, rate = _review_pass_ids(lint_ok, corpus)
-        last_rate = rate
+        passed_ids, rate, g, p = _review_pass_ids(lint_ok, corpus)
+        tot_graded += g; tot_passed += p
         # 非財務を優先採用し、財務は fin_cap で打ち止め
         for q in sorted(lint_ok, key=lambda x: 1 if x.get("category") == FIN else 0):
             if q["id"] not in passed_ids or len(accepted) >= target:
@@ -508,7 +508,8 @@ def converge_locked(slug, name, corpus, target=30, max_round=4, extra=""):
             break
     final = [{**q, "id": f"{slug}_{i:02d}"} for i, q in enumerate(accepted[:target], 1)]
     dropped = target - len(final)
-    return final, max(0, dropped), round(last_rate, 3)
+    overall_rate = (tot_passed / tot_graded) if tot_graded else 1.0
+    return final, max(0, dropped), round(overall_rate, 3)
 
 
 # ── OpenAI レビュー(R1-R6) ───────────────────────────────
