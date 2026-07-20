@@ -1,0 +1,1300 @@
+{
+"mitsubishi-corp": [
+"みつびししょうじ"
+],
+"mitsui-bussan": [
+"みついぶっさん"
+],
+"itochu": [
+"いとうちゅうしょうじ"
+],
+"sumitomo-corp": [
+"すみともしょうじ"
+],
+"marubeni": [
+"まるべに"
+],
+"toyota-tsusho": [
+"とよだつうしょう"
+],
+"sojitz": [
+"そうじつ"
+],
+"kanematsu": [
+"かねまつ"
+],
+"iwatani": [
+"いわたにさんぎょう"
+],
+"shinkokusyoji": [
+"しんこうしょうじ"
+],
+"toyota-motor": [
+"とよたじどうしゃ"
+],
+"honda": [
+"ほんだ",
+"ほんだぎけんこうぎょう",
+"ホンダ"
+],
+"nissan": [
+"にっさんじどうしゃ"
+],
+"suzuki": [
+"すずき"
+],
+"subaru": [
+"SUBARU"
+],
+"mazda": [
+"まつだ"
+],
+"mitsubishi-motors": [
+"みつびしじどうしゃ"
+],
+"isuzu": [
+"いすゞじどうしゃ"
+],
+"aisin": [
+"あいしん"
+],
+"denso": [
+"でんそー"
+],
+"toyota-shokki": [
+"とよだじどうしょっき"
+],
+"sony-group": [
+"そにーぐるーぷ"
+],
+"hitachi": [
+"ひたちせいさくしょ"
+],
+"panasonic-hd": [
+"ぱなそにっく ほーるでぃんぐす"
+],
+"mitsubishi-electric": [
+"みつびしでんき"
+],
+"keyence": [
+"きーえんす"
+],
+"murata": [
+"むらたせいさくしょ"
+],
+"shinetsu-chemical": [
+"しんえつかがくこうぎょう"
+],
+"tokyo-electron": [
+"とうきょうえれくとろん"
+],
+"canon": [
+"きやのん"
+],
+"fujifilm-hd": [
+"ふじふいるむほーるでぃんぐす"
+],
+"kyocera": [
+"きょうせら"
+],
+"mitsubishi-heavy": [
+"みつびしじゅうこうぎょう"
+],
+"daikin": [
+"だいきんこうぎょう"
+],
+"komatsu": [
+"こまつ",
+"こまつせいさくしょ",
+"小松製作所"
+],
+"fanuc": [
+"ふぁなっく"
+],
+"nidec": [
+"にでっく"
+],
+"tdk": [
+"TDK"
+],
+"omron": [
+"おむろん"
+],
+"advantest": [
+"あどばんてすと"
+],
+"renesas": [
+"るねさすえれくとろにくす"
+],
+"bridgestone": [
+"ぶりぢすとん"
+],
+"kawasaki-heavy": [
+"かわさきじゅうこうぎょう"
+],
+"ihi": [
+"IHI"
+],
+"kubota": [
+"くぼた"
+],
+"yaskawa": [
+"やすかわでんき"
+],
+"shimadzu": [
+"しまづせいさくしょ"
+],
+"hoya": [
+"HOYA"
+],
+"nikon": [
+"にこん"
+],
+"seiko-epson": [
+"せいこーえぷそん"
+],
+"ricoh": [
+"りこー"
+],
+"nippon-steel": [
+"にほんせいてつ"
+],
+"jfe-hd": [
+"JFEほーるでぃんぐす"
+],
+"kobe-steel": [
+"こうべせいこうしょ"
+],
+"sumitomo-electric": [
+"すみともでんきこうぎょう"
+],
+"sumitomo-metal-mining": [
+"すみともきんぞくこうざん"
+],
+"mitsubishi-materials": [
+"みつびしまてりある"
+],
+"mitsubishi-chemical": [
+"みつびしけみかるぐるーぷ"
+],
+"sumitomo-chemical": [
+"すみともかがく"
+],
+"asahi-kasei": [
+"あさひかせい"
+],
+"toray": [
+"とうれ"
+],
+"mitsui-chemical": [
+"みついかがく"
+],
+"agc": [
+"AGC"
+],
+"takeda": [
+"たけだやくひんこうぎょう"
+],
+"astellas": [
+"あすてらすせいやく"
+],
+"daiichi-sankyo": [
+"だいいちさんきょう"
+],
+"chugai": [
+"ちゅうがいせいやく"
+],
+"otsuka-hd": [
+"おおつかほーるでぃんぐす"
+],
+"eisai": [
+"えーざい"
+],
+"shionogi": [
+"しおのぎせいやく"
+],
+"mufg": [
+"MUFG",
+"みつびしUFJぎんこう",
+"三菱UFJ"
+],
+"smbc-bank": [
+"SMBC",
+"みついすみともぎんこう",
+"三井住友"
+],
+"mizuho-fg": [
+"みずほ",
+"みずほふぃなんしゃるぐるーぷ"
+],
+"nippon-life": [
+"にほんせいめいほけん"
+],
+"daiichi-life": [
+"だいいちせいめいほけん"
+],
+"yucho": [
+"ゆうちょぎんこう"
+],
+"tokio-marine": [
+"とうきょうかいじょうにちどうかさいほけん"
+],
+"smtb": [
+"みついすみともしんたくぎんこう"
+],
+"resona": [
+"りそなぎんこう"
+],
+"nomura": [
+"のむらしょうけん"
+],
+"daiwa": [
+"だいわしょうけん"
+],
+"mufg-ms": [
+"みつびしUFJもるがん・すたんれーしょうけん"
+],
+"smbc-nikko": [
+"SMBCにっこうしょうけん"
+],
+"mizuho-sec": [
+"みずほしょうけん"
+],
+"sbi-sec": [
+"SBIしょうけん"
+],
+"meiji-yasuda": [
+"めいじやすだせいめいほけん"
+],
+"sumitomo-life": [
+"すみともせいめいほけん"
+],
+"ms-ad": [
+"みついすみともかいじょうかさいほけん",
+"三井住友海上"
+],
+"sompo": [
+"そんがいほけんじゃぱん",
+"損保ジャパン"
+],
+"aioi-nissay": [
+"あいおいにっせいどうわそんがいほけん"
+],
+"kampo": [
+"かんぽせいめいほけん"
+],
+"taiyo-life": [
+"たいようせいめいほけん"
+],
+"mufg-trust": [
+"みつびしUFJしんたくぎんこう"
+],
+"orix": [
+"おりっくす"
+],
+"mitsubishi-hc": [
+"みつびしHCきゃぴたる"
+],
+"tokyo-century": [
+"とうきょうせんちゅりー"
+],
+"credit-saison": [
+"くれでぃせぞん"
+],
+"orico": [
+"おりえんとこーぽれーしょん",
+"おりこ",
+"オリコ"
+],
+"acom": [
+"あこむ"
+],
+"hamagin": [
+"よこはまぎんこう"
+],
+"chibagin": [
+"ちばぎんこう"
+],
+"shizuokagin": [
+"しずおかぎんこう"
+],
+"sumishin-sbi-net": [
+"すみしんSBIねっとぎんこう"
+],
+"rakuten-bank": [
+"らくてんぎんこう"
+],
+"paypay-bank": [
+"PayPayぎんこう"
+],
+"jpx": [
+"JPX",
+"にっぽんとりひきじょぐるーぷ"
+],
+"dbj": [
+"DBJ",
+"にっぽんせいさくとうしぎんこう"
+],
+"jbic": [
+"JBIC",
+"こくさいきょうりょくぎんこう"
+],
+"shoko-chukin": [
+"しょうこうくみあいちゅうおうきんこ",
+"しょうこうちゅうきん",
+"商工中金"
+],
+"norinchukin": [
+"のうりんちゅうおうきんこ"
+],
+"ntt": [
+"NTT",
+"にっぽんでんしんでんわ",
+"日本電信電話"
+],
+"ntt-data": [
+"NTTでーた"
+],
+"ntt-docomo": [
+"NTTどこも",
+"ドコモ"
+],
+"kddi": [
+"KDDI",
+"au",
+"エーユー"
+],
+"softbank": [
+"SB",
+"そふとばんく",
+"ソフトバンク"
+],
+"rakuten-group": [
+"らくてんぐるーぷ"
+],
+"fujitsu": [
+"ふじつう"
+],
+"nec": [
+"NEC"
+],
+"otsuka-shokai": [
+"おおつかしょうかい"
+],
+"tis": [
+"TIS"
+],
+"scsk": [
+"SCSK"
+],
+"ctc": [
+"CTC",
+"いとうちゅうてくのそりゅーしょんず"
+],
+"ns-solutions": [
+"にってつそりゅーしょんず"
+],
+"biprogy": [
+"BIPROGY"
+],
+"sky": [
+"Sky"
+],
+"shift": [
+"SHIFT"
+],
+"recruit-hd": [
+"りくるーとほーるでぃんぐす"
+],
+"cyberagent": [
+"さいばーえーじぇんと"
+],
+"dena": [
+"DeNA",
+"でぃー・えぬ・えー"
+],
+"gree": [
+"GREE",
+"ぐりー"
+],
+"mixi": [
+"MIXI"
+],
+"mercari": [
+"めるかり"
+],
+"line-yahoo": [
+"LINE",
+"LINEやふー",
+"Yahoo",
+"ヤフー",
+"ライン"
+],
+"gmo": [
+"GMOいんたーねっとぐるーぷ"
+],
+"sansan": [
+"Sansan"
+],
+"freee": [
+"freee"
+],
+"moneyforward": [
+"まねーふぉわーど"
+],
+"rakus": [
+"らくす"
+],
+"visional": [
+"びじょなる",
+"びずりーち",
+"ビズリーチ"
+],
+"smarthr": [
+"SmartHR"
+],
+"layerx": [
+"LayerX"
+],
+"kaonavi": [
+"かおなび"
+],
+"kubell": [
+"kubell",
+"きゅうChatwork",
+"旧Chatwork"
+],
+"uzabase": [
+"ゆーざべーす"
+],
+"plaid": [
+"ぷれいど"
+],
+"pref-networks": [
+"Preferred Networks"
+],
+"sakana-ai": [
+"Sakana AI"
+],
+"pksha": [
+"PKSHA Technology"
+],
+"appier": [
+"Appier Group"
+],
+"brainpad": [
+"ぶれいんぱっど"
+],
+"fronteo": [
+"FRONTEO"
+],
+"abeja": [
+"ABEJA"
+],
+"elyza": [
+"ELYZA"
+],
+"turing": [
+"Turing"
+],
+"nintendo": [
+"にんてんどう",
+"ニンテンドー"
+],
+"bandai-namco": [
+"ばんだいなむこほーるでぃんぐす"
+],
+"capcom": [
+"かぷこん"
+],
+"square-enix": [
+"すくうぇあ・えにっくす・ほーるでぃんぐす"
+],
+"konami": [
+"こなみぐるーぷ"
+],
+"sega-sammy": [
+"せがさみーほーるでぃんぐす"
+],
+"mckinsey": [
+"まっきんぜー・あんど・かんぱにー"
+],
+"bcg": [
+"BCG",
+"ぼすとん こんさるてぃんぐ ぐるーぷ"
+],
+"bain": [
+"べいん・あんど・かんぱにー"
+],
+"accenture": [
+"あくせんちゅあ"
+],
+"deloitte": [
+"でろいと とーまつ こんさるてぃんぐ"
+],
+"pwc": [
+"PwCこんさるてぃんぐ"
+],
+"ey": [
+"EYすとらてじー・あんど・こんさるてぃんぐ"
+],
+"kpmg": [
+"KPMGこんさるてぃんぐ"
+],
+"abeam": [
+"あびーむこんさるてぃんぐ"
+],
+"baycurrent": [
+"べいかれんと・こんさるてぃんぐ"
+],
+"adl": [
+"あーさー・D・りとる"
+],
+"roland-berger": [
+"ろーらんど・べるがー"
+],
+"strategy-and": [
+"PwC",
+"Strategy&"
+],
+"ibm-consulting": [
+"IBMこんさるてぃんぐ"
+],
+"nri": [
+"NRI",
+"のむらそうごうけんきゅうしょ"
+],
+"mri": [
+"MRI",
+"みつびしそうごうけんきゅうしょ"
+],
+"jri": [
+"JRI",
+"にっぽんそうごうけんきゅうしょ"
+],
+"murc": [
+"みつびしUFJりさーち&こんさるてぃんぐ"
+],
+"dream-incubator": [
+"どりーむいんきゅべーた"
+],
+"cdi": [
+"CDI",
+"こーぽれいとでぃれくしょん"
+],
+"medipal": [
+"めでぃぱるほーるでぃんぐす"
+],
+"alfresa": [
+"あるふれっさ ほーるでぃんぐす"
+],
+"suzuken": [
+"すずけん"
+],
+"toho-hd": [
+"とうほうほーるでぃんぐす"
+],
+"mitsubishi-shokuhin": [
+"みつびししょくひん"
+],
+"kokubu": [
+"こくぶんぐるーぷほんしゃ"
+],
+"kato-sangyo": [
+"かとうさんぎょう"
+],
+"itochu-shokuhin": [
+"いとうちゅうしょくひん"
+],
+"metal-one": [
+"めたるわん"
+],
+"hanwa": [
+"はんわこうぎょう"
+],
+"jfe-shoji": [
+"JFEしょうじ"
+],
+"macnica-hd": [
+"まくにかほーるでぃんぐす"
+],
+"kaga-electronics": [
+"かがでんし"
+],
+"lester-hd": [
+"れすたーほーるでぃんぐす"
+],
+"nagase": [
+"ながせさんぎょう"
+],
+"inabata": [
+"いなはたさんぎょう"
+],
+"chori": [
+"ちょうり"
+],
+"inaba-denki": [
+"いなばでんきさんぎょう"
+],
+"seika-sangyo": [
+"せいかさんぎょう"
+],
+"daiichi-jitsugyo": [
+"だいいちじつぎょう"
+],
+"tepco": [
+"とうきょうでんりょくほーるでぃんぐす"
+],
+"kepco": [
+"かんさいでんりょく"
+],
+"chubu-electric": [
+"ちゅうぶでんりょく"
+],
+"kyushu-electric": [
+"きゅうしゅうでんりょく"
+],
+"tohoku-electric": [
+"とうほくでんりょく"
+],
+"chugoku-electric": [
+"ちゅうごくでんりょく"
+],
+"shikoku-electric": [
+"しこくでんりょく"
+],
+"hokkaido-electric": [
+"ほっかいどうでんりょく"
+],
+"hokuriku-electric": [
+"ほくりくでんりょく"
+],
+"okinawa-electric": [
+"おきなわでんりょく"
+],
+"j-power": [
+"J-POWER",
+"でんげんかいはつ"
+],
+"jera": [
+"JERA"
+],
+"tokyo-gas": [
+"とうきょうがす"
+],
+"osaka-gas": [
+"おおさかがす"
+],
+"toho-gas": [
+"とうほうがす"
+],
+"saibu-gas": [
+"せいぶがす"
+],
+"eneos": [
+"ENEOSほーるでぃんぐす"
+],
+"idemitsu": [
+"いでみつこうさん"
+],
+"cosmo-energy": [
+"こすもえねるぎーほーるでぃんぐす"
+],
+"inpex": [
+"INPEX"
+],
+"japex": [
+"JAPEX",
+"せきゆしげんかいはつ"
+],
+"jgc-hd": [
+"にっきほーるでぃんぐす"
+],
+"chiyoda": [
+"ちよだかこうけんせつ"
+],
+"renova": [
+"れのば"
+],
+"erex": [
+"いーれっくす"
+],
+"west-hd": [
+"うえすと ほーるでぃんぐす"
+],
+"kurita": [
+"くりたこうぎょう"
+],
+"metawater": [
+"めたうぉーたー"
+],
+"shizuoka-gas": [
+"しずおかがす"
+],
+"hokkaido-gas": [
+"ほっかいどうがす"
+],
+"mitsui-fudosan": [
+"みついふどうさん"
+],
+"mitsubishi-estate": [
+"みつびしじしょ"
+],
+"sumitomo-fudosan": [
+"すみともふどうさん"
+],
+"nomura-fudosan-hd": [
+"のむらふどうさんほーるでぃんぐす"
+],
+"tokyu-fudosan-hd": [
+"とうきゅうふどうさんほーるでぃんぐす"
+],
+"mori-building": [
+"もりびる"
+],
+"hulic": [
+"ひゅーりっく"
+],
+"tokyo-tatemono": [
+"とうきょうたてもの"
+],
+"daiwa-house": [
+"やまとはうすこうぎょう"
+],
+"sekisui-house": [
+"せきすいはうす"
+],
+"sumitomo-forestry": [
+"すみともりんぎょう"
+],
+"iida-group-hd": [
+"いいだぐるーぷほーるでぃんぐす"
+],
+"open-house-group": [
+"おーぷんはうすぐるーぷ"
+],
+"daito-kentaku": [
+"だいとうけんたく"
+],
+"kajima": [
+"かしまけんせつ"
+],
+"obayashi": [
+"おおばやしくみ"
+],
+"shimizu": [
+"しみずけんせつ"
+],
+"taisei": [
+"たいせいけんせつ"
+],
+"takenaka": [
+"たけなかこうむてん"
+],
+"haseko": [
+"はせこうこーぽれーしょん"
+],
+"toda": [
+"とだけんせつ"
+],
+"infroneer-hd": [
+"いんふろにあ・ほーるでぃんぐす",
+"まえだけんせつ",
+"前田建設"
+],
+"penta-ocean": [
+"ごようけんせつ"
+],
+"kumagai-gumi": [
+"くまがいぐみ"
+],
+"nishimatsu": [
+"にしまつけんせつ"
+],
+"ando-hazama": [
+"あんどうはざま"
+],
+"kinden": [
+"きんでん"
+],
+"kandenko": [
+"かんでんこう"
+],
+"takasago-thermal": [
+"たかさごねつがくこうぎょう"
+],
+"taiki-sha": [
+"たいきしゃ"
+],
+"seven-and-i": [
+"7&i",
+"せぶん＆あい・ほーるでぃんぐす",
+"イトーヨーカドー",
+"セブン",
+"セブンイレブン"
+],
+"aeon": [
+"いおん"
+],
+"fast-retailing": [
+"UNIQLO",
+"ふぁーすとりていりんぐ",
+"ユニクロ"
+],
+"nitori-hd": [
+"にとりほーるでぃんぐす"
+],
+"ppih": [
+"どん・きほーて",
+"ぱん・ぱしふぃっく・いんたーなしょなるほーるでぃんぐす",
+"ドンキ",
+"ドンキホーテ",
+"ドン・キホーテ"
+],
+"ryohin-keikaku": [
+"りょうひんけいかく"
+],
+"lawson": [
+"ろーそん"
+],
+"familymart": [
+"ふぁみりーまーと"
+],
+"isetan-mitsukoshi": [
+"みつこしいせたんほーるでぃんぐす"
+],
+"j-front": [
+"J.ふろんと りていりんぐ"
+],
+"takashimaya": [
+"や"
+],
+"h2o-retailing": [
+"えいち・つー・おー りていりんぐ"
+],
+"life-corp": [
+"らいふこーぽれーしょん"
+],
+"yaoko": [
+"やおこー"
+],
+"shimamura": [
+"しまむら"
+],
+"adastria": [
+"あだすとりあ"
+],
+"workman": [
+"わーくまん"
+],
+"yamada-hd": [
+"やまだほーるでぃんぐす"
+],
+"biccamera": [
+"びっくかめら"
+],
+"yodobashi": [
+"よどばしかめら"
+],
+"welcia-hd": [
+"うえるしあほーるでぃんぐす"
+],
+"tsuruha-hd": [
+"つるはほーるでぃんぐす"
+],
+"matsukiyococokara": [
+"まつきよここから＆かんぱにー"
+],
+"cosmos-pharma": [
+"こすもすやくひん"
+],
+"sugi-hd": [
+"すぎほーるでぃんぐす"
+],
+"cainz": [
+"かいんず"
+],
+"dcm-hd": [
+"DCMほーるでぃんぐす"
+],
+"komeri": [
+"こめり"
+],
+"zozo": [
+"ZOZO",
+"ゾゾ",
+"ゾゾタウン"
+],
+"sundrug": [
+"さんどらっぐ"
+],
+"suntory": [
+"さんとりーほーるでぃんぐす"
+],
+"asahi-group": [
+"あさひぐるーぷほーるでぃんぐす"
+],
+"kirin-hd": [
+"きりんほーるでぃんぐす"
+],
+"ajinomoto": [
+"あじのもと"
+],
+"meiji-hd": [
+"めいじほーるでぃんぐす"
+],
+"nipponham": [
+"にっぽんはむ"
+],
+"yamazaki-pan": [
+"やまざきせいぱん"
+],
+"nissin-hd": [
+"にっしんしょくひんほーるでぃんぐす"
+],
+"kikkoman": [
+"きっこーまん"
+],
+"kagome": [
+"かごめ"
+],
+"ezaki-glico": [
+"えざきぐりこ"
+],
+"morinaga-seika": [
+"もりながせいか"
+],
+"morinaga-milk": [
+"もりながにゅうぎょう"
+],
+"yukijirushi-megmilk": [
+"ゆきじるしめぐみるく"
+],
+"house-foods": [
+"はうすしょくひんぐるーぷほんしゃ"
+],
+"itoen": [
+"いとうその"
+],
+"nichirei": [
+"にちれい"
+],
+"calbee": [
+"かるびー"
+],
+"yakult": [
+"やくるとほんしゃ"
+],
+"sapporo-hd": [
+"さっぽろほーるでぃんぐす"
+],
+"kewpie": [
+"きゆーぴー"
+],
+"fuji-oil-hd": [
+"ふじせいゆぐるーぷほんしゃ"
+],
+"lotte": [
+"ろって"
+],
+"kao": [
+"かおう"
+],
+"shiseido": [
+"しせいどう"
+],
+"kose": [
+"こーせー"
+],
+"unicharm": [
+"ゆに・ちゃーむ"
+],
+"lion": [
+"らいおん"
+],
+"pola-orbis-hd": [
+"ぽーら・おるびすほーるでぃんぐす"
+],
+"kobayashi-pharma": [
+"こばやしせいやく"
+],
+"jr-east": [
+"JRひがしにほん",
+"JR東日本",
+"ひがしにほんりょきゃくてつどう",
+"ジェイアール",
+"東日本旅客鉄道"
+],
+"jr-central": [
+"JRとうかい",
+"JR東海",
+"とうかいりょきゃくてつどう",
+"東海旅客鉄道"
+],
+"jr-west": [
+"JRにしにほん",
+"JR西日本",
+"にしにほんりょきゃくてつどう",
+"西日本旅客鉄道"
+],
+"ana-hd": [
+"ANA",
+"ANAほーるでぃんぐす",
+"ぜんにっくう",
+"全日空"
+],
+"jal": [
+"JAL",
+"じゃる",
+"にほんこうくう",
+"ジャル",
+"日本航空"
+],
+"nyk": [
+"にっぽんゆうせん"
+],
+"mol": [
+"しょうせんみつい"
+],
+"k-line": [
+"かわさききせん"
+],
+"nippon-express-hd": [
+"NIPPON EXPRESS ほーるでぃんぐす",
+"にほんつううん",
+"日本通運"
+],
+"yamato-hd": [
+"やまとほーるでぃんぐす"
+],
+"sg-hd": [
+"SGほーるでぃんぐす",
+"さがわきゅうびん",
+"佐川急便"
+],
+"seino-hd": [
+"せいのーほーるでぃんぐす"
+],
+"kintetsu-group-hd": [
+"きんてつぐるーぷほーるでぃんぐす"
+],
+"hankyu-hanshin-hd": [
+"はんきゅうはんしんほーるでぃんぐす"
+],
+"tokyu": [
+"とうきゅう"
+],
+"odakyu": [
+"おだきゅうでんてつ"
+],
+"tobu": [
+"とうぶてつどう"
+],
+"seibu-hd": [
+"せいぶほーるでぃんぐす"
+],
+"meitetsu": [
+"なごやてつどう"
+],
+"keikyu": [
+"けいひんきゅうこうでんてつ"
+],
+"dentsu": [
+"でんつう"
+],
+"hakuhodo-dy": [
+"はくほうどうDYほーるでぃんぐす"
+],
+"adk-hd": [
+"ADKほーるでぃんぐす"
+],
+"ntv-hd": [
+"にほんてれびほーるでぃんぐす"
+],
+"tbs-hd": [
+"TBSほーるでぃんぐす"
+],
+"fuji-media-hd": [
+"ふじ・めでぃあ・ほーるでぃんぐす"
+],
+"tv-asahi-hd": [
+"てれびあさひほーるでぃんぐす"
+],
+"tv-tokyo-hd": [
+"てれびとうきょうほーるでぃんぐす"
+],
+"skyperfectjsat-hd": [
+"すかぱーJSATほーるでぃんぐす"
+],
+"wowow": [
+"WOWOW"
+],
+"kadokawa": [
+"KADOKAWA"
+],
+"shueisha": [
+"しゅうえいしゃ"
+],
+"kodansha": [
+"こうだんしゃ"
+],
+"shogakukan": [
+"しょうがくかん"
+],
+"bungeishunju": [
+"ぶんげいしゅんじゅう"
+],
+"avex": [
+"えいべっくす"
+],
+"amuse": [
+"あみゅーず"
+],
+"yoshimoto-hd": [
+"よしもとこうぎょうほーるでぃんぐす"
+],
+"oriental-land": [
+"おりえんたるらんど",
+"ディズニー",
+"ディズニーランド"
+],
+"usj": [
+"USJ",
+"ごうどうかいしゃゆー・えす・じぇい",
+"ユニバ",
+"ユニバーサルスタジオ"
+],
+"sanrio": [
+"さんりお"
+],
+"round-one": [
+"らうんどわん"
+],
+"toho": [
+"とうほう"
+],
+"toei": [
+"とうえい"
+],
+"shochiku": [
+"しょうちく"
+],
+"asahi-shimbun": [
+"あさひしんぶんしゃ"
+],
+"nikkei": [
+"にほんけいざいしんぶんしゃ"
+],
+"yomiuri-group": [
+"よみうりしんぶんぐるーぷほんしゃ"
+],
+"septeni-hd": [
+"せぷてーに・ほーるでぃんぐす"
+],
+"pia": [
+"ぴあ"
+],
+"google-japan": [
+"Googleにっぽん",
+"グーグル"
+],
+"amazon-japan": [
+"あまぞんじゃぱん"
+],
+"microsoft-japan": [
+"にっぽんまいくろそふと"
+],
+"salesforce-japan": [
+"せーるすふぉーす・じゃぱん"
+],
+"oracle-japan": [
+"にっぽんおらくる"
+],
+"ibm-japan": [
+"にっぽんあい・びー・えむ"
+],
+"sap-japan": [
+"SAPじゃぱん"
+],
+"pg-japan": [
+"P＆Gじゃぱん"
+],
+"loreal-japan": [
+"にっぽんろれある"
+],
+"unilever-japan": [
+"ゆにりーば・じゃぱん"
+],
+"nestle-japan": [
+"ねすれにっぽん"
+],
+"persol-hd": [
+"ぱーそるほーるでぃんぐす"
+],
+"pasona-group": [
+"ぱそなぐるーぷ"
+],
+"benesse-hd": [
+"べねっせほーるでぃんぐす"
+],
+"gakken-hd": [
+"がっけんほーるでぃんぐす"
+],
+"nagase-toshin": [
+"とうしん",
+"ながせ",
+"東進"
+],
+"rapidus": [
+"Rapidus",
+"らぴだす",
+"ラピダス"
+],
+"jasm": [
+"JASM",
+"TSMCにっぽんこがいしゃ",
+"TSMC日本子会社"
+],
+"socionext": [
+"そしおねくすと"
+],
+"m3": [
+"えむすりー"
+],
+"medley": [
+"めどれー"
+],
+"jmdc": [
+"JMDC"
+],
+"ispace": [
+"ispace",
+"あいすぺーす",
+"アイスペース"
+],
+"astroscale-hd": [
+"あすとろすけーるほーるでぃんぐす"
+],
+"openai-japan": [
+"OpenAI Japan"
+],
+"spiber": [
+"Spiber",
+"すぱいばー",
+"スパイバー"
+],
+"tbm": [
+"TBM",
+"てぃーびーえむ",
+"ティービーエム"
+],
+"euglena": [
+"ゆーぐれな"
+],
+"base-food": [
+"べーすふーど"
+],
+"bitflyer": [
+"bitFlyer"
+]
+}
