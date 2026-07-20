@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>業界研究 | トーキャリ</title>
+  <link rel="stylesheet" href="entry.css">
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="config.js"></script>
+  <script src="entry.js"></script>
+</head>
+<body>
+<div class="e-wrap">
+  <header class="e-header">
+    <p class="e-kicker">業界研究</p>
+    <h1 class="e-title">業界を丸ごと知る</h1>
+    <div id="guide"></div>
+  </header>
+
+  <div class="e-list" id="cards">
+    <div class="e-skel"></div><div class="e-skel"></div><div class="e-skel"></div>
+  </div>
+
+  <footer class="e-footer">
+    <span class="brand-panel"><img class="brand-logo" src="/images/brand/tokyari_logo_wide.png" alt="トーキャリ"></span>
+  </footer>
+</div>
+
+<script>
+const CFG     = window.TOKYARI || {};
+const LIFF_ID = CFG.LIFF_HUB || '2010075487-89AJxZnA';
+
+// 業界10コマ(industry_10koma__<slug>)の16業界タクソノミー。企業研究とミラー構造。
+const INDUSTRIES = [
+  { slug:'sogo-shosha',            name:'総合商社',              icon:'🌐', acc:'#2f6fb0' },
+  { slug:'senmon-shosha',          name:'専門商社',              icon:'📦', acc:'#b8823a' },
+  { slug:'finance',                name:'銀行・証券・保険',       icon:'🏦', acc:'#1f6f54' },
+  { slug:'it-ai-saas-game',        name:'IT・AI・SaaS・ゲーム',   icon:'💻', acc:'#3b5bdb' },
+  { slug:'consulting',             name:'コンサル',              icon:'📈', acc:'#2c6fa8' },
+  { slug:'manufacturer',           name:'メーカー',              icon:'🏭', acc:'#4a6b8a' },
+  { slug:'ad-media',               name:'広告・メディア',         icon:'📣', acc:'#e0913a' },
+  { slug:'infra-energy',           name:'インフラ・エネルギー',    icon:'⚡', acc:'#d17d00' },
+  { slug:'realestate-construction',name:'不動産・建設',           icon:'🏗️', acc:'#9a6a2f' },
+  { slug:'retail',                 name:'小売・流通',             icon:'🛍️', acc:'#c0448a' },
+  { slug:'food-beverage',          name:'食品・飲料',             icon:'🍽️', acc:'#d1495b' },
+  { slug:'medical-healthcare',     name:'医療・ヘルスケア',        icon:'💊', acc:'#16a085' },
+  { slug:'transport-logistics',    name:'航空・運輸・物流',        icon:'✈️', acc:'#2f8fbf' },
+  { slug:'education-hr',           name:'教育・人材',             icon:'🎓', acc:'#7d3c98' },
+  { slug:'startup',                name:'スタートアップ',          icon:'🚀', acc:'#c0392b' },
+  { slug:'deeptech-space-ai',      name:'ディープテック・宇宙・AI', icon:'🛰️', acc:'#3a9d6b' },
+];
+
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function render() {
+  mountGuide('どの業界を<br>研究する？');
+  const html = INDUSTRIES.map(ind => `
+    <button class="e-card" data-slug="${esc(ind.slug)}" data-name="${esc(ind.name)}" style="--acc:${ind.acc}">
+      <span class="e-icon">${ind.icon}</span>
+      <span class="e-card-body">
+        <span class="e-card-label">${esc(ind.name)}</span>
+        <span class="e-card-sub">10コマ＋クイズで業界を知る</span>
+      </span>
+      <span class="e-card-arrow">›</span>
+    </button>`).join('');
+  document.getElementById('cards').innerHTML = html;
+  document.getElementById('cards').addEventListener('click', e => {
+    const c = e.target.closest('.e-card'); if(!c) return;
+    // 企業研究とミラー: 業界10コマビューア(company.htmlの業界モード)へ。業界クイズはその詳細内から。
+    location.href = `/company.html?industry=${encodeURIComponent(c.dataset.slug)}&name=${encodeURIComponent(c.dataset.name)}`;
+  });
+}
+
+async function main() {
+  render();
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    if (!liff.isLoggedIn() && liff.isInClient()) { liff.login(); return; }
+  } catch(e){ console.warn('LIFF skipped (preview):', e && e.message); }
+}
+main();
+</script>
+</body>
+</html>
