@@ -920,15 +920,26 @@ async function main() {
         </div>
       </div>`;
 
+    const quizCtaHtml = `
+      <div class="cta-section">
+        <button class="cta-youtube" id="company-quiz">
+          <span class="cta-icon">🧠</span>
+          <span class="cta-text"><span class="cta-main">この企業のクイズに挑戦</span><span class="cta-sub">理解度をチェック</span></span>
+        </button></div>`;
+
     app.innerHTML = `
       <div class="company-detail">
         <p class="company-detail-name">${esc(company.name)}</p>
         ${company.description ? `<p class="company-detail-desc">${esc(company.description)}</p>` : ''}
       </div>
       <div class="panels-section">${panelsHtml}</div>
+      ${quizCtaHtml}
       ${videoHtml}
       ${recommendsHtml}
       ${buildVerificationFooter(company.last_verified_at)}`;
+
+    const cq = document.getElementById('company-quiz');
+    if (cq) cq.onclick = () => { location.href = `quiz.html?company=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}`; };
 
     document.querySelectorAll('.panel-like').forEach(btn => {
       btn.addEventListener('click', e => {

@@ -135,6 +135,13 @@ const GYOKAI_INDUSTRIES = [
   {slug:'startup',name:'スタートアップ',icon:'🚀'},{slug:'deeptech-space-ai',name:'ディープテック・宇宙・AI',icon:'🛰️'},
 ];
 
+// 復習モード(ルールベース・user_quiz_progress集計をAPIで返す)
+const REVIEW_MODES = [
+  { mode:'recent',        icon:'🕒', name:'直近で間違えた問題', sub:'最近の誤答からおさらい' },
+  { mode:'frequent',      icon:'🔁', name:'よく間違える問題',   sub:'誤答回数の多い順' },
+  { mode:'weak_category', icon:'🎯', name:'苦手カテゴリ優先',   sub:'弱点カテゴリから重点出題' },
+];
+
 let COMPANIES = null;
 let lineUserId = 'guest-preview';
 let mode = 'company';           // 'company' | 'industry'
@@ -161,9 +168,17 @@ async function renderSelect(){
     <div class="quiz-tabs">
       <div class="quiz-tab ${mode==='company'?'active':''}" data-mode="company">会社別</div>
       <div class="quiz-tab ${mode==='industry'?'active':''}" data-mode="industry">業界別</div>
+      <div class="quiz-tab ${mode==='review'?'active':''}" data-mode="review">復習</div>
     </div>`;
   let list;
-  if (mode==='industry') {
+  if (mode==='review') {
+    // 復習(user_quiz_progressベース・ルールベース)
+    list = REVIEW_MODES.map(r=>`
+      <button class="e-card" data-rmode="${r.mode}" style="--acc:#d17d00">
+        <span class="e-icon">${r.icon}</span>
+        <span class="e-card-body"><span class="e-card-label">${r.name}</span><span class="e-card-sub">${r.sub}</span></span>
+        <span class="e-card-arrow">›</span></button>`).join('');
+  } else if (mode==='industry') {
     // 業界別 = 16業界タクソノミー(slug)。業界クイズは industry__<slug> に対応。
     list = GYOKAI_INDUSTRIES.map(ind=>`
       <button class="e-card" data-slug="${esc(ind.slug)}" data-name="${esc(ind.name)}" style="--acc:#2f6fb0">
@@ -183,7 +198,8 @@ async function renderSelect(){
   app().querySelectorAll('.quiz-tab').forEach(t=>t.onclick=()=>{ mode=t.dataset.mode; renderSelect(); });
   document.getElementById('sel-list').onclick = e=>{
     const c = e.target.closest('.e-card'); if(!c) return;
-    if(mode==='industry') startQuiz('industry', c.dataset.slug, c.dataset.name);
+    if(mode==='review') startReview(c.dataset.rmode);
+    else if(mode==='industry') startQuiz('industry', c.dataset.slug, c.dataset.name);
     else renderCompanyList(c.dataset.ind);
   };
 }
@@ -222,6 +238,37 @@ async function startQuiz(setType, setId, label){
   QSET = qs.slice(0, N_PER_SET).map(shuffled);
   qi = 0; score = 0;
   document.getElementById('btn-back').onclick = ()=>renderSelect();
+  renderQuestion(isSample);
+}
+
+// 復習: user_quiz_progress をルールで集計するAPIから出題
+async function startReview(rmode){
+  const LBL = { recent:'直近の間違い', frequent:'よく間違える', weak_category:'苦手カテゴリ' };
+  curLabel = `復習：${LBL[rmode] || ''}`;
+  document.getElementById('quiz-title').textContent = '復習';
+  document.getElementById('guide').innerHTML = '';
+  app().innerHTML = `<div class="e-list"><div class="e-skel"></div><div class="e-skel"></div></div>`;
+  document.getElementById('btn-back').onclick = ()=>renderSelect();
+
+  let qs = null, apiOk = false;
+  try {
+    const r = await fetch(`${API_BASE}/api/quiz/review?user_id=${encodeURIComponent(lineUserId)}&mode=${encodeURIComponent(rmode)}`);
+    if (r.ok) { apiOk = true; const d = await r.json(); qs = Array.isArray(d) ? d : (d.questions || []); }
+  } catch(e){ /* API未実装 */ }
+
+  // APIが応答して記録ゼロ → 空状態。API未実装(404/err) → プレビュー用サンプル。
+  if (apiOk && (!qs || !qs.length)) {
+    app().innerHTML = `<div class="quiz-result" style="padding-top:30px">
+      <div class="quiz-result-emoji">🗒️</div>
+      <p class="quiz-result-msg" style="margin-top:8px">まだ復習できる問題がありません。<br>クイズに挑戦すると、間違えた問題がここに集まります。</p>
+      <div class="quiz-actions"><button class="quiz-btn primary" id="go-quiz">クイズを選ぶ</button></div>
+    </div>`;
+    document.getElementById('go-quiz').onclick = ()=>{ mode='company'; renderSelect(); };
+    return;
+  }
+  let isSample = false;
+  if (!qs || !qs.length) { qs = SAMPLE; isSample = true; }
+  QSET = qs.slice(0, N_PER_SET).map(shuffled); qi = 0; score = 0;
   renderQuestion(isSample);
 }
 

@@ -47,3 +47,34 @@ CREATE INDEX IF NOT EXISTS idx_uqp_user_set ON user_quiz_progress(line_user_id, 
 --   (任意) GET /api/quiz/sets?line_user_id=<id>
 --        → 利用可能セット一覧＋進捗（正答率）
 -- =====================================================================
+
+-- =====================================================================
+-- 復習モード API（ルールベース・user_quiz_progress 集計）★フロント(quiz.html 復習タブ)が既に呼ぶ形
+--   GET /api/quiz/review?user_id=<line_user_id>&mode=<recent|frequent|weak_category>
+--        → quiz_questions[] を最大10問返す（options/correct/explanation/source_url 込み）
+--   集計ルール（SQL例・いずれも is_correct=0 の誤答起点、正解済みは除外可）:
+--     mode=recent:        直近で間違えた問題を新しい順
+--        SELECT q.* FROM user_quiz_progress p JOIN quiz_questions q ON q.id=p.question_id
+--        WHERE p.line_user_id=? AND p.is_correct=0 ORDER BY p.answered_at DESC LIMIT 10;
+--     mode=frequent:      誤答回数の多い順（同一問題を複数回誤答）
+--        SELECT q.*, COUNT(*) ng FROM user_quiz_progress p JOIN quiz_questions q ON q.id=p.question_id
+--        WHERE p.line_user_id=? AND p.is_correct=0 GROUP BY p.question_id ORDER BY ng DESC, MAX(p.answered_at) DESC LIMIT 10;
+--     mode=weak_category: 苦手カテゴリ(誤答率高)を優先し、その category の未正解問題を出題
+--        WITH cat AS (SELECT q.category, AVG(p.is_correct) acc FROM user_quiz_progress p
+--                     JOIN quiz_questions q ON q.id=p.question_id WHERE p.line_user_id=? GROUP BY q.category)
+--        SELECT q.* FROM quiz_questions q JOIN cat ON cat.category=q.category
+--        ORDER BY cat.acc ASC, RANDOM() LIMIT 10;
+--   ※ user_quiz_progress は既に chosen/is_correct/answered_at/set_type/set_id を保持（上記CREATE）。
+--      集計インデックス idx_uqp_user_set で user 単位の絞り込みは高速。
+--      category 別集計を多用するなら CREATE INDEX idx_uqp_user_q ON user_quiz_progress(line_user_id, question_id); を追加検討。
+-- =====================================================================
+
+-- =====================================================================
+-- 【設計メモ・次フェーズ】AI適応出題（寄り添い型）※回答データ蓄積後
+--   ・上記ルールベース復習で回答ログ(user_quiz_progress)が貯まってから着手。
+--   ・案: ユーザーの誤答パターン(カテゴリ/難易度/出典種別)をLLMに渡し、
+--         「次に出すべき1問」または「弱点を突く新設問」を動的生成/選択（Source-or-Silence厳守）。
+--   ・出題だけでなく、解説を個別化（"前回ここで間違えたよね" 等の寄り添い文面）。
+--   ・DBは現行スキーマで足りる（question_id/category/is_correct の履歴があれば特徴量化可能）。
+--     追加するなら user_quiz_progress に response_ms(回答時間) 等の任意列を後付けINSERT。
+-- =====================================================================

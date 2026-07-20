@@ -41,3 +41,13 @@ function mountGuide(text) {
   const el = document.getElementById('guide');
   if (el) el.innerHTML = guideHTML(text);
 }
+
+// フッターの横長ロゴをタップでホーム(index)へ。全入口ページ共通の導線。
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.e-footer .brand-panel').forEach(el => {
+    el.style.cursor = 'pointer';
+    el.setAttribute('role', 'link');
+    el.setAttribute('aria-label', 'ホームへ');
+    el.addEventListener('click', () => { location.href = '/index.html'; });
+  });
+});
