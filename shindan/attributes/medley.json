@@ -1,0 +1,85 @@
+{
+ "slug": "medley",
+ "name": "メドレー",
+ "industry": "その他（外資・新興等）",
+ "soft": {
+  "tenkin_do": {
+   "value": 2,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "kaigai_do": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "stability": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "growth": {
+   "value": 5,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "remote_flex": {
+   "value": 5,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "young_discretion": {
+   "value": 5,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "bunri": {
+   "value": "文理両方",
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "job_tags": {
+   "value": [
+    "企画・マーケティング",
+    "エンジニア・IT",
+    "コンサルタント"
+   ],
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  }
+ },
+ "facts": {
+  "avg_salary": {
+   "value": 569,
+   "unit": "万円",
+   "evidence": {
+    "source_url": "https://hitocareer.com/about-medley/",
+    "quote": "**平均年収**: 569万円（2024年度・有価証券報告書）[出典](https://hitocareer.com/about-medley/)"
+   },
+   "as_of": "",
+   "confidence": "medium",
+   "estimated": false
+  },
+  "starting_salary": null,
+  "industry": {
+   "value": "その他（外資・新興等）",
+   "estimated": false
+  }
+ },
+ "trend_note": "上場ヘルステック企業で成長率25%超。米国・フィリピン拠点あり海外志向強。中途99%採用で即戦力重視。医療×DXの最高タ",
+ "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
+ "lint": {
+  "errors": [],
+  "notes": [
+   "starting_salary: 抽出/照合不可→null"
+  ]
+ }
+}
