@@ -1,0 +1,99 @@
+{
+  "_meta": {
+    "name": "tokyari-shindan 質問セット v1",
+    "count": 12,
+    "rationale": "スキーマの各マッチング属性に最低1問を対応させ、就活初心者が直感で答えられる粒度に絞った結果12問。①軸=年収志向/初任給重視/海外/転勤/安定vs成長/働き方/若手裁量/文理/職種/業界興味/大手vs新興/対人vs専門。多い(15+)と離脱、少ない(<10)と業界・企業を絞り込めないため10〜14の中央=12を採用。各設問は『こだわらない』を持ち、選ぶと判定対象外(欠損=減点しない設計)。",
+    "tone": "『あなたに合いそう』の参考提案。断定・優劣付けではない。",
+    "answer_encoding": "option.target: score系=1-5の希望値 / null=この設問をスキップ。tags=職種タグlist。industries=業界名list。salary_band=年収/初任給の希望バンド。"
+  },
+  "questions": [
+    {"id": "q_salary", "text": "将来的に、年収はどのくらいを目指したいですか？", "kind": "salary_avg", "weight": 1.0,
+     "note": "avg_salary(有報grade)が分かる社のみ加点対象。不明社は減点せず対象外。",
+     "options": [
+       {"label": "高い年収をしっかり狙いたい", "target": 5},
+       {"label": "平均より少し上くらい", "target": 4},
+       {"label": "生活が安定すれば十分", "target": 3},
+       {"label": "こだわらない", "target": null}]},
+
+    {"id": "q_starting", "text": "初任給の高さは重視しますか？", "kind": "salary_start", "weight": 0.7,
+     "note": "starting_salary(公式)が分かる社のみ加点対象。",
+     "options": [
+       {"label": "とても重視する", "target": 5},
+       {"label": "できれば高いほうがいい", "target": 4},
+       {"label": "あまり気にしない", "target": null}]},
+
+    {"id": "q_kaigai", "text": "海外と関わる仕事に興味はありますか？", "kind": "soft", "attr": "kaigai_do", "weight": 1.0,
+     "options": [
+       {"label": "ぜひ海外で働きたい", "target": 5},
+       {"label": "多少は海外と関わりたい", "target": 4},
+       {"label": "国内中心がいい", "target": 2},
+       {"label": "こだわらない", "target": null}]},
+
+    {"id": "q_tenkin", "text": "転勤についてどう思いますか？", "kind": "soft", "attr": "tenkin_do", "weight": 1.0,
+     "options": [
+       {"label": "全国・海外どこでも構わない", "target": 5},
+       {"label": "ある程度なら受け入れる", "target": 3},
+       {"label": "できれば地元・地域で働きたい", "target": 1},
+       {"label": "こだわらない", "target": null}]},
+
+    {"id": "q_stability", "text": "安定した環境と、成長・変化の多い環境、どちらに惹かれますか？", "kind": "soft", "attr": "stability", "weight": 1.0,
+     "options": [
+       {"label": "とにかく安定した環境", "target": 5},
+       {"label": "どちらかといえば安定", "target": 4},
+       {"label": "どちらかといえば成長・変化", "target": 2},
+       {"label": "刺激と成長を最優先", "target": 1}]},
+
+    {"id": "q_growth", "text": "会社の成長スピードや新しい挑戦の多さは重要ですか？", "kind": "soft", "attr": "growth", "weight": 0.9,
+     "options": [
+       {"label": "急成長・挑戦の多い会社がいい", "target": 5},
+       {"label": "そこそこ伸びていれば良い", "target": 3},
+       {"label": "成熟・落ち着いた会社がいい", "target": 1},
+       {"label": "こだわらない", "target": null}]},
+
+    {"id": "q_remote", "text": "リモートワークやフレックスなど、柔軟な働き方は重視しますか？", "kind": "soft", "attr": "remote_flex", "weight": 0.8,
+     "options": [
+       {"label": "とても重視する", "target": 5},
+       {"label": "あれば嬉しい", "target": 4},
+       {"label": "出社中心でも構わない", "target": 2},
+       {"label": "こだわらない", "target": null}]},
+
+    {"id": "q_young", "text": "若いうちから裁量を持って働きたいですか？", "kind": "soft", "attr": "young_discretion", "weight": 0.9,
+     "options": [
+       {"label": "早くから大きな仕事を任されたい", "target": 5},
+       {"label": "できれば裁量はほしい", "target": 4},
+       {"label": "じっくり育ててもらいたい", "target": 2},
+       {"label": "こだわらない", "target": null}]},
+
+    {"id": "q_bunri", "text": "あなたの専攻・得意は文系寄り？理系寄り？", "kind": "bunri", "attr": "bunri", "weight": 0.6,
+     "options": [
+       {"label": "文系寄り", "target": "文系寄り"},
+       {"label": "理系寄り", "target": "理系寄り"},
+       {"label": "どちらも・こだわらない", "target": null}]},
+
+    {"id": "q_jobtags", "text": "興味のある仕事のタイプは？（複数選択可）", "kind": "tags", "attr": "job_tags", "weight": 1.0, "multi": true,
+     "options": [
+       {"label": "営業・人と関わる", "target": ["営業"]},
+       {"label": "企画・マーケティング", "target": ["企画・マーケティング"]},
+       {"label": "エンジニア・IT", "target": ["エンジニア・IT"]},
+       {"label": "研究・開発・技術", "target": ["研究・開発", "生産・技術"]},
+       {"label": "コンサル・専門職", "target": ["コンサルタント", "金融・専門職"]},
+       {"label": "クリエイティブ・企画制作", "target": ["クリエイティブ"]},
+       {"label": "こだわらない", "target": null}]},
+
+    {"id": "q_industry", "text": "今きになっている業界はありますか？（複数選択可・任意）", "kind": "industry", "weight": 0.8, "multi": true,
+     "options": [
+       {"label": "総合商社／専門商社", "target": ["総合商社", "専門商社"]},
+       {"label": "メーカー(自動車・電機・素材・食品等)", "target": ["自動車・モビリティ", "電機・精密・重工", "鉄鋼・素材・化学", "食品・飲料", "日用品・化粧品"]},
+       {"label": "金融(銀行・証券・保険)", "target": ["銀行・証券・保険"]},
+       {"label": "IT・通信・ゲーム・エンタメ", "target": ["IT・通信・SaaS", "ゲーム・エンタメ"]},
+       {"label": "コンサル・広告・メディア", "target": ["コンサル", "広告・メディア"]},
+       {"label": "インフラ・不動産・運輸・小売", "target": ["インフラ・エネルギー", "不動産・建設", "航空・運輸・物流", "小売・流通"]},
+       {"label": "まだ決めていない", "target": null}]},
+
+    {"id": "q_daikigyo", "text": "大手の安定基盤と、新興・外資のスピード感、どちらに近づきたいですか？", "kind": "soft", "attr": "stability", "weight": 0.7,
+     "options": [
+       {"label": "大手・安定基盤で腰を据えたい", "target": 5},
+       {"label": "新興・外資でスピード感を持ちたい", "target": 1},
+       {"label": "こだわらない", "target": null}]}
+  ]
+}
