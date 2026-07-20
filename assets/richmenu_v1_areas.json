@@ -1,0 +1,14 @@
+{
+  "size": { "width": 2500, "height": 1686 },
+  "selected": true,
+  "name": "tokyari-v1",
+  "chatBarText": "メニュー",
+  "areas": [
+    { "bounds": { "x": 0,    "y": 0,   "width": 833, "height": 843 }, "action": { "type": "uri", "label": "企業研究",     "uri": "https://liff.line.me/2010075487-89AJxZnA/industry" } },
+    { "bounds": { "x": 833,  "y": 0,   "width": 834, "height": 843 }, "action": { "type": "uri", "label": "業界研究",     "uri": "https://liff.line.me/2010075487-89AJxZnA/gyokai" } },
+    { "bounds": { "x": 1667, "y": 0,   "width": 833, "height": 843 }, "action": { "type": "uri", "label": "理解度クイズ", "uri": "https://liff.line.me/2010075487-89AJxZnA/quiz.html" } },
+    { "bounds": { "x": 0,    "y": 843, "width": 833, "height": 843 }, "action": { "type": "uri", "label": "お気に入り",   "uri": "https://liff.line.me/2010075487-89AJxZnA/bookmarks.html" } },
+    { "bounds": { "x": 833,  "y": 843, "width": 834, "height": 843 }, "action": { "type": "uri", "label": "使い方",       "uri": "https://liff.line.me/2010075487-89AJxZnA/howto.html" } },
+    { "bounds": { "x": 1667, "y": 843, "width": 833, "height": 843 }, "action": { "type": "uri", "label": "ホーム",       "uri": "https://liff.line.me/2010075487-89AJxZnA/home.html" } }
+  ]
+}
