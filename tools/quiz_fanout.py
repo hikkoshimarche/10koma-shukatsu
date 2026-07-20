@@ -468,24 +468,27 @@ def converge_locked(slug, name, corpus, target=30, max_round=4, extra=""):
     """品質固定: 生成→lint収束→OpenAI R1-R6レビュー→pass分のみ採用。ミックス強制(財務≤target/2)。
     不足は非財務優先で再生成backfill。返り: (final[], dropped, review_pass_rate)。lint error=0 かつ review pass。"""
     FIN = "財務数値"
-    fin_cap = target // 2      # 財務は最大15/30
-    accepted, seen_q, fin_n = [], set(), 0
+    fin_cap, fin_floor = 15, 8      # 財務は8〜15
+    accepted, seen_q, seen_concepts, fin_n, dry_n = [], set(), set(), 0, 0
     tot_graded, tot_passed = 0, 0
     for rnd in range(max_round):
         need = target - len(accepted)
         if need <= 0:
             break
-        # 財務が上限なら、以降は非財務のみを要求(ミックス担保)
+        # 生成バイアス: 財務が下限未満→意味ある財務を、上限到達→非財務のみ
         dyn = extra
-        if fin_n >= fin_cap:
-            dyn = (extra + "\n【重要】財務数値の設問は上限に達した。ここからは財務数値を一切作らず、"
-                   "必ず 事業セグメント/会社概要/沿革/製品・サービス/人名・役員 のカテゴリだけで作ること。")
+        if fin_n < fin_floor:
+            dyn = (extra + "\n【重要】意味のある財務設問を多めに作れ(収益/営業利益/税引前利益/当期利益/"
+                   "親会社帰属利益/総資産/ROE/配当/キャッシュフロー等を各1問ずつ・異なる指標で)。")
+        elif fin_n >= fin_cap:
+            dyn = (extra + "\n【重要】財務数値は上限。以降は財務を作らず、事業セグメント/会社概要/沿革/"
+                   "製品・サービス/人名・役員 のみで作ること。同じ事実の重複設問は作らない。")
         pool = generate(name, corpus, max(need + 6, 12), extra=dyn)
         lint_ok = []
         for q in pool:
             q.setdefault("id", "")
             k = q.get("q_text", "").strip()[:40]
-            if k in seen_q or lint_one(q, corpus):
+            if k in seen_q or lint_one(q, corpus):   # 単一lint(単位整合/数値日付/カテゴリ等)
                 continue
             seen_q.add(k); lint_ok.append(q)
         if not lint_ok:
@@ -495,18 +498,34 @@ def converge_locked(slug, name, corpus, target=30, max_round=4, extra=""):
             q["id"] = f"{slug}_r{rnd}_{j:02d}"
         passed_ids, rate, g, p = _review_pass_ids(lint_ok, corpus)
         tot_graded += g; tot_passed += p
-        # 非財務を優先採用し、財務は fin_cap で打ち止め
-        for q in sorted(lint_ok, key=lambda x: 1 if x.get("category") == FIN else 0):
-            if q["id"] not in passed_ids or len(accepted) >= target:
-                continue
-            if q.get("category") == FIN:
-                if fin_n >= fin_cap:
-                    continue
-                fin_n += 1
+        # 採用: レビューpass + 概念重複なし + ドライ上限 + 財務上限。財務は下限まで優先。
+        cands = [q for q in lint_ok if q["id"] in passed_ids]
+        cands.sort(key=lambda x: 0 if (x.get("category") == FIN and fin_n < fin_floor) else
+                                 (2 if x.get("category") == FIN else 1))
+        for q in cands:
+            if len(accepted) >= target:
+                break
+            concept = QL._concept_of(q)
+            key = (concept, (q.get("as_of") or "").strip())
+            if concept and key in seen_concepts:
+                continue                              # 概念重複
+            if concept in QL.DRY_CONCEPTS and dry_n >= QL.DRY_CAP:
+                continue                              # 登記トリビア上限
+            if q.get("category") == FIN and fin_n >= fin_cap:
+                continue                              # 財務上限
             accepted.append(q)
+            if concept: seen_concepts.add(key)
+            if concept in QL.DRY_CONCEPTS: dry_n += 1
+            if q.get("category") == FIN: fin_n += 1
         if not cost_ok():
             break
     final = [{**q, "id": f"{slug}_{i:02d}"} for i, q in enumerate(accepted[:target], 1)]
+    # 最終list-lint(概念dedup/ドライ上限/単位)でerror残があれば除去して再採番
+    r = QL.run_quiz_lints(final, corpus)
+    if r["errors"] > 0:
+        bad = {f["id"] for f in r["findings"] if f["severity"] == "error"}
+        final = [{**q, "id": f"{slug}_{i:02d}"} for i, q in enumerate(
+                 [q for q in final if q["id"] not in bad], 1)]
     dropped = target - len(final)
     overall_rate = (tot_passed / tot_graded) if tot_graded else 1.0
     return final, max(0, dropped), round(overall_rate, 3)
@@ -522,12 +541,17 @@ REVIEW_SYS = (
  "当期利益と包括利益の取り違え)や、解説が source と矛盾する場合のみ不合格。整合・妥当なら合格。\n"
  "ルーブリック:\n"
  "R1 正解と解説が source と論理的に整合(明確な指標取り違え/矛盾のみ不合格。裏取り不足は合格側に倒す)\n"
- "R2 暗記トリビア(総会日・配当支払日・有報提出日等の日程)は不合格\n"
+ "R2 暗記トリビア(総会日・配当支払日・有報提出日等の日程、本店所在地・資本金・株式数など単純転記)を"
+ "『理解を問う設問』より優先していないか。理解に資さない丸暗記トリビアは不合格。\n"
  "R3 順位/最大/最高設問は competitors(全競合の数値)が揃っているか。EPS等株数依存指標の社間比較は不合格\n"
- "R4 設問ミックス(財務≤15/30、残りは事業・会社概要・沿革・製品)を評価\n"
- "R5 誤答3つが同一source内の実数として妥当(本文にある別項目/別年度の値なら妥当=合格)\n"
+ "R4 設問ミックス(財務8〜15/30、残りは事業内容・セグメント・強み/差別化・働き方・沿革・製品)を評価\n"
+ "R5 誤答の妥当性: 4択すべて正解と同じ型/単位(円は円・%は%・社は社・名は名・株は株)で、"
+ "本文にある同単位の実数から採られ、程よく紛らわしいか。単位混在・非現実的・自明に切れる誤答は不合格。\n"
  "R6 正解ちょうど1つ・正解が実際に正しい\n"
+ "R7 理解志向: 事業/セグメント/強み/意味のある財務(収益・利益・ROE・配当・CF)など、"
+ "その会社の理解に資する問いか。単なる登記情報の丸暗記は減点し不合格側へ。\n"
  "非数値設問(セグメント名/製品/沿革/人名)は、正解がスニペットの記述と整合すれば合格。\n"
+ "pass=false にするのは R2/R5/R7 で明確に低品質な場合、または R1/R6 で誤りの場合。良問は合格。\n"
  "出力JSON: {\"results\":[{\"id\":\"..\",\"pass\":true,\"reasons\":\"..\"}],"
  "\"systemic_flags\":[\"..\"],\"pass_rate\":0.0}. systemic_flags は“同一ルール違反が3問以上で多発”した場合のみ、"
  "該当ルール名(R1..R6)+要約を入れる。単発の懸念は systemic に入れない。")
@@ -855,14 +879,15 @@ def run(targets, st, is_validate=False):
     return "done"
 
 
-def run_locked(industry_name):
+def run_locked(industry_name, lockdir="sogo_shosha_locked", suf="locked"):
     """品質固定モード: 1業界の各社+業界を 厚いcorpus + 二層ゲート(lint+review) で作り直す。
-    小バッチ・ローリング(PARALLEL)・コストガード。出力は sogo_shosha_locked/ と private。"""
+    小バッチ・ローリング(PARALLEL)・コストガード。出力は <lockdir>/ と private。"""
     from concurrent.futures import wait, FIRST_COMPLETED
     companies, industries = load_targets()
     members = [(c["slug"], c["name"]) for c in companies if c.get("industry") == industry_name]
     ind = next((x for x in industries if x["name"] == industry_name), None)
-    LOCK_DIR = os.path.join(HANDOFF, "sogo_shosha_locked")
+    LOCK_DIR = os.path.join(HANDOFF, lockdir)
+    Q30F, CORPF = f"quiz_30q_{suf}.json", f"quiz_corpus_{suf}.json"
     os.makedirs(LOCK_DIR, exist_ok=True)
     line(f"🔒 quiz品質固定モード開始: {industry_name} {len(members)}社+業界1 / 厚corpus+二層ゲート / 並列{PARALLEL}・${MAX_USD}ガード")
     results = []
@@ -874,10 +899,10 @@ def run_locked(industry_name):
                 record_needs_source(slug, name, 0, "locked:no_official_url")
                 return {"slug": slug, "name": name, "n": 0, "pass": None, "needs_source": True}
             final, dropped, rate = converge_locked(slug, name, corpus, target=30)
-            outp = os.path.join(OUT, slug, "quiz_30q_locked.json")
+            outp = os.path.join(OUT, slug, Q30F)
             os.makedirs(os.path.dirname(outp), exist_ok=True)
             json.dump(final, open(outp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-            json.dump(corpus, open(os.path.join(OUT, slug, "quiz_corpus_locked.json"), "w", encoding="utf-8"), ensure_ascii=False)
+            json.dump(corpus, open(os.path.join(OUT, slug, CORPF), "w", encoding="utf-8"), ensure_ascii=False)
             json.dump(final, open(os.path.join(LOCK_DIR, f"{slug}_quiz.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
             if len(final) < 30:
                 record_needs_source(slug, name, len(final), f"locked:under30({len(final)}/30, corpus薄)")
@@ -910,7 +935,7 @@ def run_locked(industry_name):
     if ind and cost_ok():
         mcorpus = {}
         for slug, name in members:
-            cf = os.path.join(OUT, slug, "quiz_corpus_locked.json")
+            cf = os.path.join(OUT, slug, CORPF)
             if os.path.exists(cf):
                 mcorpus.update(json.load(open(cf)))
         extra = ("この業界クイズでは、可能な範囲で『順位/最大/最高』の設問を作る場合、必ず type:\"rank\" と "
@@ -920,7 +945,7 @@ def run_locked(industry_name):
             final, dropped, rate = converge_locked(ind["slug"], industry_name, mcorpus, target=30, extra=extra)
             json.dump(final, open(os.path.join(LOCK_DIR, f"industry_{ind['slug']}_quiz.json"), "w", encoding="utf-8"),
                       ensure_ascii=False, indent=1)
-            json.dump(mcorpus, open(os.path.join(OUT, ind["slug"], "quiz_corpus_locked.json"), "w", encoding="utf-8"),
+            json.dump(mcorpus, open(os.path.join(OUT, ind["slug"], CORPF), "w", encoding="utf-8"),
                       ensure_ascii=False) if os.path.isdir(os.path.join(OUT, ind["slug"])) or os.makedirs(os.path.join(OUT, ind["slug"]), exist_ok=True) is None else None
             rankn = sum(1 for q in final if q.get("type") == "rank" or q.get("category") == "業界順位")
             ind_res = {"slug": ind["slug"], "n": len(final), "pass": rate, "rank": rankn}
@@ -941,8 +966,8 @@ def run_locked(industry_name):
         open(os.path.join(LOCK_DIR, f"review_{slug}.md"), "w", encoding="utf-8").write("\n".join(md))
     for r in results:
         if r["n"] >= 20:
-            qs = json.load(open(os.path.join(OUT, r["slug"], "quiz_30q_locked.json")))
-            corpus = json.load(open(os.path.join(OUT, r["slug"], "quiz_corpus_locked.json")))
+            qs = json.load(open(os.path.join(OUT, r["slug"], Q30F)))
+            corpus = json.load(open(os.path.join(OUT, r["slug"], CORPF)))
             write_reviewmd(r["slug"], r["name"], qs, corpus); break
 
     # サマリ
@@ -957,7 +982,7 @@ def run_locked(industry_name):
     json.dump(summary, open(os.path.join(LOCK_DIR, "summary.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     tot_q = sum(r["n"] for r in results) + (ind_res["n"] if ind_res else 0)
     line(f"🔒 quiz品質固定 完了: {industry_name} {len(results)}社 / 総問{tot_q} / 分布{dist} / "
-         f"平均review pass{summary['avg_review_pass']} / ${summary['cost_usd']} / 出力 sogo_shosha_locked/")
+         f"平均review pass{summary['avg_review_pass']} / ${summary['cost_usd']} / 出力 {lockdir}/")
     print(json.dumps(summary, ensure_ascii=False, indent=1))
     return 0
 
@@ -967,12 +992,14 @@ def main():
     ap.add_argument("--validate", type=int, default=0, help="少数社を同期検証(背景化しない)")
     ap.add_argument("--run", action="store_true", help="本番: 全社(company→industry)")
     ap.add_argument("--locked", type=str, default="", help="品質固定モード: 指定業界のみ厚corpus+二層ゲートで作り直す")
+    ap.add_argument("--lockdir", type=str, default="sogo_shosha_locked", help="locked出力の受け渡しサブフォルダ")
+    ap.add_argument("--suffix", type=str, default="locked", help="locked成果ファイルのサフィックス(v1保全のため v2 等)")
     ap.add_argument("--industries-only", action="store_true")
     args = ap.parse_args()
     if args.locked:
         if not OPENAI_KEY:
             print("NO OPENAI_API_KEY"); return 2
-        return run_locked(args.locked)
+        return run_locked(args.locked, lockdir=args.lockdir, suf=args.suffix)
     if not OPENAI_KEY:
         print("NO OPENAI_API_KEY"); return 2
     companies, industries = load_targets()

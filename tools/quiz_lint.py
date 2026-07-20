@@ -279,17 +279,111 @@ PER_Q = [lint_source_required, lint_asof_required_if_number, lint_single_correct
          lint_banned_schedule_topic]
 
 
+# ── 作りの品質(v2): 単位整合 / 概念dedup / ドライトリビア上限 ──
+UNIT_RE = re.compile(r"(百万円|億円|兆円|千円|円|%|名|社|株|拠点|カ国・地域|カ国|人|件|ドル|ポイント|年間)\s*$")
+def _unit_class(opt):
+    """選択肢の型/単位クラス。text/date/year/money-unit/percent/名/社/株… を返す。"""
+    s = str(opt).translate(Z2H).replace("％", "%").strip()
+    if not DIGIT_RE.search(s):
+        return "text"
+    if re.search(r"\d+\s*月\s*\d+\s*日", s):
+        return "date"
+    m = UNIT_RE.search(s)
+    if m:
+        return "percent" if m.group(1) == "%" else m.group(1)
+    if re.search(r"\d{3,4}\s*年", s):
+        return "year"
+    return "number"
+
+def lint_unit_consistency(q):
+    opts = q.get("options") or []
+    if len(opts) != 4:
+        return []
+    classes = {_unit_class(o) for o in opts}
+    if len(classes) > 1:
+        detail = " / ".join(f"{_unit_class(o)}:{str(o)[:14]}" for o in opts)
+        return [_f("unit_consistency", "error", q.get("id"),
+                   f"選択肢の型/単位が不揃い({sorted(classes)}): {detail}")]
+    return []
+
+# 概念グループ(canonical, [検出語])。優先順(specific first)で最初に一致した canonical を採用。
+CONCEPT_MAP = [
+    ("経営者", ("代表取締役", "社長", "ceo", "coo", "代表者", "会長")),
+    ("従業員数", ("従業員", "社員数")),
+    ("設立", ("設立", "創業", "創立")),
+    ("資本金", ("資本金",)),
+    ("本店所在地", ("本店", "本社所在地", "所在地", "本社は")),
+    ("株式数", ("発行済株式", "自己株式", "期中平均株式", "株式数")),
+    ("証券コード", ("証券コード", "コード番号")),
+    ("英文社名", ("英文", "商号")),
+    ("拠点", ("拠点", "カ国", "事業所数")),
+    ("帰属利益", ("帰属する当期", "帰属当期利益", "当社株主に帰属")),
+    ("税引前利益", ("税引前利益",)),
+    ("包括利益", ("包括利益",)),
+    ("営業利益", ("営業利益",)),
+    ("当期利益", ("当期利益", "純利益")),
+    ("収益", ("収益", "売上高", "売上収益")),
+    ("総資産", ("総資産", "資産合計")),
+    ("純資産資本", ("純資産", "資本合計")),
+    ("自己資本比率", ("自己資本比率", "帰属持分比率")),
+    ("ROE", ("roe", "当期利益率")),
+    ("配当", ("配当性向", "配当金", "年間配当", "1株当たり配当", "配当")),
+    ("CF", ("キャッシュ・フロー", "営業活動による", "現金及び現金同等物")),
+    ("1株当たり指標", ("1株当たり", "eps", "bps")),
+    ("持分法", ("持分法",)),
+    ("セグメント事業", ("セグメント", "事業本部", "事業内容", "事業領域", "事業分野")),
+    ("経営理念", ("経営理念", "企業理念", "ミッション", "バリュー", "ビジョン")),
+]
+DRY_CONCEPTS = {"本店所在地", "資本金", "株式数"}   # 登記/単純転記トリビア(合計2問まで)
+DRY_CAP = 2
+
+def _concept_of(q):
+    t = (q.get("q_text", "") or "").lower()
+    for canon, terms in CONCEPT_MAP:
+        if any(term.lower() in t for term in terms):
+            return canon
+    return None
+
+def lint_concept_dedup(quiz):
+    """同じ概念×同じas_of を問う設問が複数 → 2つ目以降 error(1つに集約)。"""
+    seen, res = {}, []
+    for q in quiz:
+        c = _concept_of(q)
+        if not c:
+            continue
+        key = (c, (q.get("as_of") or "").strip())
+        if key in seen:
+            res.append(_f("concept_dedup", "error", q.get("id"),
+                          f"概念重複『{c}』(as_of={key[1] or '-'}) 既出={seen[key]} → 1問に集約"))
+        else:
+            seen[key] = q.get("id")
+    return res
+
+def lint_dry_trivia_cap(quiz):
+    """本店所在地・資本金・株式数(発行済/自己/平均)の登記トリビアは合計DRY_CAP問まで。"""
+    dry = [q for q in quiz if _concept_of(q) in DRY_CONCEPTS]
+    res = []
+    if len(dry) > DRY_CAP:
+        for q in dry[DRY_CAP:]:
+            res.append(_f("dry_trivia_cap", "error", q.get("id"),
+                          f"ドライトリビア({_concept_of(q)})が上限{DRY_CAP}超過({len(dry)}問) → 事業/セグメント/財務へ差し替え"))
+    return res
+
+
 def run_quiz_lints(quiz, corpus=None):
     findings = []
     seen_ids = {}
     for q in quiz:
         for fn in PER_Q:
             findings += fn(q)
+        findings += lint_unit_consistency(q)
         findings += lint_no_fabrication_number(q, corpus)
         findings += lint_no_fabrication_date(q, corpus)
         findings += lint_rank_claim(q, corpus)
         qid = q.get("id")
         seen_ids[qid] = seen_ids.get(qid, 0) + 1
+    findings += lint_concept_dedup(quiz)      # リスト全体で概念重複
+    findings += lint_dry_trivia_cap(quiz)     # リスト全体でトリビア上限
     for qid, c in seen_ids.items():
         if c > 1:
             findings.append(_f("single_correct", "error", qid, f"id重複×{c}"))
@@ -348,6 +442,9 @@ def _fixtures():
         "rank_claim": {**base, "id": "fx_rank", "category": "業界順位", "type": "rank",
                        "q_text": "2025年3月期にEPSが最も高い商社は？",
                        "options": ["三菱商事", "三井物産", "伊藤忠商事", "住友商事"]},
+        "unit_consistency": {**base, "id": "fx_unit", "category": "会社概要", "q_text": "資本金は？",
+                             "options": ["344,163,332,347円", "5,333名", "2,905,248,272株", "62カ国"],
+                             "as_of": "2026年"},
     }
     return corpus, cases
 
@@ -363,11 +460,11 @@ def _positive():
          "options": ["1918年10月1日", "2024年7月1日", "2025年6月18日", "2025年5月2日"],
          "correct": 0, "explanation": "1918年10月1日設立。", "source_url": "http://src/a", "as_of": "設立"},
         {"id": "pos_rank", "category": "業界順位", "type": "rank",
-         "q_text": "2025年3月期に連結収益が最も大きい商社は？",
-         "options": ["三菱商事", "三井物産", "伊藤忠商事", "住友商事"], "correct": 0,
-         "explanation": "三菱商事が最大。", "source_url": "http://src/a", "as_of": "2025年3月期",
-         "competitors": [{"name": "三菱商事", "value": "18,617,601", "source_url": "http://src/a"},
-                         {"name": "三井物産", "value": "14,662,620", "source_url": "http://src/b"}]},
+         "q_text": "2025年3月期にROEが最も高い商社は？",
+         "options": ["三井物産", "三菱商事", "伊藤忠商事", "住友商事"], "correct": 0,
+         "explanation": "三井物産が最高。", "source_url": "http://src/b", "as_of": "2025年3月期",
+         "competitors": [{"name": "三菱商事", "value": "10.3", "source_url": "http://src/a"},
+                         {"name": "三井物産", "value": "11.9", "source_url": "http://src/b"}]},
     ]
     return corpus, qs
 
@@ -383,6 +480,17 @@ def selftest():
         if not fired:
             print("      " + format_report(r, name))
         ok = ok and fired
+    print("\n=== リスト全体lint(概念dedup / ドライトリビア上限) ===")
+    base = {"category": "会社概要", "correct": 0, "explanation": "", "source_url": "http://src/a", "as_of": ""}
+    dup_list = [{**base, "id": "d1", "q_text": "社長は誰か？", "options": ["A", "B", "C", "D"]},
+                {**base, "id": "d2", "q_text": "代表取締役社長は誰か？", "options": ["A", "B", "C", "D"]}]
+    fired_dup = any(f["lint"] == "concept_dedup" for f in run_quiz_lints(dup_list, corpus)["findings"])
+    print(f"  {'OK ' if fired_dup else 'NG '} concept_dedup(社長×2): {'発火' if fired_dup else 'NG'}")
+    dry_list = [{**base, "id": f"t{i}", "q_text": q, "options": ["A", "B", "C", "D"]}
+                for i, q in enumerate(["本店所在地は？", "資本金は？", "発行済株式数は？"])]
+    fired_dry = any(f["lint"] == "dry_trivia_cap" for f in run_quiz_lints(dry_list, corpus)["findings"])
+    print(f"  {'OK ' if fired_dry else 'NG '} dry_trivia_cap(登記3問>上限2): {'発火' if fired_dry else 'NG'}")
+    ok = ok and fired_dup and fired_dry
     print("\n=== 正例：error=0 で通過するか ===")
     pc, pqs = _positive()
     pr = run_quiz_lints(pqs, pc)
