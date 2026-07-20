@@ -709,4 +709,17 @@ app.get('/api/recent-companies', async (c) => {
   } catch (e) { return c.json([]) }
 })
 
+// === 企業データシート（タブD投入・未投入時はgraceful 404→フロントはサンプル/導線非表示） ===
+app.get('/api/datasheet', async (c) => {
+  const id = c.req.query('id')
+  if (!id) return c.json({ error: 'id required' }, 400)
+  try {
+    const row = await c.env.DB.prepare(
+      'SELECT company_id, data FROM datasheets WHERE company_id = ?'
+    ).bind(id).first<{ company_id: string; data: string }>()
+    if (!row) return c.json({ error: 'not found', id }, 404)
+    return c.json({ id: row.company_id, ...safeJson(row.data) })
+  } catch (e) { return c.json({ error: 'unavailable', id }, 404) }
+})
+
 export default app
