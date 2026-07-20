@@ -513,6 +513,68 @@ def format_report(r, label=""):
     return "\n".join(out)
 
 
+# ── datasheet(教材) 用 lint ───────────────────────────────
+#  教材とクイズを同一corpusで対に。datasheetもSource-or-Silence、quiz→datasheetカバレッジを保証。
+def datasheet_body(ds):
+    """datasheet の全 fact 文字列を連結(照合用)。"""
+    parts = []
+    for _sec, items in (ds.get("sections") or {}).items():
+        for it in (items or []):
+            parts.append(str(it.get("fact", "")))
+            if it.get("as_of"):
+                parts.append(str(it.get("as_of")))
+    return " \n ".join(parts)
+
+def lint_datasheet_source(ds, corpus):
+    """datasheet の数値が引用source本文に実在するか(Source-or-Silence)。捏造factを検出。"""
+    res = []
+    for sec, items in (ds.get("sections") or {}).items():
+        for it in (items or []):
+            url = (it.get("source_url") or "").strip()
+            nums = _num_tokens(str(it.get("fact", "")) + " " + str(it.get("as_of", "")))
+            if not nums:
+                continue
+            body = corpus.get(url) if corpus else None
+            if not body:
+                res.append(_f("datasheet_source", "error", sec, f"factのsource_url本文なし: {url}"))
+                continue
+            miss = sorted(t for t in nums if t not in _norm_num(body))
+            if miss:
+                res.append(_f("datasheet_source", "error", sec,
+                              f"datasheet捏造数値{miss}: {str(it.get('fact',''))[:30]}"))
+    return res
+
+def lint_datasheet_coverage(quiz, ds):
+    """quiz→datasheet カバレッジ: 各設問の正解(値/語)が datasheet 本文に実在しなければ error。
+    (アプリ内で学べないことを問う『当てずっぽう』を防ぐ)"""
+    body = datasheet_body(ds)
+    bodyn = _norm_num(body)
+    body_nospace = re.sub(r"\s", "", body)
+    res = []
+    for q in quiz:
+        opts = q.get("options") or []
+        ci = q.get("correct")
+        if not (isinstance(ci, int) and 0 <= ci < len(opts)):
+            continue
+        corr = str(opts[ci]).strip()
+        nums = _num_tokens(corr)
+        if nums:
+            miss = [t for t in nums if t not in bodyn]
+            if miss:
+                res.append(_f("datasheet_coverage", "error", q.get("id"),
+                              f"正解値『{corr}』がdatasheetに不在: {miss}"))
+        else:
+            if re.sub(r"\s", "", corr) not in body_nospace:
+                res.append(_f("datasheet_coverage", "error", q.get("id"),
+                              f"正解語『{corr}』がdatasheetに不在(教材未掲載)"))
+    return res
+
+def run_datasheet_lints(ds, quiz, corpus):
+    findings = lint_datasheet_source(ds, corpus) + lint_datasheet_coverage(quiz, ds)
+    e = sum(1 for f in findings if f["severity"] == "error")
+    return {"findings": findings, "errors": e, "n_facts": sum(len(v or []) for v in (ds.get("sections") or {}).values())}
+
+
 # ── selftest ─────────────────────────────────────────────
 def _corpus():
     return {

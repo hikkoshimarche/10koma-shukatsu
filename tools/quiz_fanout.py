@@ -436,6 +436,87 @@ def fix_failures(name, corpus, failed):
         return []
 
 
+# ── datasheet(教材) 生成: クイズと同一corpusで対に ───────────
+DS_SYS = (
+ "あなたは就活生向けの『企業データシート(教材)』を、提供された一次情報の本文だけを根拠に作る編集者です。"
+ "絶対規則(Source-or-Silence): 記載する数値・日付・固有名は指定 source 本文に『実在』するものだけ。"
+ "捏造・概算・別表記(兆億換算等)は禁止。各 fact に source_url を付す。数値・可変事実には as_of(時点)を付す。"
+ "構成は4セクション: 『事業内容・セグメント』『主要財務』『社風・求める人物像』『沿革・基本情報』。"
+ "各セクションに、その会社を理解できる要点を短い日本語のfactで列挙する(1factは1文)。"
+ "主要財務は 収益・利益・ROE・配当・キャッシュフロー等を as_of 付きで。社風・人物像は公式の記述の範囲のみ。")
+DS_USER_TMPL = (
+ "対象企業: {name}\n以下は許可された source 本文(URL付き)。ここに実在する事実だけで data sheet を作る。\n\n{sources}\n\n"
+ "出力JSON(厳守): {{\"sections\":{{"
+ "\"事業内容・セグメント\":[{{\"fact\":\"...\",\"source_url\":\"<上記URL>\"}}],"
+ "\"主要財務\":[{{\"fact\":\"...\",\"as_of\":\"2025年3月期\",\"source_url\":\"...\"}}],"
+ "\"社風・求める人物像\":[{{\"fact\":\"...\",\"source_url\":\"...\"}}],"
+ "\"沿革・基本情報\":[{{\"fact\":\"...\",\"as_of\":\"...\",\"source_url\":\"...\"}}]}}}}\n"
+ "数値・日付は source 本文の表記のまま。source_url は上記URLのいずれか。捏造禁止。")
+
+def generate_datasheet(name, corpus):
+    user = DS_USER_TMPL.format(name=name, sources=_sources_block(corpus))
+    txt = openai_chat([{"role": "system", "content": DS_SYS}, {"role": "user", "content": user}],
+                      model=GEN_MODEL, max_tokens=4000)
+    try:
+        data = json.loads(txt)
+    except Exception:
+        m = re.search(r"\{.*\}", txt, re.S)
+        data = json.loads(m.group(0)) if m else {"sections": {}}
+    return data if isinstance(data, dict) and data.get("sections") else {"sections": {}}
+
+def _filter_datasheet_sos(ds, corpus):
+    """Source-or-Silence: 数値が引用source本文に実在しないfactを除去。"""
+    out = {"sections": {}}
+    for sec, items in (ds.get("sections") or {}).items():
+        keep = []
+        for it in (items or []):
+            url = (it.get("source_url") or "").strip()
+            nums = QL._num_tokens(str(it.get("fact", "")) + " " + str(it.get("as_of", "")))
+            body = corpus.get(url, "")
+            if nums and (not body or any(t not in QL._norm_num(body) for t in nums)):
+                continue                       # 捏造数値fact→除去
+            if url not in corpus:              # 出典が台帳外→除去
+                continue
+            keep.append(it)
+        out["sections"][sec] = keep
+    return out
+
+_DS_SEC = {"財務数値": "主要財務", "業界順位": "主要財務", "事業セグメント": "事業内容・セグメント",
+           "製品・サービス": "事業内容・セグメント", "沿革": "沿革・基本情報",
+           "会社概要": "沿革・基本情報", "人名・役員": "沿革・基本情報", "その他": "沿革・基本情報"}
+def _repair_coverage(ds, quiz):
+    """quiz→datasheet カバレッジ保証: datasheet に無いクイズ正解を、該当セクションに追記。
+    (正解はすでにcorpus実在をlint済=Source-or-Silence担保)。"""
+    body = QL.datasheet_body(ds); bodyn = QL._norm_num(body); bns = re.sub(r"\s", "", body)
+    ds.setdefault("sections", {})
+    for q in quiz:
+        opts = q.get("options") or []; ci = q.get("correct")
+        if not (isinstance(ci, int) and 0 <= ci < len(opts)):
+            continue
+        corr = str(opts[ci]).strip(); nums = QL._num_tokens(corr)
+        covered = (all(t in bodyn for t in nums) if nums else re.sub(r"\s", "", corr) in bns)
+        if covered:
+            continue
+        sec = _DS_SEC.get(q.get("category"), "沿革・基本情報")
+        subj = re.split(r"(はどれ|はどの|はいくつ|はどこ|は何|に含まれ|ですか|は、|は？|\?)", q.get("q_text", ""))[0].strip()
+        item = {"fact": f"{subj or q.get('q_text','')[:24]}: {corr}", "source_url": q.get("source_url")}
+        if q.get("as_of"):
+            item["as_of"] = q["as_of"]
+        ds["sections"].setdefault(sec, []).append(item)
+        body += " " + item["fact"]; bodyn = QL._norm_num(body); bns = re.sub(r"\s", "", body)
+    return ds
+
+def build_datasheet(slug, name, corpus, quiz):
+    """corpus から datasheet 生成 → SoS除去 → quizカバレッジ修復。返り: (datasheet, cov_errors)"""
+    ds = generate_datasheet(name, corpus)
+    ds = _filter_datasheet_sos(ds, corpus)
+    ds = _repair_coverage(ds, quiz)
+    ds["slug"] = slug; ds["name"] = name
+    ds["generated_from"] = list(corpus.keys())
+    cov = QL.lint_datasheet_coverage(quiz, ds)
+    return ds, len([f for f in cov if f["severity"] == "error"])
+
+
 # ── lint収束 ─────────────────────────────────────────────
 def lint_one(q, corpus):
     r = QL.run_quiz_lints([q], corpus)
@@ -1129,21 +1210,52 @@ def run_all_locked():
     HROOT = os.path.join(HANDOFF, "gyokai_locked_v3")
     os.makedirs(HROOT, exist_ok=True)
     st = _load_locked_state()
+    with _lock:                      # コストガードを累積化(resumeでも$75総額を守る)
+        _cost["usd"] = st.get("cost_usd", 0.0)
     doneset = set(st["done"])
-    pending = [c for c in companies if c["slug"] not in doneset]
-    line(f"🔒 quiz全業界ロック開始/再開: 全{len(companies)}社 / 未処理{len(pending)} / 出荷済{len(st['shipped'])} / "
-         f"並列{PARALLEL}・${MAX_USD}ガード・出荷基準≥{SHIP_MIN}問")
+    # pending: 未処理(fresh) + quizありdatasheet無し(retrofit対象)。done済のthin/needsは再挑戦しない。
+    pending = []
+    for c in companies:
+        qp = os.path.join(OUT, c["slug"], "quiz_30q_locked_v3.json")
+        dp = os.path.join(OUT, c["slug"], "datasheet.json")
+        if os.path.exists(qp):
+            if not os.path.exists(dp):
+                pending.append(c)          # datasheet retrofit
+        elif c["slug"] not in doneset:
+            pending.append(c)              # fresh(quiz+datasheet)
+    # 既出荷社のdatasheet補完(安価)を先に→既shipの教材を完備してから fresh へ
+    pending.sort(key=lambda c: 0 if os.path.exists(os.path.join(OUT, c["slug"], "quiz_30q_locked_v3.json")) else 1)
+    retro = sum(1 for c in pending if os.path.exists(os.path.join(OUT, c["slug"], "quiz_30q_locked_v3.json")))
+    line(f"🔒 quiz+教材ロック開始/再開: 全{len(companies)}社 / 処理{len(pending)}(datasheet補完{retro}) / "
+         f"出荷済{len(st['shipped'])} / 並列{PARALLEL}・${MAX_USD}ガード・出荷基準≥{SHIP_MIN}問")
 
     def ind_slug(nm): return _ind_slug(nm)
+    def _emit_datasheet(slug, name, corpus, quiz, hd):
+        """datasheet生成→SoS→カバレッジ修復→output/<slug>/datasheet.json + 受け渡し。"""
+        ds, cov_err = build_datasheet(slug, name, corpus, quiz)
+        json.dump(ds, open(os.path.join(OUT, slug, "datasheet.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+        if hd:
+            json.dump(ds, open(os.path.join(hd, f"{slug}_datasheet.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+        return cov_err
     def work(tgt):
         slug, name, ind = tgt["slug"], tgt["name"], tgt["industry"]
         outp = os.path.join(OUT, slug, "quiz_30q_locked_v3.json")
-        if os.path.exists(outp):   # 冪等
+        dsp = os.path.join(OUT, slug, "datasheet.json")
+        hd = os.path.join(HROOT, ind_slug(ind))
+        if os.path.exists(outp):   # 冪等: quizあり
             try:
-                return {"slug": slug, "name": name, "ind": ind, "n": len(json.load(open(outp))),
-                        "status": "shipped", "skipped": True, "pass": None}
+                quiz = json.load(open(outp)); n = len(quiz)
             except Exception:
-                pass
+                n = 0; quiz = []
+            if quiz and not os.path.exists(dsp):   # datasheet未生成→retrofit(保存corpusから)
+                cp = os.path.join(OUT, slug, "quiz_corpus_locked_v3.json")
+                if os.path.exists(cp) and cost_ok():
+                    try:
+                        os.makedirs(hd, exist_ok=True)
+                        _emit_datasheet(slug, name, json.load(open(cp)), quiz, hd)
+                    except Exception:
+                        pass
+            return {"slug": slug, "name": name, "ind": ind, "n": n, "status": "shipped", "skipped": True, "pass": None}
         try:
             corpus = acquire_corpus_thick(name, slug)
             if not corpus:
@@ -1153,12 +1265,12 @@ def run_all_locked():
             if len(final) < SHIP_MIN:
                 record_thin(slug, name, len(final), ind)
                 return {"slug": slug, "name": name, "ind": ind, "n": len(final), "status": "thin", "pass": rate}
-            os.makedirs(os.path.dirname(outp), exist_ok=True)
+            os.makedirs(os.path.dirname(outp), exist_ok=True); os.makedirs(hd, exist_ok=True)
             json.dump(final, open(outp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
             json.dump(corpus, open(os.path.join(OUT, slug, "quiz_corpus_locked_v3.json"), "w", encoding="utf-8"), ensure_ascii=False)
-            hd = os.path.join(HROOT, ind_slug(ind)); os.makedirs(hd, exist_ok=True)
             json.dump(final, open(os.path.join(hd, f"{slug}_quiz.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-            return {"slug": slug, "name": name, "ind": ind, "n": len(final), "status": "shipped", "pass": rate}
+            cov = _emit_datasheet(slug, name, corpus, final, hd)   # 教材も同一runで生成
+            return {"slug": slug, "name": name, "ind": ind, "n": len(final), "status": "shipped", "pass": rate, "cov_err": cov}
         except Exception as e:
             record_needs_source(slug, name, 0, f"locked_all:error:{type(e).__name__}:{str(e)[:50]}")
             return {"slug": slug, "name": name, "ind": ind, "n": 0, "status": "needs", "pass": None, "err": str(e)[:80]}
