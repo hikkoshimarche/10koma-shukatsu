@@ -615,4 +615,73 @@ app.post('/api/room/init', async (c) => {
   }
 })
 
+// options(JSON文字列)を安全にparse
+function safeJson(s: any) { try { return typeof s === 'string' ? JSON.parse(s) : s } catch { return s } }
+
+// === クイズ（quiz_questions 未migrationの間はどれも空/no-opで安全に握りつぶす→フロントはサンプル/空状態） ===
+app.get('/api/quiz', async (c) => {
+  const setType = c.req.query('set_type'); const setId = c.req.query('set_id')
+  if (!setType || !setId) return c.json([])
+  try {
+    const { results } = await c.env.DB.prepare(
+      `SELECT id, category, q_text, options, correct, explanation, source_url, as_of
+       FROM quiz_questions WHERE set_type = ? AND set_id = ? ORDER BY ord, id`
+    ).bind(setType, setId).all()
+    return c.json((results || []).map((r: any) => ({ ...r, options: safeJson(r.options) })))
+  } catch (e) { return c.json([]) }
+})
+
+app.post('/api/quiz/answer', async (c) => {
+  try {
+    const { line_user_id, question_id, chosen, is_correct, set_type, set_id } = await c.req.json()
+    if (!line_user_id || !question_id) return c.json({ ok: false })
+    await c.env.DB.prepare(
+      `INSERT OR REPLACE INTO user_quiz_progress
+       (line_user_id, question_id, set_type, set_id, chosen, is_correct, answered_at)
+       VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`
+    ).bind(line_user_id, question_id, set_type ?? null, set_id ?? null, chosen ?? null, is_correct ?? 0).run()
+    return c.json({ ok: true })
+  } catch (e) { return c.json({ ok: true, skipped: true }) }
+})
+
+app.get('/api/quiz/review', async (c) => {
+  const userId = c.req.query('user_id'); const mode = c.req.query('mode') || 'recent'
+  if (!userId) return c.json([])
+  const cols = `q.id, q.category, q.q_text, q.options, q.correct, q.explanation, q.source_url, q.as_of`
+  let sql: string
+  if (mode === 'frequent') {
+    sql = `SELECT ${cols}, COUNT(*) ng FROM user_quiz_progress p JOIN quiz_questions q ON q.id = p.question_id
+           WHERE p.line_user_id = ? AND p.is_correct = 0
+           GROUP BY p.question_id ORDER BY ng DESC, MAX(p.answered_at) DESC LIMIT 10`
+  } else if (mode === 'weak_category') {
+    sql = `WITH cat AS (SELECT q.category, AVG(p.is_correct) acc FROM user_quiz_progress p
+             JOIN quiz_questions q ON q.id = p.question_id WHERE p.line_user_id = ? GROUP BY q.category)
+           SELECT ${cols} FROM quiz_questions q JOIN cat ON cat.category = q.category
+           ORDER BY cat.acc ASC LIMIT 10`
+  } else {
+    sql = `SELECT ${cols} FROM user_quiz_progress p JOIN quiz_questions q ON q.id = p.question_id
+           WHERE p.line_user_id = ? AND p.is_correct = 0 ORDER BY p.answered_at DESC LIMIT 10`
+  }
+  try {
+    const { results } = await c.env.DB.prepare(sql).bind(userId).all()
+    return c.json((results || []).map((r: any) => ({ ...r, options: safeJson(r.options) })))
+  } catch (e) { return c.json([]) }
+})
+
+// === ホーム: 続きから（最近見た企業・view_logsから） ===
+app.get('/api/recent-companies', async (c) => {
+  const userId = c.req.query('user_id')
+  const limit = Math.min(parseInt(c.req.query('limit') || '5', 10) || 5, 10)
+  if (!userId) return c.json([])
+  try {
+    const { results } = await c.env.DB.prepare(
+      `SELECT c.id, c.name, c.description, MAX(v.viewed_at) last_viewed
+       FROM view_logs v JOIN companies c ON c.id = v.content_id
+       WHERE v.line_user_id = ? AND v.content_type = 'company'
+       GROUP BY v.content_id ORDER BY last_viewed DESC LIMIT ?`
+    ).bind(userId, limit).all()
+    return c.json(results || [])
+  } catch (e) { return c.json([]) }
+})
+
 export default app
