@@ -1,0 +1,37 @@
+{
+  "_note": "コンテンツ層(ハイフンslug=業界10コマ/URL/クイズID) ↔ D1 industries.id(アンダースコア) のマッピング提案。★D1適用はタブE。既存 industries.id は FK参照ありリネーム禁止。status を確認して行追加(new)/流用(existing)/要判断(ambiguous)を決めること。クイズセットIDは industry__<slug>。",
+  "_convention": {
+    "content_slug": "hyphen（例 sogo-shosha） = URL / ファイル / クイズ set_id(industry__<slug>)",
+    "industries_id": "underscore（例 sogo_shosha） = 既存D1 industries.id（FK: companies.industry_id, industry_panels.industry_id 等）"
+  },
+  "map": [
+    { "slug": "sogo-shosha",             "industries_id": "sogo_shosha",       "name": "総合商社",              "status": "existing" },
+    { "slug": "senmon-shosha",           "industries_id": "specialty_trading", "name": "専門商社",              "status": "existing" },
+    { "slug": "finance",                 "industries_id": "banking_insurance", "name": "銀行・証券・保険",       "status": "existing" },
+    { "slug": "consulting",              "industries_id": "consulting",        "name": "コンサル",              "status": "existing" },
+    { "slug": "ad-media",                "industries_id": "advertising_media", "name": "広告・メディア",         "status": "existing" },
+    { "slug": "infra-energy",            "industries_id": "infra_energy",      "name": "インフラ・エネルギー",    "status": "existing" },
+    { "slug": "realestate-construction", "industries_id": "real_estate",       "name": "不動産・建設",           "status": "existing" },
+    { "slug": "retail",                  "industries_id": "retail",            "name": "小売・流通",             "status": "existing" },
+    { "slug": "food-beverage",           "industries_id": "food_beverage",     "name": "食品・飲料",             "status": "existing" },
+    { "slug": "medical-healthcare",      "industries_id": "pharma_healthcare", "name": "医療・ヘルスケア",        "status": "existing" },
+    { "slug": "transport-logistics",     "industries_id": "transport_logistics","name": "航空・運輸・物流",       "status": "existing" },
+
+    { "slug": "it-ai-saas-game",         "industries_id": "it_ai_saas",        "name": "IT・AI・SaaS・ゲーム",    "status": "ambiguous",
+      "todo": "コンテンツはIT+ゲーム統合。D1は it_ai_saas と game_entertainment が別行。タブE判断: it_ai_saas に集約 or 新統合行 it_ai_saas_game。" },
+    { "slug": "manufacturer",            "industries_id": "manufacturer",      "name": "メーカー",              "status": "ambiguous",
+      "todo": "コンテンツ『メーカー』は自動車/電機・精密・重工/鉄鋼・素材・化学/日用品・化粧品を包含。D1 manufacturer(=自動車) と electronics_precision/materials_chemical/consumer_goods が別行。タブE判断: 新『メーカー』統合行 or 代表行流用。" },
+
+    { "slug": "education-hr",            "industries_id": "education_hr",      "name": "教育・人材",            "status": "new",
+      "todo": "D1に該当industry無し → タブEが industries 行を追加(id=education_hr)。" },
+    { "slug": "startup",                 "industries_id": "startup",           "name": "スタートアップ",         "status": "new",
+      "todo": "D1に該当industry無し(othersと別) → タブEが行追加(id=startup)。" },
+    { "slug": "deeptech-space-ai",       "industries_id": "deeptech_space_ai", "name": "ディープテック・宇宙・AI","status": "new",
+      "todo": "D1に該当industry無し → タブEが行追加(id=deeptech_space_ai)。" }
+  ],
+  "_unused_existing_industries": [
+    "electronics_precision(電機・精密・重工)", "materials_chemical(鉄鋼・素材・化学)",
+    "consumer_goods(日用品・化粧品)", "game_entertainment(ゲーム・エンタメ)", "others(その他)"
+  ],
+  "_note_unused": "上記5行は content 16タクソノミーに1:1で現れない（メーカー/IT・ゲームに統合 or 未使用）。既存FK保護のためリネーム/削除せず残置。業界10コマ側では16に集約表示。"
+}

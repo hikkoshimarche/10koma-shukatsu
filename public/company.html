@@ -733,10 +733,70 @@ function openYoutube(url) {
   window.open(url, '_blank');
 }
 
+// === 業界研究モード: 10コマビューアを業界slugで再利用（企業モードとは独立） ===
+async function renderIndustry(slug, name) {
+  const app = document.getElementById('app');
+  const bm = document.getElementById('btn-header-bookmark'); if (bm) bm.style.display = 'none';
+  document.getElementById('header-title').textContent = name || '業界研究';
+  document.title = `${name || '業界'}｜業界研究｜トーキャリ`;
+  try { await liff.init({ liffId: LIFF_ID }); } catch (e) { /* プレビュー(外部ブラウザ)はゲスト */ }
+
+  // 業界10コマは D1反映フェーズ(タブE)で有効化。未反映のうちは panels 空 → クイズ導線を表示。
+  let panels = [];
+  try {
+    const r = await fetch(`${API_BASE}/api/industries/${encodeURIComponent(slug)}`);
+    if (r.ok) { const d = await r.json(); panels = d.panels || []; }
+  } catch (e) { /* 未反映 */ }
+
+  if (panels[0]?.image_url) {
+    const l = document.createElement('link');
+    l.rel = 'preload'; l.as = 'image'; l.href = panels[0].image_url; l.setAttribute('fetchpriority', 'high');
+    document.head.appendChild(l);
+  }
+
+  const panelsHtml = panels.map((p, idx) => {
+    const scriptArr = parseScriptJson(p.script_json);
+    let bubbleHtml;
+    if (scriptArr) {
+      bubbleHtml = `<div class="bubble-stack">${scriptArr.map(line => {
+        const { cssSpeaker, label, text } = splitSpeakerLine(line);
+        return `<div class="speech-bubble ${cssSpeaker}"><span class="char-tag ${cssSpeaker}">${esc(label)}</span><p class="bubble-text">${esc(stripMd(text))}</p></div>`;
+      }).join('')}</div>`;
+    } else {
+      bubbleHtml = `<div class="speech-bubble ${esc(p.character || '')}"><span class="char-tag ${esc(p.character || '')}">${esc(CHAR_LABEL[p.character] ?? (p.character || ''))}</span><p class="bubble-text">${esc(stripMd(p.dialogue || ''))}</p></div>`;
+    }
+    const overlayHtml = p.main_copy
+      ? `<div class="panel-overlay"><span class="overlay-main">${esc(p.main_copy)}</span>${p.sub_copy ? `<span class="overlay-sub">${esc(p.sub_copy)}</span>` : ''}</div>`
+      : '';
+    return `<div class="panel"><div class="panel-num">${String(p.panel_num).padStart(2, '0')} / ${String(panels.length).padStart(2, '0')}</div><div class="panel-image-wrap"><img src="${esc(p.image_url)}" alt="コマ${p.panel_num}" width="900" height="1200" ${idx === 0 ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"'} decoding="async" onerror="this.style.display='none'">${overlayHtml}</div>${bubbleHtml}</div>`;
+  }).join('');
+
+  const quizCta = `<div class="cta-section">
+    <button class="cta-youtube" id="ind-quiz">
+      <span class="cta-icon">🧠</span>
+      <span class="cta-text"><span class="cta-main">この業界のクイズに挑戦</span><span class="cta-sub">理解度をチェック</span></span>
+    </button></div>`;
+
+  app.innerHTML = `
+    <div class="company-detail">
+      <p class="company-detail-name">${esc(name || '業界研究')}</p>
+      <p class="company-detail-desc">${panels.length ? '業界を10コマで研究しよう' : '業界クイズで理解度をチェックしよう'}</p>
+    </div>
+    ${panels.length ? `<div class="panels-section">${panelsHtml}</div>` : ''}
+    ${quizCta}`;
+  document.getElementById('ind-quiz').onclick = () => {
+    location.href = `quiz.html?industry=${encodeURIComponent(slug)}&name=${encodeURIComponent(name || '')}`;
+  };
+}
+
 async function main() {
   const app = document.getElementById('app');
   const params = new URLSearchParams(location.search);
   const companyId = params.get('id');
+
+  // 業界研究モード（?industry=<slug> かつ id無し）は企業モードに一切触れず早期リターン
+  const industrySlug = params.get('industry');
+  if (industrySlug && !companyId) { return renderIndustry(industrySlug, params.get('name') || ''); }
 
   if (!companyId) {
     app.innerHTML = '<p class="error-text">企業IDが指定されていません</p>';

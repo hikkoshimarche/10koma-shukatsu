@@ -123,6 +123,18 @@ const IND_ICON = {
 const PAL = ['#2f6fb0','#c0392b','#7d3c98','#16a085','#d17d00','#2d8659','#c0448a','#3b5bdb','#b8823a','#2f8fbf'];
 function hue(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return PAL[h%PAL.length];}
 
+// 業界別クイズ = 業界10コマと同じ16業界タクソノミー(ハイフンslug)。gyokai.html と一致。
+const GYOKAI_INDUSTRIES = [
+  {slug:'sogo-shosha',name:'総合商社',icon:'🌐'},{slug:'senmon-shosha',name:'専門商社',icon:'📦'},
+  {slug:'finance',name:'銀行・証券・保険',icon:'🏦'},{slug:'it-ai-saas-game',name:'IT・AI・SaaS・ゲーム',icon:'💻'},
+  {slug:'consulting',name:'コンサル',icon:'📈'},{slug:'manufacturer',name:'メーカー',icon:'🏭'},
+  {slug:'ad-media',name:'広告・メディア',icon:'📣'},{slug:'infra-energy',name:'インフラ・エネルギー',icon:'⚡'},
+  {slug:'realestate-construction',name:'不動産・建設',icon:'🏗️'},{slug:'retail',name:'小売・流通',icon:'🛍️'},
+  {slug:'food-beverage',name:'食品・飲料',icon:'🍽️'},{slug:'medical-healthcare',name:'医療・ヘルスケア',icon:'💊'},
+  {slug:'transport-logistics',name:'航空・運輸・物流',icon:'✈️'},{slug:'education-hr',name:'教育・人材',icon:'🎓'},
+  {slug:'startup',name:'スタートアップ',icon:'🚀'},{slug:'deeptech-space-ai',name:'ディープテック・宇宙・AI',icon:'🛰️'},
+];
+
 let COMPANIES = null;
 let lineUserId = 'guest-preview';
 let mode = 'company';           // 'company' | 'industry'
@@ -145,28 +157,34 @@ async function renderSelect(){
   mountGuide('どのクイズに<br>挑戦する？');
   document.getElementById('quiz-title').textContent = 'クイズで腕試し';
   const data = await loadCompanies();
-  const inds = Object.keys(data);
   const tabs = `
     <div class="quiz-tabs">
       <div class="quiz-tab ${mode==='company'?'active':''}" data-mode="company">会社別</div>
       <div class="quiz-tab ${mode==='industry'?'active':''}" data-mode="industry">業界別</div>
     </div>`;
-  const list = inds.map(name=>{
-    const icon = IND_ICON[name]||'🏢';
-    const sub = mode==='industry' ? '業界クイズに挑戦' : `${(data[name]||[]).length}社から選ぶ`;
-    return `<button class="e-card" data-ind="${esc(name)}" style="--acc:#2f6fb0">
-      <span class="e-icon">${icon}</span>
-      <span class="e-card-body"><span class="e-card-label">${esc(name)}</span><span class="e-card-sub">${sub}</span></span>
-      <span class="e-card-arrow">›</span></button>`;
-  }).join('');
+  let list;
+  if (mode==='industry') {
+    // 業界別 = 16業界タクソノミー(slug)。業界クイズは industry__<slug> に対応。
+    list = GYOKAI_INDUSTRIES.map(ind=>`
+      <button class="e-card" data-slug="${esc(ind.slug)}" data-name="${esc(ind.name)}" style="--acc:#2f6fb0">
+        <span class="e-icon">${ind.icon}</span>
+        <span class="e-card-body"><span class="e-card-label">${esc(ind.name)}</span><span class="e-card-sub">業界クイズに挑戦</span></span>
+        <span class="e-card-arrow">›</span></button>`).join('');
+  } else {
+    // 会社別 = 企業タクソノミー(companies.json)で業界→会社へドリル
+    list = Object.keys(data).map(name=>`
+      <button class="e-card" data-ind="${esc(name)}" style="--acc:#2f6fb0">
+        <span class="e-icon">${IND_ICON[name]||'🏢'}</span>
+        <span class="e-card-body"><span class="e-card-label">${esc(name)}</span><span class="e-card-sub">${(data[name]||[]).length}社から選ぶ</span></span>
+        <span class="e-card-arrow">›</span></button>`).join('');
+  }
   app().innerHTML = tabs + `<div class="e-list" id="sel-list">${list}</div>`;
 
   app().querySelectorAll('.quiz-tab').forEach(t=>t.onclick=()=>{ mode=t.dataset.mode; renderSelect(); });
   document.getElementById('sel-list').onclick = e=>{
     const c = e.target.closest('.e-card'); if(!c) return;
-    const ind = c.dataset.ind;
-    if(mode==='industry') startQuiz('industry', ind, ind);
-    else renderCompanyList(ind);
+    if(mode==='industry') startQuiz('industry', c.dataset.slug, c.dataset.name);
+    else renderCompanyList(c.dataset.ind);
   };
 }
 
@@ -193,9 +211,11 @@ async function startQuiz(setType, setId, label){
   document.getElementById('quiz-title').textContent = label;
   document.getElementById('guide').innerHTML = '';
   app().innerHTML = `<div class="e-list"><div class="e-skel"></div><div class="e-skel"></div></div>`;
+  // クイズセットID正規化: 業界は industry__<slug>（会社は company_id そのまま）
+  const apiSetId = setType==='industry' ? `industry__${setId}` : setId;
   let qs = null, isSample = false;
   try {
-    const r = await fetch(`${API_BASE}/api/quiz?set_type=${encodeURIComponent(setType)}&set_id=${encodeURIComponent(setId)}`);
+    const r = await fetch(`${API_BASE}/api/quiz?set_type=${encodeURIComponent(setType)}&set_id=${encodeURIComponent(apiSetId)}`);
     if (r.ok) { const d = await r.json(); qs = Array.isArray(d) ? d : (d.questions || []); }
   } catch(e){ /* API未実装 → サンプル */ }
   if (!qs || !qs.length) { qs = SAMPLE; isSample = true; }
