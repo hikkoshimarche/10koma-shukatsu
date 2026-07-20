@@ -75,12 +75,13 @@ def _norm_digits(s):
 
 
 def verbatim_ok(figure, *texts):
-    """figure中の主要数字列が、いずれかのtext中に(カンマ等無視で)出現するか。"""
+    """figure が出典本文にverbatim出現するか。数字列(カンマ無視)一致 or 原文字列の直接一致。"""
+    lit = figure.strip()
     fig = _norm_digits(figure)
-    if len(fig) < 3:  # 短すぎる数値は照合対象外(誤検出防止)→ 不採用扱い
-        return False
     for t in texts:
-        if fig and fig in _norm_digits(t):
+        if lit and lit in t:           # 原文字列(例 '37.0万円')の直接一致
+            return True
+        if len(fig) >= 3 and fig in _norm_digits(t):  # 数字列一致(カンマ等無視)
             return True
     return False
 
@@ -114,21 +115,24 @@ def extract_avg_salary(name, caveats, factsheet, corpus):
                         "evidence": {"source_url": r.get("primary_source", ""),
                                      "quote": f"{subj} {r.get('claim','')} {fig}（{r.get('source_type','')}）"},
                         "as_of": r.get("fiscal_year", ""), "confidence": "high", "estimated": False}
-    # 2) factsheet 平均年収行: 出典が有報grade のときのみ採用
-    line = _extract_line(factsheet, "平均年収")
-    if line:
+    # 2) factsheet: 平均年収を含む全行を走査し、有報grade出典の行のみ採用(第三者行は無視)
+    for line in factsheet.splitlines():
+        if "平均年収" not in line or "**" not in line:
+            continue
         url = _source_url(line)
         blob = (line + " " + url).lower()
-        is_yuho = any(m.lower() in blob for m in YUHO_MARKERS)
-        is_third = any(m.lower() in blob for m in THIRD_PARTY_HINT)
+        if not any(m.lower() in blob for m in YUHO_MARKERS):
+            continue
+        if any(t in blob for t in THIRD_PARTY_HINT):
+            continue
         m = re.search(r"([0-9,]+)\s*万円", line.replace("，", ","))
-        if m and is_yuho and not is_third:
-            val = int(m.group(1).replace(",", ""))
-            fig = m.group(0)
-            if verbatim_ok(fig, factsheet, corpus):
-                return {"value": val, "unit": "万円",
-                        "evidence": {"source_url": url, "quote": line.strip("- ").strip()},
-                        "as_of": "", "confidence": "medium", "estimated": False}
+        if not m:
+            continue
+        fig = m.group(0)
+        if verbatim_ok(fig, factsheet, corpus):
+            return {"value": int(m.group(1).replace(",", "")), "unit": "万円",
+                    "evidence": {"source_url": url, "quote": line.strip("- ").strip()},
+                    "as_of": "", "confidence": "medium", "estimated": False}
     return None  # Source-or-Silence: 有報grade出典が無ければ数字を出さない
 
 
@@ -138,16 +142,26 @@ def extract_starting_salary(factsheet, corpus):
     if not line:
         return None
     url = _source_url(line)
-    # 学部卒 月給 XXX,XXX円 を優先(無ければ最初の n,nnn円)
-    m = re.search(r"(?:学部卒|大卒|学部)[^0-9]{0,8}([0-9]{2,3},[0-9]{3})\s*円", line)
-    if not m:
-        m = re.search(r"([0-9]{2,3},[0-9]{3})\s*円", line)
-    if not m:
+    val = None
+    fig = None
+    # 1) カンマ形式 XXX,XXX円 (学部卒優先→最初)
+    m = re.search(r"(?:学部卒|大卒|学部|総合職)[^0-9]{0,10}([0-9]{2,3},[0-9]{3})\s*円", line) \
+        or re.search(r"([0-9]{2,3},[0-9]{3})\s*円", line)
+    if m:
+        fig = m.group(1) + "円"
+        val = int(m.group(1).replace(",", ""))
+    else:
+        # 2) 万円形式 37.0万円 / 25万円 (学部卒優先→最初)
+        m2 = re.search(r"(?:学部卒|大卒|学部|総合職)[^0-9]{0,10}([0-9]{2}(?:\.[0-9])?)\s*万円", line) \
+            or re.search(r"([0-9]{2}(?:\.[0-9])?)\s*万円", line)
+        if m2:
+            fig = m2.group(0).replace(m2.group(0).split(str(m2.group(1)))[0], "").strip()
+            fig = m2.group(1) + "万円"
+            val = int(round(float(m2.group(1)) * 10000))
+    if val is None or not (150000 <= val <= 600000):  # 初任給の妥当域(月給)
         return None
-    fig = m.group(1) + "円"
     if not verbatim_ok(fig, factsheet, corpus):
         return None
-    val = int(m.group(1).replace(",", ""))
     blob = (line + " " + url).lower()
     is_third = any(t in blob for t in THIRD_PARTY_HINT)
     return {"value": val, "unit": "円/月",

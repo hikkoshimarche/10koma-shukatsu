@@ -68,7 +68,17 @@
    "confidence": "medium",
    "estimated": false
   },
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 225000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://www.nenshuu.net/corporation/contents/corporations.php?security_code=3156",
+    "quote": "**初任給**: 大卒22.5万円 [出典](https://www.nenshuu.net/corporation/contents/corporations.php?security_code=3156)、25.0万円（別情報）[出典](https://www.nikkei.com/nkd/company/salary/?scode=3156)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "専門商社",
    "estimated": false
@@ -78,8 +88,6 @@
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
  "lint": {
   "errors": [],
-  "notes": [
-   "starting_salary: 抽出/照合不可→null"
-  ]
+  "notes": []
  }
 }

@@ -68,7 +68,17 @@
    "confidence": "medium",
    "estimated": false
   },
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 240000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://recruit.corp-gakken.co.jp/recruit/guideline/",
+    "quote": "**初任給**: 月給30万円（固定残業手当20時間相当分含む）※Gakken（2025年実績）[出典](https://recruit.corp-gakken.co.jp/recruit/guideline/)、ホールディングス全体では大卒初任給24万円 [出典](https://www.nenshuu.net/corporation/contents/corporations.php?security_code=9470)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "その他（外資・新興等）",
    "estimated": false
@@ -78,8 +88,6 @@
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
  "lint": {
   "errors": [],
-  "notes": [
-   "starting_salary: 抽出/照合不可→null"
-  ]
+  "notes": []
  }
 }

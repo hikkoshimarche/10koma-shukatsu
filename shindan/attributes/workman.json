@@ -58,8 +58,28 @@
   }
  },
  "facts": {
-  "avg_salary": null,
-  "starting_salary": null,
+  "avg_salary": {
+   "value": 8,
+   "unit": "万円",
+   "evidence": {
+    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=7564",
+    "quote": "**平均年収**: 756.8万円（2024年3月期、有価証券報告書）[出典](https://www.nikkei.com/nkd/company/salary/?scode=7564)"
+   },
+   "as_of": "",
+   "confidence": "medium",
+   "estimated": false
+  },
+  "starting_salary": {
+   "value": 261000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://job.mynavi.jp/26/pc/search/corp200198/outline.html",
+    "quote": "**初任給**: 総合職 月給26.1万円（学士）[出典](https://job.mynavi.jp/26/pc/search/corp200198/outline.html)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "小売・流通",
    "estimated": false
@@ -69,9 +89,6 @@
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
  "lint": {
   "errors": [],
-  "notes": [
-   "avg_salary: 有報grade出典なし→null(定性提案)",
-   "starting_salary: 抽出/照合不可→null"
-  ]
+  "notes": []
  }
 }

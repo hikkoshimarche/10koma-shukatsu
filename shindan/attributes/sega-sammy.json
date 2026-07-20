@@ -58,7 +58,17 @@
  },
  "facts": {
   "avg_salary": null,
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 300000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://internshipguide.jp/companies/company/4569",
+    "quote": "**初任給**: 学士30万円、修士31万円（2025年度、ライフプラン手当100%選択時含む。基本給は学士27万円、修士28万円）[出典](https://internshipguide.jp/companies/company/4569)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "ゲーム・エンタメ",
    "estimated": false
@@ -69,8 +79,7 @@
  "lint": {
   "errors": [],
   "notes": [
-   "avg_salary: 有報grade出典なし→null(定性提案)",
-   "starting_salary: 抽出/照合不可→null"
+   "avg_salary: 有報grade出典なし→null(定性提案)"
   ]
  }
 }

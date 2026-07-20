@@ -58,7 +58,17 @@
  },
  "facts": {
   "avg_salary": null,
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 250000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://www.nikkei.com/article/DGXZQOUF23ANN0T21C25A0000000/",
+    "quote": "**初任給（2026年4月入社）**: 博士了 30万5,000円、修士了 27万5,000円、学士卒 25万円（3年連続引き上げ、2025年4月入社比+4万5,000円増）[出典](https://www.nikkei.com/article/DGXZQOUF23ANN0T21C25A0000000/) / 学士卒30万円（2026年4月）[出典](https://www.nikkei.com/article/DGKKZO92464060X01C25A1TB0000/)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "製薬・ヘルスケア",
    "estimated": false
@@ -69,8 +79,7 @@
  "lint": {
   "errors": [],
   "notes": [
-   "avg_salary: 有報grade出典なし→null(定性提案)",
-   "starting_salary: 抽出/照合不可→null"
+   "avg_salary: 有報grade出典なし→null(定性提案)"
   ]
  }
 }

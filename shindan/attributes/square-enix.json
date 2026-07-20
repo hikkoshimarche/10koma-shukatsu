@@ -58,7 +58,17 @@
  },
  "facts": {
   "avg_salary": null,
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 288000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://www.nikkei.com/article/DGXZQOUC1672B0W3A310C2000000/",
+    "quote": "**初任給**: 学士・修士とも最低保証28.8万円〜（2023年4月に平均27%アップ実施、2027年度募集要項掲載） [出典](https://www.nikkei.com/article/DGXZQOUC1672B0W3A310C2000000/) [出典](https://www.jp.square-enix.com/recruit/fresh/recruitment/)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "ゲーム・エンタメ",
    "estimated": false
@@ -69,8 +79,7 @@
  "lint": {
   "errors": [],
   "notes": [
-   "avg_salary: 有報grade出典なし→null(定性提案)",
-   "starting_salary: 抽出/照合不可→null"
+   "avg_salary: 有報grade出典なし→null(定性提案)"
   ]
  }
 }

@@ -58,7 +58,17 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": {
+   "value": 597,
+   "unit": "万円",
+   "evidence": {
+    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=9536",
+    "quote": "**平均年収**: 597万円（2024年度） [出典](https://www.nikkei.com/nkd/company/salary/?scode=9536)"
+   },
+   "as_of": "",
+   "confidence": "medium",
+   "estimated": false
+  },
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
@@ -70,7 +80,6 @@
  "lint": {
   "errors": [],
   "notes": [
-   "avg_salary: 有報grade出典なし→null(定性提案)",
    "starting_salary: 抽出/照合不可→null"
   ]
  }

@@ -68,7 +68,17 @@
    "confidence": "medium",
    "estimated": false
   },
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 195000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://axxis.co.jp/magazine/56836",
+    "quote": "**初任給（2025年4月入社、大卒・東京23区在住在勤の場合）**: 基本給19.5万円 + 諸手当（地域手当2.6万円、日額インセンティブ4.2万円）= 合計26.3万円 [出典](https://axxis.co.jp/magazine/56836)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "航空・運輸・物流",
    "estimated": false
@@ -78,8 +88,6 @@
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
  "lint": {
   "errors": [],
-  "notes": [
-   "starting_salary: 抽出/照合不可→null"
-  ]
+  "notes": []
  }
 }

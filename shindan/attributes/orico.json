@@ -68,7 +68,17 @@
    "confidence": "medium",
    "estimated": false
   },
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 250000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=8585",
+    "quote": "**初任給**: 大学卒 25万円（2024年度）[出典](https://www.nikkei.com/nkd/company/salary/?scode=8585) ※修士は未確認"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
@@ -78,8 +88,6 @@
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
  "lint": {
   "errors": [],
-  "notes": [
-   "starting_salary: 抽出/照合不可→null"
-  ]
+  "notes": []
  }
 }

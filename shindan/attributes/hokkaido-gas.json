@@ -69,17 +69,7 @@
    "confidence": "medium",
    "estimated": false
   },
-  "starting_salary": {
-   "value": 12000,
-   "unit": "円/月",
-   "evidence": {
-    "source_url": "",
-    "quote": "**初任給**（2024年度実績＋12,000円）:"
-   },
-   "as_of": "",
-   "confidence": "high",
-   "estimated": false
-  },
+  "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
@@ -89,6 +79,8 @@
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
  "lint": {
   "errors": [],
-  "notes": []
+  "notes": [
+   "starting_salary: 抽出/照合不可→null"
+  ]
  }
 }

@@ -57,7 +57,17 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": {
+   "value": 7,
+   "unit": "万円",
+   "evidence": {
+    "source_url": "https://m-careerguide.jp/articles/877-2/",
+    "quote": "**平均年収**: 673.7万円（2024年12月期有価証券報告書）[出典](https://m-careerguide.jp/articles/877-2/) / 711万円（2025年12月期有価証券報告書）[出典](https://the-shashi.com/tse/4912/workforce/)"
+   },
+   "as_of": "",
+   "confidence": "medium",
+   "estimated": false
+  },
   "starting_salary": null,
   "industry": {
    "value": "日用品・化粧品",
@@ -69,7 +79,6 @@
  "lint": {
   "errors": [],
   "notes": [
-   "avg_salary: 有報grade出典なし→null(定性提案)",
    "starting_salary: 抽出/照合不可→null"
   ]
  }

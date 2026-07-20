@@ -58,7 +58,17 @@
  },
  "facts": {
   "avg_salary": null,
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 340000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://www.movin.co.jp/finance/company_list/secu/sbi/annual_income.html",
+    "quote": "**初任給**: 月給34万円（学部卒・修士卒共通、年俸制約408万円） [出典](https://www.movin.co.jp/finance/company_list/secu/sbi/annual_income.html)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
@@ -69,8 +79,7 @@
  "lint": {
   "errors": [],
   "notes": [
-   "avg_salary: 有報grade出典なし→null(定性提案)",
-   "starting_salary: 抽出/照合不可→null"
+   "avg_salary: 有報grade出典なし→null(定性提案)"
   ]
  }
 }

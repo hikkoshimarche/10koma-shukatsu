@@ -69,7 +69,17 @@
    "confidence": "high",
    "estimated": false
   },
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 300000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "",
+    "quote": "**初任給**（2026年度入社）: 大卒総合職 月額30万円、修士了 月額32万円、博士了 月額35万円"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "不動産・建設",
    "estimated": false
@@ -79,8 +89,6 @@
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
  "lint": {
   "errors": [],
-  "notes": [
-   "starting_salary: 抽出/照合不可→null"
-  ]
+  "notes": []
  }
 }

@@ -58,7 +58,17 @@
  },
  "facts": {
   "avg_salary": null,
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 300000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://www.capcom.co.jp/ir/english/news/html/e240306d.html",
+    "quote": "**初任給**: 月額30万円（2025年度以降、大学院卒～専門学校卒まで一律、時間外勤務手当・通勤手当は別途支給） [出典](https://www.capcom.co.jp/ir/english/news/html/e240306d.html) [出典](https://www.nikkei.com/article/DGXZQOUF068RP0W4A300C2000000/)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "ゲーム・エンタメ",
    "estimated": false
@@ -69,8 +79,7 @@
  "lint": {
   "errors": [],
   "notes": [
-   "avg_salary: 有報grade出典なし→null(定性提案)",
-   "starting_salary: 抽出/照合不可→null"
+   "avg_salary: 有報grade出典なし→null(定性提案)"
   ]
  }
 }

@@ -68,7 +68,17 @@
    "confidence": "high",
    "estimated": false
   },
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 300000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://www.nikkei.com/article/DGXZQOUC185DN0Y5A310C2000000/",
+    "quote": "**初任給**: 学部卒30万円、修士卒32万5千円（2025年4月入社）[出典](https://www.nikkei.com/article/DGXZQOUC185DN0Y5A310C2000000/)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "製薬・ヘルスケア",
    "estimated": false
@@ -78,8 +88,6 @@
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
  "lint": {
   "errors": [],
-  "notes": [
-   "starting_salary: 抽出/照合不可→null"
-  ]
+  "notes": []
  }
 }

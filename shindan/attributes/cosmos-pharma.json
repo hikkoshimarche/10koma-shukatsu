@@ -57,7 +57,17 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": {
+   "value": 7,
+   "unit": "万円",
+   "evidence": {
+    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=3349",
+    "quote": "**平均年収**: 488.7万円（2024年5月期） [出典](https://www.nikkei.com/nkd/company/salary/?scode=3349)"
+   },
+   "as_of": "",
+   "confidence": "medium",
+   "estimated": false
+  },
   "starting_salary": null,
   "industry": {
    "value": "小売・流通",
@@ -69,7 +79,6 @@
  "lint": {
   "errors": [],
   "notes": [
-   "avg_salary: 有報grade出典なし→null(定性提案)",
    "starting_salary: 抽出/照合不可→null"
   ]
  }

@@ -68,7 +68,17 @@
    "confidence": "high",
    "estimated": false
   },
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 360000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "",
+    "quote": "初任給 **大卒36万円**（2026年4月）"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "総合商社",
    "estimated": false
@@ -78,8 +88,6 @@
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
  "lint": {
   "errors": [],
-  "notes": [
-   "starting_salary: 抽出/照合不可→null"
-  ]
+  "notes": []
  }
 }

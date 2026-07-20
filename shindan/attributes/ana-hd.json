@@ -69,7 +69,17 @@
    "confidence": "high",
    "estimated": false
   },
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 250000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://www.anahd.co.jp/group/pr/202403/20240312.html",
+    "quote": "**初任給**: グローバルスタッフ職（総合職）学士25万円（職務調整手当3万円含む、2025年度入社） [出典](https://www.anahd.co.jp/group/pr/202403/20240312.html) / 客室乗務職 学士21万221円（2024年4月～） [出典](https://www.aviationwire.jp/archives/296336)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "航空・運輸・物流",
    "estimated": false
@@ -79,8 +89,6 @@
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
  "lint": {
   "errors": [],
-  "notes": [
-   "starting_salary: 抽出/照合不可→null"
-  ]
+  "notes": []
  }
 }

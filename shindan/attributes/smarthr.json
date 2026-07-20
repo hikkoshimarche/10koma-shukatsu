@@ -59,7 +59,17 @@
  },
  "facts": {
   "avg_salary": null,
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 300000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://tleon.co.jp/media/smarthr-salary/",
+    "quote": "**初任給**: 月額30万円～35万円（45時間分のみなし残業代と8時間分の深夜手当を含む）[出典](https://tleon.co.jp/media/smarthr-salary/)、新卒エンジニア職は年俸500万円（2024年度入社）[出典](https://samuraisoulinc.jp/archives/13474)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "IT・通信・SaaS",
    "estimated": false
@@ -70,8 +80,7 @@
  "lint": {
   "errors": [],
   "notes": [
-   "avg_salary: 有報grade出典なし→null(定性提案)",
-   "starting_salary: 抽出/照合不可→null"
+   "avg_salary: 有報grade出典なし→null(定性提案)"
   ]
  }
 }

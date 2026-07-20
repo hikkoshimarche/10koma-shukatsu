@@ -59,7 +59,17 @@
  },
  "facts": {
   "avg_salary": null,
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 230000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://en-hyouban.com/company/10013607490/salary/",
+    "quote": "**初任給**: 美容部員職で当社規定による（一部口コミで研修時23万円の記述あり）[出典](https://en-hyouban.com/company/10013607490/salary/)、マーケティング職等は新卒3年目で550〜650万円 [出典](https://www.openwork.jp/one_answer.php?vid=a0A1000001loolu&qco=2)"
+   },
+   "as_of": "",
+   "confidence": "medium",
+   "estimated": false
+  },
   "industry": {
    "value": "その他（外資・新興等）",
    "estimated": false
@@ -70,8 +80,7 @@
  "lint": {
   "errors": [],
   "notes": [
-   "avg_salary: 有報grade出典なし→null(定性提案)",
-   "starting_salary: 抽出/照合不可→null"
+   "avg_salary: 有報grade出典なし→null(定性提案)"
   ]
  }
 }

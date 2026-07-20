@@ -31,8 +31,8 @@ PATTERNS = [
      {"q_stability": 0, "q_remote": 2, "q_jobtags": [0], "q_daikigyo": 0, "q_tenkin": 1}),
     ("⑨新興・外資・スピード",
      {"q_daikigyo": 1, "q_growth": 0, "q_stability": 3, "q_remote": 0, "q_young": 0}),
-    ("⑩ほぼ全部こだわらない(欠損多・堅牢性確認)",
-     {"q_salary": 3, "q_kaigai": 3, "q_growth": 3, "q_remote": 3, "q_young": 3}),
+    ("⑩回答少数(2問のみ・欠損多で減点しない堅牢性確認)",
+     {"q_stability": 0, "q_bunri": 0, "q_salary": 3, "q_kaigai": 3, "q_growth": 3}),
 ]
 
 

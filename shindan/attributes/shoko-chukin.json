@@ -59,7 +59,17 @@
  },
  "facts": {
   "avg_salary": null,
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 260000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://migi-nanameue.co.jp/column/shoko-chukin-salary-guide/",
+    "quote": "**初任給**: 学部卒・修士卒ともに月給26万円（2024年度実績） [出典](https://migi-nanameue.co.jp/column/shoko-chukin-salary-guide/) / 月給30万円（2026年度採用） [出典](https://recree.jobree.co.jp/col/%E5%95%86%E5%B7%A5%E4%B8%AD%E9%87%91-%E5%B9%B4%E5%8F%8E)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
@@ -70,8 +80,7 @@
  "lint": {
   "errors": [],
   "notes": [
-   "avg_salary: 有報grade出典なし→null(定性提案)",
-   "starting_salary: 抽出/照合不可→null"
+   "avg_salary: 有報grade出典なし→null(定性提案)"
   ]
  }
 }

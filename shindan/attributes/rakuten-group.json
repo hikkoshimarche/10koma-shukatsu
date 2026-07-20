@@ -59,7 +59,17 @@
  },
  "facts": {
   "avg_salary": null,
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 350000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://corp.rakuten.co.jp/careers/graduates/recruit_business/business.html",
+    "quote": "**初任給**: 学部卒 月給35万円（月40時間分の固定残業代を含む）、修士卒 月給36万円（2026年度入社） [出典](https://corp.rakuten.co.jp/careers/graduates/recruit_business/business.html)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "IT・通信・SaaS",
    "estimated": false
@@ -70,8 +80,7 @@
  "lint": {
   "errors": [],
   "notes": [
-   "avg_salary: 有報grade出典なし→null(定性提案)",
-   "starting_salary: 抽出/照合不可→null"
+   "avg_salary: 有報grade出典なし→null(定性提案)"
   ]
  }
 }

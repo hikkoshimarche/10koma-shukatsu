@@ -68,7 +68,17 @@
    "confidence": "high",
    "estimated": false
   },
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 600000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://talentsquare.co.jp/career/hakuhodo-salary/",
+    "quote": "**初任給**: 年俸360万円（学士・修士共通、月額換算で30万円） [出典](https://talentsquare.co.jp/career/hakuhodo-salary/)"
+   },
+   "as_of": "",
+   "confidence": "medium",
+   "estimated": false
+  },
   "industry": {
    "value": "広告・メディア",
    "estimated": false
@@ -78,8 +88,6 @@
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
  "lint": {
   "errors": [],
-  "notes": [
-   "starting_salary: 抽出/照合不可→null"
-  ]
+  "notes": []
  }
 }

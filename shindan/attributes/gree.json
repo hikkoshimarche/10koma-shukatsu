@@ -57,8 +57,28 @@
   }
  },
  "facts": {
-  "avg_salary": null,
-  "starting_salary": null,
+  "avg_salary": {
+   "value": 3,
+   "unit": "万円",
+   "evidence": {
+    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=3632",
+    "quote": "**平均年収**: 865.3万円（2025年6月期、グリーホールディングス） [出典](https://www.nikkei.com/nkd/company/salary/?scode=3632)"
+   },
+   "as_of": "",
+   "confidence": "medium",
+   "estimated": false
+  },
+  "starting_salary": {
+   "value": 200000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://syukatsu-kaigi.jp/companies/112082/post_items/2/word_mouths",
+    "quote": "**初任給**: 年俸420万円（ビジネス職）/ 年俸480万円（エンジニア職）[出典](https://syukatsu-kaigi.jp/companies/112082/post_items/2/word_mouths)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "IT・通信・SaaS",
    "estimated": false
@@ -68,9 +88,6 @@
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
  "lint": {
   "errors": [],
-  "notes": [
-   "avg_salary: 有報grade出典なし→null(定性提案)",
-   "starting_salary: 抽出/照合不可→null"
-  ]
+  "notes": []
  }
 }

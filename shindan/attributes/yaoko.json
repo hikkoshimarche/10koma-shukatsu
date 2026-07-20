@@ -57,7 +57,17 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": {
+   "value": 3,
+   "unit": "万円",
+   "evidence": {
+    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=8279",
+    "quote": "**平均年収**: 636.3万円（2025年3月期）[出典](https://www.nikkei.com/nkd/company/salary/?scode=8279)"
+   },
+   "as_of": "",
+   "confidence": "medium",
+   "estimated": false
+  },
   "starting_salary": null,
   "industry": {
    "value": "小売・流通",
@@ -69,7 +79,6 @@
  "lint": {
   "errors": [],
   "notes": [
-   "avg_salary: 有報grade出典なし→null(定性提案)",
    "starting_salary: 抽出/照合不可→null"
   ]
  }

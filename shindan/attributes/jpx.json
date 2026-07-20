@@ -68,7 +68,17 @@
    "confidence": "medium",
    "estimated": false
   },
-  "starting_salary": null,
+  "starting_salary": {
+   "value": 258000,
+   "unit": "円/月",
+   "evidence": {
+    "source_url": "https://m-careerguide.jp/articles/116-2/",
+    "quote": "**初任給**: 月給25.8万円（GSコース・学士、2025年度） [出典](https://m-careerguide.jp/articles/116-2/)"
+   },
+   "as_of": "",
+   "confidence": "high",
+   "estimated": false
+  },
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
@@ -78,8 +88,6 @@
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
  "lint": {
   "errors": [],
-  "notes": [
-   "starting_salary: 抽出/照合不可→null"
-  ]
+  "notes": []
  }
 }
