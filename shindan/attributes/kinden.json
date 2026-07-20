@@ -1,0 +1,76 @@
+{
+ "slug": "kinden",
+ "name": "きんでん",
+ "industry": "不動産・建設",
+ "soft": {
+  "tenkin_do": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "kaigai_do": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "stability": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "growth": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "remote_flex": {
+   "value": 2,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "young_discretion": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "bunri": {
+   "value": "理系寄り",
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "job_tags": {
+   "value": [
+    "営業",
+    "生産・技術",
+    "企画・マーケティング"
+   ],
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  }
+ },
+ "facts": {
+  "avg_salary": null,
+  "starting_salary": null,
+  "industry": {
+   "value": "不動産・建設",
+   "estimated": false
+  }
+ },
+ "trend_note": "売上高・利益が急成長(48%増)し、世界90ヵ国での海外展開も拡大中。インフラ系の安定性と成長力を併せ持つ総合設備工事の",
+ "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
+ "lint": {
+  "errors": [],
+  "notes": [
+   "avg_salary: 有報grade出典なし→null(定性提案)",
+   "starting_salary: 抽出/照合不可→null"
+  ]
+ }
+}

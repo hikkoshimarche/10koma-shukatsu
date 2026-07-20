@@ -1,0 +1,86 @@
+{
+ "slug": "aeon",
+ "name": "イオン",
+ "industry": "小売・流通",
+ "soft": {
+  "tenkin_do": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "kaigai_do": {
+   "value": 2,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "stability": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "growth": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "remote_flex": {
+   "value": 2,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "young_discretion": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "bunri": {
+   "value": "文系寄り",
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "job_tags": {
+   "value": [
+    "店舗・販売",
+    "企画・マーケティング",
+    "営業",
+    "商品企画"
+   ],
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  }
+ },
+ "facts": {
+  "avg_salary": {
+   "value": 947,
+   "unit": "万円",
+   "evidence": {
+    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=8267",
+    "quote": "イオン(8267) 平均年収 約947万円（有報単体平均年収）"
+   },
+   "as_of": "2025年2月期",
+   "confidence": "high",
+   "estimated": false
+  },
+  "starting_salary": null,
+  "industry": {
+   "value": "小売・流通",
+   "estimated": false
+  }
+ },
+ "trend_note": "創業267年の老舗かつ国内最大手流通。全国に広大な店舗網と安定した事業基盤。自立心と現状打破を求める採用メッセージが特徴",
+ "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
+ "lint": {
+  "errors": [],
+  "notes": [
+   "starting_salary: 抽出/照合不可→null"
+  ]
+ }
+}

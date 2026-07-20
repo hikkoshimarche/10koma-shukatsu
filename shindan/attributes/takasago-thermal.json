@@ -1,0 +1,76 @@
+{
+ "slug": "takasago-thermal",
+ "name": "高砂熱学工業",
+ "industry": "不動産・建設",
+ "soft": {
+  "tenkin_do": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "kaigai_do": {
+   "value": 2,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "stability": {
+   "value": 5,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "growth": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "remote_flex": {
+   "value": 2,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "young_discretion": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "bunri": {
+   "value": "理系寄り",
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "job_tags": {
+   "value": [
+    "生産・技術",
+    "営業",
+    "企画・マーケティング"
+   ],
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  }
+ },
+ "facts": {
+  "avg_salary": null,
+  "starting_salary": null,
+  "industry": {
+   "value": "不動産・建設",
+   "estimated": false
+  }
+ },
+ "trend_note": "創業100年超の老舗インフラ企業で安定性高い。売上・利益の二桁成長と新規事業(宇宙開発・T-Base)で成長性向上。施工",
+ "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
+ "lint": {
+  "errors": [],
+  "notes": [
+   "avg_salary: 有報grade出典なし→null(定性提案)",
+   "starting_salary: 抽出/照合不可→null"
+  ]
+ }
+}
