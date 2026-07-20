@@ -448,6 +448,72 @@ def _dedup(qs):
         seen.add(k); out.append(q)
     return out
 
+def _group(digits):
+    """'16811509' -> '16,811,509'。小数はそのまま。"""
+    if "." in digits:
+        a, b = digits.split(".", 1)
+        return _group(a) + "." + b
+    r = ""
+    for i, c in enumerate(reversed(digits)):
+        if i and i % 3 == 0:
+            r = "," + r
+        r = c + r
+    return r
+
+def _repair_distractors(q, corpus):
+    """誤答が捏造(本文に不在)の財務問を、corpus内の同一単位・同桁の実数へ置換して救済。
+    正解が本文に実在する場合のみ。成功で修復後q、失敗でNone。"""
+    body = corpus.get(q.get("source_url"), "")
+    if not body:
+        return None
+    body_norm = QL._norm_num(body)
+    opts = [str(o) for o in (q.get("options") or [])]
+    ci = q.get("correct")
+    if len(opts) != 4 or not isinstance(ci, int) or not (0 <= ci < 4):
+        return None
+    correct = opts[ci]
+    # 正解の数値が本文に無ければ修復不能(正解が捏造=破棄)
+    if any(t not in body_norm for t in QL._num_tokens(correct)):
+        return None
+    unit = QL._unit_class(correct)
+    if unit in ("text", "date", "year"):
+        return None                      # 非数値/日付は本修復の対象外
+    cm = QL.NUM_RE.search(correct)
+    if not cm:
+        return None
+    core = QL._norm_num(cm.group(0))
+    suffix = correct[cm.end():].strip()  # 例 "百万円" / "%" / "円" / "名" / "株"
+    is_pct = (unit == "percent")
+    ndig = len(core.replace(".", ""))
+    # corpus から同単位・同桁の実数を収集(紛らわしい別項目/別年度の値)
+    pool, seen = [], {core}
+    for m in QL.NUM_RE.finditer(body):
+        t = QL._norm_num(m.group(0))
+        if not t or t in seen:
+            continue
+        if is_pct:
+            try:
+                fv = float(t)
+            except ValueError:
+                continue
+            if not (0 < fv < 100 and "." in t):
+                continue
+        else:
+            if "." in t or len(t) != ndig:
+                continue
+        seen.add(t); pool.append(t)
+    if len(pool) < 3:
+        return None
+    newopts = list(opts)
+    pi = 0
+    for i in range(4):
+        if i == ci:
+            continue
+        newopts[i] = (pool[pi] + "%") if is_pct else (_group(pool[pi]) + suffix)
+        pi += 1
+    q2 = {**q, "options": newopts}
+    return q2 if not lint_one(q2, corpus) else None
+
 def _review_pass_ids(qs, corpus):
     """二層目: qs をレビューし、pass した id集合・pass率・(graded, passed)件数 を返す(バッチ12)。"""
     passed, graded = set(), 0
@@ -488,8 +554,13 @@ def converge_locked(slug, name, corpus, target=30, max_round=5, extra=""):
         for q in pool:
             q.setdefault("id", "")
             k = q.get("q_text", "").strip()[:40]
-            if k in seen_q or lint_one(q, corpus):   # 単一lint(単位整合/数値日付/カテゴリ等)
+            if k in seen_q:
                 continue
+            if lint_one(q, corpus):                  # 単一lint(単位整合/数値日付/カテゴリ等)
+                rq = _repair_distractors(q, corpus)  # 誤答捏造なら corpus 内の同単位実数へ修復
+                if rq is None:
+                    continue
+                q = rq
             seen_q.add(k); lint_ok.append(q)
         if not lint_ok:
             if not cost_ok(): break
