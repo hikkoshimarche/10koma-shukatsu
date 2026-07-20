@@ -1,0 +1,85 @@
+{
+ "slug": "abeja",
+ "name": "ABEJA",
+ "industry": "IT・通信・SaaS",
+ "soft": {
+  "tenkin_do": {
+   "value": 2,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "kaigai_do": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "stability": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "growth": {
+   "value": 5,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "remote_flex": {
+   "value": 5,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "young_discretion": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "bunri": {
+   "value": "理系寄り",
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "job_tags": {
+   "value": [
+    "エンジニア・IT",
+    "企画・マーケティング",
+    "営業"
+   ],
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  }
+ },
+ "facts": {
+  "avg_salary": {
+   "value": 953,
+   "unit": "万円",
+   "evidence": {
+    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=5574",
+    "quote": "**平均年収**: 953万円（2025年8月期、平均年齢36.7歳、平均勤続年数2.7年）[出典](https://www.nikkei.com/nkd/company/salary/?scode=5574) [出典](https://remedy-tokyo.co.jp/media/8389/)"
+   },
+   "as_of": "",
+   "confidence": "medium",
+   "estimated": false
+  },
+  "starting_salary": null,
+  "industry": {
+   "value": "IT・通信・SaaS",
+   "estimated": false
+  }
+ },
+ "trend_note": "Google・NVIDIA出資で国際AI企業へシフト。成長率53.6%、新卒年4名の少数精鋭。テクノプレナーシップと倫理",
+ "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
+ "lint": {
+  "errors": [],
+  "notes": [
+   "starting_salary: 抽出/照合不可→null"
+  ]
+ }
+}
