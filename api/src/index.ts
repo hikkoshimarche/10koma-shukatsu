@@ -52,6 +52,31 @@ app.get('/api/industries', async (c) => {
   return c.json(results)
 })
 
+// 業界研究10コマ詳細 (industry_10koma__<slug> の疑似会社+company_panels を返す)
+// フロント company.html renderIndustry は { panels: [...] } を期待。未反映時は404→クイズ導線にフォールバック。
+app.get('/api/industries/:slug', async (c) => {
+  const slug = c.req.param('slug')
+  const companyId = `industry_10koma__${slug}`
+
+  const industry = await c.env.DB.prepare(
+    'SELECT * FROM companies WHERE id = ?'
+  )
+    .bind(companyId)
+    .first<{ id: string; name: string; industry_id: string }>()
+
+  if (!industry) {
+    return c.json({ error: 'not found', slug }, 404)
+  }
+
+  const { results: panels } = await c.env.DB.prepare(
+    'SELECT * FROM company_panels WHERE company_id = ? ORDER BY panel_num'
+  )
+    .bind(companyId)
+    .all()
+
+  return c.json({ slug, name: industry.name, industry_id: industry.industry_id, panels })
+})
+
 // 会社一覧
 app.get('/api/companies', async (c) => {
   const { results } = await c.env.DB.prepare(
