@@ -1,9 +1,21 @@
 # リッチメニュー v1 登録手順（トーキャリ）
 
+## ✅ 実行済み（①作成・②画像アップまで完了 / ③未実行）
+- **richmenu_id = `richmenu-56ee5a0a6f890ba332391012930c7e7e`**（name: tokyari-v1 / 2500×1686 / areas 6）
+- 画像アップロード: HTTP 200 済 ／ `GET /richmenu/list` に登録確認済（既存0件→並存OK）
+- **残るは③デフォルト適用のみ**（下記1コマンド）。
+
+## 🚀 ③ 公開＝合図後にこの1コマンド（自動でトークン発行→全ユーザーに適用）
+```bash
+cd ~/projects/10koma-shukatsu && CID=$(grep '^LINE_MESSAGING_CHANNEL_ID=' .env|cut -d= -f2) && CSEC=$(grep '^LINE_MESSAGING_CHANNEL_SECRET=' .env|cut -d= -f2) && TOKEN=$(curl -s -X POST https://api.line.me/v2/oauth/accessToken -d grant_type=client_credentials -d client_id=$CID -d client_secret=$CSEC | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])') && curl -sS -X POST https://api.line.me/v2/bot/user/all/richmenu/richmenu-56ee5a0a6f890ba332391012930c7e7e -H "Authorization: Bearer $TOKEN" -w '\nHTTP %{http_code}\n'
+```
+（動作確認済＝トークン発行部分はテスト済。HTTP 200 で公開成功。）
+（.env のチャネルID/シークレットから短命トークンを都度発行＝メモにシークレットを書かない。HTTP 200 で公開成功。ロールバック＝別メニューidで同コマンド、または `DELETE /v2/bot/user/all/richmenu` で既定解除。）
+
 ## ⚠️ 切替タイミング
-**まだ切替えない。** クイズの D1 投入（quiz_questions）完了 → オスカーの合図後に「デフォルト設定」する。
+**まだ切替えない。** クイズの D1 投入（quiz_questions）＋業界10コマ適用の完了 → オスカーの合図後に上記③を実行。
 ＝メニュー公開の瞬間から全6セルが実データで動く状態にするため。
-（登録・画像アップ・タップ領域設定までは事前に済ませてOK。最後の「デフォルト適用」だけ合図待ち。）
+（①②は実行済み。最後の「③デフォルト適用」だけ合図待ち。）
 
 ## 使うファイル（このフォルダ内）
 - **richmenu_v1.jpg**（2500×1686 / 401KB）… ★アップロードはこちら（LINE上限1MB以内）
