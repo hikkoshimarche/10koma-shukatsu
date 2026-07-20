@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>理解度クイズ | トーキャリ</title>
+  <link rel="stylesheet" href="entry.css">
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="config.js"></script>
+  <script src="entry.js"></script>
+  <style>
+    /* === クイズ専用 === */
+    .quiz-tabs { display:flex; gap:8px; padding:4px 16px 10px; }
+    .quiz-tab {
+      flex:1; text-align:center; padding:10px; border-radius:12px;
+      font-weight:700; font-size:14px; cursor:pointer;
+      background:rgba(255,255,255,0.12); color:rgba(255,255,255,0.75);
+      border:1.5px solid transparent; -webkit-tap-highlight-color:transparent;
+    }
+    .quiz-tab.active { background:#fff; color:var(--navy); box-shadow:0 3px 10px rgba(0,0,0,0.2); }
+
+    .quiz-play { padding:14px 16px 24px; }
+    .quiz-progress-wrap { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+    .quiz-bar { flex:1; height:8px; border-radius:99px; background:rgba(255,255,255,0.18); overflow:hidden; }
+    .quiz-bar-fill { height:100%; background:var(--gold); border-radius:99px; transition:width .3s; }
+    .quiz-count { font-size:12px; font-weight:700; color:rgba(255,255,255,0.85); flex-shrink:0; }
+
+    .quiz-card { background:#fff; color:var(--ink); border-radius:16px; padding:18px 16px; box-shadow:0 4px 16px rgba(0,0,0,0.2); }
+    .quiz-cat { display:inline-block; font-size:11px; font-weight:700; color:#fff; background:var(--nana); padding:2px 10px; border-radius:999px; margin-bottom:10px; }
+    .quiz-sample-tag { display:inline-block; font-size:10px; font-weight:700; color:#8a6d00; background:#ffe9a8; padding:2px 8px; border-radius:999px; margin-left:6px; }
+    .quiz-q { font-size:17px; font-weight:700; line-height:1.55; margin-bottom:16px; }
+
+    .quiz-opts { display:flex; flex-direction:column; gap:10px; }
+    .quiz-opt {
+      display:flex; align-items:center; gap:11px; width:100%; text-align:left;
+      background:#f4f7fb; border:2px solid #e2e8f0; border-radius:12px; padding:13px 14px;
+      font-size:15px; font-weight:600; color:var(--ink); cursor:pointer; font-family:inherit;
+      -webkit-tap-highlight-color:transparent; transition:transform .08s;
+    }
+    .quiz-opt:active { transform:scale(0.99); }
+    .quiz-opt .mark {
+      flex-shrink:0; width:26px; height:26px; border-radius:50%; background:#fff;
+      border:2px solid #cbd5e1; display:flex; align-items:center; justify-content:center;
+      font-size:13px; font-weight:800; color:#64748b;
+    }
+    .quiz-opt.correct { background:#e7f7ee; border-color:#28a45c; }
+    .quiz-opt.correct .mark { background:#28a45c; border-color:#28a45c; color:#fff; }
+    .quiz-opt.wrong { background:#fdecec; border-color:#d64545; }
+    .quiz-opt.wrong .mark { background:#d64545; border-color:#d64545; color:#fff; }
+    .quiz-opt.locked { cursor:default; }
+    .quiz-opt.dim { opacity:0.55; }
+
+    .quiz-feedback { margin-top:14px; border-top:1px dashed #d7dee7; padding-top:13px; display:none; }
+    .quiz-feedback.show { display:block; }
+    .quiz-verdict { font-size:15px; font-weight:800; margin-bottom:6px; }
+    .quiz-verdict.ok { color:#1f8a4c; }
+    .quiz-verdict.ng { color:#c0392b; }
+    .quiz-exp { font-size:13.5px; line-height:1.65; color:var(--ink); }
+    .quiz-src { display:inline-block; margin-top:9px; font-size:12.5px; font-weight:700; color:var(--nana); text-decoration:none; }
+    .quiz-src::after { content:" ↗"; }
+
+    .quiz-next {
+      width:100%; margin-top:14px; padding:14px; border:none; border-radius:12px;
+      background:var(--gold); color:#2a1c00; font-size:15px; font-weight:800; cursor:pointer;
+      font-family:inherit; -webkit-tap-highlight-color:transparent; display:none;
+      box-shadow:0 4px 12px rgba(231,184,75,0.4);
+    }
+    .quiz-next.show { display:block; }
+
+    /* 結果 */
+    .quiz-result { text-align:center; padding:8px 16px 24px; }
+    .quiz-result-emoji { font-size:60px; }
+    .quiz-score { font-family:"Reggae One",sans-serif; font-size:40px; color:#fff; text-shadow:0 2px 12px rgba(0,0,0,0.3); margin:6px 0 2px; }
+    .quiz-score small { font-size:20px; opacity:0.7; }
+    .quiz-result-msg { font-size:14px; color:rgba(255,255,255,0.85); margin-bottom:22px; }
+    .quiz-actions { display:flex; flex-direction:column; gap:10px; }
+    .quiz-btn {
+      padding:14px; border-radius:12px; font-size:15px; font-weight:800; cursor:pointer;
+      font-family:inherit; -webkit-tap-highlight-color:transparent; border:none;
+    }
+    .quiz-btn.primary { background:var(--gold); color:#2a1c00; box-shadow:0 4px 12px rgba(231,184,75,0.4); }
+    .quiz-btn.ghost { background:rgba(255,255,255,0.12); color:#fff; border:1.5px solid rgba(255,255,255,0.25); }
+  </style>
+</head>
+<body>
+<div class="e-wrap">
+  <header class="e-header has-back">
+    <button class="e-back" id="btn-back" aria-label="戻る">‹</button>
+    <p class="e-kicker">理解度クイズ</p>
+    <h1 class="e-title" id="quiz-title">クイズで腕試し</h1>
+    <div id="guide"></div>
+  </header>
+
+  <div id="app">
+    <div class="e-list"><div class="e-skel"></div><div class="e-skel"></div><div class="e-skel"></div></div>
+  </div>
+
+  <footer class="e-footer">
+    <span class="brand-panel"><img class="brand-logo" src="/images/brand/tokyari_logo_wide.png" alt="トーキャリ"></span>
+  </footer>
+</div>
+
+<script>
+const CFG      = window.TOKYARI || {};
+const LIFF_ID  = CFG.LIFF_HUB || '2010075487-89AJxZnA';
+const API_BASE = CFG.API_BASE  || 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+const N_PER_SET = 10; // 1セッションの出題数
+
+// プレビュー用サンプル(本番はAPIから取得)
+const SAMPLE = [
+  {"category":"会社概要","q_text":"MSCI ESGのレーティングでSAPはどの評価を受けていますか？","options":["AAA","AA","A","BBB"],"correct":0,"explanation":"SAPはMSCI ESGのレーティングでAAAを受けています。","source_url":"https://www.sap.com/japan/about/company.html"},
+  {"category":"会社概要","q_text":"SAPはS&P ESGスコアでどの位置にランクされていますか？","options":["上位5%","上位10%","上位15%","上位20%"],"correct":0,"explanation":"SAPはS&P ESGスコアで上位5%にランクされています。","source_url":"https://www.sap.com/japan/about/company.html"},
+  {"category":"沿革","q_text":"SAPは何人の起業家プログラマーによって設立されましたか？","options":["5人","3人","7人","10人"],"correct":0,"explanation":"SAPは5人の起業家プログラマーによって設立されました。","source_url":"https://www.sap.com/japan/about/company.html"},
+  {"category":"事業セグメント","q_text":"SAPはどのような役割を担っていますか？","options":["ビジネスとテクノロジーをつなぐ","金融サービスを提供","製造業に特化","教育サービスを提供"],"correct":0,"explanation":"SAPはエンタープライズアプリケーションやビジネスAIのグローバルリーダーとして、ビジネスとテクノロジーをつなぐ役割を担っています。","source_url":"https://www.sap.com/japan/about/company.html"}
+];
+
+const IND_ICON = {
+  '総合商社':'🌐','自動車・モビリティ':'🚗','電機・精密・重工':'⚙️','鉄鋼・素材・化学':'🏭',
+  '製薬・ヘルスケア':'💊','銀行・証券・保険':'🏦','IT・通信・SaaS':'💻','ゲーム・エンタメ':'🎮',
+  'コンサル':'📈','専門商社':'📦','インフラ・エネルギー':'⚡','不動産・建設':'🏗️','小売・流通':'🛍️',
+  '食品・飲料':'🍽️','日用品・化粧品':'🧴','航空・運輸・物流':'✈️','広告・メディア':'📣','その他（外資・新興等）':'🌱',
+};
+const PAL = ['#2f6fb0','#c0392b','#7d3c98','#16a085','#d17d00','#2d8659','#c0448a','#3b5bdb','#b8823a','#2f8fbf'];
+function hue(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return PAL[h%PAL.length];}
+
+let COMPANIES = null;
+let lineUserId = 'guest-preview';
+let mode = 'company';           // 'company' | 'industry'
+let QSET = [], qi = 0, score = 0, curLabel = '';
+
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+const app = () => document.getElementById('app');
+
+async function loadCompanies(){ if(!COMPANIES) COMPANIES = await (await fetch('/companies.json')).json(); return COMPANIES; }
+
+// 選択肢シャッフル(正解が常にAにならないよう)
+function shuffled(q){
+  const idx = q.options.map((_,i)=>i);
+  for(let i=idx.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+  return {...q, options: idx.map(i=>q.options[i]), correct: idx.indexOf(q.correct)};
+}
+
+/* ---------- 選択画面 ---------- */
+async function renderSelect(){
+  mountGuide('どのクイズに<br>挑戦する？');
+  document.getElementById('quiz-title').textContent = 'クイズで腕試し';
+  const data = await loadCompanies();
+  const inds = Object.keys(data);
+  const tabs = `
+    <div class="quiz-tabs">
+      <div class="quiz-tab ${mode==='company'?'active':''}" data-mode="company">会社別</div>
+      <div class="quiz-tab ${mode==='industry'?'active':''}" data-mode="industry">業界別</div>
+    </div>`;
+  const list = inds.map(name=>{
+    const icon = IND_ICON[name]||'🏢';
+    const sub = mode==='industry' ? '業界クイズに挑戦' : `${(data[name]||[]).length}社から選ぶ`;
+    return `<button class="e-card" data-ind="${esc(name)}" style="--acc:#2f6fb0">
+      <span class="e-icon">${icon}</span>
+      <span class="e-card-body"><span class="e-card-label">${esc(name)}</span><span class="e-card-sub">${sub}</span></span>
+      <span class="e-card-arrow">›</span></button>`;
+  }).join('');
+  app().innerHTML = tabs + `<div class="e-list" id="sel-list">${list}</div>`;
+
+  app().querySelectorAll('.quiz-tab').forEach(t=>t.onclick=()=>{ mode=t.dataset.mode; renderSelect(); });
+  document.getElementById('sel-list').onclick = e=>{
+    const c = e.target.closest('.e-card'); if(!c) return;
+    const ind = c.dataset.ind;
+    if(mode==='industry') startQuiz('industry', ind, ind);
+    else renderCompanyList(ind);
+  };
+}
+
+async function renderCompanyList(industry){
+  mountGuide('会社を選んで<br>スタート！');
+  const data = await loadCompanies();
+  const comps = data[industry]||[];
+  const list = comps.map(c=>`
+    <button class="e-card" data-id="${esc(c.id)}" data-name="${esc(c.name)}" style="--acc:${hue(c.id)}">
+      <span class="e-badge">${esc(String(c.name||'？').charAt(0))}</span>
+      <span class="e-card-body"><span class="e-card-label">${esc(c.name)}</span><span class="e-card-sub">クイズに挑戦</span></span>
+      <span class="e-card-arrow">›</span></button>`).join('');
+  app().innerHTML = `<div class="e-list">${list}</div>`;
+  app().querySelector('.e-list').onclick = e=>{
+    const c = e.target.closest('.e-card'); if(!c) return;
+    startQuiz('company', c.dataset.id, c.dataset.name);
+  };
+  document.getElementById('btn-back').onclick = ()=>renderSelect();
+}
+
+/* ---------- クイズ本体 ---------- */
+async function startQuiz(setType, setId, label){
+  curLabel = label;
+  document.getElementById('quiz-title').textContent = label;
+  document.getElementById('guide').innerHTML = '';
+  app().innerHTML = `<div class="e-list"><div class="e-skel"></div><div class="e-skel"></div></div>`;
+  let qs = null, isSample = false;
+  try {
+    const r = await fetch(`${API_BASE}/api/quiz?set_type=${encodeURIComponent(setType)}&set_id=${encodeURIComponent(setId)}`);
+    if (r.ok) { const d = await r.json(); qs = Array.isArray(d) ? d : (d.questions || []); }
+  } catch(e){ /* API未実装 → サンプル */ }
+  if (!qs || !qs.length) { qs = SAMPLE; isSample = true; }
+  QSET = qs.slice(0, N_PER_SET).map(shuffled);
+  qi = 0; score = 0;
+  document.getElementById('btn-back').onclick = ()=>renderSelect();
+  renderQuestion(isSample);
+}
+
+function renderQuestion(isSample){
+  const q = QSET[qi];
+  const pct = Math.round((qi)/QSET.length*100);
+  const opts = q.options.map((o,i)=>`
+    <button class="quiz-opt" data-i="${i}">
+      <span class="mark">${'ABCD'[i]}</span><span>${esc(o)}</span>
+    </button>`).join('');
+  app().innerHTML = `
+    <div class="quiz-play">
+      <div class="quiz-progress-wrap">
+        <div class="quiz-bar"><div class="quiz-bar-fill" style="width:${pct}%"></div></div>
+        <span class="quiz-count">Q ${qi+1} / ${QSET.length}</span>
+      </div>
+      <div class="quiz-card">
+        <span class="quiz-cat">${esc(q.category||'クイズ')}</span>${isSample?'<span class="quiz-sample-tag">サンプル</span>':''}
+        <p class="quiz-q">${esc(q.q_text)}</p>
+        <div class="quiz-opts" id="opts">${opts}</div>
+        <div class="quiz-feedback" id="fb"></div>
+        <button class="quiz-next" id="next">${qi+1<QSET.length?'次の問題へ':'結果を見る'}</button>
+      </div>
+    </div>`;
+  document.getElementById('opts').addEventListener('click', e=>{
+    const b = e.target.closest('.quiz-opt'); if(!b) return;
+    answer(parseInt(b.dataset.i,10));
+  }, { once:false });
+}
+
+function answer(chosen){
+  const q = QSET[qi];
+  const optsEl = document.getElementById('opts');
+  [...optsEl.children].forEach((b,i)=>{
+    b.classList.add('locked');
+    if (i===q.correct) b.classList.add('correct');
+    else if (i===chosen) b.classList.add('wrong');
+    else b.classList.add('dim');
+    b.onclick = null;
+  });
+  const ok = chosen===q.correct;
+  if (ok) score++;
+  const fb = document.getElementById('fb');
+  fb.innerHTML = `
+    <p class="quiz-verdict ${ok?'ok':'ng'}">${ok?'正解！':'惜しい…'}</p>
+    <p class="quiz-exp">${esc(q.explanation||'')}</p>
+    ${q.source_url?`<a class="quiz-src" href="${esc(q.source_url)}" target="_blank" rel="noopener">出典を見る</a>`:''}`;
+  fb.classList.add('show');
+  const nx = document.getElementById('next'); nx.classList.add('show');
+  nx.onclick = ()=>{ qi++; (qi<QSET.length)?renderQuestion():renderResult(); };
+  recordAnswer(q, chosen, ok);
+}
+
+function renderResult(){
+  const total = QSET.length, pct = Math.round(score/total*100);
+  const emoji = pct>=80?'🏆':pct>=50?'👍':'📚';
+  const msg = pct>=80?'素晴らしい！この企業はバッチリ。':pct>=50?'いい調子！もう一歩で完璧。':'復習して再挑戦しよう！';
+  app().innerHTML = `
+    <div class="quiz-result">
+      <div class="quiz-result-emoji">${emoji}</div>
+      <p class="quiz-score">${score}<small> / ${total}</small></p>
+      <p class="quiz-result-msg">${curLabel}｜${msg}</p>
+      <div class="quiz-actions">
+        <button class="quiz-btn primary" id="retry">もう一度挑戦</button>
+        <button class="quiz-btn ghost" id="other">ほかのクイズを選ぶ</button>
+      </div>
+    </div>`;
+  document.getElementById('retry').onclick = ()=>{ QSET=QSET.map(shuffled); qi=0; score=0; renderQuestion(); };
+  document.getElementById('other').onclick = ()=>renderSelect();
+}
+
+// 進捗記録(API未実装なら黙って失敗＝将来 user_quiz_progress へ)
+function recordAnswer(q, chosen, ok){
+  try {
+    fetch(`${API_BASE}/api/quiz/answer`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ line_user_id: lineUserId, question_id: q.id||null, chosen, is_correct: ok?1:0 })
+    }).catch(()=>{});
+  } catch(e){}
+}
+
+async function main(){
+  document.getElementById('btn-back').onclick = ()=>history.back();
+  // LIFF: 本番はログイン、外部ブラウザ(プレビュー)はゲスト
+  try {
+    await liff.init({ liffId: LIFF_ID });
+    if (liff.isLoggedIn()) { const p = await liff.getProfile(); lineUserId = p.userId; }
+    else if (liff.isInClient()) { liff.login(); return; }
+  } catch(e){ console.warn('LIFF skipped (preview):', e && e.message); }
+
+  const params = new URLSearchParams(location.search);
+  const company = params.get('company'), industry = params.get('industry');
+  const name = params.get('name') || company || industry;
+  if (company) startQuiz('company', company, name);
+  else if (industry) startQuiz('industry', industry, name);
+  else renderSelect();
+}
+main();
+</script>
+</body>
+</html>
