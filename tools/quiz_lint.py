@@ -285,11 +285,17 @@ PER_Q = [lint_source_required, lint_asof_required_if_number, lint_single_correct
 
 # ── 作りの品質(v2): 単位整合 / 概念dedup / ドライトリビア上限 ──
 UNIT_RE = re.compile(r"(百万円|億円|兆円|千円|円|%|名|社|株|拠点|カ国・地域|カ国|人|件|ドル|ポイント|年間)\s*$")
+# ★v3-2① 会社名(法人)判定: 人名問に社名が混じる型整合違反を検出するため
+COMPANY_SUF = re.compile(
+    r"(株式会社|（株）|\(株\)|ホールディングス|ホールディング|ＨＤ|グループ|"
+    r"工業|商事|商会|物産|通商|化学|化工|建設|銀行|信託|保険|証券|製作所|電機|重工|"
+    r"自動車|産業|製鉄|製薬|海運|商船|石油|電力|ガス|鉄道|食品|製菓|飲料|繊維|"
+    r"Corporation|Corp\.?|Inc\.?|Ltd\.?|LIMITED|Company|&\s*Co|PLC|LLC)")
 def _unit_class(opt):
-    """選択肢の型/単位クラス。text/date/year/money-unit/percent/名/社/株… を返す。"""
+    """選択肢の型/単位クラス。text/date/year/money-unit/percent/名/社/株/company … を返す。"""
     s = str(opt).translate(Z2H).replace("％", "%").strip()
     if not DIGIT_RE.search(s):
-        return "text"
+        return "company" if COMPANY_SUF.search(s) else "text"   # 社名 vs 人名/その他テキスト
     if re.search(r"\d+\s*月\s*\d+\s*日", s):
         return "date"
     m = UNIT_RE.search(s)
@@ -297,6 +303,8 @@ def _unit_class(opt):
         return "percent" if m.group(1) == "%" else m.group(1)
     if re.search(r"\d{3,4}\s*年", s):
         return "year"
+    if COMPANY_SUF.search(s):
+        return "company"
     return "number"
 
 def lint_unit_consistency(q):
@@ -395,6 +403,68 @@ def lint_dry_trivia_cap(quiz):
                           f"ドライトリビア({_concept_of(q)})が上限{DRY_CAP}超過({len(dry)}問) → 事業/セグメント/財務へ差し替え"))
     return res
 
+# ★v3-2② 可変事実は as_of 必須(社長・従業員数・会社数・株式数・拠点・資本金)
+VARIABLE_CONCEPTS = {"経営者", "従業員数", "連結子会社数", "株式数", "拠点", "資本金"}
+def lint_variable_asof(q):
+    if _concept_of(q) in VARIABLE_CONCEPTS and not (q.get("as_of") or "").strip():
+        return [_f("variable_asof", "error", q.get("id"),
+                   f"可変事実({_concept_of(q)})は as_of(時点)必須: {q.get('q_text','')[:32]}")]
+    return []
+
+# ★v3-2③ 派生値(合計=構成要素の和)の設問は落とす
+def _answer_int(q):
+    opts = q.get("options") or []
+    ci = q.get("correct")
+    if not (isinstance(ci, int) and 0 <= ci < len(opts)):
+        return None, None
+    nums = _num_tokens(str(opts[ci]))
+    ints = [int(t) for t in nums if t.isdigit()]
+    if len(ints) != 1:
+        return None, None
+    return ints[0], _unit_class(str(opts[ci]))
+
+def lint_derived_value(quiz):
+    """ある設問の正解値が、他の2問の正解値の和になっている(例 1,182=833+349)なら派生値=落とす。"""
+    vals = []
+    for q in quiz:
+        v, u = _answer_int(q)
+        if v is not None:
+            vals.append((q.get("id"), v, u))
+    res = []
+    for qid, v, u in vals:
+        if v < 50:                     # 微小値は偶然の和が起きやすいので対象外
+            continue
+        others = [(oid, ov) for oid, ov, ou in vals if oid != qid and ov >= 20]  # 単位非依存(1,182と833社の書式差を吸収)
+        found = False
+        for i in range(len(others)):
+            for j in range(i + 1, len(others)):
+                if others[i][1] + others[j][1] == v and others[i][1] != v and others[j][1] != v:
+                    res.append(_f("derived_value", "error", qid,
+                                  f"派生値: 正解{v}={others[i][1]}+{others[j][1]}({others[i][0]},{others[j][0]}) → 冗長で落とす"))
+                    found = True; break
+            if found: break
+    return res
+
+# ★v3-2④ 同一リストの「含む/含まない」ペアは1問に
+INCL_RE = re.compile(r"(.{2,20}?)(に(?:含まれ|含む|該当|当てはま))")
+def _list_subject(q):
+    m = INCL_RE.search(q.get("q_text", "") or "")
+    return re.sub(r"[のに、。]", "", m.group(1)).strip() if m else None
+
+def lint_list_membership_dedup(quiz):
+    """同じリスト(事業セグメント/企業行動指針 等)の含む/含まない設問が複数 → 1問に集約。"""
+    seen, res = {}, []
+    for q in quiz:
+        s = _list_subject(q)
+        if not s:
+            continue
+        if s in seen:
+            res.append(_f("list_membership_dedup", "error", q.get("id"),
+                          f"同一リスト『{s}』の含む/含まない重複 既出={seen[s]} → 1問に"))
+        else:
+            seen[s] = q.get("id")
+    return res
+
 
 def run_quiz_lints(quiz, corpus=None):
     findings = []
@@ -403,6 +473,7 @@ def run_quiz_lints(quiz, corpus=None):
         for fn in PER_Q:
             findings += fn(q)
         findings += lint_unit_consistency(q)
+        findings += lint_variable_asof(q)     # ④可変事実はas_of必須
         findings += lint_no_fabrication_number(q, corpus)
         findings += lint_no_fabrication_date(q, corpus)
         findings += lint_rank_claim(q, corpus)
@@ -410,6 +481,8 @@ def run_quiz_lints(quiz, corpus=None):
         seen_ids[qid] = seen_ids.get(qid, 0) + 1
     findings += lint_concept_dedup(quiz)      # リスト全体で概念重複
     findings += lint_dry_trivia_cap(quiz)     # リスト全体でトリビア上限
+    findings += lint_derived_value(quiz)      # ③派生値(合計=和)
+    findings += lint_list_membership_dedup(quiz)  # ②含む/含まないペア
     for qid, c in seen_ids.items():
         if c > 1:
             findings.append(_f("single_correct", "error", qid, f"id重複×{c}"))
@@ -471,6 +544,8 @@ def _fixtures():
         "unit_consistency": {**base, "id": "fx_unit", "category": "会社概要", "q_text": "資本金は？",
                              "options": ["344,163,332,347円", "5,333名", "2,905,248,272株", "62カ国"],
                              "as_of": "2026年"},
+        "variable_asof": {**base, "id": "fx_var", "category": "人名・役員", "q_text": "社長は誰か？",
+                          "options": ["中西勝也", "堀健一", "石井敬太", "上野真吾"], "as_of": ""},
     }
     return corpus, cases
 
@@ -523,7 +598,23 @@ def selftest():
              "options": ["03-1", "03-2", "03-3", "03-4"], "as_of": "2025年"}
     fired_phone = any(f["lint"] == "banned_schedule_topic" for f in run_quiz_lints([phone], corpus)["findings"])
     print(f"  {'OK ' if fired_phone else 'NG '} banned(電話番号): {'発火' if fired_phone else 'NG'}")
-    ok = ok and fired_val and fired_phone
+    # ①人名問に社名混入 → unit_consistency
+    pc_mix = {**base, "id": "pc", "category": "人名・役員", "q_text": "社長は誰か？",
+              "options": ["中西勝也", "堀健一", "三菱自動車工業", "上野真吾"], "as_of": "2025年"}
+    fired_pc = any(f["lint"] == "unit_consistency" for f in run_quiz_lints([pc_mix], corpus)["findings"])
+    print(f"  {'OK ' if fired_pc else 'NG '} unit_consistency(人名に社名混入): {'発火' if fired_pc else 'NG'}")
+    # ③派生値(1182=833+349)
+    dv = [{**base, "id": "a", "category": "会社概要", "q_text": "連結子会社数は？", "options": ["833社", "800社", "850社", "900社"], "as_of": "2025年"},
+          {**base, "id": "b", "category": "会社概要", "q_text": "持分法適用会社数は？", "options": ["349社", "300社", "400社", "320社"], "as_of": "2025年"},
+          {**base, "id": "c", "category": "会社概要", "q_text": "連結対象会社の合計は？", "options": ["1,182社", "1,000社", "1,200社", "1,100社"], "as_of": "2025年"}]
+    fired_dv = any(f["lint"] == "derived_value" for f in run_quiz_lints(dv, corpus)["findings"])
+    print(f"  {'OK ' if fired_dv else 'NG '} derived_value(1182=833+349): {'発火' if fired_dv else 'NG'}")
+    # ②含む/含まないペア
+    lm = [{**base, "id": "in", "category": "事業セグメント", "q_text": "事業セグメントに含まれるものはどれか？", "options": ["A", "B", "C", "D"], "as_of": ""},
+          {**base, "id": "out", "category": "事業セグメント", "q_text": "事業セグメントに含まれないものはどれか？", "options": ["A", "B", "C", "D"], "as_of": ""}]
+    fired_lm = any(f["lint"] == "list_membership_dedup" for f in run_quiz_lints(lm, corpus)["findings"])
+    print(f"  {'OK ' if fired_lm else 'NG '} list_membership_dedup(含む/含まない): {'発火' if fired_lm else 'NG'}")
+    ok = ok and fired_val and fired_phone and fired_pc and fired_dv and fired_lm
     dry_list = [{**base, "id": f"t{i}", "q_text": q, "options": ["A", "B", "C", "D"]}
                 for i, q in enumerate(["本店所在地は？", "資本金は？", "発行済株式数は？"])]
     fired_dry = any(f["lint"] == "dry_trivia_cap" for f in run_quiz_lints(dry_list, corpus)["findings"])
