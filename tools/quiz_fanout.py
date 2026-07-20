@@ -307,27 +307,33 @@ def _expand_official_pdfs(index_url, official_dom, limit=2):
         if len(res) >= limit: break
     return res
 
+def _host_reg(u):
+    m = re.match(r"https?://([^/]+)", u)
+    return _reg_domain(m.group(1).lower()) if m else None
+
 def acquire_corpus_thick(name, slug):
-    """品質固定モードの厚いcorpus。会社概要+seed に加え、公式IR/有報索引を辿ってPDFを1-2本追加。"""
+    """品質固定モードの厚いcorpus。会社概要+seed + 公式IR/有報索引→PDF展開。
+    ★v3: 本体公式ドメイン(registrable domain)のみに厳密限定。子会社ドメイン
+    (例 mitsubishicorprtm.com=RtMジャパン)は registrable が異なるので除外し、本体への誤帰属を防ぐ。"""
     urls, dom = _factsheet_official_urls(slug or "", name)
     urls = list(urls)
     seed = _manifest().get(slug or "", [])
     for u in seed:
         if u not in urls: urls.append(u)
-    # official domain 推定(seed優先)
-    if not dom and seed:
-        mm = re.match(r"https?://([^/]+)/", seed[0]); dom = mm.group(1) if mm else None
-    reg = _reg_domain(dom) if dom else None
-    # IR/有報 索引HTMLからPDFを展開
+    # 本体公式 registrable domain を確定(seed優先=権威)。無ければ factsheet 判定。
+    official_reg = _host_reg(seed[0]) if seed else (_reg_domain(dom) if dom else None)
+    if not official_reg:
+        return {}
+    # IR/有報 索引HTMLからPDFを展開(本体ドメインのみ)
     extra = []
-    for u in urls:
+    for u in list(urls):
         ul = u.lower()
         if ul.split("?")[0].endswith(".pdf"): continue
-        if reg and any(k in ul for k in ("securities", "library", "/ir", "financial", "report", "yuka", "meeting")):
-            extra += _expand_official_pdfs(u, reg)
-    for u in extra:
-        if u not in urls: urls.append(u)
-    # 優先: PDF(短信/有報) を前に。最大7本。
+        if any(k in ul for k in ("securities", "library", "/ir", "financial", "report", "yuka", "meeting")):
+            extra += _expand_official_pdfs(u, official_reg)
+    urls += extra
+    # ★本体 registrable domain 完全一致のみ採用(子会社/別ドメインは除外)
+    urls = [u for u in dict.fromkeys(urls) if _host_reg(u) == official_reg]
     def prio(u):
         ul = u.lower()
         if ul.split("?")[0].endswith(".pdf"):
@@ -335,7 +341,7 @@ def acquire_corpus_thick(name, slug):
         if any(k in ul for k in ("securities", "yuka")): return 2
         if any(k in ul for k in ("outline", "profile", "about", "company", "corporate")): return 3
         return 5
-    urls = sorted(dict.fromkeys(urls), key=prio)[:7]
+    urls = sorted(urls, key=prio)[:7]
     corpus = {}
     for u in urls:
         body = fetch_url(u)
@@ -613,6 +619,8 @@ REVIEW_SYS = (
  "  ・解説が source と矛盾している\n"
  "  ・正解が実際には誤り、または正解が2つ以上ある\n"
  "  ・誤答が正解と重複している/明らかに正解と区別できない(＝実質的に答えが割れる)\n"
+ "  ・誤答に『現実に存在しない値』が含まれる(架空の証券取引所=西証/南証、存在しない電話番号、"
+ "実在しない地名・役職・製品など)。誤答はすべて実在し得る妥当な値であること。\n"
  "  ・非数値設問(セグメント名/製品/沿革/人名)で、正解が source の記述と矛盾している\n"
  "上記に当てはまらなければ **pass=true**(良問は通す。スタイルや『やや易しい』では落とさない)。\n"
  "参考ルーブリック: R1整合 / R3順位はcompetitors必須・EPS社間比較は不可 / R5誤答が同source実数として妥当 / R6正解1つで正しい。\n"
