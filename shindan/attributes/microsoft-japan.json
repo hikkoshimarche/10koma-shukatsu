@@ -1,0 +1,77 @@
+{
+ "slug": "microsoft-japan",
+ "name": "日本マイクロソフト",
+ "industry": "その他（外資・新興等）",
+ "soft": {
+  "tenkin_do": {
+   "value": 2,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "kaigai_do": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "stability": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "growth": {
+   "value": 5,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "remote_flex": {
+   "value": 5,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "young_discretion": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "bunri": {
+   "value": "文理両方",
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "job_tags": {
+   "value": [
+    "企画・マーケティング",
+    "エンジニア・IT",
+    "コンサルタント",
+    "営業"
+   ],
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  }
+ },
+ "facts": {
+  "avg_salary": null,
+  "starting_salary": null,
+  "industry": {
+   "value": "その他（外資・新興等）",
+   "estimated": false
+  }
+ },
+ "trend_note": "グローバル外資で急成長中。AI・クラウド領域の高成長、裁量と挑戦が評価される風土。本社一拠点で転勤少なめ。",
+ "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
+ "lint": {
+  "errors": [],
+  "notes": [
+   "avg_salary: 有報grade出典なし→null(定性提案)",
+   "starting_salary: 抽出/照合不可→null"
+  ]
+ }
+}
