@@ -59,11 +59,16 @@ def _closeness(v, target):
     return 1.0 - abs(v - target) / 4.0
 
 
+# 年収重視回答時、有報grade年収が無い社に与える低スコア(欠損補正)。0=完全除外, 1=満点扱い。
+MISSING_SALARY_SCORE = 0.25
+
+
 def score_company(d, answers):
-    """会社1社の(正規化スコア, 一致根拠list)。適用重み0なら(0, [])。"""
+    """会社1社の(正規化スコア, 一致根拠list, meta)。適用重み0なら(0, [], meta)。"""
     wsum = 0.0
     acc = 0.0
     matched = []
+    meta = {"missing_salary_pref": False}
     soft = d.get("soft", {})
     facts = d.get("facts", {})
     for q in QS:
@@ -90,24 +95,29 @@ def score_company(d, answers):
             if target is None:
                 continue
             av = facts.get("avg_salary")
-            if not av:
-                continue
-            m = _closeness(_avg_band(av["value"]), target)
-            acc += w * m; wsum += w
-            if m >= 0.75:
-                matched.append(f"年収志向に合致(平均年収{av['value']}万円)")
+            if av:
+                m = _closeness(_avg_band(av["value"]), target)
+                acc += w * m; wsum += w
+                if m >= 0.75:
+                    matched.append(f"年収志向に合致(平均年収{av['value']}万円)")
+            elif target >= 4:
+                # 年収を重視する回答なのに有報grade年収が無い社は優先度を下げる
+                # (年収不明社が高年収狙いの上位に来る誤りを是正)。target<=3(不問)は欠損=対象外。
+                acc += w * MISSING_SALARY_SCORE; wsum += w
+                meta["missing_salary_pref"] = True
 
         elif kind == "salary_start":
             target = opts[0].get("target")
             if target is None:
                 continue
             st = facts.get("starting_salary")
-            if not st:
-                continue
-            m = _closeness(_start_band(st["value"]), target)
-            acc += w * m; wsum += w
-            if m >= 0.75:
-                matched.append(f"初任給重視に合致(初任給{st['value']:,}円)")
+            if st:
+                m = _closeness(_start_band(st["value"]), target)
+                acc += w * m; wsum += w
+                if m >= 0.75:
+                    matched.append(f"初任給重視に合致(初任給{st['value']:,}円)")
+            elif target >= 4:
+                acc += w * MISSING_SALARY_SCORE; wsum += w
 
         elif kind == "bunri":
             target = opts[0].get("target")
@@ -148,21 +158,24 @@ def score_company(d, answers):
                 matched.append(f"きになる業界に該当({d.get('industry')})")
 
     if wsum == 0:
-        return 0.0, []
-    return acc / wsum, matched
+        return 0.0, [], meta
+    return acc / wsum, matched, meta
 
 
 def _why(q, opt):
     return f"{q['text'].rstrip('？?')}→「{opt['label']}」に合致"
 
 
-def _rationale(d, matched):
+def _rationale(d, matched, meta=None):
     facts = d.get("facts", {})
-    r = {"trend": d.get("trend_note", ""), "matched": matched[:4], "facts": {}}
+    r = {"trend": d.get("trend_note", ""), "matched": matched[:4], "facts": {}, "notes": []}
     av = facts.get("avg_salary")
     if av:
         r["facts"]["avg_salary"] = {"text": f"平均年収 約{av['value']}万円", "source": av["evidence"].get("source_url", ""),
                                     "as_of": av.get("as_of", "")}
+    elif meta and meta.get("missing_salary_pref"):
+        # 年収重視の回答なのに出典年収が無い社=根拠欄に明示(数字は出さない=Source-or-Silence)
+        r["notes"].append("年収データなし（出典のある平均年収が非公開のため、年収面は参考程度に）")
     st = facts.get("starting_salary")
     if st:
         r["facts"]["starting_salary"] = {"text": f"初任給 {st['value']:,}円/月", "source": st["evidence"].get("source_url", "")}
@@ -173,19 +186,19 @@ def recommend(answers, top_companies=8, top_industries=5):
     rows = _load_all()
     scored = []
     for d in rows:
-        s, matched = score_company(d, answers)
-        scored.append((s, matched, d))
+        s, matched, meta = score_company(d, answers)
+        scored.append((s, matched, meta, d))
     scored.sort(key=lambda x: x[0], reverse=True)
 
     # 企業おすすめ
     comps = []
-    for s, matched, d in scored[:top_companies]:
+    for s, matched, meta, d in scored[:top_companies]:
         comps.append({"name": d["name"], "slug": d["slug"], "industry": d["industry"],
-                      "score": round(s, 3), "rationale": _rationale(d, matched)})
+                      "score": round(s, 3), "rationale": _rationale(d, matched, meta)})
 
     # 業界おすすめ = 所属企業スコアの集計(平均)。有効スコア(適用重み>0)社のみ。
     ind_acc = {}
-    for s, matched, d in scored:
+    for s, matched, meta, d in scored:
         ind_acc.setdefault(d["industry"], []).append(s)
     ind_rank = [{"industry": k, "score": round(sum(v) / len(v), 3), "n": len(v)}
                 for k, v in ind_acc.items()]

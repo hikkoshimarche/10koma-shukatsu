@@ -32,7 +32,7 @@ PATTERNS = [
     ("⑨新興・外資・スピード",
      {"q_daikigyo": 1, "q_growth": 0, "q_stability": 3, "q_remote": 0, "q_young": 0}),
     ("⑩回答少数(2問のみ・欠損多で減点しない堅牢性確認)",
-     {"q_stability": 0, "q_bunri": 0, "q_salary": 3, "q_kaigai": 3, "q_growth": 3}),
+     {"q_stability": 0, "q_bunri": 0}),
 ]
 
 
@@ -49,7 +49,9 @@ def run():
         lines.append("- 企業トップ3:")
         for c in res["top_companies"]:
             fa = c["rationale"]["facts"].get("avg_salary", {}).get("text", "")
-            lines.append(f"    - **{c['name']}**（{c['industry']}・score {c['score']}）— {c['rationale']['trend'][:40]} {('/ '+fa) if fa else ''}")
+            notes = c["rationale"].get("notes", [])
+            note_s = ("　⚠️" + notes[0]) if notes else ""
+            lines.append(f"    - **{c['name']}**（{c['industry']}・score {c['score']}）— {c['rationale']['trend'][:36]}{(' / '+fa) if fa else ''}{note_s}")
         lines.append("")
         # 妥当性の軽いassert(データが十分埋まっている場合のみ)
         top_inds = [x["industry"] for x in res["top_industries"]]
