@@ -165,7 +165,7 @@ async function renderRoadmap(){
     {ic:'🌐', l:'業界研究',   href:'/gyokai',       cta:'業界研究へ'},
     {ic:'🏢', l:'企業研究',   href:'/industry',     cta:'企業研究へ'},
     {ic:'🧠', l:'理解度',     href:'/quiz.html',    cta:'クイズに挑戦'},
-    {ic:'🛡️', l:'選考対策',   href:'/omamori.html', cta:'お守りを見る'},
+    {ic:'📝', l:'選考対策',   href:'/es_guide.html', cta:'選考対策を見る'},
   ];
   const flag=k=>{ try{ return localStorage.getItem(k)==='1'; }catch(e){ return false; } };
   let viewedCompany=false;
@@ -173,7 +173,7 @@ async function renderRoadmap(){
     const r=await fetch(`${API_BASE}/api/recent-companies?user_id=${encodeURIComponent(lineUserId)}&limit=1`);
     const l=r.ok?await r.json():[]; viewedCompany=Array.isArray(l)&&l.length>0;
   }catch(e){}
-  const done=[ flag('tk_shindan_done'), flag('tk_gyokai_seen'), viewedCompany, flag('tk_quiz_answered'), flag('tk_omamori_used') ];
+  const done=[ flag('tk_shindan_done'), flag('tk_gyokai_seen'), viewedCompany, flag('tk_quiz_answered'), flag('tk_esguide_seen')||flag('tk_omamori_used') ];
   const allDone=done.every(Boolean);
   let cur=done.findIndex(d=>!d); if(cur<0) cur=steps.length-1;  // 全ステップ済→最後(選考対策)を現在地
   const strip=steps.map((s,i)=>{
@@ -181,7 +181,7 @@ async function renderRoadmap(){
     return `<div class="rm-step ${cls}"><span class="rm-ic">${done[i]?'✓':s.ic}</span><span class="rm-l">${s.l}</span></div>`;
   }).join('<span class="rm-sep">›</span>');
   const t=steps[cur];
-  const lead = allDone ? 'ひと通りOK！本番前はお守りも' : (done.some(Boolean) ? '次はここから' : 'まずは自己分析から');
+  const lead = allDone ? 'ひと通りOK！本番前の対策も' : (done.some(Boolean) ? '次はここから' : 'まずは自己分析から');
   const el=document.getElementById('roadmap');
   el.innerHTML=`<div class="home-sec-head"><span class="home-sec-title">就活の<span class="em">現在地</span></span></div>
     <div class="rm-wrap"><div class="rm-strip">${strip}</div>

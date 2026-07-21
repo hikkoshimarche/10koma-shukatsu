@@ -87,7 +87,8 @@ function render(d, id){
       <p class="nm">${esc(d.name||'企業')}</p></div>
     <p class="disc">※公式公開情報と業界傾向に基づく参考情報です。「出典」付きは公表ファクト、「傾向」は推定です。</p>
     ${secs || '<div class="empty">この企業のデータはまだありません</div>'}
-    <div class="cta"><a href="/quiz.html?company=${encodeURIComponent(id)}&name=${encodeURIComponent(d.name||'')}">🧠 このままクイズに挑戦する</a></div>`;
+    <div class="cta"><a href="/es_kit.html?id=${encodeURIComponent(id)}">🧰 この事実でES・面接対策キットへ</a></div>
+    <div class="cta" style="margin-top:-6px"><a href="/quiz.html?company=${encodeURIComponent(id)}&name=${encodeURIComponent(d.name||'')}" style="background:#fff;color:var(--navy);box-shadow:0 2px 10px rgba(0,0,0,0.08)">🧠 このままクイズに挑戦する</a></div>`;
 }
 
 async function main(){

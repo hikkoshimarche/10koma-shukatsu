@@ -724,6 +724,23 @@ app.get('/api/datasheet', async (c) => {
   } catch (e) { return c.json({ error: 'unavailable', id }, 404) }
 })
 
+// === ES・面接対策キット（会社別・タブD生成。datasheetと同型のgraceful。未投入時404→フロントは案内表示） ===
+// es_kits(company_id TEXT PRIMARY KEY, data TEXT) の data JSON 想定スキーマ:
+//   { "name": "会社名",
+//     "motivation": [ { "text": "志望動機の材料(事実)", "source_url": "..." } ],
+//     "questions":  [ { "text": "想定質問", "note": "答え方のヒント" } ] }
+app.get('/api/es-kit', async (c) => {
+  const id = c.req.query('id')
+  if (!id) return c.json({ error: 'id required' }, 400)
+  try {
+    const row = await c.env.DB.prepare(
+      'SELECT company_id, data FROM es_kits WHERE company_id = ?'
+    ).bind(id).first<{ company_id: string; data: string }>()
+    if (!row) return c.json({ error: 'not found', id }, 404)
+    return c.json({ id: row.company_id, ...safeJson(row.data) })
+  } catch (e) { return c.json({ error: 'unavailable', id }, 404) }
+})
+
 // === 企業比較（既存 attributes + datasheets を束ねるだけ・新規生成なし・graceful） ===
 app.get('/api/compare', async (c) => {
   const idsRaw = c.req.query('ids') || ''

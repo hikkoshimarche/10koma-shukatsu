@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>ES・面接の基本 | トーキャリ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@500;700&display=swap" rel="stylesheet">
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="config.js"></script>
+  <style>
+    :root{ --navy:#003F7D; --ink:#1a2733; --mute:#6a7686; --gold:#E7B84B; --nana:#4a7fb5; --haruki:#3f8a5f; --line:#eef2f6; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;color:var(--ink);background:#eef1f5;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:480px;margin:0 auto;min-height:100vh;overflow-x:hidden;padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}
+    .hd{position:sticky;top:0;z-index:10;background:var(--navy);color:#fff;display:flex;align-items:center;gap:8px;padding:0 12px;height:54px}
+    .hd .bk{width:36px;height:36px;border:none;background:rgba(255,255,255,0.14);border-radius:50%;color:#fff;font-size:18px;cursor:pointer}
+    .hd .t{flex:1;text-align:center;font-weight:700;font-size:16px}
+    .hd .sp{width:36px}
+
+    /* ナナ/ハルキ 案内 */
+    .intro{display:flex;align-items:flex-start;gap:11px;padding:16px 16px 6px}
+    .intro .faces{display:flex;flex-shrink:0}
+    .intro .face{width:38px;height:38px;border-radius:50%;background:#fff;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;font-size:19px}
+    .intro .face:nth-child(2){margin-left:-12px}
+    .intro .bubble{background:#fff;border-radius:14px;padding:11px 14px;box-shadow:0 2px 10px rgba(0,0,0,0.08);font-size:13.5px;line-height:1.6;font-weight:600}
+
+    .sec-title{font-size:13px;font-weight:800;color:var(--navy);padding:16px 16px 8px;letter-spacing:0.02em}
+    .card{margin:0 16px 12px;background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,0.08);overflow:hidden}
+    .card-h{display:flex;align-items:center;gap:10px;padding:14px 15px 10px}
+    .card-ic{width:40px;height:40px;border-radius:12px;background:#eef3f9;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+    .card-t{font-family:"Kaisei Decol",sans-serif;font-size:16px;font-weight:700}
+    .card-t small{display:block;font-size:11px;color:var(--mute);font-weight:600;margin-top:1px;font-family:inherit}
+    .steps{list-style:none;padding:0 15px 6px;margin:0;counter-reset:s}
+    .steps li{position:relative;padding:8px 0 8px 34px;border-top:1px solid var(--line);counter-increment:s;font-size:13.5px;line-height:1.55}
+    .steps li:first-child{border-top:none}
+    .steps li::before{content:counter(s);position:absolute;left:0;top:8px;width:23px;height:23px;border-radius:50%;background:var(--navy);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+    .steps .k{font-weight:800}
+    .steps .letter{display:inline-block;min-width:20px;font-weight:800;color:var(--gold);}
+    .note{display:flex;align-items:flex-start;gap:8px;margin:2px 15px 14px;background:#f6f9fc;border-radius:12px;padding:9px 12px;font-size:12px;color:#516074;line-height:1.55}
+    .note .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px}
+    .note b{font-weight:800}
+
+    .tips{list-style:none;padding:4px 15px 12px;margin:0}
+    .tips li{position:relative;padding:7px 0 7px 20px;font-size:13.5px;line-height:1.55;border-top:1px solid var(--line)}
+    .tips li:first-child{border-top:none}
+    .tips li::before{content:'・';position:absolute;left:4px;top:7px;color:var(--navy);font-weight:800}
+
+    .links{margin:6px 16px 0;display:flex;flex-direction:column;gap:10px}
+    .lk{display:flex;align-items:center;gap:11px;background:#fff;border-radius:14px;padding:13px 15px;text-decoration:none;color:var(--ink);box-shadow:0 2px 10px rgba(0,0,0,0.08)}
+    .lk .li{width:38px;height:38px;border-radius:11px;background:#eef3f9;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+    .lk .lt{font-weight:700;font-size:14px}
+    .lk .ls{font-size:11.5px;color:var(--mute);margin-top:1px}
+    .lk .la{margin-left:auto;color:#c3ccd6;font-size:18px;font-weight:700}
+    .foot{text-align:center;font-size:11px;color:var(--mute);padding:20px 24px 6px;line-height:1.6}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hd">
+    <button class="bk" onclick="history.length>1?history.back():location.href='/home.html'" aria-label="戻る">‹</button>
+    <span class="t">ES・面接の基本</span><span class="sp"></span>
+  </header>
+
+  <div class="intro">
+    <span class="faces"><span class="face">🙂</span><span class="face">🧑‍💼</span></span>
+    <div class="bubble">ESも面接も、<b>“型”</b>を知れば怖くない。よく使われる定番フレームを一緒に整えよう。書くのはあなたの言葉でOK。</div>
+  </div>
+
+  <p class="sec-title">ガクチカ・自己PRの型</p>
+
+  <!-- STAR法 -->
+  <div class="card">
+    <div class="card-h"><span class="card-ic">⭐</span><span class="card-t">ガクチカ（STAR法）<small>経験を筋道立てて伝える定番フレーム</small></span></div>
+    <ol class="steps">
+      <li><span class="letter">S</span><span class="k">状況</span>：いつ・どこで・どんな場面だったか（前提を短く）</li>
+      <li><span class="letter">T</span><span class="k">課題</span>：何を目標にした／どんな問題があったか</li>
+      <li><span class="letter">A</span><span class="k">行動</span>：あなたが具体的に何をしたか（ここを厚く）</li>
+      <li><span class="letter">R</span><span class="k">結果</span>：どうなったか。できれば数字や変化で</li>
+    </ol>
+    <div class="note"><span class="dot" style="background:var(--haruki)"></span><span><b>ハルキ：</b>面接官が知りたいのは“結果”より“あなたの行動”。Aを一番くわしく書くと伝わりやすいよ。</span></div>
+  </div>
+
+  <!-- 自己PR -->
+  <div class="card">
+    <div class="card-h"><span class="card-ic">💪</span><span class="card-t">自己PR（強み→根拠→再現性）<small>強みが「仕事でも活きる」と示す</small></span></div>
+    <ol class="steps">
+      <li><span class="k">強み</span>：ひと言で（例：粘り強さ／巻き込み力）</li>
+      <li><span class="k">根拠エピソード</span>：その強みが表れた具体例を1つ</li>
+      <li><span class="k">再現性</span>：入社後どう活かせるかを一文で</li>
+    </ol>
+    <div class="note"><span class="dot" style="background:var(--nana)"></span><span><b>ナナ：</b>強みは“盛らなくて”大丈夫。ひとつのエピソードを深く話すほうが、ちゃんと伝わるよ。</span></div>
+  </div>
+
+  <!-- 志望動機 -->
+  <div class="card">
+    <div class="card-h"><span class="card-ic">🎯</span><span class="card-t">志望動機（3つのなぜ）<small>「なぜここか」を筋道で</small></span></div>
+    <ol class="steps">
+      <li><span class="k">なぜこの業界</span>：興味・原体験のきっかけ</li>
+      <li><span class="k">なぜこの会社</span>：他社でなくここ、という理由（事業・強み・理念）</li>
+      <li><span class="k">入社後どうしたい</span>：やりたいこと・貢献の方向</li>
+    </ol>
+    <div class="note"><span class="dot" style="background:var(--haruki)"></span><span><b>ハルキ：</b>「なぜこの会社」は、企業研究の“事実”で裏づけると強い。データシートや比較が材料になるよ。</span></div>
+  </div>
+
+  <p class="sec-title">面接の基本</p>
+
+  <div class="card">
+    <div class="card-h"><span class="card-ic">🗣️</span><span class="card-t">よく聞かれること<small>準備しておくと安心</small></span></div>
+    <ul class="tips">
+      <li>学生時代に力を入れたこと（→STAR法で）</li>
+      <li>自己PR・あなたの強み／弱み</li>
+      <li>志望動機・入社後にやりたいこと</li>
+      <li>挫折経験と、そこから学んだこと</li>
+      <li>逆質問（1〜2個は用意しておく）</li>
+    </ul>
+    <div class="note"><span class="dot" style="background:var(--nana)"></span><span><b>ナナ：</b>暗記より“自分の言葉”で。詰まっても大丈夫、「少し考えます」と言っていいんだよ。</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-h"><span class="card-ic">❓</span><span class="card-t">逆質問のヒント<small>「特にありません」は避けたい</small></span></div>
+    <ul class="tips">
+      <li>入社後に活躍している人に共通することは？</li>
+      <li>配属先での1日の流れや、若手の裁量は？</li>
+      <li>いま会社が力を入れている事業は？（企業研究とつなげる）</li>
+    </ul>
+  </div>
+
+  <p class="sec-title">つぎの一歩</p>
+  <div class="links">
+    <a class="lk" href="/industry"><span class="li">🏢</span><span><span class="lt">企業ページで“材料”を集める</span><span class="ls">各社の志望動機の材料・想定質問キットへ</span></span><span class="la">›</span></a>
+    <a class="lk" href="/compare.html"><span class="li">⚖️</span><span><span class="lt">企業比較で違いを整理</span><span class="ls">年収・事業・決算を横並び（出典付き）</span></span><span class="la">›</span></a>
+    <a class="lk" href="/omamori.html"><span class="li">🛡️</span><span><span class="lt">本番前の心の準備は「お守り」</span><span class="ls">面接直前・結果待ちの不安に、そっとひと言</span></span><span class="la">›</span></a>
+  </div>
+
+  <p class="foot">※ 一般的な就活の型の紹介です。合否や成果を保証するものではありません。あなたに合うやり方で進めてください。</p>
+</div>
+<script>
+  try{ localStorage.setItem('tk_esguide_seen','1'); }catch(e){} // ホームの就活ロードマップ用フラグ
+  (async()=>{ try{ const CFG=window.TOKYARI||{}; await liff.init({liffId:CFG.LIFF_HUB||'2010075487-89AJxZnA'}); if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();} }catch(e){} })();
+</script>
+</body>
+</html>

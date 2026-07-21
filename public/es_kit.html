@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>ES・面接キット | トーキャリ</title>
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="config.js"></script>
+  <style>
+    :root{ --navy:#003F7D; --ink:#1a2733; --mute:#6a7686; --gold:#E7B84B; --line:#eef2f6; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;color:var(--ink);background:#eef1f5;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:480px;margin:0 auto;min-height:100vh;overflow-x:hidden;padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}
+    .hd{position:sticky;top:0;z-index:10;background:var(--navy);color:#fff;display:flex;align-items:center;gap:8px;padding:0 12px;height:54px}
+    .hd .bk{width:36px;height:36px;border:none;background:rgba(255,255,255,0.14);border-radius:50%;color:#fff;font-size:18px;cursor:pointer}
+    .hd .t{flex:1;text-align:center;font-weight:700;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .hd .sp{width:36px}
+    .lead{padding:16px 16px 4px}
+    .lead .nm{font-size:22px;font-weight:800;line-height:1.3}
+    .lead .kb{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--navy);padding:2px 10px;border-radius:999px;margin-bottom:6px}
+    .sample{display:inline-block;font-size:10px;font-weight:700;color:#8a6d00;background:#ffe9a8;padding:2px 8px;border-radius:999px;margin-left:6px}
+    .disc{font-size:11.5px;color:var(--mute);padding:2px 16px 10px;line-height:1.5}
+
+    /* タブ */
+    .tabs{display:flex;gap:8px;padding:0 16px 4px;position:sticky;top:54px;background:#eef1f5;z-index:9}
+    .tab{flex:1;text-align:center;background:#fff;border:2px solid #e2e8f0;color:var(--mute);border-radius:999px;padding:10px;font-size:13.5px;font-weight:800;cursor:pointer;font-family:inherit}
+    .tab.on{background:var(--navy);border-color:var(--navy);color:#fff}
+
+    .sec{margin:12px 16px}
+    .mcard{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,0.08);padding:13px 15px;margin-bottom:11px}
+    .mcard .v{font-size:14.5px;line-height:1.6;font-weight:600}
+    .mcard .src{display:inline-block;margin-top:7px;font-size:11.5px;font-weight:700;color:#2f6fb0;text-decoration:none}
+    .mcard .src::after{content:" ↗"}
+    .qcard{background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,0.08);padding:13px 15px;margin-bottom:11px}
+    .qcard .qh{display:flex;gap:10px;align-items:flex-start}
+    .qcard .qb{width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .qcard .qt{font-size:15px;font-weight:700;line-height:1.5;padding-top:2px}
+    .qcard .hint{margin:8px 0 0 36px;background:#f6f9fc;border-radius:10px;padding:8px 11px;font-size:12.5px;color:#516074;line-height:1.55}
+    .qcard .hint b{font-weight:800}
+
+    .empty{margin:16px;background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,0.08);padding:24px 18px;text-align:center}
+    .empty .ei{font-size:34px;margin-bottom:8px}
+    .empty .et{font-size:15px;font-weight:800;margin-bottom:5px}
+    .empty .es{font-size:12.5px;color:var(--mute);line-height:1.6;margin-bottom:14px}
+    .lk{display:flex;align-items:center;gap:11px;background:#f6f9fc;border-radius:12px;padding:12px 14px;text-decoration:none;color:var(--ink);margin-top:9px;text-align:left}
+    .lk .li{width:36px;height:36px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+    .lk .lt{font-weight:700;font-size:13.5px}
+    .lk .ls{font-size:11px;color:var(--mute);margin-top:1px}
+    .lk .la{margin-left:auto;color:#c3ccd6;font-size:17px;font-weight:700}
+    .guidebar{margin:4px 16px 0}
+    .guidebar a{display:flex;align-items:center;gap:10px;background:var(--gold);color:#2a1c00;border-radius:14px;padding:13px 15px;text-decoration:none;font-weight:800;font-size:14.5px;box-shadow:0 4px 12px rgba(231,184,75,0.35)}
+    .skel{height:80px;margin:12px 16px;border-radius:14px;background:linear-gradient(100deg,#e3e8ee 30%,#f3f6f9 50%,#e3e8ee 70%);background-size:200% 100%;animation:sk 1.3s infinite}
+    @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hd">
+    <button class="bk" onclick="history.length>1?history.back():location.href='/home.html'" aria-label="戻る">‹</button>
+    <span class="t" id="hd-title">ES・面接キット</span><span class="sp"></span>
+  </header>
+  <div id="app"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+</div>
+<script>
+const CFG=window.TOKYARI||{};
+const LIFF_ID=CFG.LIFF_HUB||'2010075487-89AJxZnA';
+const API_BASE=CFG.API_BASE||'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+let CUR='motivation', DATA=null, CID='';
+
+// プレビュー用サンプル（?sample=1）。本番は /api/es-kit。事実は出典付、質問はヒント付。
+const SAMPLE={ name:'サンプル企業', sample:true,
+  motivation:[
+    {text:'主力サービスがサブスク型（クラウド）へ移行し、継続収益の基盤が拡大している。→「腰を据えて価値を積み上げたい」と結べる。', source_url:'https://example.com/ir'},
+    {text:'海外売上比率が高く、若手からグローバル案件に関われる環境。', source_url:'https://example.com/ir'},
+    {text:'公表の人材像として「自律・グローバル志向」を掲げている。→自分の強みと重ねる。', source_url:'https://example.com/recruit'},
+  ],
+  questions:[
+    {text:'なぜ同業他社ではなく当社なのですか？', note:'事業の違い（企業比較）や公表の強みを1つ挙げ、具体的に。'},
+    {text:'入社後にやってみたい仕事は？', note:'志望動機の「入社後どうしたい」と揃えると一貫する。'},
+    {text:'学生時代に力を入れたことは？', note:'STAR法で。行動(A)を厚く、結果(R)は数字で。'},
+  ]};
+
+function guideLink(){
+  return `<a class="lk" href="/es_guide.html"><span class="li">📝</span><span><span class="lt">ES・面接の基本（型）を見る</span><span class="ls">ガクチカ・自己PR・志望動機・面接の定番フレーム</span></span><span class="la">›</span></a>`;
+}
+function dsLink(){
+  return `<a class="lk" href="/datasheet.html?id=${encodeURIComponent(CID)}"><span class="li">📄</span><span><span class="lt">データシートで“事実”を集める</span><span class="ls">事業・財務・社風（出典付き）＝志望動機の材料</span></span><span class="la">›</span></a>`;
+}
+
+function tabContent(){
+  if(CUR==='motivation'){
+    const arr=DATA.motivation||[];
+    if(!arr.length) return `<div class="empty"><div class="et">志望動機の材料はまだありません</div><div class="es">データシートの事実から材料を集めましょう。</div>${dsLink()}</div>`;
+    return `<div class="sec">${arr.map(m=>`<div class="mcard"><div class="v">${esc(m.text||'')}</div>${m.source_url?`<a class="src" href="${esc(m.source_url)}" target="_blank" rel="noopener">出典</a>`:''}</div>`).join('')}</div>`;
+  } else {
+    const arr=DATA.questions||[];
+    if(!arr.length) return `<div class="empty"><div class="et">想定質問はまだありません</div><div class="es">まずは基本の型で練習しましょう。</div>${guideLink()}</div>`;
+    return `<div class="sec">${arr.map(q=>`<div class="qcard"><div class="qh"><span class="qb">Q</span><span class="qt">${esc(q.text||'')}</span></div>${q.note?`<div class="hint"><b>ヒント：</b>${esc(q.note)}</div>`:''}</div>`).join('')}</div>`;
+  }
+}
+function paint(){
+  document.getElementById('app').innerHTML=`
+    <div class="lead"><span class="kb">ES・面接キット</span>${DATA.sample?'<span class="sample">サンプル</span>':''}
+      <p class="nm">${esc(DATA.name||'企業')}</p></div>
+    <p class="disc">※公式公開情報をもとにした「志望動機の材料」と「想定質問」です。合否や回答例を保証するものではありません。あなたの言葉で使ってください。</p>
+    <div class="tabs">
+      <button class="tab ${CUR==='motivation'?'on':''}" data-t="motivation">志望動機の材料</button>
+      <button class="tab ${CUR==='questions'?'on':''}" data-t="questions">想定質問</button>
+    </div>
+    <div id="tabbody">${tabContent()}</div>
+    <div class="guidebar"><a href="/es_guide.html">📝 ES・面接の基本（型）を見る</a></div>`;
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{ CUR=b.dataset.t; paint(); });
+}
+
+function renderEmpty(){
+  document.getElementById('hd-title').textContent='ES・面接キット';
+  document.getElementById('app').innerHTML=`
+    <div class="empty">
+      <div class="ei">🧰</div>
+      <div class="et">この企業の対策キットは準備中です</div>
+      <div class="es">いまは基本の型と、データシートの“事実”から材料を集められます。準備ができ次第、志望動機の材料と想定質問をここに用意します。</div>
+      ${guideLink()}
+      ${CID?dsLink():''}
+    </div>`;
+}
+
+async function main(){
+  const params=new URLSearchParams(location.search);
+  CID=params.get('id')||'';
+  try{ await liff.init({liffId:LIFF_ID}); if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;} }catch(e){}
+  if(params.get('sample')==='1'){ DATA=SAMPLE; document.getElementById('hd-title').textContent=DATA.name+' キット'; paint(); return; }
+  let d=null;
+  if(CID){ try{ const r=await fetch(`${API_BASE}/api/es-kit?id=${encodeURIComponent(CID)}`); if(r.ok) d=await r.json(); }catch(e){} }
+  if(d && (Array.isArray(d.motivation)&&d.motivation.length || Array.isArray(d.questions)&&d.questions.length)){
+    DATA=d; document.getElementById('hd-title').textContent=(d.name||'企業')+' キット'; paint();
+  } else {
+    renderEmpty();
+  }
+}
+main();
+</script>
+</body>
+</html>
