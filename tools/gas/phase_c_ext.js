@@ -847,13 +847,14 @@ function handleExt(mode, e, token){
       }
       appended = true;
     }
+    // paramが「存在」すれば書込(空文字=そのセルをクリア)。「省略」ならそのセルは触らない(FB再記入/部分更新に対応)。
     var written = {};
-    if(e.parameter.url !== undefined && String(e.parameter.url) !== ''){
+    if(e.parameter.url !== undefined){
       var urlCol = parseInt(e.parameter.url_col||String(CONFIG.COL.公開URL),10);
       sh.getRange(row, urlCol).setValue(e.parameter.url);
       written.url_col = urlCol;
     }
-    if(e.parameter.fb !== undefined && String(e.parameter.fb) !== ''){
+    if(e.parameter.fb !== undefined){
       var fbC = e.parameter.fb_col ? parseInt(e.parameter.fb_col,10) : fbCol(parseInt(e.parameter.round||'1',10));
       sh.getRange(row, fbC).setValue(e.parameter.fb);
       written.fb_col = fbC;
