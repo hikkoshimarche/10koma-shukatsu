@@ -66,16 +66,27 @@ const LIFF_ID=CFG.LIFF_HUB||'2010075487-89AJxZnA';
 function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 const wrap=()=>document.getElementById('wrap');
 let DATA=null, QUOTES=[];
-let cat=null, deck=[], di=0;
+let cat=null, oPool=[], oi=0, qPool=[], qi=0;
+const QUOTE_RATIO=0.3; // オリジナル7:名言3
 
 function shuffle(a){ // Fisher-Yates（Math.randomはクライアントJSで利用可）
   for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 
 function buildDeck(key){
-  const origs=(DATA.messages[key]||[]).map(m=>({type:'orig',...m}));
-  const qs=QUOTES.filter(q=>(q.categories||[]).includes(key)).map(q=>({type:'quote',...q}));
-  // オリジナル7:名言3程度。origが多数派なので合算シャッフルで自然に近似（全消化まで重複なし）。
-  deck=shuffle([...origs,...qs]); di=0;
+  // オリジナル/名言を別プールで管理。各プールは全消化まで重複なし→再シャッフル。
+  oPool=shuffle((DATA.messages[key]||[]).map(m=>({type:'orig',...m}))); oi=0;
+  qPool=shuffle(QUOTES.filter(q=>(q.categories||[]).includes(key)).map(q=>({type:'quote',...q}))); qi=0;
+}
+function drawOrig(){ if(oi>=oPool.length){ shuffle(oPool); oi=0; } return oPool[oi++]; }
+function drawQuote(){ if(qi>=qPool.length){ shuffle(qPool); qi=0; } return qPool[qi++]; }
+// 7:3で抽選（名言8件ベース）。名言が無いカテゴリは常にオリジナル。再シャッフル境界での直前重複も回避。
+let lastText=null;
+function nextItem(){
+  let it, tries=0;
+  do { it=(qPool.length>0 && Math.random()<QUOTE_RATIO)?drawQuote():drawOrig(); tries++; }
+  while(it && it.text===lastText && tries<4);
+  if(it) lastText=it.text;
+  return it;
 }
 
 function renderEntry(){
@@ -88,7 +99,7 @@ function renderEntry(){
         <button class="cat" data-k="${c.key}"><span class="ic">${c.icon}</span>${esc(c.label)}<span class="ar">›</span></button>`).join('')}</div>
       <p class="foot">そっと、ひと言。</p>
     </div>`;
-  wrap().querySelector('.cats').onclick=e=>{const b=e.target.closest('.cat'); if(b){ cat=b.dataset.k; buildDeck(cat); showCard(); }};
+  wrap().querySelector('.cats').onclick=e=>{const b=e.target.closest('.cat'); if(b){ cat=b.dataset.k; buildDeck(cat); showCard(nextItem()); }};
 }
 
 function cardInner(item){
@@ -102,9 +113,7 @@ function cardInner(item){
     <div class="attrib in"><span class="note"><span class="dot" style="background:${col}"></span>${who}：${esc(item.note)}</span></div>`;
 }
 
-function showCard(){
-  if(di>=deck.length){ shuffle(deck); di=0; }
-  const item=deck[di];
+function showCard(item){
   const label=(DATA.categories.find(c=>c.key===cat)||{}).label||'';
   wrap().innerHTML=`
     <button class="close-x" id="cx" aria-label="閉じる">×</button>
@@ -114,7 +123,7 @@ function showCard(){
       <button class="act main" id="a-more">もう一言</button>
       <button class="act" id="a-close">閉じる</button>
     </div>`;
-  document.getElementById('a-more').onclick=()=>{ di++; showCard(); };
+  document.getElementById('a-more').onclick=()=>{ showCard(nextItem()); };
   document.getElementById('a-cat').onclick=()=>renderEntry();
   document.getElementById('a-close').onclick=showSendoff;
   document.getElementById('cx').onclick=showSendoff;

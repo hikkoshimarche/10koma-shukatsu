@@ -3,10 +3,8 @@
   "quotes": [
     { "text": "小さなことを積み重ねることが、とんでもないところへ行くただ一つの道。", "author": "イチロー", "verify": "2004年MLBシーズン最多安打記録達成後の会見。致知出版社ほか複数媒体で紹介", "categories": ["webtest","waiting","vague","mensetsu"] },
     { "text": "失敗は受け入れられる。でも、挑戦しないことだけは受け入れられない。", "author": "マイケル・ジョーダン", "verify": "著書『I Can't Accept Not Trying』(1994) p.129。原文: I can accept failure... But I can't accept not trying.", "categories": ["rejection","mensetsu"] },
-    { "text": "成功とは、99%の失敗に支えられた1%だ。", "author": "本田宗一郎", "verify": "ホンダ創業者の言葉として複数の書籍・大手媒体で広く紹介(一次出典は要最終確認)", "categories": ["rejection","webtest"] },
     { "text": "自分には自分に与えられた道がある。どんな道かはわからないが、この道を歩む。", "author": "松下幸之助", "verify": "著書『道をひらく』(PHP研究所)所収「道」", "categories": ["vague","mensetsu","rejection","sleepless","gd"] },
     { "text": "人生・仕事の結果は、考え方と熱意と能力の掛け算で決まる。", "author": "稲盛和夫", "verify": "京セラ公式サイト(inamori)・著書『生き方』", "categories": ["webtest","vague","gd"] },
-    { "text": "努力は必ず報われる。もし報われない努力があるのなら、それはまだ努力と呼べない。", "author": "王貞治", "verify": "複数の名言集・大手媒体で広く紹介(一次出典は要最終確認)", "categories": ["webtest","mensetsu"] },
     { "text": "ハングリーであれ。愚か者であれ。", "author": "スティーブ・ジョブズ", "verify": "2005年スタンフォード大学卒業式スピーチ(大学公式全文)。原文: Stay hungry, stay foolish.", "categories": ["mensetsu","vague","gd"] },
     { "text": "楽観とは、達成へと導く信念。希望と自信がなければ、何事も成し遂げられない。", "author": "ヘレン・ケラー", "verify": "エッセイ『Optimism』(1903)。複数の名言集で紹介。原文: Optimism is the faith that leads to achievement...", "categories": ["vague","waiting","sleepless"] },
     { "text": "大きなことはできません。小さなことを、大きな愛をもって行うだけです。", "author": "マザー・テレサ", "verify": "広く知られる言葉として複数の書籍・媒体で紹介", "categories": ["webtest","gd","vague"] },
