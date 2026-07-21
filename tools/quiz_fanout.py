@@ -172,13 +172,28 @@ def fetch_url(url):
                            capture_output=True, timeout=55)
         data = r.stdout
         if url.lower().split("?")[0].endswith(".pdf") or data[:5] == b"%PDF-":
-            import fitz
             fn = f"/tmp/_qz_{hashlib.md5(url.encode()).hexdigest()[:8]}.pdf"
             open(fn, "wb").write(data)
-            # PyMuPDF(MuPDF)はスレッド非安全→並行解析でsegfault。臨界区間をロックで直列化。
-            with _pdf_lock:
-                doc = fitz.open(fn); txt = "\n".join(p.get_text() for p in doc); doc.close()
-            os.remove(fn)
+            # PDF解析(PyMuPDF/MuPDF)は不正PDFでプロセスごとsegfaultする(スレッド非安全に加え特定PDFで
+            # 単体でもSIGSEGV)。別プロセスに隔離し、落ちても親は""を受けてその社をhold扱いにする。
+            txt = ""
+            try:
+                pr = subprocess.run(
+                    [sys.executable, "-c",
+                     "import sys,fitz\n"
+                     "d=fitz.open(sys.argv[1])\n"
+                     "sys.stdout.write('\\n'.join(p.get_text() for p in d))\n"
+                     "d.close()", fn],
+                    capture_output=True, timeout=90)
+                if pr.returncode == 0:
+                    txt = pr.stdout.decode("utf-8", "ignore")
+            except Exception:
+                txt = ""
+            finally:
+                try:
+                    os.remove(fn)
+                except Exception:
+                    pass
             return re.sub(r"\n\s*\n+", "\n", re.sub(r"[ \t　]+", " ", txt)).strip()
         return clean_html(data.decode("utf-8", "ignore"))
     except Exception:
@@ -1415,6 +1430,8 @@ def run_freshness():
                         if r["slug"] not in st["hold"]: st["hold"].append(r["slug"])
                         _hold_row(r["slug"], r["name"], r.get("reason", "hold"))
                 batch.append(r)
+                st["cost_usd"] = round(_cost["usd"], 4)
+                json.dump(st, open(stp, "w", encoding="utf-8"), ensure_ascii=False)  # 毎社state保存(ハードクラッシュでも再開可)
                 # systemic OpenAI失敗(残高枯渇/quota)検知: err:連続8で HALT(Anthropicに切替えず停止・要報告)
                 if r["status"] in ("hold", "regen_thin") and str(r.get("reason", "")).startswith("err:"):
                     consec_err += 1
