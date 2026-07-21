@@ -803,6 +803,66 @@ function handleExt(mode, e, token){
     return _json({ok:true, added:true, row:row, before:before, after:sh.getLastRow(), sheet:sh.getName(), format_from:_sample});
   }
 
+  if(mode === 'sheethead'){
+    // 診断read: 指定タブのヘッダ(1-2行目)+見本データ行(FIRST_ROW)を返す(列様式の実読用)。allowlist内のみ。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    var _allow = CONFIG.CONTENT_SHEETS;
+    var _nm = String(e.parameter.sheet||'').trim();
+    if(_allow.indexOf(_nm) < 0) return _json({error:'sheet not allowed', sheet:_nm, allow:_allow});
+    var _sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(_nm);
+    if(!_sh) return _json({error:'no sheet', sheet:_nm});
+    var _lc = Math.min(_sh.getLastColumn(), 46);
+    var _hrows = Math.min(2, _sh.getLastRow());
+    var _head = _hrows>0 ? _sh.getRange(1,1,_hrows,_lc).getValues() : [];
+    var _sample = _sh.getLastRow()>=CONFIG.FIRST_ROW ? _sh.getRange(CONFIG.FIRST_ROW,1,1,_lc).getValues()[0] : [];
+    return _json({sheet:_nm, last_row:_sh.getLastRow(), last_col:_sh.getLastColumn(),
+                  header_rows:_head, sample_row:_sample});
+  }
+
+  if(mode === 'videotabset'){
+    // 【動画タブ 視聴リンク+FB upsert】企業紹介動画/決算書分析動画 に、視聴リンク(url)とFB(fb)を会社名突合で記入。
+    // LINE漏洩対応と同規律: (1)認証付きmode (2)対象タブはallowlist固定(動画2タブのみ) (3)書込は会社名で行を突合。
+    // 既定列: 視聴リンク=公開URL(col4) / FB=fbCol(round)(round既定1=col6)。実ヘッダに合わせ url_col/fb_col で上書き可。
+    // 会社行が無い場合は append=1 で新規追加(見本行から書式・入力規則継承)。冪等: 既存行はupdate。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    var VIDEO_TABS = ['企業紹介動画', '決算書分析動画'];
+    var nm = String(e.parameter.sheet||'').trim();
+    if(VIDEO_TABS.indexOf(nm) < 0) return _json({error:'sheet not allowed (動画2タブ限定)', sheet:nm, allow:VIDEO_TABS});
+    var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(nm);
+    if(!sh) return _json({error:'no sheet', sheet:nm});
+    var company = String(e.parameter.company||'').trim();
+    if(!company) return _json({error:'no company'});
+    var row = _findRowByCompany(sh, company);
+    var appended = false;
+    if(row < 0){
+      if(String(e.parameter.append||'') !== '1') return _json({error:'company not found (append=1で新規追加可)', company:company, sheet:nm});
+      row = sh.getLastRow() + 1;
+      sh.getRange(row, CONFIG.COL.業界).setValue(e.parameter.industry||'');
+      sh.getRange(row, CONFIG.COL.会社名).setValue(company);
+      var _s = parseInt(e.parameter.sample||String(CONFIG.FIRST_ROW),10), _lc2 = sh.getLastColumn();
+      if(_s>=CONFIG.FIRST_ROW && _s!==row){
+        var _src2 = sh.getRange(_s,1,1,_lc2);
+        _src2.copyTo(sh.getRange(row,1,1,_lc2), SpreadsheetApp.CopyPasteType.PASTE_FORMAT, false);
+        _src2.copyTo(sh.getRange(row,1,1,_lc2), SpreadsheetApp.CopyPasteType.PASTE_DATA_VALIDATION, false);
+      }
+      appended = true;
+    }
+    var written = {};
+    if(e.parameter.url !== undefined && String(e.parameter.url) !== ''){
+      var urlCol = parseInt(e.parameter.url_col||String(CONFIG.COL.公開URL),10);
+      sh.getRange(row, urlCol).setValue(e.parameter.url);
+      written.url_col = urlCol;
+    }
+    if(e.parameter.fb !== undefined && String(e.parameter.fb) !== ''){
+      var fbC = e.parameter.fb_col ? parseInt(e.parameter.fb_col,10) : fbCol(parseInt(e.parameter.round||'1',10));
+      sh.getRange(row, fbC).setValue(e.parameter.fb);
+      written.fb_col = fbC;
+    }
+    if(e.parameter.status) sh.getRange(row, CONFIG.COL.ステータス).setValue(e.parameter.status);
+    sh.getRange(row, CONFIG.COL.最終更新).setValue(new Date());
+    return _json({ok:true, sheet:nm, company:company, row:row, appended:appended, written:written});
+  }
+
   if(mode === 'fixrowformat'){
     // 既存の追加行(appendrow等)の書式・入力規則(プルダウン)を見本行から複製(内容は不変・純加算)。
     // 対象は company or row で指定。CFはrange方式で自動適用済ゆえ触らない(新規ルール乱造しない)。
