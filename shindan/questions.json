@@ -1,33 +1,29 @@
 {
   "_meta": {
-    "name": "tokyari-shindan 質問セット v1",
-    "count": 12,
-    "rationale": "スキーマの各マッチング属性に最低1問を対応させ、就活初心者が直感で答えられる粒度に絞った結果12問。①軸=年収志向/初任給重視/海外/転勤/安定vs成長/働き方/若手裁量/文理/職種/業界興味/大手vs新興/対人vs専門。多い(15+)と離脱、少ない(<10)と業界・企業を絞り込めないため10〜14の中央=12を採用。各設問は『こだわらない』を持ち、選ぶと判定対象外(欠損=減点しない設計)。",
+    "name": "tokyari-shindan 質問セット v2",
+    "count": 11,
+    "rationale": "v2改修(オスカーFB): 年収志向と初任給を『年収↔ワークライフバランス』の両極1軸に統合(トレードオフを1問で)。海外志向も『海外でバリバリ↔国内でじっくり』の両極5段階に。職種・文理・業界興味など選択式が自然な設問は両極化せず維持。結果11問。各設問は中庸/こだわらない選択で判定対象外(欠損=減点しない)。",
     "tone": "『あなたに合いそう』の参考提案。断定・優劣付けではない。",
-    "answer_encoding": "option.target: score系=1-5の希望値 / null=この設問をスキップ。tags=職種タグlist。industries=業界名list。salary_band=年収/初任給の希望バンド。"
+    "answer_encoding": "option.target: soft=1-5の希望値/null=スキップ。salary_wlb={salary:1-5}or{wlb:1-5}or{}(中庸)。tags=職種タグlist。industry=業界名list。bunri=カテゴリ。"
   },
   "questions": [
-    {"id": "q_salary", "text": "将来的に、年収はどのくらいを目指したいですか？", "kind": "salary_avg", "weight": 1.0,
-     "note": "avg_salary(有報grade)が分かる社のみ加点対象。不明社は減点せず対象外。",
+    {"id": "q_salary_wlb", "text": "働き方の軸として、年収とワークライフバランス、どちらを優先したいですか？", "kind": "salary_wlb", "weight": 1.1,
+     "note": "両極1軸。年収側=avg_salary/初任給(有報grade/公式)を加点・不明社は年収重視時のみ優先度低下。WLB側=remote_flex(柔軟な働き方)を加点。中庸=判定対象外。",
      "options": [
-       {"label": "高い年収をしっかり狙いたい", "target": 5},
-       {"label": "平均より少し上くらい", "target": 4},
-       {"label": "生活が安定すれば十分", "target": 3},
-       {"label": "こだわらない", "target": null}]},
+       {"label": "とにかく年収が高い方がいい", "target": {"salary": 5}},
+       {"label": "どちらかといえば年収を重視", "target": {"salary": 4}},
+       {"label": "バランスよく（こだわらない）", "target": {}},
+       {"label": "どちらかといえばワークライフを重視", "target": {"wlb": 4}},
+       {"label": "ワークライフバランスをしっかり確保したい", "target": {"wlb": 5}}]},
 
-    {"id": "q_starting", "text": "初任給の高さは重視しますか？", "kind": "salary_start", "weight": 0.7,
-     "note": "starting_salary(公式)が分かる社のみ加点対象。",
+    {"id": "q_kaigai", "text": "海外との関わり方は、どちらに近いですか？", "kind": "soft", "attr": "kaigai_do", "weight": 1.0,
+     "note": "両極5段階。海外でバリバリ↔国内でじっくり。",
      "options": [
-       {"label": "とても重視する", "target": 5},
-       {"label": "できれば高いほうがいい", "target": 4},
-       {"label": "あまり気にしない", "target": null}]},
-
-    {"id": "q_kaigai", "text": "海外と関わる仕事に興味はありますか？", "kind": "soft", "attr": "kaigai_do", "weight": 1.0,
-     "options": [
-       {"label": "ぜひ海外で働きたい", "target": 5},
-       {"label": "多少は海外と関わりたい", "target": 4},
-       {"label": "国内中心がいい", "target": 2},
-       {"label": "こだわらない", "target": null}]},
+       {"label": "海外でバリバリ働きたい", "target": 5},
+       {"label": "どちらかといえば海外志向", "target": 4},
+       {"label": "どちらでもよい", "target": null},
+       {"label": "どちらかといえば国内志向", "target": 2},
+       {"label": "国内でじっくり働きたい", "target": 1}]},
 
     {"id": "q_tenkin", "text": "転勤についてどう思いますか？", "kind": "soft", "attr": "tenkin_do", "weight": 1.0,
      "options": [

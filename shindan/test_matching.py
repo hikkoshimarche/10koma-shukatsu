@@ -14,15 +14,15 @@ ROOT = Path(__file__).resolve().parent
 # 10サンプル回答パターン(id→option index / multiはlist)
 PATTERNS = [
     ("①安定・地元・文系(金融/インフラ想定)",
-     {"q_stability": 0, "q_tenkin": 2, "q_bunri": 0, "q_growth": 2, "q_kaigai": 2, "q_daikigyo": 0}),
+     {"q_stability": 0, "q_tenkin": 2, "q_bunri": 0, "q_growth": 2, "q_kaigai": 3, "q_daikigyo": 0}),
     ("②海外・成長・商社志向",
      {"q_kaigai": 0, "q_growth": 0, "q_tenkin": 0, "q_industry": [0], "q_stability": 2}),
     ("③IT・リモート・若手裁量",
      {"q_remote": 0, "q_young": 0, "q_jobtags": [2], "q_industry": [3], "q_growth": 0}),
     ("④研究・理系・メーカー",
      {"q_bunri": 1, "q_jobtags": [3], "q_industry": [1], "q_stability": 1, "q_kaigai": 1}),
-    ("⑤高年収狙い",
-     {"q_salary": 0, "q_starting": 0, "q_kaigai": 0, "q_young": 0}),
+    ("⑤高年収狙い(年収↔WLBで年収側)",
+     {"q_salary_wlb": 0, "q_kaigai": 0, "q_young": 0}),
     ("⑥コンサル・裁量・成長",
      {"q_young": 0, "q_growth": 0, "q_jobtags": [4], "q_industry": [4], "q_stability": 3}),
     ("⑦クリエイティブ・エンタメ",

@@ -21,9 +21,10 @@
 | `extract.py` | 1社ハーネス。②=ルール＋verbatim、①=baseline＋haiku微調整＋trend_note生成 |
 | `run_all.py` | 400社ローリング・20社毎CP(commit/push)・resumable・**LINE不使用**・coverage出力 |
 | `attributes/<slug>.json` | 各社の属性（マッチングの入力データ） |
-| `questions.json` | 12問（各属性対応・『こだわらない』で判定対象外・根拠付き） |
-| `matching.py` | `recommend(answers)` → 業界/企業おすすめ＋根拠。決定論・即応答 |
+| `questions.json` | 11問（v2: 年収↔WLBを両極1軸に統合・海外両極5段階・選択式は維持。根拠付き） |
+| `matching.py` | `recommend(answers)` → 業界/企業おすすめ＋根拠。決定論・即応答。同点は回答依存の決定論tie-breaker(eps=0.01)で入替＝全社に登場チャンス |
 | `test_matching.py` | 10サンプル回答→妥当性検証＋`test_results.md` |
+| `reachability.py` | 全社到達性テスト（理想プローブ400＋ランダム4000）→`reachability_report.md`。到達率 **before 98%→after 100%** |
 | `coverage_report.md` | 属性×充足社数＋平均年収を数字表示できない社リスト（run_allが生成） |
 
 ## マッチング仕様（`matching.recommend(answers)`）

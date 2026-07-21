@@ -12,7 +12,7 @@ shindan/matching.py — 決定論マッチング(AI課金不要・即応答)。
 API: recommend(answers, top_companies=8, top_industries=5) -> dict
      answers = {question_id: option_index}  (multi設問は {id:[idx,...]})
 """
-import os, json
+import os, json, hashlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -21,15 +21,21 @@ QS = json.load(open(ROOT / "questions.json"))["questions"]
 QBYID = {q["id"]: q for q in QS}
 
 
+_CACHE = None
+
+
 def _load_all():
-    out = []
-    for f in os.listdir(ATTR):
-        if f.endswith(".json"):
-            try:
-                out.append(json.load(open(ATTR / f)))
-            except Exception:
-                pass
-    return out
+    global _CACHE
+    if _CACHE is None:
+        out = []
+        for f in os.listdir(ATTR):
+            if f.endswith(".json"):
+                try:
+                    out.append(json.load(open(ATTR / f)))
+                except Exception:
+                    pass
+        _CACHE = out
+    return _CACHE
 
 
 def _avg_band(man):
@@ -119,6 +125,34 @@ def score_company(d, answers):
             elif target >= 4:
                 acc += w * MISSING_SALARY_SCORE; wsum += w
 
+        elif kind == "salary_wlb":
+            # 両極1軸: 年収側=avg_salary(+初任給補助)/WLB側=remote_flex。中庸({})=判定対象外。
+            tgt = opts[0].get("target") or {}
+            if tgt.get("salary"):
+                s_t = tgt["salary"]
+                av = facts.get("avg_salary")
+                if av:
+                    m = _closeness(_avg_band(av["value"]), s_t)
+                    acc += w * m; wsum += w
+                    if m >= 0.75:
+                        matched.append(f"年収志向に合致(平均年収{av['value']}万円)")
+                elif s_t >= 4:
+                    acc += w * MISSING_SALARY_SCORE; wsum += w
+                    meta["missing_salary_pref"] = True
+                st = facts.get("starting_salary")
+                if st:  # 初任給は補助シグナル(半分の重み)
+                    m2 = _closeness(_start_band(st["value"]), s_t)
+                    acc += w * 0.5 * m2; wsum += w * 0.5
+            elif tgt.get("wlb"):
+                w_t = tgt["wlb"]
+                v = soft.get("remote_flex", {}).get("value")
+                if isinstance(v, int):
+                    m = _closeness(v, w_t)
+                    acc += w * m; wsum += w
+                    if m >= 0.75:
+                        matched.append("柔軟な働き方(WLB)を重視する傾向に合致")
+            # tgt空(バランス)=シグナルなし=判定対象外
+
         elif kind == "bunri":
             target = opts[0].get("target")
             if target is None:
@@ -182,23 +216,44 @@ def _rationale(d, matched, meta=None):
     return r
 
 
-def recommend(answers, top_companies=8, top_industries=5):
+def _tiebreak(slug, answers, eps):
+    """決定論の微小tie-breaker(0〜eps)。回答パターンと会社slugのhashで一意。
+    同点社の順位を回答ごとに入れ替え、どの会社も『どこかの回答で上位に出る』を担保。
+    epsは実スコア差(通常0.05+)より十分小さく、真に優れた社の順位は動かさない。"""
+    if not eps:
+        return 0.0
+    h = int(hashlib.md5((json.dumps(answers, sort_keys=True, ensure_ascii=False) + "|" + slug).encode("utf-8")).hexdigest()[:8], 16)
+    return (h % 100000) / 100000.0 * eps
+
+
+def recommend(answers, top_companies=8, top_industries=5, max_per_industry=None, tiebreak_eps=0.01):
+    """tiebreak_eps: 同点社を回答パターン依存で決定論的に入れ替える微小ノイズ(全社到達性の補正)。
+    max_per_industry: 企業おすすめに同一業界をこの数までに制限(通常はNone推奨=深さを潰さない)。"""
     rows = _load_all()
     scored = []
     for d in rows:
         s, matched, meta = score_company(d, answers)
-        scored.append((s, matched, meta, d))
+        sort_key = s + _tiebreak(d["slug"], answers, tiebreak_eps)
+        scored.append((sort_key, s, matched, meta, d))
     scored.sort(key=lambda x: x[0], reverse=True)
 
-    # 企業おすすめ
+    # 企業おすすめ(多様性capあり時は業界ごとの出現数を制限しつつ上位から採用)
     comps = []
-    for s, matched, meta, d in scored[:top_companies]:
+    ind_count = {}
+    for sort_key, s, matched, meta, d in scored:
+        if len(comps) >= top_companies:
+            break
+        if max_per_industry:
+            c = ind_count.get(d["industry"], 0)
+            if c >= max_per_industry:
+                continue
+            ind_count[d["industry"]] = c + 1
         comps.append({"name": d["name"], "slug": d["slug"], "industry": d["industry"],
                       "score": round(s, 3), "rationale": _rationale(d, matched, meta)})
 
     # 業界おすすめ = 所属企業スコアの集計(平均)。有効スコア(適用重み>0)社のみ。
     ind_acc = {}
-    for s, matched, meta, d in scored:
+    for sort_key, s, matched, meta, d in scored:
         ind_acc.setdefault(d["industry"], []).append(s)
     ind_rank = [{"industry": k, "score": round(sum(v) / len(v), 3), "n": len(v)}
                 for k, v in ind_acc.items()]
