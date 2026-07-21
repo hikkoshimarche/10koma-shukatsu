@@ -30,3 +30,14 @@
   未公表・取得不能の社のみ旧期を維持し `freshness_hold.csv` に記録（捏造で埋めない）。
 - 鮮度lint（`lint_financial_freshness`/`lint_datasheet_freshness`）: 財務as_ofが corpus最新期より古い→error。最新期が取れない社はfireせず現状維持。
 - **決算シーズン(毎年5〜6月)に全社定期リフレッシュ**: `QUIZ_LATEST_FY` を当年の「YYYY年3月期」に更新→ `--locked-all`(財務再生成)＋D1 UPDATE。
+
+## [キュー] education-hr 業界セット (2026-07-21起票)
+- 保留承認済み。構成社(パーソル/パソナ/ベネッセ/学研/ナガセ東進 等)が全て needs_source=corpus未取得。
+- TODO: 各社IR公式URL(有報/短信/会社概要)を手動シード → acquire_corpus_thick で corpus 取得 → gen_gyokai_sets.py の MAP に education-hr を追加(members=取得できた上場社) → 生成 → D1投入(industry__education-hr)。
+- リクルートHDは corpus 済だが it-ai-saas-game に分類。単独では枠にならない。
+
+## [キュー] deeptech-space-ai 宇宙追補 (2026-07-21起票)
+- 現状 AI開発5社(pref-networks/sakana-ai/pksha/elyza/brainpad)のみで生成。
+- ispace: 公式library(ispace-inc.com)は広報PDFのみ・決算短信リンク無し。自動取得は第三者サイト(kitaishihon.com)を掴む=無効。
+- astroscale(186A): 公式IR(astroscale.com/ja/ir/)に xj-storage.jp(TDnet)開示PDF有るが、取得できたのは通知/議決権行使書で「年3月期」決算短信の形でない(3月決算か要確認)。
+- TODO: 両社の正しい決算短信PDF(TDnet/xj-storage)を手動シード → corpus取得 → deeptech-space-ai の members に追加して再生成(AI+宇宙の完全枠)。
