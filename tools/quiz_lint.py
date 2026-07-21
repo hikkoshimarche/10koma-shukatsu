@@ -218,12 +218,17 @@ def _fy_year(s):
 _LATEST_ACTUAL_FY = int(re.search(r"20\d\d", os.environ.get("QUIZ_LATEST_FY", "2026年3月期")).group())
 
 def _corpus_latest_fy_year(corpus, cap=None):
-    """corpusに実在する最新の『YYYY年3月期』を返す。ただし cap(=報告済み最新実績年)を超える
-    将来期(予想/中計目標)は無視する。cap未指定時は _LATEST_ACTUAL_FY を使う。"""
+    """corpusに実在する最新の『YYYY年3月期(実績)』を返す。
+    - 予想/見通し/計画/目標 文脈の『YYYY年3月期』は除外(短信は当期実績+翌期予想を併記するため、
+      2025年3月期短信に載る『2026年3月期(予想)』を実績最新=2026と誤認しない)。
+    - cap(既定 _LATEST_ACTUAL_FY)超の将来期(中計目標)も無視。"""
     if not corpus:
         return None
     cap = cap if cap is not None else _LATEST_ACTUAL_FY
     j = re.sub(r"\s", "", " ".join(corpus.values()))
+    # 予想/見通し文脈を除去してから実績年を判定
+    j = re.sub(r"20\d\d年3月期[（(]?(?:予想|見通し|計画|目標|予測)", "", j)
+    j = re.sub(r"20\d\d年3月期の(?:連結)?(?:業績)?(?:予想|見通し|計画)", "", j)
     for y in (2028, 2027, 2026, 2025, 2024):
         if y > cap:
             continue

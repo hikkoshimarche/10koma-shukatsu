@@ -1337,7 +1337,11 @@ def run_freshness():
             if latest is None or latest < latest_year:
                 return {"slug": slug, "name": name, "status": "hold", "reason": f"corpus_latest={latest or 'NA'}"}
             # 最新corpusで再生成: freshness lintが財務as_of<最新をerror化→最新期を強制
-            final, dropped, rate = converge_locked(slug, name, corpus, target=30)
+            fresh_hint = (f"財務数値の設問は必ず最新期({LATEST_FY})の実績値で作ること。"
+                          f"corpus内に{LATEST_FY}の実績が載る項目(収益/利益/総資産/CF等)を優先し、"
+                          f"前期のみで作らない。ただし予想/見通しの数値は使わず実績のみ。"
+                          f"誤答も同一source内に実在する数値(別項目/別期)を使う。")
+            final, dropped, rate = converge_locked(slug, name, corpus, target=30, extra=fresh_hint)
             if len(final) < SHIP_MIN:
                 return {"slug": slug, "name": name, "status": "regen_thin", "n": len(final)}
             rep = QL.run_quiz_lints(final, corpus)
