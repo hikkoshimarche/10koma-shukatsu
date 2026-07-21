@@ -1299,6 +1299,136 @@ def _locked_reviewmd(slug, name, qs, corpus, outdir):
         md.append("")
     open(os.path.join(outdir, f"review_{slug}.md"), "w", encoding="utf-8").write("\n".join(md))
 
+def run_freshness():
+    """出荷済社の財務を最新期(LATEST_FY)へ再生成。最新corpusで全問再生成し、
+    ≥SHIP_MIN & lint0(財務freshness含む) & 財務as_of=最新 の時だけ上書き。
+    最新期(LATEST_FY)がcorpusで取れない社は freshness_hold(旧2025維持)。
+    再生成で<15になった社も旧版維持(regen_thin=保留)。ローリング・CP20・resumable・累積コストガード。
+    業界セットは本関数の後に --locked-all で(更新corpusをmergeして)生成する。"""
+    from concurrent.futures import wait, FIRST_COMPLETED
+    companies, _industries = load_targets()
+    stp = os.path.join(OUT, "_quiz_freshness_state.json")
+    st = (json.load(open(stp, encoding="utf-8")) if os.path.exists(stp)
+          else {"done": [], "updated": [], "hold": [], "regen_thin": [],
+                "q_delta": 0, "checkpoints": [], "cost_usd": 0.0})
+    with _lock:
+        _cost["usd"] = st.get("cost_usd", 0.0)
+    latest_year = int(re.search(r"20\d\d", LATEST_FY).group())
+    doneset = set(st["done"])
+    shipped = [c for c in companies
+               if os.path.exists(os.path.join(OUT, c["slug"], "quiz_30q_locked_v3.json"))
+               and c["slug"] not in doneset]
+    hold_csv = os.path.join(OUT, "freshness_hold.csv")
+    line(f"🕐 鮮度再生成 開始/再開: 対象{len(shipped)}社 (最新期={LATEST_FY}) / "
+         f"既更新{len(st['updated'])}・保留{len(st['hold'])+len(st['regen_thin'])} / 並列{PARALLEL}・${MAX_USD}ガード")
+
+    def _hold_row(slug, name, reason, extra=""):
+        with open(hold_csv, "a", encoding="utf-8") as f:
+            f.write(f"{slug},{name},{reason},{extra}\n")
+
+    def work(tgt):
+        slug, name, ind = tgt["slug"], tgt["name"], tgt["industry"]
+        outp = os.path.join(OUT, slug, "quiz_30q_locked_v3.json")
+        try:
+            corpus = acquire_corpus_thick(name, slug, prefer_latest=True)
+            if not corpus:
+                return {"slug": slug, "name": name, "status": "hold", "reason": "no_corpus"}
+            latest = QL._corpus_latest_fy_year(corpus)
+            if latest is None or latest < latest_year:
+                return {"slug": slug, "name": name, "status": "hold", "reason": f"corpus_latest={latest or 'NA'}"}
+            # 最新corpusで再生成: freshness lintが財務as_of<最新をerror化→最新期を強制
+            final, dropped, rate = converge_locked(slug, name, corpus, target=30)
+            if len(final) < SHIP_MIN:
+                return {"slug": slug, "name": name, "status": "regen_thin", "n": len(final)}
+            rep = QL.run_quiz_lints(final, corpus)
+            if rep["errors"] > 0:
+                return {"slug": slug, "name": name, "status": "regen_thin", "n": len(final), "reason": "lint"}
+            # 最新期の財務問が1問以上あることを確認(0なら鮮度更新の意味がない→保留で旧版維持)
+            fin_latest = [q for q in final if q.get("category") in ("財務数値", "業界順位")
+                          and QL._fy_year(q.get("as_of")) == latest]
+            if not fin_latest:
+                return {"slug": slug, "name": name, "status": "hold", "reason": "no_latest_financial_q"}
+            oldn = 0
+            try:
+                oldn = len(json.load(open(outp)))
+            except Exception:
+                pass
+            json.dump(final, open(outp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+            json.dump(corpus, open(os.path.join(OUT, slug, "quiz_corpus_locked_v3.json"), "w", encoding="utf-8"), ensure_ascii=False)
+            try:
+                ds, _cov = build_datasheet(slug, name, corpus, final)
+                json.dump(ds, open(os.path.join(OUT, slug, "datasheet.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+            except Exception:
+                pass
+            return {"slug": slug, "name": name, "status": "updated", "n": len(final),
+                    "delta": len(final) - oldn, "fin_latest": len(fin_latest), "pass": rate}
+        except Exception as e:
+            return {"slug": slug, "name": name, "status": "hold", "reason": f"err:{type(e).__name__}:{str(e)[:40]}"}
+
+    def checkpoint(batch, cp_idx):
+        upd = [r for r in batch if r["status"] == "updated"]
+        cp = {"cp": cp_idx, "done": len(st["done"]), "updated": len(st["updated"]),
+              "hold": len(st["hold"]), "regen_thin": len(st["regen_thin"]),
+              "q_delta": st["q_delta"], "cost": round(_cost["usd"], 2)}
+        st["checkpoints"].append(cp)
+        json.dump(st, open(stp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+        try:
+            git("add", "output/_quiz_freshness_state.json", "output/freshness_hold.csv",
+                "output/*/quiz_30q_locked_v3.json", "output/*/quiz_corpus_locked_v3.json",
+                "output/*/datasheet.json", cwd=PIPE)
+            git("-c", "user.email=quiz@local", "-c", "user.name=quiz-freshness",
+                "commit", "-q", "-m",
+                f"quiz-freshness CP{cp_idx}: 更新{len(st['updated'])} 保留{len(st['hold'])+len(st['regen_thin'])} Δq{st['q_delta']} ({LATEST_FY})", cwd=PIPE)
+            git("push", "-q", "origin", "HEAD", cwd=PIPE)
+        except Exception as e:
+            print("[commit ERR]", e)
+        line(f"[鮮度 CP{cp_idx}] 完了{cp['done']}/{len(shipped)} / 更新{cp['updated']}・保留{cp['hold']+cp['regen_thin']} / "
+             f"Δq{cp['q_delta']} / ${cp['cost']}")
+
+    batch, stop = [], None
+    it = iter(shipped); inflight = {}
+    with ThreadPoolExecutor(max_workers=PARALLEL) as ex:
+        for _ in range(PARALLEL):
+            t = next(it, None)
+            if t: inflight[ex.submit(work, t)] = t
+        while inflight:
+            done, _p = wait(list(inflight), return_when=FIRST_COMPLETED)
+            for fut in done:
+                inflight.pop(fut, None)
+                r = fut.result()
+                with _lock:
+                    if r["slug"] not in st["done"]: st["done"].append(r["slug"])
+                    if r["status"] == "updated":
+                        if r["slug"] not in st["updated"]: st["updated"].append(r["slug"])
+                        st["q_delta"] += r.get("delta", 0)
+                    elif r["status"] == "regen_thin":
+                        if r["slug"] not in st["regen_thin"]: st["regen_thin"].append(r["slug"])
+                        _hold_row(r["slug"], r["name"], "regen_thin", str(r.get("n")))
+                    else:
+                        if r["slug"] not in st["hold"]: st["hold"].append(r["slug"])
+                        _hold_row(r["slug"], r["name"], r.get("reason", "hold"))
+                batch.append(r)
+                print(f"  {r['status']:10} {r['slug']:16} n={r.get('n')} fin={r.get('fin_latest')} ${_cost['usd']:.2f}"
+                      + (f" [{r.get('reason')}]" if r.get("reason") else ""), flush=True)
+                if not cost_ok(): stop = "cost"
+                if len(batch) >= CHECKPOINT_EVERY:
+                    checkpoint(batch, len(st["checkpoints"]) + 1); batch = []
+                if stop is None:
+                    nt = next(it, None)
+                    if nt: inflight[ex.submit(work, nt)] = nt
+            if stop: break
+    if batch:
+        checkpoint(batch, len(st["checkpoints"]) + 1)
+    json.dump(st, open(stp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    agg = {"target": len(shipped) + len(st["updated"]) + len(st["hold"]) + len(st["regen_thin"]),
+           "updated": len(st["updated"]), "hold": len(st["hold"]),
+           "regen_thin": len(st["regen_thin"]), "q_delta": st["q_delta"],
+           "cost_usd": round(_cost["usd"], 2), "stop": stop or "done", "latest_fy": LATEST_FY}
+    line(f"[鮮度 {agg['stop']}] 更新{agg['updated']}社 / 保留{agg['hold']+agg['regen_thin']}(旧期維持) / "
+         f"Δq{agg['q_delta']} / ${agg['cost_usd']} ({LATEST_FY})")
+    print(json.dumps(agg, ensure_ascii=False, indent=1))
+    return 0
+
 def run_all_locked():
     """全16業界の品質固定ロック。各業界=所属全社(厚corpus+二層ゲート+出荷基準≥15)。
     夜間規律: ローリング投入・20社毎CP(lint統計+サンプル1社+commit/push+LINE)・resumable・
@@ -1514,7 +1644,10 @@ def main():
     ap.add_argument("--suffix", type=str, default="locked", help="locked成果ファイルのサフィックス(v1保全のため v2 等)")
     ap.add_argument("--industries-only", action="store_true")
     ap.add_argument("--locked-all", action="store_true", help="全16業界の品質固定ロック(夜間規律・出荷基準≥15・resumable)")
+    ap.add_argument("--freshness", action="store_true", help="出荷済社の財務を最新期(LATEST_FY)へ再生成(取れない社は旧期維持でhold)")
     args = ap.parse_args()
+    if args.freshness:
+        return run_freshness()
     if args.locked_all:
         if not OPENAI_KEY:
             print("NO OPENAI_API_KEY"); return 2
