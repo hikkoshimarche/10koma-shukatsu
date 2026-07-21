@@ -806,7 +806,7 @@ function handleExt(mode, e, token){
   if(mode === 'sheethead'){
     // 診断read: 指定タブのヘッダ(1-2行目)+見本データ行(FIRST_ROW)を返す(列様式の実読用)。allowlist内のみ。
     if(!_authed(e, token)) return _json({error:'unauthorized'});
-    var _allow = CONFIG.CONTENT_SHEETS;
+    var _allow = CONFIG.CONTENT_SHEETS.concat(['業界紹介動画']);
     var _nm = String(e.parameter.sheet||'').trim();
     if(_allow.indexOf(_nm) < 0) return _json({error:'sheet not allowed', sheet:_nm, allow:_allow});
     var _sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(_nm);
@@ -819,15 +819,54 @@ function handleExt(mode, e, token){
                   header_rows:_head, sample_row:_sample});
   }
 
+  if(mode === 'creategyokaivideotab'){
+    // 「業界紹介動画」タブを新設(既存動画タブと同一様式)+16業界行を事前作成。突合キー=業界名(col1業界/col2会社名の両方に業界名)。
+    // 冪等: 既存タブがあればヘッダ/既存業界はスキップ、未作成の業界のみ追加。見本=企業紹介動画の行3。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    var GYOKAI = ['銀行・証券・保険','総合商社','専門商社','コンサル','メーカー','食品・飲料','IT・AI・SaaS・ゲーム',
+                  'インフラ・エネルギー','不動産・建設','広告・メディア','小売・流通','航空・運輸・物流',
+                  'ディープテック・宇宙・AI','医療・ヘルスケア','教育・人材','スタートアップ'];
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var srcSh = ss.getSheetByName('企業紹介動画');
+    if(!srcSh) return _json({error:'見本タブ(企業紹介動画)が無い'});
+    var sh = ss.getSheetByName('業界紹介動画');
+    var created = false;
+    if(!sh){
+      sh = ss.insertSheet('業界紹介動画');
+      created = true;
+      // ヘッダ2行を企業紹介動画から複製(値+書式)
+      var lc = srcSh.getLastColumn();
+      srcSh.getRange(1,1,2,lc).copyTo(sh.getRange(1,1,2,lc), SpreadsheetApp.CopyPasteType.PASTE_NORMAL, false);
+    }
+    // 16業界行を冪等追加
+    var lc2 = srcSh.getLastColumn();
+    var sampleRange = srcSh.getRange(CONFIG.FIRST_ROW,1,1,lc2);
+    var added = [], existed = [];
+    GYOKAI.forEach(function(g){
+      if(_findRowByCompany(sh, g) >= 0){ existed.push(g); return; }
+      var row = sh.getLastRow() + 1;
+      if(row < CONFIG.FIRST_ROW) row = CONFIG.FIRST_ROW;
+      // 見本行の書式・入力規則を継承
+      sampleRange.copyTo(sh.getRange(row,1,1,lc2), SpreadsheetApp.CopyPasteType.PASTE_FORMAT, false);
+      sampleRange.copyTo(sh.getRange(row,1,1,lc2), SpreadsheetApp.CopyPasteType.PASTE_DATA_VALIDATION, false);
+      sh.getRange(row, CONFIG.COL.業界).setValue(g);       // col1=業界名
+      sh.getRange(row, CONFIG.COL.会社名).setValue(g);      // col2=業界名(=突合キー。videotabsetはcompany=<業界名>で照合)
+      sh.getRange(row, CONFIG.COL.ステータス).setValue('未着手');
+      added.push(g);
+    });
+    return _json({ok:true, sheet:'業界紹介動画', tab_created:created, added:added, existed:existed, total_rows:sh.getLastRow()});
+  }
+
   if(mode === 'videotabset'){
     // 【動画タブ 視聴リンク+FB upsert】企業紹介動画/決算書分析動画 に、視聴リンク(url)とFB(fb)を会社名突合で記入。
     // LINE漏洩対応と同規律: (1)認証付きmode (2)対象タブはallowlist固定(動画2タブのみ) (3)書込は会社名で行を突合。
     // 既定列: 視聴リンク=公開URL(col4) / FB=fbCol(round)(round既定1=col6)。実ヘッダに合わせ url_col/fb_col で上書き可。
     // 会社行が無い場合は append=1 で新規追加(見本行から書式・入力規則継承)。冪等: 既存行はupdate。
     if(!_authed(e, token)) return _json({error:'unauthorized'});
-    var VIDEO_TABS = ['企業紹介動画', '決算書分析動画'];
+    // 業界紹介動画は業界名で突合(タブB側は company=<業界名> で叩く=col2に業界名を入れてあるので同一I/Fで照合)。
+    var VIDEO_TABS = ['企業紹介動画', '決算書分析動画', '業界紹介動画'];
     var nm = String(e.parameter.sheet||'').trim();
-    if(VIDEO_TABS.indexOf(nm) < 0) return _json({error:'sheet not allowed (動画2タブ限定)', sheet:nm, allow:VIDEO_TABS});
+    if(VIDEO_TABS.indexOf(nm) < 0) return _json({error:'sheet not allowed (動画タブ限定)', sheet:nm, allow:VIDEO_TABS});
     var sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(nm);
     if(!sh) return _json({error:'no sheet', sheet:nm});
     var company = String(e.parameter.company||'').trim();
