@@ -415,14 +415,25 @@ def _concept_of(q):
             return canon
     return None
 
+def _src_host(q):
+    """source_url のホスト(会社識別子)。dedupを会社別に区別するため。
+    会社セットは全問同一ホスト=挙動不変、業界セットは会社別ホスト=同概念でも別事実として保持。"""
+    u = q.get("source_url", "") or ""
+    m = re.search(r"https?://([^/]+)", u)
+    h = (m.group(1) if m else "").lower()
+    return h[4:] if h.startswith("www.") else h
+
+
 def _fact_keys(q):
     """設問の『事実キー』集合。表記ゆれ耐性のため concept と『正解値』の両方を鍵にする。
-    → 言い回しが違っても同じ事実(例: 連結子会社数)を問えば重複検出できる。"""
+    → 言い回しが違っても同じ事実(例: 連結子会社数)を問えば重複検出できる。
+    ★会社(source host)を鍵に含める: 業界セットで別会社の同概念(各社の収益等)を誤って畳まない。"""
     asof = (q.get("as_of") or "").strip()
+    h = _src_host(q)
     keys = set()
     c = _concept_of(q)
     if c:
-        keys.add(("c:" + c, asof))
+        keys.add(("c:" + c, asof, h))
     # 正解の値(数値)も鍵に。同じ答え=同じ事実の強いシグナル。
     # ★as_of非依存: 三綱領1934年をas_of=''と'2025年'(誤)で問う等、as_ofの不整合で
     #   重複がすり抜けるのを防ぐ(値そのものが十分に特定的)。
@@ -432,7 +443,7 @@ def _fact_keys(q):
         corr = str(opts[ci]).strip()
         nums = _num_tokens(corr)
         if nums:
-            keys.add("v:" + ",".join(sorted(nums)))
+            keys.add(("v:" + ",".join(sorted(nums)), h))
         else:
             # ★v3-3② 否定事実(含まない/やっていない)と製品・サービス名は正解名で1問に集約。
             #   兼松の不動産3連発、同一製品名(KG ZAICO等)の重複を捕捉。順位設問(社名が
@@ -442,7 +453,7 @@ def _fact_keys(q):
                                            "展開していない", "扱っていない", "該当しない", "していない事業"))
             is_prod = q.get("category") == "製品・サービス"
             if q.get("type") != "rank" and c != "業界順位" and (is_neg or is_prod):
-                keys.add("name:" + re.sub(r"\s", "", corr))
+                keys.add(("name:" + re.sub(r"\s", "", corr), h))
     return keys
 
 def lint_concept_dedup(quiz):
@@ -480,9 +491,9 @@ def lint_metric_year_series_cap(quiz):
     for q in quiz:
         c = _concept_of(q)
         if c:
-            byc[c].append(q.get("id"))
+            byc[(c, _src_host(q))].append(q.get("id"))   # 会社別に集計(業界で各社同一指標を誤削減しない)
     res = []
-    for c, ids in byc.items():
+    for (c, _h), ids in byc.items():
         if len(ids) > METRIC_YEAR_CAP:
             for qid in ids[METRIC_YEAR_CAP:]:
                 res.append(_f("metric_year_series_cap", "error", qid,

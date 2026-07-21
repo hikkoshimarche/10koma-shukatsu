@@ -801,9 +801,9 @@ def converge_locked(slug, name, corpus, target=30, max_round=5, extra=""):
             if len(accepted) >= target:
                 break
             concept = QL._concept_of(q)
-            key = (concept, (q.get("as_of") or "").strip())
+            key = (concept, (q.get("as_of") or "").strip(), QL._src_host(q))  # 会社別(業界で各社同概念を保持)
             if concept and key in seen_concepts:
-                continue                              # 概念重複
+                continue                              # 概念重複(同一会社内)
             if concept in QL.DRY_CONCEPTS and dry_n >= QL.DRY_CAP:
                 continue                              # 登記トリビア上限
             if q.get("category") == FIN and fin_n >= fin_cap:
