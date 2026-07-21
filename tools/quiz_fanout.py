@@ -51,6 +51,7 @@ AGGREGATORS = ("nikkei.com", "yahoo", "biggo", "disclosure.tokyo", "daiwair", "i
                "reuters", "bloomberg", "quick", "tdnet")
 
 _lock = threading.Lock()
+_pdf_lock = threading.Lock()   # PyMuPDF(fitz)はスレッド非安全→PDF解析を直列化しsegfault回避
 _cost = {"usd": 0.0, "in": 0, "out": 0, "calls": 0}
 
 
@@ -174,7 +175,9 @@ def fetch_url(url):
             import fitz
             fn = f"/tmp/_qz_{hashlib.md5(url.encode()).hexdigest()[:8]}.pdf"
             open(fn, "wb").write(data)
-            doc = fitz.open(fn); txt = "\n".join(p.get_text() for p in doc); doc.close()
+            # PyMuPDF(MuPDF)はスレッド非安全→並行解析でsegfault。臨界区間をロックで直列化。
+            with _pdf_lock:
+                doc = fitz.open(fn); txt = "\n".join(p.get_text() for p in doc); doc.close()
             os.remove(fn)
             return re.sub(r"\n\s*\n+", "\n", re.sub(r"[ \t　]+", " ", txt)).strip()
         return clean_html(data.decode("utf-8", "ignore"))
