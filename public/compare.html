@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>企業比較 | トーキャリ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@500;700&display=swap" rel="stylesheet">
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="config.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{ --bg:#0f2647; --bg2:#16335c; --ink:#1c2733; --acc:#2f6fb0; --gold:#e0a52a; --line:#e2e8f0; --muted:#7a8794; }
+    body{font-family:"Hiragino Kaku Gothic ProN","Kaisei Decol",system-ui,sans-serif;background:var(--bg);color:#fff;min-height:100vh;min-height:100dvh}
+    .wrap{max-width:520px;margin:0 auto;padding:16px 14px calc(28px + env(safe-area-inset-bottom,0px))}
+    .top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+    .back{width:36px;height:36px;border:none;border-radius:50%;background:rgba(255,255,255,0.1);color:#fff;font-size:18px;cursor:pointer;flex-shrink:0}
+    h1{font-family:"Kaisei Decol",serif;font-size:19px;font-weight:700}
+    .sub{font-size:12px;color:rgba(255,255,255,0.75);margin:2px 0 14px}
+    .gold{color:var(--gold)}
+
+    /* 選択画面 */
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;min-height:4px}
+    .chip{display:inline-flex;align-items:center;gap:7px;background:#fff;color:var(--ink);border-radius:999px;padding:7px 10px 7px 13px;font-size:14px;font-weight:700}
+    .chip b{font-weight:700}
+    .chip .x{width:20px;height:20px;border:none;border-radius:50%;background:#eef2f7;color:#6a7686;font-size:13px;cursor:pointer;line-height:1}
+    .chip .ci{font-size:10px;color:var(--muted);font-weight:600}
+    .searchbox{position:relative;margin-bottom:8px}
+    .searchbox input{width:100%;border:none;border-radius:12px;padding:13px 14px;font-size:15px;font-family:inherit;color:var(--ink)}
+    .results{background:#fff;border-radius:12px;overflow:hidden;margin-bottom:14px}
+    .rrow{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);color:var(--ink);cursor:pointer}
+    .rrow:last-child{border-bottom:none}
+    .rrow:active{background:#f4f7fb}
+    .rrow .rn{font-weight:700;font-size:15px}
+    .rrow .rind{font-size:11px;color:var(--muted);margin-left:auto}
+    .rrow.dis{opacity:0.4;pointer-events:none}
+    .hint{font-size:12px;color:rgba(255,255,255,0.7);padding:10px 4px}
+    .cta{width:100%;border:none;border-radius:14px;padding:15px;font-size:16px;font-weight:800;font-family:inherit;background:var(--gold);color:#3a2c05;cursor:pointer;margin-top:4px}
+    .cta:disabled{background:rgba(255,255,255,0.14);color:rgba(255,255,255,0.4);cursor:default}
+
+    /* 比較表 */
+    .tblwrap{background:#fff;border-radius:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:12px}
+    table{border-collapse:collapse;color:var(--ink);width:100%;font-size:13px}
+    th,td{border-bottom:1px solid var(--line);vertical-align:top;text-align:left;padding:11px 12px}
+    thead th{background:#f4f7fb;font-size:13px}
+    .rowlabel{position:sticky;left:0;z-index:2;background:#eef3f9;font-weight:700;font-size:12px;color:#43506a;width:80px;min-width:80px;border-right:1px solid var(--line)}
+    thead .rowlabel{background:#e7eef6}
+    td.cell{min-width:184px;width:184px}
+    .cname{font-weight:800;font-size:15px;line-height:1.3}
+    .cname a{color:var(--ink);text-decoration:none;border-bottom:1px dotted #b7c2cf}
+    .cind{font-size:10.5px;color:var(--muted);margin-top:3px}
+    .val{font-weight:700;font-size:15px}
+    .asof{font-size:10px;color:#94a0ac;margin-left:2px}
+    .src{display:inline-block;font-size:10.5px;font-weight:700;color:var(--acc);text-decoration:none;margin-left:5px}
+    .li{margin-bottom:7px;line-height:1.5}
+    .li:last-child{margin-bottom:0}
+    .badge{display:inline-block;font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px;margin:0 5px 5px 0}
+    .b-stab{background:#e8f0fb;color:#2f6fb0}
+    .b-grow{background:#eaf6ee;color:#2f8a54}
+    .est{display:inline-block;font-size:9.5px;font-weight:700;color:#9a7b1e;background:#fbf3dd;border-radius:6px;padding:1px 5px;margin-left:3px}
+    .nd{color:#aeb7c2;font-size:12px;font-weight:600}
+    .note{font-size:11px;color:#6a7686;line-height:1.5;margin-top:5px}
+    .disc{font-size:11.5px;color:rgba(255,255,255,0.82);background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:10px;padding:11px 12px;line-height:1.6}
+    .editbtn{width:100%;border:1px solid rgba(255,255,255,0.25);background:transparent;color:#fff;border-radius:12px;padding:12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:12px}
+    .loading{text-align:center;padding:40px 0;color:rgba(255,255,255,0.7)}
+  </style>
+</head>
+<body>
+<div class="wrap" id="wrap"><div class="loading">読み込み中…</div></div>
+<script>
+const CFG=window.TOKYARI||{};
+const API_BASE=CFG.API_BASE||'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+const LIFF_ID=CFG.LIFF_HUB||'2010075487-89AJxZnA';
+const LS_KEY='tokyari_compare';
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function normJ(s){return String(s||'').toLowerCase().normalize('NFKC').replace(/[ぁ-ゖ]/g,c=>String.fromCharCode(c.charCodeAt(0)+0x60)).replace(/\s+/g,'');}
+const wrap=()=>document.getElementById('wrap');
+
+let COMPANIES=[], IDX=[], NAME={}, IND={};
+let sel=[]; // [{id,name}]
+
+function loadSel(){
+  try{ const raw=JSON.parse(localStorage.getItem(LS_KEY)||'[]'); sel=raw.filter(id=>NAME[id]).slice(0,3).map(id=>({id,name:NAME[id]})); }catch(e){ sel=[]; }
+}
+function saveSel(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(sel.map(s=>s.id))); }catch(e){} }
+function addId(id){ if(!NAME[id]) return; if(sel.find(s=>s.id===id)) return; if(sel.length>=3) return; sel.push({id,name:NAME[id]}); saveSel(); }
+
+// ===== 選択画面 =====
+function renderPicker(){
+  wrap().innerHTML=`
+    <div class="top"><button class="back" id="bk">‹</button><h1>企業<span class="gold">比較</span></h1></div>
+    <p class="sub">2〜3社を選ぶと、一次情報で横並び比較できます（優劣づけはしません）。</p>
+    <div class="chips" id="chips"></div>
+    <div class="searchbox"><input id="q" type="search" placeholder="会社名で検索（例：三菱商事、じゃる）" autocomplete="off"></div>
+    <div class="results" id="results" style="display:none"></div>
+    <p class="hint" id="hint"></p>
+    <button class="cta" id="go" disabled>比較する</button>`;
+  document.getElementById('bk').onclick=()=>{ if(history.length>1) history.back(); else location.href='/home.html'; };
+  document.getElementById('q').addEventListener('input', onSearch);
+  document.getElementById('go').onclick=()=>{ if(sel.length>=2){ saveSel(); renderResult(sel.map(s=>s.id)); } };
+  drawChips();
+}
+function drawChips(){
+  const c=document.getElementById('chips'); if(!c) return;
+  c.innerHTML=sel.map(s=>`<span class="chip"><b>${esc(s.name)}</b><button class="x" data-id="${esc(s.id)}">×</button></span>`).join('')
+    || '<span class="ci" style="color:rgba(255,255,255,0.6);font-size:12px">まだ選ばれていません</span>';
+  c.querySelectorAll('.x').forEach(b=>b.onclick=()=>{ sel=sel.filter(s=>s.id!==b.dataset.id); saveSel(); drawChips(); refreshGo(); onSearch(); });
+  refreshGo();
+  const hint=document.getElementById('hint');
+  if(hint) hint.textContent = sel.length>=3 ? '最大3社まで比較できます。' : (sel.length===1 ? 'あと1社以上えらぶと比較できます。' : '');
+}
+function refreshGo(){ const g=document.getElementById('go'); if(g){ g.disabled=sel.length<2; g.textContent=`比較する${sel.length>=2?`（${sel.length}社）`:''}`; } }
+function onSearch(){
+  const q=(document.getElementById('q')||{}).value||'';
+  const box=document.getElementById('results'); if(!box) return;
+  const nq=normJ(q);
+  if(!nq){ box.style.display='none'; box.innerHTML=''; return; }
+  const hits=IDX.filter(it=>it.key.includes(nq)).slice(0,8);
+  box.style.display=hits.length?'block':'none';
+  box.innerHTML=hits.map(it=>{
+    const picked=sel.find(s=>s.id===it.id); const full=sel.length>=3&&!picked;
+    return `<div class="rrow ${picked||full?'dis':''}" data-id="${esc(it.id)}"><span class="rn">${esc(it.name)}</span><span class="rind">${esc(it.ind)}${picked?' ✓選択中':''}</span></div>`;
+  }).join('');
+  box.querySelectorAll('.rrow').forEach(r=>r.onclick=()=>{ addId(r.dataset.id); document.getElementById('q').value=''; box.style.display='none'; box.innerHTML=''; drawChips(); });
+}
+
+// ===== 比較表 =====
+function salaryCell(o){ return o ? `<span class="val">${esc(o.text)}</span>${o.as_of?`<span class="asof">(${esc(o.as_of)})</span>`:''}${o.source?`<a class="src" href="${esc(o.source)}" target="_blank" rel="noopener">出典↗</a>`:''}` : `<span class="nd">データなし</span>`; }
+function listCell(arr){ return (arr&&arr.length) ? arr.map(x=>`<div class="li">${esc(x.text)}${x.source?`<a class="src" href="${esc(x.source)}" target="_blank" rel="noopener">出典↗</a>`:''}</div>`).join('') : `<span class="nd">データなし</span>`; }
+function trendCell(t){
+  if(!t) return `<span class="nd">データなし</span>`;
+  const b=[];
+  if(t.stability) b.push(`<span class="badge b-stab">安定：${esc(t.stability)}</span>`);
+  if(t.growth) b.push(`<span class="badge b-grow">成長：${esc(t.growth)}</span>`);
+  return `${b.join('')}<span class="est">推定</span>${t.note?`<div class="note">${esc(t.note)}</div>`:''}`;
+}
+
+function renderResult(ids){
+  wrap().innerHTML=`<div class="top"><button class="back" id="bk">‹</button><h1>企業<span class="gold">比較</span></h1></div><div class="loading">一次情報を集めています…</div>`;
+  document.getElementById('bk').onclick=()=>renderPicker();
+  fetch(`${API_BASE}/api/compare?ids=${encodeURIComponent(ids.join(','))}`)
+    .then(r=>r.ok?r.json():Promise.reject(r.status))
+    .then(data=>drawTable(data))
+    .catch(()=>{ wrap().innerHTML=`<div class="top"><button class="back" id="bk2">‹</button><h1>企業比較</h1></div><p class="sub">読み込みに失敗しました。時間をおいて試してください。</p>`; document.getElementById('bk2').onclick=()=>renderPicker(); });
+}
+
+function drawTable(data){
+  const cs=(data.companies||[]).filter(c=>c && c.found);
+  if(cs.length<1){ renderPicker(); return; }
+  const rows=[
+    ['平均年収', c=>salaryCell(c.avg_salary)],
+    ['初任給', c=>salaryCell(c.starting_salary)],
+    ['成長・<br>安定の傾向', c=>trendCell(c.trend)],
+    ['事業<br>セグメント', c=>listCell(c.segments)],
+    ['社風・<br>人物像', c=>listCell(c.culture)],
+    ['直近決算の<br>主要数字', c=>listCell(c.financials)],
+  ];
+  const head=`<tr><th class="rowlabel"></th>${cs.map(c=>`<th class="cell"><div class="cname"><a href="/company.html?id=${esc(c.id)}">${esc(c.name)}</a></div><div class="cind">${esc(c.industry||'')}</div></th>`).join('')}</tr>`;
+  const body=rows.map(([label,fn])=>`<tr><td class="rowlabel">${label}</td>${cs.map(c=>`<td class="cell">${fn(c)}</td>`).join('')}</tr>`).join('');
+  wrap().innerHTML=`
+    <div class="top"><button class="back" id="bk">‹</button><h1>企業<span class="gold">比較</span></h1></div>
+    <p class="sub">${cs.map(c=>esc(c.name)).join(' ／ ')}</p>
+    <button class="editbtn" id="edit">＋ 会社を選びなおす</button>
+    <div class="tblwrap"><table><thead>${head}</thead><tbody>${body}</tbody></table></div>
+    <p class="disc">${esc(data.disclaimer||'')}</p>`;
+  document.getElementById('bk').onclick=()=>renderPicker();
+  document.getElementById('edit').onclick=()=>renderPicker();
+}
+
+async function main(){
+  try{ await liff.init({liffId:LIFF_ID}); if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;} }catch(e){}
+  // データ読込
+  let comp={}, aliases={};
+  try{
+    [comp, aliases]=await Promise.all([
+      fetch('/companies.json').then(r=>r.json()),
+      fetch('/search_aliases.json').then(r=>r.ok?r.json():({})).catch(()=>({})),
+    ]);
+  }catch(e){ wrap().innerHTML='<div class="loading">データの読み込みに失敗しました</div>'; return; }
+  for(const [ind,arr] of Object.entries(comp)){
+    for(const c of (arr||[])){
+      NAME[c.id]=c.name; IND[c.id]=ind;
+      IDX.push({id:c.id, name:c.name, ind, key:normJ([c.name, c.id, c.id.replace(/-/g,' '), ...((aliases[c.id]||[]))].join(' '))});
+    }
+  }
+  const params=new URLSearchParams(location.search);
+  const idsParam=params.get('ids');
+  const addParam=params.get('add');
+  const pickParam=params.get('pick'); // 選択画面に複数候補を事前セット(お気に入り「選んで比較」)
+  if(idsParam){
+    const ids=idsParam.split(',').map(s=>s.trim()).filter(id=>NAME[id]).slice(0,3);
+    if(ids.length>=2){ sel=ids.map(id=>({id,name:NAME[id]})); saveSel(); renderResult(ids); return; }
+    if(ids.length===1){ loadSel(); addId(ids[0]); renderPicker(); return; }
+  }
+  if(pickParam){
+    const ids=pickParam.split(',').map(s=>s.trim()).filter(id=>NAME[id]).slice(0,3);
+    sel=ids.map(id=>({id,name:NAME[id]})); saveSel(); renderPicker(); return;
+  }
+  loadSel();
+  if(addParam && NAME[addParam]){ addId(addParam); }
+  renderPicker();
+}
+main();
+</script>
+</body>
+</html>

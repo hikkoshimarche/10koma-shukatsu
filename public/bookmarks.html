@@ -96,12 +96,18 @@ async function main() {
       </a>
     `).join('');
 
+    // 2社以上なら「選んで比較」導線(お気に入りを事前セットして比較画面へ)
+    const compareHtml = bookmarks.length >= 2 ? `
+      <a href="compare.html?pick=${encodeURIComponent(bookmarks.map(b => b.id).join(','))}" class="compare-cta">⚖️ 選んで比較する</a>
+    ` : '';
+
     app.innerHTML = `
       <div class="industry-detail">
         <p class="industry-detail-name">お気に入り</p>
         <p class="industry-detail-desc">保存した企業 ${bookmarks.length}件</p>
       </div>
       <div class="content">
+        ${compareHtml}
         <div class="bookmark-list">${cardsHtml}</div>
       </div>
     `;
@@ -115,6 +121,18 @@ main();
 </script>
 
 <style>
+  .compare-cta {
+    display: block;
+    text-align: center;
+    background: #e0a52a;
+    color: #3a2c05;
+    font-weight: 800;
+    text-decoration: none;
+    border-radius: 12px;
+    padding: 13px;
+    margin-bottom: 14px;
+  }
+  .compare-cta:active { opacity: 0.85; }
   .bookmark-list {
     display: flex;
     flex-direction: column;

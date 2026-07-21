@@ -929,6 +929,10 @@ async function main() {
         <button class="cta-youtube" id="company-quiz" style="margin-top:10px">
           <span class="cta-icon">🧠</span>
           <span class="cta-text"><span class="cta-main">この企業のクイズに挑戦</span><span class="cta-sub">理解度をチェック</span></span>
+        </button>
+        <button class="cta-youtube" id="company-compare" style="margin-top:10px">
+          <span class="cta-icon">⚖️</span>
+          <span class="cta-text"><span class="cta-main">比較リストに追加</span><span class="cta-sub">他社と横並びで見る（一次情報）</span></span>
         </button></div>`;
 
     app.innerHTML = `
@@ -944,6 +948,8 @@ async function main() {
 
     const cq = document.getElementById('company-quiz');
     if (cq) cq.onclick = () => { location.href = `quiz.html?company=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}`; };
+    const cc = document.getElementById('company-compare');
+    if (cc) cc.onclick = () => { location.href = `compare.html?add=${encodeURIComponent(companyId)}`; };
     const cds = document.getElementById('company-datasheet');
     if (cds) cds.onclick = () => { location.href = `datasheet.html?id=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}`; };
 

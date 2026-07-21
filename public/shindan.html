@@ -151,6 +151,7 @@ function renderResult(data){
     <div class="sh-sec-t">あなたにおすすめの<span class="em">業界</span></div>${indCards||'<div class="sh-rc">—</div>'}
     <div class="sh-sec-t">おすすめの<span class="em">企業</span></div>${compCards||'<div class="sh-rc">—</div>'}
     <div class="sh-actions">
+      ${comps.length>=2?`<a class="sh-btn p" href="/compare.html?ids=${encodeURIComponent(comps.slice(0,3).map(c=>c.slug).join(','))}">おすすめ社を比較する</a>`:''}
       <button class="sh-btn p" id="sh-retry">もう一度診断する</button>
       <a class="sh-btn g" href="/home.html">ホームへ戻る</a>
     </div></div>`;

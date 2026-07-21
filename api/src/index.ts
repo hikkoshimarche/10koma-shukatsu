@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { recommend } from './shindan_match'
+import { bundleCompany, COMPARE_DISCLAIMER } from './compare'
 
 type Bindings = {
   DB: D1Database
@@ -721,6 +722,31 @@ app.get('/api/datasheet', async (c) => {
     if (!row) return c.json({ error: 'not found', id }, 404)
     return c.json({ id: row.company_id, ...safeJson(row.data) })
   } catch (e) { return c.json({ error: 'unavailable', id }, 404) }
+})
+
+// === 企業比較（既存 attributes + datasheets を束ねるだけ・新規生成なし・graceful） ===
+app.get('/api/compare', async (c) => {
+  const idsRaw = c.req.query('ids') || ''
+  // 重複除去・順序維持・最大3社
+  const seen = new Set<string>()
+  const ids: string[] = []
+  for (const s of idsRaw.split(',').map(x => x.trim()).filter(Boolean)) {
+    if (!seen.has(s)) { seen.add(s); ids.push(s) }
+    if (ids.length >= 3) break
+  }
+  if (ids.length < 1) return c.json({ error: 'ids required (comma-separated, 1-3)' }, 400)
+  const companies = []
+  for (const id of ids) {
+    let ds: any = null
+    try {
+      const row = await c.env.DB.prepare(
+        'SELECT data FROM datasheets WHERE company_id = ?'
+      ).bind(id).first<{ data: string }>()
+      if (row) ds = safeJson(row.data)
+    } catch (e) { /* datasheet未投入/不可はgraceful=データなし */ }
+    companies.push(bundleCompany(id, ds))
+  }
+  return c.json({ companies, disclaimer: COMPARE_DISCLAIMER })
 })
 
 // === 業界・企業診断（決定論マッチング・AI課金なし・shindanタブA由来データをバンドル） ===
