@@ -16,3 +16,11 @@
 
 ## 3. AI適応出題（寄り添い型）※quiz_migration_proposal.sql にも記載
 - ルールベース復習(実装済)で `user_quiz_progress` が貯まってから。誤答パターンをLLMで特徴量化し次の1問を動的選択/生成（Source-or-Silence厳守）＋個別化解説。
+
+## 【恒久ルール】決算データは常に最新期(2026-07-21起票)
+- クイズ・データシートの財務は**常に最新の決算期を一次情報で取得**する。IR library indexで年度を確認し、
+  PDF本文に「<最新>年3月期」が verbatim 実在することを確認してから採用（別表記/概算/推定は不可＝Source-or-Silence）。
+- corpus取得は**最新期優先**（`acquire_corpus_thick` の `_prefer_latest_tanshin`：短信URLのFY変種推定＋IR索引再クロール＋verbatim確認）。
+  未公表・取得不能の社のみ旧期を維持し `freshness_hold.csv` に記録（捏造で埋めない）。
+- 鮮度lint（`lint_financial_freshness`/`lint_datasheet_freshness`）: 財務as_ofが corpus最新期より古い→error。最新期が取れない社はfireせず現状維持。
+- **決算シーズン(毎年5〜6月)に全社定期リフレッシュ**: `QUIZ_LATEST_FY` を当年の「YYYY年3月期」に更新→ `--locked-all`(財務再生成)＋D1 UPDATE。
