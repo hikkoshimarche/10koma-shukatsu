@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>お守り | トーキャリ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@400;500;700&family=Shippori+Mincho:wght@500;600&display=swap" rel="stylesheet">
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="config.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{ --wa:#f4efe1; --wa2:#ece4d2; --ink:#3a3226; --ink-soft:#6b6150; --nana:#4a7fb5; --haruki:#3f8a5f; }
+    html,body{height:100%}
+    body{
+      font-family:"Shippori Mincho","Kaisei Decol",serif; color:var(--ink);
+      background:
+        radial-gradient(120% 80% at 50% 0%, #faf6ec 0%, var(--wa) 55%, var(--wa2) 100%) fixed;
+      background-image:
+        radial-gradient(rgba(120,100,60,0.04) 1px, transparent 1.4px),
+        radial-gradient(120% 80% at 50% 0%, #faf6ec 0%, var(--wa) 55%, var(--wa2) 100%);
+      background-size:18px 18px, 100% 100%;
+    }
+    .wrap{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;position:relative;overflow:hidden}
+    .close-x{position:absolute;top:14px;right:16px;width:38px;height:38px;border:none;background:rgba(58,50,38,0.06);border-radius:50%;color:var(--ink-soft);font-size:20px;cursor:pointer;z-index:5}
+
+    /* 入口 */
+    .entry{flex:1;display:flex;flex-direction:column;justify-content:center;padding:30px 26px 40px}
+    .entry-brand{text-align:center;font-family:"Kaisei Decol",serif;font-size:15px;color:var(--ink-soft);letter-spacing:0.2em;margin-bottom:6px}
+    .entry-t{text-align:center;font-size:24px;font-weight:600;letter-spacing:0.06em;margin-bottom:26px}
+    .cats{display:flex;flex-direction:column;gap:11px}
+    .cat{display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:rgba(255,255,255,0.72);border:1px solid rgba(120,100,60,0.14);border-radius:14px;padding:15px 17px;font-family:inherit;font-size:16px;font-weight:600;color:var(--ink);cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:0 1px 4px rgba(120,100,60,0.06)}
+    .cat:active{transform:translateY(1px)}
+    .cat .ic{font-size:20px}
+    .cat .ar{margin-left:auto;color:#bcae94}
+
+    /* メッセージ画面 */
+    .msg{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:54px 24px 20px;position:relative}
+    .msg-cat{position:absolute;top:18px;left:0;right:0;text-align:center;font-size:12px;color:var(--ink-soft);letter-spacing:0.14em}
+    .card{flex:1;display:flex;align-items:center;justify-content:center;width:100%;min-height:0}
+    .vtext{
+      writing-mode:vertical-rl; text-orientation:upright;
+      font-size:clamp(21px,6.4vw,27px); font-weight:600; line-height:1.9; letter-spacing:0.12em;
+      max-height:64vh; color:var(--ink);
+      opacity:0; transform:translateY(8px);
+    }
+    .vtext.in{ animation:fade 1.3s ease forwards }
+    @keyframes fade{ to{ opacity:1; transform:translateY(0) } }
+    .attrib{ min-height:44px; text-align:center; margin-top:8px; opacity:0 }
+    .attrib.in{ animation:fade 1.6s ease .5s forwards }
+    .note{ display:inline-flex; align-items:center; gap:7px; font-family:"Kaisei Decol",sans-serif; font-size:13px; color:var(--ink-soft); background:rgba(255,255,255,0.6); border-radius:999px; padding:6px 13px; line-height:1.5; max-width:88%; }
+    .note .dot{ width:9px;height:9px;border-radius:50%;flex-shrink:0 }
+    .author{ font-family:"Kaisei Decol",serif; font-size:14px; color:var(--ink-soft); letter-spacing:0.04em }
+
+    .acts{display:flex;gap:10px;padding:8px 20px calc(18px + env(safe-area-inset-bottom,0px));justify-content:center}
+    .act{border:none;background:rgba(58,50,38,0.06);color:var(--ink);border-radius:999px;padding:11px 18px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent}
+    .act.main{background:var(--ink);color:var(--wa)}
+    .foot{text-align:center;font-family:"Kaisei Decol",serif;font-size:11px;color:#b3a685;letter-spacing:0.18em;padding-bottom:10px}
+  </style>
+</head>
+<body>
+<div class="wrap" id="wrap"><div class="entry"><p class="entry-t">読み込み中…</p></div></div>
+<script>
+const CFG=window.TOKYARI||{};
+const LIFF_ID=CFG.LIFF_HUB||'2010075487-89AJxZnA';
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+const wrap=()=>document.getElementById('wrap');
+let DATA=null, QUOTES=[];
+let cat=null, deck=[], di=0;
+
+function shuffle(a){ // Fisher-Yates（Math.randomはクライアントJSで利用可）
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function buildDeck(key){
+  const origs=(DATA.messages[key]||[]).map(m=>({type:'orig',...m}));
+  const qs=QUOTES.filter(q=>(q.categories||[]).includes(key)).map(q=>({type:'quote',...q}));
+  // オリジナル7:名言3程度。origが多数派なので合算シャッフルで自然に近似（全消化まで重複なし）。
+  deck=shuffle([...origs,...qs]); di=0;
+}
+
+function renderEntry(){
+  cat=null;
+  wrap().innerHTML=`
+    <div class="entry">
+      <p class="entry-brand">トーキャリ・お守り</p>
+      <p class="entry-t">いま、どんな気持ち？</p>
+      <div class="cats">${DATA.categories.map(c=>`
+        <button class="cat" data-k="${c.key}"><span class="ic">${c.icon}</span>${esc(c.label)}<span class="ar">›</span></button>`).join('')}</div>
+      <p class="foot">そっと、ひと言。</p>
+    </div>`;
+  wrap().querySelector('.cats').onclick=e=>{const b=e.target.closest('.cat'); if(b){ cat=b.dataset.k; buildDeck(cat); showCard(); }};
+}
+
+function cardInner(item){
+  if(item.type==='quote'){
+    return `<div class="card"><p class="vtext in">${esc(item.text)}</p></div>
+      <div class="attrib in"><span class="author">— ${esc(item.author)}</span></div>`;
+  }
+  const col=item.char==='nana'?'var(--nana)':'var(--haruki)';
+  const who=item.char==='nana'?'ナナ':'ハルキ';
+  return `<div class="card"><p class="vtext in">${esc(item.text)}</p></div>
+    <div class="attrib in"><span class="note"><span class="dot" style="background:${col}"></span>${who}：${esc(item.note)}</span></div>`;
+}
+
+function showCard(){
+  if(di>=deck.length){ shuffle(deck); di=0; }
+  const item=deck[di];
+  const label=(DATA.categories.find(c=>c.key===cat)||{}).label||'';
+  wrap().innerHTML=`
+    <button class="close-x" id="cx" aria-label="閉じる">×</button>
+    <div class="msg"><p class="msg-cat">${esc(label)}</p>${cardInner(item)}</div>
+    <div class="acts">
+      <button class="act" id="a-cat">別の気持ち</button>
+      <button class="act main" id="a-more">もう一言</button>
+      <button class="act" id="a-close">閉じる</button>
+    </div>`;
+  document.getElementById('a-more').onclick=()=>{ di++; showCard(); };
+  document.getElementById('a-cat').onclick=()=>renderEntry();
+  document.getElementById('a-close').onclick=showSendoff;
+  document.getElementById('cx').onclick=showSendoff;
+}
+
+function showSendoff(){
+  const s=DATA.sendoff[Math.floor(Math.random()*DATA.sendoff.length)];
+  wrap().innerHTML=`
+    <div class="msg"><div class="card"><p class="vtext in">${esc(s)}</p></div>
+      <div class="attrib in"><span class="note"><span class="dot" style="background:var(--nana)"></span>いってらっしゃい</span></div></div>
+    <div class="acts">
+      <button class="act" id="s-back">もう一度お守り</button>
+      <a class="act main" id="s-home" href="/home.html" style="text-decoration:none">ホームへ</a>
+    </div>`;
+  document.getElementById('s-back').onclick=()=>renderEntry();
+}
+
+async function main(){
+  try{ await liff.init({liffId:LIFF_ID}); if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;} }catch(e){}
+  try{
+    const [m,q]=await Promise.all([
+      fetch('/omamori_messages.json').then(r=>r.json()),
+      fetch('/omamori_quotes.json').then(r=>r.ok?r.json():({quotes:[]})).catch(()=>({quotes:[]})),
+    ]);
+    DATA=m; QUOTES=q.quotes||[];
+  }catch(e){ wrap().innerHTML='<div class="entry"><p class="entry-t">読み込みに失敗しました</p></div>'; return; }
+  renderEntry();
+}
+main();
+</script>
+</body>
+</html>
