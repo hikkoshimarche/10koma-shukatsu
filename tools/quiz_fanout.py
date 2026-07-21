@@ -79,10 +79,46 @@ def git(*a, cwd=REPO):
     return subprocess.run(["git", *a], cwd=cwd, capture_output=True, text=True, timeout=180)
 
 
-# ── OpenAI ───────────────────────────────────────────────
+# ── LLM (OpenAI / Anthropic フォールバック) ───────────────
+ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+ANTHROPIC_MODEL = os.environ.get("QUIZ_ANTHROPIC_MODEL", "claude-sonnet-4-5")
+# QUIZ_LLM=anthropic で明示切替。OpenAIが insufficient_quota になったら自動でanthropicへ恒久フォールバック。
+LLM_BACKEND = [os.environ.get("QUIZ_LLM", "openai")]
+# claude-sonnet-4-5 概算価格(USD/1M): in $3 / out $15
+A_PIN, A_POUT = 3.0, 15.0
+
+def _anthropic_chat(messages, max_tokens, temperature):
+    sys_txt = "\n".join(m["content"] for m in messages if m["role"] == "system")
+    usr = [{"role": ("assistant" if m["role"] == "assistant" else "user"), "content": m["content"]}
+           for m in messages if m["role"] != "system"]
+    for attempt in range(4):
+        try:
+            r = requests.post("https://api.anthropic.com/v1/messages",
+                              headers={"x-api-key": ANTHROPIC_KEY, "anthropic-version": "2023-06-01",
+                                       "content-type": "application/json"},
+                              json={"model": ANTHROPIC_MODEL, "max_tokens": max_tokens,
+                                    "temperature": temperature, "system": sys_txt, "messages": usr}, timeout=180)
+            if r.status_code == 429 or r.status_code >= 500:
+                time.sleep(4 * (attempt + 1)); continue
+            d = r.json()
+            if "content" not in d:
+                time.sleep(3 * (attempt + 1)); continue
+            u = d.get("usage", {})
+            with _lock:
+                pt = u.get("input_tokens", 0); ct = u.get("output_tokens", 0)
+                _cost["in"] += pt; _cost["out"] += ct; _cost["calls"] += 1
+                _cost["usd"] += pt / 1e6 * A_PIN + ct / 1e6 * A_POUT
+            return d["content"][0]["text"]
+        except Exception:
+            time.sleep(3 * (attempt + 1))
+    raise RuntimeError("anthropic_chat failed after retries")
+
 def openai_chat(messages, model=GEN_MODEL, max_tokens=4000, json_mode=True, temperature=0.3):
     if not cost_ok():
         raise RuntimeError(f"COST_GUARD: ${_cost['usd']:.2f} >= ${MAX_USD}")
+    # 既定はOpenAI(出荷済みと生成エンジンを統一)。Anthropicは QUIZ_LLM=anthropic の明示指定時のみ(緊急退避)。
+    if LLM_BACKEND[0] == "anthropic" and ANTHROPIC_KEY:
+        return _anthropic_chat(messages, max_tokens, temperature)
     body = {"model": model, "messages": messages, "max_tokens": max_tokens, "temperature": temperature}
     if json_mode:
         body["response_format"] = {"type": "json_object"}
@@ -100,6 +136,23 @@ def openai_chat(messages, model=GEN_MODEL, max_tokens=4000, json_mode=True, temp
         except Exception:
             time.sleep(3 * (attempt + 1))
     raise RuntimeError("openai_chat failed after retries")
+
+def _parse_json(txt):
+    """LLM出力からJSONを頑健に抽出(```fence除去・末尾カンマ許容)。"""
+    t = (txt or "").strip()
+    if t.startswith("```"):
+        t = re.sub(r"^```[a-zA-Z]*\n?", "", t); t = re.sub(r"\n?```\s*$", "", t).strip()
+    for cand in (t, (re.search(r"\{.*\}", t, re.S).group(0) if re.search(r"\{.*\}", t, re.S) else None)):
+        if not cand:
+            continue
+        try:
+            return json.loads(cand)
+        except Exception:
+            try:
+                return json.loads(re.sub(r",\s*([}\]])", r"\1", cand))
+            except Exception:
+                pass
+    return {}
 
 
 # ── corpus 取得(DDG検索→curl→PyMuPDF/HTML) ───────────────
@@ -465,11 +518,7 @@ def generate(name, corpus, n=30, extra=""):
         user += "\n\n" + extra
     txt = openai_chat([{"role": "system", "content": GEN_SYS}, {"role": "user", "content": user}],
                       model=GEN_MODEL, max_tokens=6000)
-    try:
-        data = json.loads(txt)
-    except Exception:
-        m = re.search(r"\{.*\}", txt, re.S)
-        data = json.loads(m.group(0)) if m else {"questions": []}
+    data = _parse_json(txt)
     return data.get("questions", []) if isinstance(data, dict) else []
 
 def fix_failures(name, corpus, failed):
@@ -480,10 +529,7 @@ def fix_failures(name, corpus, failed):
               "本文で確実に裏取りできる別テーマ(セグメント/沿革/製品/会社概要)に差し替えて再出力:\n" + fb)
     txt = openai_chat([{"role": "system", "content": GEN_SYS}, {"role": "user", "content": user}],
                       model=GEN_MODEL, max_tokens=4000)
-    try:
-        return json.loads(txt).get("questions", [])
-    except Exception:
-        return []
+    return _parse_json(txt).get("questions", [])
 
 
 # ── datasheet(教材) 生成: クイズと同一corpusで対に ───────────
@@ -507,11 +553,7 @@ def generate_datasheet(name, corpus):
     user = DS_USER_TMPL.format(name=name, sources=_sources_block(corpus))
     txt = openai_chat([{"role": "system", "content": DS_SYS}, {"role": "user", "content": user}],
                       model=GEN_MODEL, max_tokens=4000)
-    try:
-        data = json.loads(txt)
-    except Exception:
-        m = re.search(r"\{.*\}", txt, re.S)
-        data = json.loads(m.group(0)) if m else {"sections": {}}
+    data = _parse_json(txt)
     return data if isinstance(data, dict) and data.get("sections") else {"sections": {}}
 
 def _filter_datasheet_sos(ds, corpus):
@@ -797,10 +839,7 @@ def review_batch(items):
     txt = openai_chat([{"role": "system", "content": REVIEW_SYS},
                        {"role": "user", "content": "採点対象:\n" + payload}],
                       model=REVIEW_MODEL, max_tokens=3000)
-    try:
-        d = json.loads(txt)
-    except Exception:
-        d = {"results": [], "systemic_flags": ["review_parse_error"], "pass_rate": 0.0}
+    d = _parse_json(txt) or {"results": [], "systemic_flags": ["review_parse_error"], "pass_rate": 0.0}
     return d
 
 def _flex_ctx(body, needle, width=60):
