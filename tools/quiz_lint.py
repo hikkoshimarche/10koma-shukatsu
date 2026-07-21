@@ -208,6 +208,46 @@ def lint_banned_schedule_topic(q):  # ★強化②
     return []
 
 
+# ★鮮度lint: 財務as_ofが「そのcorpusで取得できた最新期」より古い→error(最新期が無ければfireしない=現状維持)
+FY_RE = re.compile(r"(20\d\d)\s*年\s*3\s*月期")
+def _fy_year(s):
+    m = FY_RE.search(str(s or ""))
+    return int(m.group(1)) if m else None
+def _corpus_latest_fy_year(corpus):
+    if not corpus:
+        return None
+    j = re.sub(r"\s", "", " ".join(corpus.values()))
+    for y in (2028, 2027, 2026, 2025, 2024):
+        if f"{y}年3月期" in j:
+            return y
+    return None
+def lint_financial_freshness(quiz, corpus):
+    latest = _corpus_latest_fy_year(corpus)
+    if not latest:
+        return []
+    res = []
+    for q in quiz:
+        if q.get("category") not in ("財務数値", "業界順位"):
+            continue
+        ay = _fy_year(q.get("as_of"))
+        if ay and ay < latest:
+            res.append(_f("financial_freshness", "error", q.get("id"),
+                          f"財務as_of {ay}年3月期がcorpus最新{latest}年3月期より古い → 最新期で再生成"))
+    return res
+def lint_datasheet_freshness(ds, corpus):
+    """datasheetの主要財務sectionのas_of/期がcorpus最新期より古い→error。"""
+    latest = _corpus_latest_fy_year(corpus)
+    if not latest:
+        return []
+    res = []
+    for it in (ds.get("sections") or {}).get("主要財務", []) or []:
+        ay = _fy_year(it.get("as_of")) or _fy_year(it.get("fact"))
+        if ay and ay < latest:
+            res.append(_f("datasheet_freshness", "error", "主要財務",
+                          f"datasheet財務 {ay}年3月期がcorpus最新{latest}年3月期より古い"))
+    return res
+
+
 def lint_no_fabrication_number(q, corpus):
     qid, url = q.get("id"), (q.get("source_url") or "").strip()
     wanted = set()
@@ -537,6 +577,7 @@ def run_quiz_lints(quiz, corpus=None):
     findings += lint_derived_value(quiz)      # ③派生値(合計=和)
     findings += lint_list_membership_dedup(quiz)  # ②含む/含まないペア
     findings += lint_metric_year_series_cap(quiz)  # v3-4:同一指標の年度シリーズ上限2
+    findings += lint_financial_freshness(quiz, corpus)  # 鮮度:財務as_ofがcorpus最新期より古い
     for qid, c in seen_ids.items():
         if c > 1:
             findings.append(_f("single_correct", "error", qid, f"id重複×{c}"))
@@ -753,7 +794,14 @@ def selftest():
              "options": ["18,617,601百万円", "3番地", "2丁目", "1号"], "source_url": "http://addr", "as_of": "2025年"}
     fired_ad = any(f["lint"] == "address_number_distractor" for f in run_quiz_lints([addrq], ac)["findings"])
     print(f"  {'OK ' if fired_ad else 'NG '} address_number_distractor: {'発火' if fired_ad else 'NG'}")
-    ok = ok and fired_val and fired_phone and fired_pc and fired_dv and fired_lm and fired_url and fired_neg and fired_prod and fired_ys and fired_ad
+    # 鮮度: corpusに2026年3月期があるのにas_of=2025 → error
+    fc = {"http://fresh": "2026年3月期の連結収益は18,617,601百万円。前期(2025年3月期)は19,567,601百万円。"}
+    freshq = {**base, "id": "fr", "category": "財務数値", "q_text": "収益は？",
+              "options": ["19,567,601百万円", "18,617,601百万円", "1,393,425百万円", "950,709百万円"],
+              "correct": 0, "source_url": "http://fresh", "as_of": "2025年3月期"}
+    fired_fr = any(f["lint"] == "financial_freshness" for f in run_quiz_lints([freshq], fc)["findings"])
+    print(f"  {'OK ' if fired_fr else 'NG '} financial_freshness(corpus2026・問2025): {'発火' if fired_fr else 'NG'}")
+    ok = ok and fired_val and fired_phone and fired_pc and fired_dv and fired_lm and fired_url and fired_neg and fired_prod and fired_ys and fired_ad and fired_fr
     dry_list = [{**base, "id": f"t{i}", "q_text": q, "options": ["A", "B", "C", "D"]}
                 for i, q in enumerate(["本店所在地は？", "資本金は？", "発行済株式数は？"])]
     fired_dry = any(f["lint"] == "dry_trivia_cap" for f in run_quiz_lints(dry_list, corpus)["findings"])

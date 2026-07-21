@@ -330,7 +330,46 @@ def _host_reg(u):
     m = re.match(r"https?://([^/]+)", u)
     return _reg_domain(m.group(1).lower()) if m else None
 
-def acquire_corpus_thick(name, slug):
+# ★鮮度: 決算データは常に最新期を一次情報で取得(取れた期をverbatim確認してから採用)
+LATEST_FY = os.environ.get("QUIZ_LATEST_FY", "2026年3月期")
+_FY_SUBS = [("_253_", "_263_"), ("ja_253", "ja_263"), ("_253", "_263"), ("202505", "202605"),
+            ("202405", "202505"), ("2503", "2603"), ("25_ended", "26_ended"),
+            ("/2024/", "/2025/"), ("/2025/", "/2026/"), ("2025", "2026")]
+def _fy_variants(u):
+    out = set()
+    for a, b in _FY_SUBS:
+        if a in u:
+            out.add(u.replace(a, b))
+    return out
+def _has_fy(body, fy=None):
+    fy = (fy or LATEST_FY).replace(" ", "")
+    return fy in re.sub(r"\s", "", body or "")
+def _prefer_latest_tanshin(urls, official_reg):
+    """既存短信PDFのFY変種 + IR索引の最新年度PDF を試し、LATEST_FY をverbatim含むものを先頭へ。"""
+    pdfs = [u for u in urls if u.lower().split("?")[0].endswith(".pdf")]
+    cands = set()
+    for u in pdfs:
+        cands |= _fy_variants(u)
+    for u in urls:
+        ul = u.lower()
+        if ul.split("?")[0].endswith(".pdf"):
+            continue
+        if any(k in ul for k in ("securities", "library", "/ir", "meeting", "earnings", "report", "financial")):
+            for p in _expand_official_pdfs(u, official_reg, limit=6):
+                if any(y in p for y in ("263", "2606", "2605", "202606", "202605", "/2026/", "26_ended")):
+                    cands.add(p)
+    latest = []
+    for c in list(cands)[:8]:
+        if _host_reg(c) != official_reg or c in urls and c in latest:
+            continue
+        body = fetch_url(c)
+        if body and _has_fy(body):
+            latest.append(c)
+    if latest:
+        return latest + [u for u in urls if u not in latest]
+    return urls
+
+def acquire_corpus_thick(name, slug, prefer_latest=True):
     """品質固定モードの厚いcorpus。会社概要+seed + 公式IR/有報索引→PDF展開。
     ★v3: 本体公式ドメイン(registrable domain)のみに厳密限定。子会社ドメイン
     (例 mitsubishicorprtm.com=RtMジャパン)は registrable が異なるので除外し、本体への誤帰属を防ぐ。"""
@@ -361,6 +400,8 @@ def acquire_corpus_thick(name, slug):
         if any(k in ul for k in ("outline", "profile", "about", "company", "corporate")): return 3
         return 5
     urls = sorted(urls, key=prio)[:7]
+    if prefer_latest:                       # ★最新期(2026年3月期)短信を先頭へ(verbatim確認済のみ)
+        urls = _prefer_latest_tanshin(urls, official_reg)[:8]
     corpus = {}
     for u in urls:
         body = fetch_url(u)
@@ -368,6 +409,15 @@ def acquire_corpus_thick(name, slug):
             corpus[u] = body
         time.sleep(0.3)
     return corpus
+
+def corpus_latest_fy(corpus):
+    """corpus内に存在する最新の決算期(2026年3月期があればそれ、無ければ2025…)。鮮度lint/hold判定用。"""
+    joined = " ".join(corpus.values()) if isinstance(corpus, dict) else str(corpus)
+    j = re.sub(r"\s", "", joined)
+    for fy in ("2026年3月期", "2025年3月期", "2024年3月期"):
+        if fy in j:
+            return fy
+    return None
 
 
 # ── 生成(OpenAI, corpus厳密紐付け) ───────────────────────
@@ -847,6 +897,15 @@ def record_needs_source(slug, name, got, reason):
         w = csv.writer(fh)
         if newfile: w.writerow(["slug", "name", "got", "reason", "ts"])
         w.writerow([slug, name, got, reason, int(time.time())])
+
+FRESHNESS_HOLD_CSV = os.path.join(OUT, "freshness_hold.csv")
+def record_freshness_hold(slug, name, got_fy, want_fy=None):
+    """最新期(2026年3月期)が取得できず旧期のまま維持した社(捏造しない・後で手当て)。"""
+    newfile = not os.path.exists(FRESHNESS_HOLD_CSV)
+    with open(FRESHNESS_HOLD_CSV, "a", encoding="utf-8", newline="") as fh:
+        w = csv.writer(fh)
+        if newfile: w.writerow(["slug", "name", "got_fy", "want_fy", "ts"])
+        w.writerow([slug, name, got_fy, want_fy or LATEST_FY, int(time.time())])
 
 SHIP_MIN = 15   # 出荷基準: lint+review通過の良問が15問以上の社のみ出荷(質を下げて埋めない)
 THIN_CSV = os.path.join(OUT, "quiz_thin.csv")
