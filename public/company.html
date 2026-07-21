@@ -538,6 +538,7 @@ function goBack() {
 }
 let currentUserId = null;
 let currentCompanyId = null;
+let currentCompanyName = '';
 let isBookmarked = false;
 
 const CHAR_LABEL = { nana: 'ナナ', haruki: 'ハルキ', both: '二人' };
@@ -709,7 +710,7 @@ async function sharePanel(panelNum, dialogue) {
     if (liff && liff.isApiAvailable && liff.isApiAvailable('shareTargetPicker')) {
       await liff.shareTargetPicker([{
         type: 'text',
-        text: `「${dialogue}」\n\n10コマ就活で${currentCompanyId}を読んでます！`
+        text: `「${dialogue}」\n\nトーキャリで${currentCompanyName || 'この企業'}を読んでます！`
       }]);
       return;
     }
@@ -820,6 +821,7 @@ async function main() {
       body: JSON.stringify({ line_user_id: currentUserId, content_type: 'company', content_id: companyId })
     }).catch(() => {});
 
+    currentCompanyName = company.name || '';
     document.getElementById('header-title').textContent = company.name;
     document.title = `${company.name} | トーキャリ`;
     isBookmarked = !!company.bookmarked;

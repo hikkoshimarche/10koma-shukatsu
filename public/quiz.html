@@ -302,6 +302,7 @@ function renderQuestion(isSample){
 }
 
 function answer(chosen){
+  try{ localStorage.setItem('tk_quiz_answered','1'); }catch(e){} // ホームの就活ロードマップ用フラグ
   const q = QSET[qi];
   const optsEl = document.getElementById('opts');
   [...optsEl.children].forEach((b,i)=>{

@@ -125,6 +125,7 @@ function whyBlock(rat){
 }
 
 function renderResult(data){
+  try{ localStorage.setItem('tk_shindan_done','1'); }catch(e){} // ホームの就活ロードマップ用フラグ
   document.getElementById('sh-title').textContent='診断結果';
   const isReal=!!(data&&data.top_companies);
   connected=isReal;

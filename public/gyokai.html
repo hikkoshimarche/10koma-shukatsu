@@ -72,6 +72,7 @@ function render() {
 }
 
 async function main() {
+  try{ localStorage.setItem('tk_gyokai_seen','1'); }catch(e){} // ホームの就活ロードマップ用フラグ
   render();
   try {
     await liff.init({ liffId: LIFF_ID });

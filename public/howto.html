@@ -6,357 +6,232 @@
   <title>使い方・お問い合わせ | トーキャリ</title>
   <link rel="stylesheet" href="shared.css">
   <style>
-    /* ---- セクション見出し ---- */
-    .howto-section {
-      padding: 0 16px 8px;
-    }
+    .howto-section { padding: 0 16px 8px; }
 
-    /* ---- トーキャリとは ---- */
+    /* トーキャリとは */
     .about-box {
-      background: var(--ink);
-      color: var(--paper);
-      border: 3px solid var(--ink);
-      border-radius: 4px;
-      padding: 20px 18px;
-      margin-bottom: 14px;
-      box-shadow: var(--shadow-md);
-      position: relative;
-      overflow: hidden;
+      background: var(--ink); color: var(--paper); border: 3px solid var(--ink);
+      border-radius: 4px; padding: 20px 18px; margin-bottom: 14px;
+      box-shadow: var(--shadow-md); position: relative; overflow: hidden;
     }
-
     .about-box::before {
-      content: '';
-      position: absolute;
-      top: -40%;
-      right: -10%;
-      width: 80px;
-      height: 200%;
-      background: var(--accent-red);
-      transform: rotate(20deg);
-      opacity: 0.2;
+      content: ''; position: absolute; top: -40%; right: -10%; width: 80px; height: 200%;
+      background: var(--accent-red); transform: rotate(20deg); opacity: 0.2;
     }
-
     .about-box-lead {
-      font-family: "Reggae One", sans-serif;
-      font-size: 16px;
-      line-height: 1.7;
-      letter-spacing: 0.04em;
-      position: relative;
+      font-family: "Reggae One", sans-serif; font-size: 16px; line-height: 1.7;
+      letter-spacing: 0.04em; position: relative;
     }
+    .about-box-lead span { color: var(--accent-red); font-size: 18px; }
 
-    .about-box-lead span {
-      color: var(--accent-red);
-      font-size: 18px;
+    /* メニューカード */
+    .menu-card {
+      background: #fff; border: 2.5px solid var(--ink); border-radius: 4px;
+      padding: 14px 16px; margin-bottom: 12px; box-shadow: var(--shadow-sm);
     }
+    .menu-head { display: flex; align-items: center; gap: 10px; }
+    .menu-ic { font-size: 22px; line-height: 1; flex-shrink: 0; }
+    .menu-title {
+      font-family: "Kaisei Decol", sans-serif; font-size: 16px; font-weight: 700; color: var(--ink);
+    }
+    .menu-cell {
+      margin-left: auto; font-family: "Reggae One", sans-serif; font-size: 10px; color: var(--paper);
+      background: var(--accent-red); border: 1.5px solid var(--ink); border-radius: 20px;
+      padding: 2px 9px; white-space: nowrap; box-shadow: 1px 1px 0 var(--ink);
+    }
+    .menu-desc { font-size: 12.5px; color: var(--ink-soft); line-height: 1.65; margin-top: 8px; }
+    .flow-list { margin: 9px 0 0; padding: 0; list-style: none; counter-reset: st; }
+    .flow-list li {
+      position: relative; padding: 5px 0 5px 30px; font-size: 12.5px; color: var(--ink);
+      line-height: 1.5; counter-increment: st;
+    }
+    .flow-list li::before {
+      content: counter(st); position: absolute; left: 0; top: 4px;
+      font-family: "Reggae One", sans-serif; font-size: 11px; color: #fff; background: var(--ink);
+      width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    }
+    .flow-list li b { font-weight: 700; }
+    .flow-arrow { color: var(--ink-mute); font-size: 11px; padding-left: 30px; }
 
-    /* ---- ステップカード ---- */
-    .step-card {
-      background: #fff;
-      border: 2.5px solid var(--ink);
-      border-radius: 4px;
-      padding: 14px 16px;
-      margin-bottom: 12px;
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      position: relative;
+    /* その他機能 (コンパクト) */
+    .mini-feat {
+      display: flex; align-items: flex-start; gap: 12px; background: #fff; border: 2px solid var(--ink);
+      border-radius: 4px; padding: 12px 14px; margin-bottom: 10px; box-shadow: var(--shadow-sm);
     }
+    .mini-feat .mf-ic { font-size: 20px; line-height: 1.2; flex-shrink: 0; }
+    .mini-feat .mf-t { font-family: "Kaisei Decol", sans-serif; font-size: 14px; font-weight: 700; color: var(--ink); }
+    .mini-feat .mf-d { font-size: 12px; color: var(--ink-soft); line-height: 1.6; margin-top: 3px; }
 
-    .step-card:not(:last-child)::after {
-      content: '▼';
-      position: absolute;
-      bottom: -20px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 14px;
-      color: var(--accent-red);
-      line-height: 1;
+    /* 就活の流れ */
+    .flow-strip {
+      background: #fff; border: 2.5px solid var(--ink); border-radius: 4px; padding: 14px;
+      box-shadow: var(--shadow-sm); display: flex; align-items: stretch; gap: 6px; overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
+    .flow-step { flex: 0 0 auto; text-align: center; min-width: 64px; }
+    .flow-step .fs-ic {
+      width: 40px; height: 40px; margin: 0 auto 5px; border-radius: 12px; background: #eef3f9;
+      display: flex; align-items: center; justify-content: center; font-size: 20px; border: 2px solid var(--ink);
+    }
+    .flow-step .fs-l { font-size: 10.5px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+    .flow-sep { align-self: center; color: var(--accent-red); font-weight: 700; flex: 0 0 auto; }
 
-    .step-num {
-      font-family: "Reggae One", sans-serif;
-      font-size: 12px;
-      color: var(--paper);
-      background: var(--accent-red);
-      border: 2px solid var(--ink);
-      border-radius: 20px;
-      padding: 3px 10px;
-      white-space: nowrap;
-      flex-shrink: 0;
-      letter-spacing: 0.06em;
-      box-shadow: 1px 1px 0 var(--ink);
-      margin-top: 2px;
-    }
+    /* FAQ */
+    .faq-item { background: #fff; border: 2.5px solid var(--ink); border-radius: 4px; margin-bottom: 12px; box-shadow: var(--shadow-sm); overflow: hidden; }
+    .faq-q { display: flex; align-items: flex-start; gap: 10px; padding: 14px 16px; cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; }
+    .faq-q-badge { font-family: "Reggae One", sans-serif; font-size: 15px; color: var(--paper); background: var(--ink); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .faq-q-text { flex: 1; font-family: "Kaisei Decol", sans-serif; font-size: 14px; font-weight: 700; color: var(--ink); line-height: 1.5; padding-top: 3px; }
+    .faq-chevron { font-size: 14px; color: var(--ink-mute); flex-shrink: 0; transition: transform 0.2s; padding-top: 4px; }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+    .faq-a { display: none; padding: 0 16px 14px 54px; border-top: 1.5px dashed var(--ink-soft); }
+    .faq-item.open .faq-a { display: block; }
+    .faq-a-badge { font-family: "Reggae One", sans-serif; font-size: 13px; color: var(--accent-red); margin-right: 4px; }
+    .faq-a-text { font-size: 13px; color: var(--ink-soft); line-height: 1.75; display: inline; }
+    .faq-a-wrap { padding-top: 10px; }
 
-    .step-body {
-      flex: 1;
-    }
+    /* お問い合わせ */
+    .contact-box { background: #fff; border: 2.5px solid var(--ink); border-radius: 4px; padding: 18px 16px; box-shadow: var(--shadow-sm); text-align: center; }
+    .contact-icon { font-size: 36px; line-height: 1; margin-bottom: 8px; }
+    .contact-text { font-size: 14px; color: var(--ink-soft); line-height: 1.7; font-family: "Kaisei Decol", sans-serif; }
 
-    .step-icon-title {
-      font-family: "Kaisei Decol", sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--ink);
-      line-height: 1.4;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .step-icon {
-      font-size: 20px;
-      line-height: 1;
-    }
-
-    .step-desc {
-      font-size: 12px;
-      color: var(--ink-soft);
-      line-height: 1.65;
-      margin-top: 5px;
-    }
-
-    /* ---- FAQ ---- */
-    .faq-item {
-      background: #fff;
-      border: 2.5px solid var(--ink);
-      border-radius: 4px;
-      margin-bottom: 12px;
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-    }
-
-    .faq-q {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 14px 16px;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
-
-    .faq-q-badge {
-      font-family: "Reggae One", sans-serif;
-      font-size: 15px;
-      color: var(--paper);
-      background: var(--ink);
-      border-radius: 50%;
-      width: 28px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      letter-spacing: 0;
-    }
-
-    .faq-q-text {
-      flex: 1;
-      font-family: "Kaisei Decol", sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--ink);
-      line-height: 1.5;
-      padding-top: 3px;
-    }
-
-    .faq-chevron {
-      font-size: 14px;
-      color: var(--ink-mute);
-      flex-shrink: 0;
-      transition: transform 0.2s;
-      padding-top: 4px;
-    }
-
-    .faq-item.open .faq-chevron {
-      transform: rotate(180deg);
-    }
-
-    .faq-a {
-      display: none;
-      padding: 0 16px 14px 54px;
-      border-top: 1.5px dashed var(--ink-soft);
-    }
-
-    .faq-item.open .faq-a {
-      display: block;
-    }
-
-    .faq-a-badge {
-      font-family: "Reggae One", sans-serif;
-      font-size: 13px;
-      color: var(--accent-red);
-      margin-right: 4px;
-    }
-
-    .faq-a-text {
-      font-size: 13px;
-      color: var(--ink-soft);
-      line-height: 1.75;
-      display: inline;
-    }
-
-    .faq-a-wrap {
-      padding-top: 10px;
-    }
-
-    /* ---- お問い合わせ ---- */
-    .contact-box {
-      background: #fff;
-      border: 2.5px solid var(--ink);
-      border-radius: 4px;
-      padding: 18px 16px;
-      box-shadow: var(--shadow-sm);
-      text-align: center;
-    }
-
-    .contact-icon {
-      font-size: 36px;
-      line-height: 1;
-      margin-bottom: 8px;
-    }
-
-    .contact-text {
-      font-size: 14px;
-      color: var(--ink-soft);
-      line-height: 1.7;
-      font-family: "Kaisei Decol", sans-serif;
-    }
-
-    /* ---- フッター ---- */
-    .page-footer {
-      text-align: center;
-      padding: 24px 16px env(safe-area-inset-bottom, 20px);
-      font-family: "Reggae One", sans-serif;
-      font-size: 13px;
-      color: var(--ink-mute);
-      letter-spacing: 0.12em;
-      border-top: 2px dashed var(--ink-soft);
-    }
-    /* 紙背景(明色)なのでロゴは白パネル不要・そのまま可読 */
-    .page-footer .footer-logo {
-      display: inline-block;
-      height: 34px;
-      width: auto;
-      max-width: 100%;
-    }
+    /* フッター */
+    .page-footer { text-align: center; padding: 24px 16px env(safe-area-inset-bottom, 20px); font-family: "Reggae One", sans-serif; font-size: 13px; color: var(--ink-mute); letter-spacing: 0.12em; border-top: 2px dashed var(--ink-soft); }
+    .page-footer .footer-logo { display: inline-block; height: 34px; width: auto; max-width: 100%; }
   </style>
 </head>
 <body>
 <div class="page-wrapper">
 
-  <!-- ヘッダー -->
   <header class="header">
     <button class="btn-back" onclick="history.back()" aria-label="戻る">←</button>
     <h1 class="header-title">使い方・お問い合わせ</h1>
     <div class="header-spacer"></div>
   </header>
 
-  <!-- 1. トーキャリとは -->
+  <!-- トーキャリとは -->
   <div class="content howto-section">
     <p class="section-title">トーキャリとは</p>
     <div class="about-box">
       <p class="about-box-lead">
-        企業のリアルを知る場所。<br>
-        就活生のための<span>4本立て</span>学習プラットフォームです。
+        企業のリアルを、<span>一次情報</span>で。<br>
+        就活生のための企業・業界研究プラットフォームです。
       </p>
     </div>
   </div>
 
-  <!-- 2. 使い方ガイド -->
+  <!-- メニューの使い方 (リッチメニュー6セル対応) -->
   <div class="content howto-section">
-    <p class="section-title">使い方ガイド</p>
+    <p class="section-title">メニューの使い方</p>
 
-    <div class="step-card">
-      <span class="step-num">STEP 1</span>
-      <div class="step-body">
-        <p class="step-icon-title">
-          <span class="step-icon">📱</span>10コマ
-        </p>
-        <p class="step-desc">マンガ形式で企業の概要を10分で把握</p>
-      </div>
+    <div class="menu-card">
+      <div class="menu-head"><span class="menu-ic">🏢</span><span class="menu-title">企業研究</span><span class="menu-cell">メニュー左上</span></div>
+      <p class="menu-desc">業界から会社を選び、1社をとことん深掘り。</p>
+      <ol class="flow-list">
+        <li><b>10コマ</b>で会社の全体像をつかむ</li>
+        <li><b>企業紹介動画</b>で雰囲気を知る</li>
+        <li><b>決算書分析動画</b>で数字を読み解く</li>
+        <li><b>データシート</b>で事業・財務・社風を確認（出典付き）</li>
+        <li><b>クイズ</b>で理解度をチェック</li>
+        <li><b>AI OB訪問ルーム</b>で気になることを質問</li>
+      </ol>
     </div>
 
-    <div class="step-card">
-      <span class="step-num">STEP 2</span>
-      <div class="step-body">
-        <p class="step-icon-title">
-          <span class="step-icon">🎬</span>企業動画
-        </p>
-        <p class="step-desc">より深く企業を理解する</p>
-      </div>
+    <div class="menu-card">
+      <div class="menu-head"><span class="menu-ic">🌐</span><span class="menu-title">業界研究</span><span class="menu-cell">メニュー中上</span></div>
+      <p class="menu-desc">業界を選んで、まるごと理解。</p>
+      <ol class="flow-list">
+        <li><b>業界10コマ</b>で業界の全体像をつかむ</li>
+        <li><b>業界紹介動画</b>で流れを知る</li>
+        <li><b>業界クイズ</b>で理解度をチェック</li>
+      </ol>
     </div>
 
-    <div class="step-card">
-      <span class="step-num">STEP 3</span>
-      <div class="step-body">
-        <p class="step-icon-title">
-          <span class="step-icon">📊</span>決算書動画
-        </p>
-        <p class="step-desc">数字で企業を読み解き、面接で語れるようになる</p>
-      </div>
+    <div class="menu-card">
+      <div class="menu-head"><span class="menu-ic">🧭</span><span class="menu-title">相性診断</span><span class="menu-cell">メニュー右上</span></div>
+      <p class="menu-desc">かんたんな質問に答えると、公式公開情報と業界傾向から、あなたに合いそうな業界・企業を提案します。<b>優劣づけはしません</b>——あなたが判断するための材料です。</p>
     </div>
 
-    <div class="step-card">
-      <span class="step-num">STEP 4</span>
-      <div class="step-body">
-        <p class="step-icon-title">
-          <span class="step-icon">🚪</span>ルーム
-        </p>
-        <p class="step-desc">AI OB訪問で疑問を解消</p>
-      </div>
+    <div class="menu-card">
+      <div class="menu-head"><span class="menu-ic">⭐</span><span class="menu-title">お気に入り</span><span class="menu-cell">メニュー左下</span></div>
+      <p class="menu-desc">気になる企業を保存。一覧から「選んで比較」もできます。</p>
+    </div>
+
+    <div class="menu-card">
+      <div class="menu-head"><span class="menu-ic">🛡️</span><span class="menu-title">お守り</span><span class="menu-cell">メニュー右下</span></div>
+      <p class="menu-desc">面接前・GD前・結果待ち・眠れない夜など、不安なときに。そっと背中を押す言葉を、いまの気持ちに合わせてお届けします。</p>
+    </div>
+
+    <div class="menu-card">
+      <div class="menu-head"><span class="menu-ic">📖</span><span class="menu-title">使い方</span><span class="menu-cell">メニュー中下</span></div>
+      <p class="menu-desc">このページ。困ったときはここから。</p>
     </div>
   </div>
 
-  <!-- 3. FAQ -->
+  <!-- そのほかの機能 -->
+  <div class="content howto-section">
+    <p class="section-title">そのほかの機能</p>
+
+    <div class="mini-feat">
+      <span class="mf-ic">⚖️</span>
+      <div><p class="mf-t">企業比較</p><p class="mf-d">2〜3社を横並びで比較。年収・事業・決算などを一次情報＋出典付きで確認できます（順位づけはしません）。</p></div>
+    </div>
+    <div class="mini-feat">
+      <span class="mf-ic">🔍</span>
+      <div><p class="mf-t">検索</p><p class="mf-d">ホームの検索窓から、会社名・業界名ですぐに探せます。</p></div>
+    </div>
+    <div class="mini-feat">
+      <span class="mf-ic">🎯</span>
+      <div><p class="mf-t">復習</p><p class="mf-d">クイズで間違えた問題を、あとからまとめておさらいできます。</p></div>
+    </div>
+  </div>
+
+  <!-- 就活の流れ -->
+  <div class="content howto-section">
+    <p class="section-title">就活の流れ</p>
+    <div class="flow-strip">
+      <div class="flow-step"><span class="fs-ic">🧭</span><span class="fs-l">自己分析<br>(相性診断)</span></div>
+      <span class="flow-sep">›</span>
+      <div class="flow-step"><span class="fs-ic">🌐</span><span class="fs-l">業界研究</span></div>
+      <span class="flow-sep">›</span>
+      <div class="flow-step"><span class="fs-ic">🏢</span><span class="fs-l">企業研究</span></div>
+      <span class="flow-sep">›</span>
+      <div class="flow-step"><span class="fs-ic">🧠</span><span class="fs-l">理解度<br>チェック</span></div>
+      <span class="flow-sep">›</span>
+      <div class="flow-step"><span class="fs-ic">🛡️</span><span class="fs-l">選考対策<br>(お守り)</span></div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
   <div class="content howto-section">
     <p class="section-title">❓ よくある質問</p>
 
     <div class="faq-item">
-      <div class="faq-q">
-        <span class="faq-q-badge">Q</span>
-        <span class="faq-q-text">費用はかかりますか？</span>
-        <span class="faq-chevron">▼</span>
-      </div>
-      <div class="faq-a">
-        <div class="faq-a-wrap">
-          <span class="faq-a-badge">A</span>
-          <span class="faq-a-text">現在無料でご利用いただけます。</span>
-        </div>
-      </div>
+      <div class="faq-q"><span class="faq-q-badge">Q</span><span class="faq-q-text">費用はかかりますか？</span><span class="faq-chevron">▼</span></div>
+      <div class="faq-a"><div class="faq-a-wrap"><span class="faq-a-badge">A</span><span class="faq-a-text">現在無料でご利用いただけます。</span></div></div>
     </div>
 
     <div class="faq-item">
-      <div class="faq-q">
-        <span class="faq-q-badge">Q</span>
-        <span class="faq-q-text">トーキャリ・ルームのOBは本物ですか？</span>
-        <span class="faq-chevron">▼</span>
-      </div>
-      <div class="faq-a">
-        <div class="faq-a-wrap">
-          <span class="faq-a-badge">A</span>
-          <span class="faq-a-text">AIシミュレーションです。実在のOBではありませんが、各企業の公開情報をもとに設計された複数のAIキャラクターです（登場人数は企業により異なります）。</span>
-        </div>
-      </div>
+      <div class="faq-q"><span class="faq-q-badge">Q</span><span class="faq-q-text">AI OB訪問ルームのOBは本物ですか？</span><span class="faq-chevron">▼</span></div>
+      <div class="faq-a"><div class="faq-a-wrap"><span class="faq-a-badge">A</span><span class="faq-a-text">AIシミュレーションです。実在のOBではありませんが、各企業の公開情報をもとに設計された複数のAIキャラクターです（登場人数は企業により異なります）。</span></div></div>
     </div>
 
     <div class="faq-item">
-      <div class="faq-q">
-        <span class="faq-q-badge">Q</span>
-        <span class="faq-q-text">対応している企業はどれですか？</span>
-        <span class="faq-chevron">▼</span>
-      </div>
-      <div class="faq-a">
-        <div class="faq-a-wrap">
-          <span class="faq-a-badge">A</span>
-          <span class="faq-a-text">主要400社に対応しています。</span>
-        </div>
-      </div>
+      <div class="faq-q"><span class="faq-q-badge">Q</span><span class="faq-q-text">対応している企業・業界は？</span><span class="faq-chevron">▼</span></div>
+      <div class="faq-a"><div class="faq-a-wrap"><span class="faq-a-badge">A</span><span class="faq-a-text">主要400社・16業界に対応しています。</span></div></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q"><span class="faq-q-badge">Q</span><span class="faq-q-text">年収や決算の数字はどこから？</span><span class="faq-chevron">▼</span></div>
+      <div class="faq-a"><div class="faq-a-wrap"><span class="faq-a-badge">A</span><span class="faq-a-text">有価証券報告書・決算短信・公式サイトなどの公式公開情報に基づき、出典を付けています。非公開・未取得の項目は推測で埋めず「データなし」と明記します。</span></div></div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q"><span class="faq-q-badge">Q</span><span class="faq-q-text">診断や比較で「どの会社が良い」と順位はつきますか？</span><span class="faq-chevron">▼</span></div>
+      <div class="faq-a"><div class="faq-a-wrap"><span class="faq-a-badge">A</span><span class="faq-a-text">つけません。優劣・勝敗の判定ではなく、あなた自身が判断するための参考材料をお見せするものです。</span></div></div>
     </div>
   </div>
 
-  <!-- 4. お問い合わせ -->
+  <!-- お問い合わせ -->
   <div class="content howto-section">
     <p class="section-title">📩 お問い合わせ</p>
     <div class="contact-box">
@@ -371,9 +246,7 @@
 
 <script>
   document.querySelectorAll('.faq-q').forEach(q => {
-    q.addEventListener('click', () => {
-      q.closest('.faq-item').classList.toggle('open');
-    });
+    q.addEventListener('click', () => { q.closest('.faq-item').classList.toggle('open'); });
   });
 </script>
 </body>

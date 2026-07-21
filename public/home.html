@@ -83,6 +83,21 @@
     .sr-empty { background:#fff; border-radius:12px; padding:18px 16px; text-align:center; color:var(--ink); box-shadow:0 2px 8px rgba(0,0,0,0.14); }
     .sr-empty p { font-size:14px; margin-bottom:12px; color:#556; }
     .sr-empty a { display:inline-block; background:var(--navy); color:#fff; text-decoration:none; padding:10px 20px; border-radius:999px; font-size:13px; font-weight:700; }
+
+    /* 就活の現在地 (ロードマップ) */
+    .rm-wrap { background:#fff; border-radius:16px; padding:14px 12px 12px; box-shadow:0 3px 12px rgba(0,0,0,0.16); }
+    .rm-strip { display:flex; align-items:flex-start; justify-content:center; gap:1px; overflow-x:auto; padding-bottom:4px; -webkit-overflow-scrolling:touch; }
+    .rm-step { flex:0 0 auto; width:58px; text-align:center; }
+    .rm-ic { width:42px; height:42px; margin:0 auto 5px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:19px; background:#eef2f7; color:#9aa5b1; border:2px solid #e2e8f0; }
+    .rm-l { font-size:10.5px; font-weight:700; color:#9aa5b1; line-height:1.25; display:block; }
+    .rm-step.done .rm-ic { background:#e7f4ec; color:#2f8a54; border-color:#bfe3cd; }
+    .rm-step.done .rm-l { color:#2f8a54; }
+    .rm-step.current .rm-ic { background:linear-gradient(135deg,var(--gold),var(--gold-deep)); color:#3a2c05; border-color:var(--gold); box-shadow:0 0 0 3px rgba(224,165,42,0.28); }
+    .rm-step.current .rm-l { color:var(--ink); }
+    .rm-sep { align-self:flex-start; color:#c3ccd6; font-weight:700; font-size:13px; flex:0 0 auto; padding-top:12px; }
+    .rm-cta { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:11px; background:var(--navy); color:#fff; text-decoration:none; border-radius:12px; padding:12px 15px; }
+    .rm-cta span { font-size:12px; color:rgba(255,255,255,0.85); min-width:0; }
+    .rm-cta b { font-size:14px; font-weight:800; white-space:nowrap; }
   </style>
 </head>
 <body>
@@ -103,6 +118,7 @@
     <div id="search-results" class="search-results"></div>
   </div>
 
+  <div id="roadmap" class="home-sec" style="display:none"></div>
   <div id="continue" class="home-sec" style="display:none"></div>
   <div id="review" class="home-sec" style="display:none"></div>
   <div id="favorites" class="home-sec" style="display:none"></div>
@@ -140,6 +156,37 @@ function renderEntries(){
       <span class="eic">${i.ic}</span>
       <span style="flex:1;min-width:0"><span class="el">${i.l}</span><span class="es">${i.s}</span></span>
       <span class="ea">›</span></a>`).join('');
+}
+
+// ① 就活の現在地（既存API=view_logs流用 + 各機能利用フラグ。新規生成なし・常時表示）
+async function renderRoadmap(){
+  const steps=[
+    {ic:'🧭', l:'自己分析',   href:'/shindan.html', cta:'相性診断をする'},
+    {ic:'🌐', l:'業界研究',   href:'/gyokai',       cta:'業界研究へ'},
+    {ic:'🏢', l:'企業研究',   href:'/industry',     cta:'企業研究へ'},
+    {ic:'🧠', l:'理解度',     href:'/quiz.html',    cta:'クイズに挑戦'},
+    {ic:'🛡️', l:'選考対策',   href:'/omamori.html', cta:'お守りを見る'},
+  ];
+  const flag=k=>{ try{ return localStorage.getItem(k)==='1'; }catch(e){ return false; } };
+  let viewedCompany=false;
+  try{
+    const r=await fetch(`${API_BASE}/api/recent-companies?user_id=${encodeURIComponent(lineUserId)}&limit=1`);
+    const l=r.ok?await r.json():[]; viewedCompany=Array.isArray(l)&&l.length>0;
+  }catch(e){}
+  const done=[ flag('tk_shindan_done'), flag('tk_gyokai_seen'), viewedCompany, flag('tk_quiz_answered'), flag('tk_omamori_used') ];
+  const allDone=done.every(Boolean);
+  let cur=done.findIndex(d=>!d); if(cur<0) cur=steps.length-1;  // 全ステップ済→最後(選考対策)を現在地
+  const strip=steps.map((s,i)=>{
+    const cls=done[i]?'done':(i===cur?'current':'todo');
+    return `<div class="rm-step ${cls}"><span class="rm-ic">${done[i]?'✓':s.ic}</span><span class="rm-l">${s.l}</span></div>`;
+  }).join('<span class="rm-sep">›</span>');
+  const t=steps[cur];
+  const lead = allDone ? 'ひと通りOK！本番前はお守りも' : (done.some(Boolean) ? '次はここから' : 'まずは自己分析から');
+  const el=document.getElementById('roadmap');
+  el.innerHTML=`<div class="home-sec-head"><span class="home-sec-title">就活の<span class="em">現在地</span></span></div>
+    <div class="rm-wrap"><div class="rm-strip">${strip}</div>
+      <a class="rm-cta" href="${t.href}"><span>${esc(lead)}</span><b>${esc(t.cta)} ›</b></a></div>`;
+  el.style.display='';
 }
 
 // ② 続きから
@@ -279,8 +326,8 @@ async function main(){
 
   mountGuide(displayName ? `こんにちは、${esc(displayName)}さん！<br>今日はどこから見る？` : 'ようこそ！<br>今日はどこから見る？');
 
-  // ②③④は並行取得（無ければ各自非表示）。⑥お知らせは中身が来るまで非表示。
-  renderContinue(); renderReview(); renderFavorites();
+  // ①就活の現在地は常時表示。②③④は並行取得（無ければ各自非表示）。⑥お知らせは中身が来るまで非表示。
+  renderRoadmap(); renderContinue(); renderReview(); renderFavorites();
 }
 main();
 </script>
