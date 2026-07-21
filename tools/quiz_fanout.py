@@ -1389,7 +1389,7 @@ def run_freshness():
         line(f"[鮮度 CP{cp_idx}] 完了{cp['done']}/{len(shipped)} / 更新{cp['updated']}・保留{cp['hold']+cp['regen_thin']} / "
              f"Δq{cp['q_delta']} / ${cp['cost']}")
 
-    batch, stop = [], None
+    batch, stop, consec_err = [], None, 0
     it = iter(shipped); inflight = {}
     with ThreadPoolExecutor(max_workers=PARALLEL) as ex:
         for _ in range(PARALLEL):
@@ -1412,6 +1412,13 @@ def run_freshness():
                         if r["slug"] not in st["hold"]: st["hold"].append(r["slug"])
                         _hold_row(r["slug"], r["name"], r.get("reason", "hold"))
                 batch.append(r)
+                # systemic OpenAI失敗(残高枯渇/quota)検知: err:連続8で HALT(Anthropicに切替えず停止・要報告)
+                if r["status"] in ("hold", "regen_thin") and str(r.get("reason", "")).startswith("err:"):
+                    consec_err += 1
+                else:
+                    consec_err = 0
+                if consec_err >= 8:
+                    stop = "openai_fail"
                 print(f"  {r['status']:10} {r['slug']:16} n={r.get('n')} fin={r.get('fin_latest')} ${_cost['usd']:.2f}"
                       + (f" [{r.get('reason')}]" if r.get("reason") else ""), flush=True)
                 if not cost_ok(): stop = "cost"
@@ -1428,8 +1435,12 @@ def run_freshness():
            "updated": len(st["updated"]), "hold": len(st["hold"]),
            "regen_thin": len(st["regen_thin"]), "q_delta": st["q_delta"],
            "cost_usd": round(_cost["usd"], 2), "stop": stop or "done", "latest_fy": LATEST_FY}
-    line(f"[鮮度 {agg['stop']}] 更新{agg['updated']}社 / 保留{agg['hold']+agg['regen_thin']}(旧期維持) / "
-         f"Δq{agg['q_delta']} / ${agg['cost_usd']} ({LATEST_FY})")
+    if stop == "openai_fail":
+        line(f"⚠️[鮮度 HALT] OpenAI連続失敗(残高枯渇/quota疑い)で停止。Anthropicへは切替えず待機。"
+             f"更新{agg['updated']}社/保留{agg['hold']+agg['regen_thin']}/${agg['cost_usd']}。残高補充後 --freshness で再開可(resumable)。")
+    else:
+        line(f"[鮮度 {agg['stop']}] 更新{agg['updated']}社 / 保留{agg['hold']+agg['regen_thin']}(旧期維持) / "
+             f"Δq{agg['q_delta']} / ${agg['cost_usd']} ({LATEST_FY})")
     print(json.dumps(agg, ensure_ascii=False, indent=1))
     return 0
 
