@@ -418,6 +418,43 @@ def lint_dry_trivia_cap(quiz):
                           f"ドライトリビア({_concept_of(q)})が上限{DRY_CAP}超過({len(dry)}問) → 事業/セグメント/財務へ差し替え"))
     return res
 
+# ★v3-4(次回再生成用) 同一指標の年度シリーズは2問まで(as_of無視で同一conceptを2問に制限)
+METRIC_YEAR_CAP = 2
+def lint_metric_year_series_cap(quiz):
+    from collections import defaultdict
+    byc = defaultdict(list)
+    for q in quiz:
+        c = _concept_of(q)
+        if c:
+            byc[c].append(q.get("id"))
+    res = []
+    for c, ids in byc.items():
+        if len(ids) > METRIC_YEAR_CAP:
+            for qid in ids[METRIC_YEAR_CAP:]:
+                res.append(_f("metric_year_series_cap", "error", qid,
+                              f"同一指標『{c}』が{len(ids)}問(年度シリーズ上限{METRIC_YEAR_CAP}) → 削減"))
+    return res
+
+# ★v3-4(次回再生成用) 住所/郵便番号由来の数字を誤答に使わない
+ADDR_UNIT = re.compile(r"(丁目|番地|番|号|条|郵便番号|〒)")
+def lint_address_number_distractor(q, corpus):
+    body = corpus.get((q.get("source_url") or "").strip(), "") if corpus else ""
+    if not body:
+        return []
+    bn = _norm_num(body)
+    opts = q.get("options") or []
+    ci = q.get("correct")
+    res = []
+    for i, o in enumerate(opts):
+        if i == ci:
+            continue
+        for t in _num_tokens(str(o)):
+            if re.search(re.escape(t) + r"\s*(丁目|番地|番|号|条)", bn):
+                res.append(_f("address_number_distractor", "error", q.get("id"),
+                              f"誤答の数値{t}が住所由来(丁目/番地/号) → 住所数字を誤答に使わない"))
+                break
+    return res
+
 # ★v3-2② 可変事実は as_of 必須(社長・従業員数・会社数・株式数・拠点・資本金)
 VARIABLE_CONCEPTS = {"経営者", "従業員数", "連結子会社数", "株式数", "拠点", "資本金"}
 def lint_variable_asof(q):
@@ -489,6 +526,7 @@ def run_quiz_lints(quiz, corpus=None):
             findings += fn(q)
         findings += lint_unit_consistency(q)
         findings += lint_variable_asof(q)     # ④可変事実はas_of必須
+        findings += lint_address_number_distractor(q, corpus)  # v3-4:住所数字を誤答に使わない
         findings += lint_no_fabrication_number(q, corpus)
         findings += lint_no_fabrication_date(q, corpus)
         findings += lint_rank_claim(q, corpus)
@@ -498,6 +536,7 @@ def run_quiz_lints(quiz, corpus=None):
     findings += lint_dry_trivia_cap(quiz)     # リスト全体でトリビア上限
     findings += lint_derived_value(quiz)      # ③派生値(合計=和)
     findings += lint_list_membership_dedup(quiz)  # ②含む/含まないペア
+    findings += lint_metric_year_series_cap(quiz)  # v3-4:同一指標の年度シリーズ上限2
     for qid, c in seen_ids.items():
         if c > 1:
             findings.append(_f("single_correct", "error", qid, f"id重複×{c}"))
@@ -702,7 +741,19 @@ def selftest():
             {**base, "id": "p2", "category": "製品・サービス", "q_text": "兼松が提供するSaaSはどれか？", "options": ["KG ZAICO", "X", "Y", "Z"], "as_of": ""}]
     fired_prod = any(f["lint"] == "concept_dedup" for f in run_quiz_lints(prod, corpus)["findings"])
     print(f"  {'OK ' if fired_prod else 'NG '} name_dedup(製品名×2): {'発火' if fired_prod else 'NG'}")
-    ok = ok and fired_val and fired_phone and fired_pc and fired_dv and fired_lm and fired_url and fired_neg and fired_prod
+    # v3-4① 同一指標の年度シリーズ上限2(収益×3年度)
+    ys = [{**base, "id": f"y{i}", "category": "財務数値", "q_text": f"{y}の収益は？",
+           "options": ["18,617,601百万円", "19,567,601百万円", "21,496,104百万円", "950,709百万円"],
+           "as_of": y} for i, y in enumerate(["2023年3月期", "2024年3月期", "2025年3月期"])]
+    fired_ys = any(f["lint"] == "metric_year_series_cap" for f in run_quiz_lints(ys, corpus)["findings"])
+    print(f"  {'OK ' if fired_ys else 'NG '} metric_year_series_cap(収益×3年度): {'発火' if fired_ys else 'NG'}")
+    # v3-4② 住所由来の数字を誤答に(本文に『2丁目』)
+    ac = {"http://addr": "本店は東京都千代田区丸の内2丁目3番1号。収益は18,617,601百万円。"}
+    addrq = {**base, "id": "ad", "category": "財務数値", "q_text": "収益は？",
+             "options": ["18,617,601百万円", "3番地", "2丁目", "1号"], "source_url": "http://addr", "as_of": "2025年"}
+    fired_ad = any(f["lint"] == "address_number_distractor" for f in run_quiz_lints([addrq], ac)["findings"])
+    print(f"  {'OK ' if fired_ad else 'NG '} address_number_distractor: {'発火' if fired_ad else 'NG'}")
+    ok = ok and fired_val and fired_phone and fired_pc and fired_dv and fired_lm and fired_url and fired_neg and fired_prod and fired_ys and fired_ad
     dry_list = [{**base, "id": f"t{i}", "q_text": q, "options": ["A", "B", "C", "D"]}
                 for i, q in enumerate(["本店所在地は？", "資本金は？", "発行済株式数は？"])]
     fired_dry = any(f["lint"] == "dry_trivia_cap" for f in run_quiz_lints(dry_list, corpus)["findings"])
