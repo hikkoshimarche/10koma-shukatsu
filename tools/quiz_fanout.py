@@ -1358,16 +1358,15 @@ def run_all_locked():
             iout = os.path.join(OUT, islug, "quiz_30q_locked_v3.json")
             if os.path.exists(iout) or islug in st["industry_done"] or not cost_ok():
                 continue
+            # 代表5社(出荷済)のcorpusをmerge(全社mergeは薄くなるため)
+            mems = [c["slug"] for c in companies if c["industry"] == iname
+                    and os.path.exists(os.path.join(OUT, c["slug"], "quiz_corpus_locked_v3.json"))][:5]
             mcorpus = {}
-            for c in companies:
-                if c["industry"] != iname:
-                    continue
-                cf = os.path.join(OUT, c["slug"], "quiz_corpus_locked_v3.json")
-                if os.path.exists(cf):
-                    try:
-                        mcorpus.update(json.load(open(cf)))
-                    except Exception:
-                        pass
+            for ms in mems:
+                try:
+                    mcorpus.update(json.load(open(os.path.join(OUT, ms, "quiz_corpus_locked_v3.json"))))
+                except Exception:
+                    pass
             if len(mcorpus) < 2:
                 continue
             extra = ("業界クイズ。可能なら『最大/最高』の順位設問は type:\"rank\" と competitors:"
