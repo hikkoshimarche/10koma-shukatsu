@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { recommend } from './shindan_match'
 
 type Bindings = {
   DB: D1Database
@@ -720,6 +721,15 @@ app.get('/api/datasheet', async (c) => {
     if (!row) return c.json({ error: 'not found', id }, 404)
     return c.json({ id: row.company_id, ...safeJson(row.data) })
   } catch (e) { return c.json({ error: 'unavailable', id }, 404) }
+})
+
+// === 業界・企業診断（決定論マッチング・AI課金なし・shindanタブA由来データをバンドル） ===
+app.post('/api/shindan', async (c) => {
+  try {
+    const body = await c.req.json().catch(() => ({}))
+    const answers = (body && body.answers) || {}
+    return c.json(recommend(answers))
+  } catch (e) { return c.json({ error: 'bad request' }, 400) }
 })
 
 export default app
