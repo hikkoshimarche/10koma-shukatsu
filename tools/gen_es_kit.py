@@ -110,6 +110,12 @@ def verify_materials(cands, corpus):
     return [c for i, c in enumerate(cands) if sup.get(i, False)]
 
 
+# 非公式ソース(大学/百科/媒体/株式集約サイト等)=Source-or-Silence違反・誤事実の温床。材料に採らない。
+_NONOFFICIAL = re.compile(r"\.ac\.jp|\.edu|osakahu|univ|wikipedia|kabutan|minkabu|itmedia|impress|"
+                          r"nikkei\.com|reuters|bloomberg|prtimes|yahoo|note\.com|ameblo|hatena|"
+                          r"toyokeizai|diamond\.jp|president\.jp|newspicks|wantedly", re.I)
+
+
 def load_prose_facts(ds):
     out = []
     sec = ds.get("sections", {})
@@ -123,9 +129,12 @@ def load_prose_facts(ds):
             if not isinstance(it, dict):
                 continue
             f = (it.get("fact") or "").strip()
-            if not f or _DRY_FACT.search(f) or _NEG_SHAPE.search(f) or _FIN_EVENT.search(f):  # 登記系/否定形/財務イベントを除外
+            su = it.get("source_url", "")
+            if not f or _DRY_FACT.search(f) or _NEG_SHAPE.search(f) or _FIN_EVENT.search(f):  # 登記系/否定形/財務イベント除外
                 continue
-            out.append({"axis": axis, "fact": f, "source_url": it.get("source_url", "")})
+            if _NONOFFICIAL.search(su):                # 非公式ソースの事実は不採用(Source-or-Silence)
+                continue
+            out.append({"axis": axis, "fact": f, "source_url": su})
     return out
 
 
