@@ -233,9 +233,16 @@ def selftest():
 def main():
     if "--selftest" in sys.argv:
         sys.exit(0 if selftest() else 1)
+    import glob
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     pilot = "--pilot" in sys.argv
-    thin_rows, results = [], []
+    allmode = "--all" in sys.argv
+    if allmode:                                     # 全datasheet社(es_kit.json未生成のみ=resumable)
+        args = [os.path.basename(os.path.dirname(d)) for d in sorted(glob.glob(os.path.join(OUT, "*/datasheet.json")))
+                if not os.path.basename(os.path.dirname(d)).startswith("industry__")
+                and not os.path.exists(os.path.join(os.path.dirname(d), "es_kit.json"))]
+        q.line(f"📝 ES kit fanout 開始/再開: 未生成{len(args)}社")
+    thin_rows, results, ship, cp_i = [], [], 0, 0
     for slug in args:
         dp = os.path.join(OUT, slug, "datasheet.json")
         cp = os.path.join(OUT, slug, "quiz_corpus_locked_v3.json")
@@ -260,14 +267,24 @@ def main():
         nm, ni = len(kit["motivation_sheet"]["materials"]), len(kit["interview_questions"])
         print(f"OK {slug}: 材料{nm} 面接{ni} (検証済材料{len(verified)})", flush=True)
         results.append((slug, "ok", {"materials": nm, "interview": ni, "verified": len(verified)}))
+        ship += 1
         if pilot:
             os.makedirs(os.path.join(HANDOFF, "es_kit_pilot"), exist_ok=True)
             open(os.path.join(HANDOFF, "es_kit_pilot", f"es_kit_{slug}.md"), "w", encoding="utf-8").write(to_md(kit))
+        if allmode and len(results) % 20 == 0:
+            cp_i += 1
+            if thin_rows:
+                with open(os.path.join(OUT, "es_thin.csv"), "a", encoding="utf-8") as f:
+                    f.write("\n".join(thin_rows) + "\n"); thin_rows = []
+            q.line(f"[ES kit CP{cp_i}] 処理{len(results)} 出荷{ship} 保留{sum(1 for r in results if r[1]=='thin')}")
     if thin_rows:
         with open(os.path.join(OUT, "es_thin.csv"), "a", encoding="utf-8") as f:
             f.write("\n".join(thin_rows) + "\n")
-    print("\n=== SUMMARY ===")
-    for s, st, d in results:
+    thin = sum(1 for r in results if r[1] == "thin")
+    print(f"\n=== SUMMARY: 出荷{ship} 保留{thin} 計{len(results)} ===")
+    if allmode:
+        q.line(f"[ES kit fanout done] 出荷{ship}社 / 保留(実質材料<5){thin}社 / 計{len(results)}")
+    for s, st, d in results[:40]:
         print(f"  {st:8} {s} {d}")
 
 

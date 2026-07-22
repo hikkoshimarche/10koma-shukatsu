@@ -174,25 +174,60 @@ def _verify(facts, prose):
 
 
 def main():
-    pilot = "--pilot" in sys.argv
+    import glob
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
-    slugs = args if args else sorted(os.path.basename(os.path.dirname(d))
-             for d in __import__("glob").glob(os.path.join(OUT, "*/datasheet.json"))
-             if not os.path.basename(os.path.dirname(d)).startswith("industry__"))
-    print(f"質的増強 対象{len(slugs)}社 / 並列{PARALLEL}", flush=True)
-    results = []
+    allslugs = sorted(os.path.basename(os.path.dirname(d)) for d in glob.glob(os.path.join(OUT, "*/datasheet.json"))
+                      if not os.path.basename(os.path.dirname(d)).startswith("industry__"))
+    stp = os.path.join(OUT, "_enrich_state.json")
+    st = json.load(open(stp)) if os.path.exists(stp) else {"done": [], "ok": [], "cost": 0.0, "cp": 0}
+    with q._lock:
+        q._cost["usd"] = st.get("cost", 0.0)
+    targets = args if args else [s for s in allslugs if s not in set(st["done"])]   # resumable
+    q.line(f"📝 datasheet質的増強 開始/再開: 対象{len(targets)}社(全{len(allslugs)}・完了{len(st['done'])}) / 並列{PARALLEL}・${q.MAX_USD}ガード")
+    results, batch = [], []
+
+    def checkpoint():
+        st["cost"] = round(q._cost["usd"], 4)
+        st["cp"] += 1
+        json.dump(st, open(stp, "w", encoding="utf-8"), ensure_ascii=False)
+        try:
+            q.git("add", "output/*/datasheet.json", "output/_enrich_state.json", cwd=q.PIPE)
+            q.git("-c", "user.email=quiz@local", "-c", "user.name=quiz-enrich", "commit", "-q",
+                  "-m", f"enrich CP{st['cp']}: 増強{len(st['ok'])}/{len(st['done'])}社 ${st['cost']}", cwd=q.PIPE)
+            q.git("push", "-q", "origin", "HEAD", cwd=q.PIPE)
+        except Exception as e:
+            print("[commit ERR]", e)
+        q.line(f"[増強CP{st['cp']}] 完了{len(st['done'])}/{len(allslugs)} 増強OK{len(st['ok'])} ${st['cost']:.2f}")
+
+    stop = None
+    it = iter(targets); inflight = {}
     with ThreadPoolExecutor(max_workers=PARALLEL) as ex:
-        futs = {ex.submit(enrich_one, s): s for s in slugs}
-        for fu in futs:
-            pass
-        for fu in list(futs):
-            r = fu.result()
-            results.append(r)
-            print(f"  {r['status']:12} {r['slug']:16} prose={r.get('prose')} 追加={r.get('added')} 実質={r.get('substantive')}", flush=True)
-            if pilot and r["status"] == "ok":
-                pass
+        for _ in range(PARALLEL):
+            t = next(it, None)
+            if t: inflight[ex.submit(enrich_one, t)] = t
+        while inflight:
+            done, _p = wait(list(inflight), return_when=FIRST_COMPLETED)
+            for fu in done:
+                inflight.pop(fu, None)
+                r = fu.result()
+                results.append(r); batch.append(r)
+                with q._lock:
+                    if r["slug"] not in st["done"]: st["done"].append(r["slug"])
+                    if r["status"] == "ok" and r["slug"] not in st["ok"]: st["ok"].append(r["slug"])
+                print(f"  {r['status']:12} {r['slug']:16} prose={r.get('prose')} 追加={r.get('added')} 実質={r.get('substantive')} ${q._cost['usd']:.2f}", flush=True)
+                if not q.cost_ok(): stop = "cost"
+                if len(batch) >= CP_EVERY:
+                    checkpoint(); batch = []
+                if stop is None:
+                    nt = next(it, None)
+                    if nt: inflight[ex.submit(enrich_one, nt)] = nt
+            if stop: break
+    if batch:
+        checkpoint()
+    json.dump(st, open(stp, "w", encoding="utf-8"), ensure_ascii=False)
     ok = [r for r in results if r["status"] == "ok"]
-    print(f"\n=== 増強OK {len(ok)}/{len(slugs)} / 実質材料5+ {sum(1 for r in ok if r.get('substantive',0)>=5)}社 ===")
+    q.line(f"[増強 {stop or 'done'}] 今回OK{len(ok)}/{len(results)} 累計増強{len(st['ok'])}/{len(st['done'])} ${q._cost['usd']:.2f}")
+    print(f"=== 増強OK {len(ok)}/{len(results)} 累計{len(st['ok'])} ===")
 
 
 if __name__ == "__main__":
