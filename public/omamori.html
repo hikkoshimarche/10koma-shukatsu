@@ -38,13 +38,12 @@
     .msg{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:54px 24px 20px;position:relative}
     .msg-cat{position:absolute;top:18px;left:0;right:0;text-align:center;font-size:12px;color:var(--ink-soft);letter-spacing:0.14em}
     .card{flex:1;display:flex;align-items:center;justify-content:center;width:100%;min-height:0}
-    .vtext{
-      writing-mode:vertical-rl; text-orientation:upright;
-      font-size:clamp(21px,6.4vw,27px); font-weight:600; line-height:1.9; letter-spacing:0.12em;
-      max-height:64vh; color:var(--ink);
-      opacity:0; transform:translateY(8px);
-    }
-    .vtext.in{ animation:fade 1.3s ease forwards }
+    /* 1行=1列。自動折り返しはせず、明示的な改行(lines)だけで列を作る。 */
+    .vcard{ display:flex; flex-direction:row-reverse; align-items:flex-start; justify-content:center;
+      gap:calc(var(--fs,26px) * 0.52); max-height:66vh; opacity:0; transform:translateY(8px); }
+    .vcard.in{ animation:fade 1.3s ease forwards }
+    .vline{ writing-mode:vertical-rl; text-orientation:upright; white-space:nowrap;
+      font-size:var(--fs,26px); font-weight:600; line-height:1.15; letter-spacing:0.12em; color:var(--ink); }
     @keyframes fade{ to{ opacity:1; transform:translateY(0) } }
     .attrib{ min-height:44px; text-align:center; margin-top:8px; opacity:0 }
     .attrib.in{ animation:fade 1.6s ease .5s forwards }
@@ -103,15 +102,30 @@ function renderEntry(){
   wrap().querySelector('.cats').onclick=e=>{const b=e.target.closest('.cat'); if(b){ cat=b.dataset.k; buildDeck(cat); showCard(nextItem()); }};
 }
 
+// 明示改行 lines を優先。無ければ句読点で暫定分割（安全フォールバック）。
+function getLines(o){
+  if(o && Array.isArray(o.lines) && o.lines.length) return o.lines;
+  const t=String((o&&o.text)||o||'');
+  return t.match(/[^、。]+[、。]?/g) || [t];
+}
+// 行数・最長行に応じて字サイズを決め、390pxで最長列がはみ出さないようにする。
+function vcardHTML(lines){
+  const n=Math.max(1,lines.length);
+  const maxLen=Math.max(1,...lines.map(l=>[...String(l)].length));
+  const W=Math.min(window.innerWidth||390,460)-56;   // 横予算(列方向)
+  const H=(window.innerHeight||760)*0.60;            // 縦予算(文字方向)
+  let fs=Math.min(W/(n*1.62), H/(maxLen*1.16), 28);
+  fs=Math.max(fs,14);
+  return `<div class="vcard in" style="--fs:${fs.toFixed(1)}px">${lines.map(l=>`<span class="vline">${esc(l)}</span>`).join('')}</div>`;
+}
 function cardInner(item){
+  const body=`<div class="card">${vcardHTML(getLines(item))}</div>`;
   if(item.type==='quote'){
-    return `<div class="card"><p class="vtext in">${esc(item.text)}</p></div>
-      <div class="attrib in"><span class="author">— ${esc(item.author)}</span></div>`;
+    return `${body}<div class="attrib in"><span class="author">— ${esc(item.author)}</span></div>`;
   }
   const col=item.char==='nana'?'var(--nana)':'var(--haruki)';
   const who=item.char==='nana'?'ナナ':'ハルキ';
-  return `<div class="card"><p class="vtext in">${esc(item.text)}</p></div>
-    <div class="attrib in"><span class="note"><span class="dot" style="background:${col}"></span>${who}：${esc(item.note)}</span></div>`;
+  return `${body}<div class="attrib in"><span class="note"><span class="dot" style="background:${col}"></span>${who}：${esc(item.note)}</span></div>`;
 }
 
 function showCard(item){
@@ -133,7 +147,7 @@ function showCard(item){
 function showSendoff(){
   const s=DATA.sendoff[Math.floor(Math.random()*DATA.sendoff.length)];
   wrap().innerHTML=`
-    <div class="msg"><div class="card"><p class="vtext in">${esc(s)}</p></div>
+    <div class="msg"><div class="card">${vcardHTML(getLines(s))}</div>
       <div class="attrib in"><span class="note"><span class="dot" style="background:var(--nana)"></span>いってらっしゃい</span></div></div>
     <div class="acts">
       <button class="act" id="s-back">もう一度お守り</button>

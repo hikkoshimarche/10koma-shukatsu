@@ -1,13 +1,135 @@
 {
   "_note": "著名人の名言。採用基準=複数の信頼できる情報源で本人の言葉と確認できたもののみ(Source-or-Silence)。誤帰属(例: マンデル「rising every time we fall」→実際はGoldsmith)・出典不明・ネット拡散系は不採用。各quoteに author(表示用)と verify(確認情報源)を保持。",
   "quotes": [
-    { "text": "小さなことを積み重ねることが、とんでもないところへ行くただ一つの道。", "author": "イチロー", "verify": "2004年MLBシーズン最多安打記録達成後の会見。致知出版社ほか複数媒体で紹介", "categories": ["webtest","waiting","vague","mensetsu"] },
-    { "text": "失敗は受け入れられる。でも、挑戦しないことだけは受け入れられない。", "author": "マイケル・ジョーダン", "verify": "著書『I Can't Accept Not Trying』(1994) p.129。原文: I can accept failure... But I can't accept not trying.", "categories": ["rejection","mensetsu"] },
-    { "text": "自分には自分に与えられた道がある。どんな道かはわからないが、この道を歩む。", "author": "松下幸之助", "verify": "著書『道をひらく』(PHP研究所)所収「道」", "categories": ["vague","mensetsu","rejection","sleepless","gd"] },
-    { "text": "人生・仕事の結果は、考え方と熱意と能力の掛け算で決まる。", "author": "稲盛和夫", "verify": "京セラ公式サイト(inamori)・著書『生き方』", "categories": ["webtest","vague","gd"] },
-    { "text": "ハングリーであれ。愚か者であれ。", "author": "スティーブ・ジョブズ", "verify": "2005年スタンフォード大学卒業式スピーチ(大学公式全文)。原文: Stay hungry, stay foolish.", "categories": ["mensetsu","vague","gd"] },
-    { "text": "楽観とは、達成へと導く信念。希望と自信がなければ、何事も成し遂げられない。", "author": "ヘレン・ケラー", "verify": "エッセイ『Optimism』(1903)。複数の名言集で紹介。原文: Optimism is the faith that leads to achievement...", "categories": ["vague","waiting","sleepless"] },
-    { "text": "大きなことはできません。小さなことを、大きな愛をもって行うだけです。", "author": "マザー・テレサ", "verify": "広く知られる言葉として複数の書籍・媒体で紹介", "categories": ["webtest","gd","vague"] },
-    { "text": "踏み出せば、その一足が道となる。迷わず行けよ、行けばわかるさ。", "author": "清沢哲夫『道』", "verify": "清沢哲夫の詩『道』(1951年『同帰』掲載、1966年『無常断章』所収)。アントニオ猪木が引退時に朗読・一部改変し有名に", "categories": ["mensetsu","waiting","vague","gd"] }
+    {
+      "text": "小さなことを積み重ねることが、とんでもないところへ行くただ一つの道。",
+      "author": "イチロー",
+      "verify": "2004年MLBシーズン最多安打記録達成後の会見。致知出版社ほか複数媒体で紹介",
+      "categories": [
+        "webtest",
+        "waiting",
+        "vague",
+        "mensetsu"
+      ],
+      "lines": [
+        "小さなことを",
+        "積み重ねることが、",
+        "とんでもないところへ行く",
+        "ただ一つの道。"
+      ]
+    },
+    {
+      "text": "失敗は受け入れられる。でも、挑戦しないことだけは受け入れられない。",
+      "author": "マイケル・ジョーダン",
+      "verify": "著書『I Can't Accept Not Trying』(1994) p.129。原文: I can accept failure... But I can't accept not trying.",
+      "categories": [
+        "rejection",
+        "mensetsu"
+      ],
+      "lines": [
+        "失敗は受け入れられる。",
+        "でも、",
+        "挑戦しないことだけは",
+        "受け入れられない。"
+      ]
+    },
+    {
+      "text": "自分には自分に与えられた道がある。どんな道かはわからないが、この道を歩む。",
+      "author": "松下幸之助",
+      "verify": "著書『道をひらく』(PHP研究所)所収「道」",
+      "categories": [
+        "vague",
+        "mensetsu",
+        "rejection",
+        "sleepless",
+        "gd"
+      ],
+      "lines": [
+        "自分には自分に",
+        "与えられた道がある。",
+        "どんな道かは",
+        "わからないが、",
+        "この道を歩む。"
+      ]
+    },
+    {
+      "text": "人生・仕事の結果は、考え方と熱意と能力の掛け算で決まる。",
+      "author": "稲盛和夫",
+      "verify": "京セラ公式サイト(inamori)・著書『生き方』",
+      "categories": [
+        "webtest",
+        "vague",
+        "gd"
+      ],
+      "lines": [
+        "人生・仕事の結果は、",
+        "考え方と熱意と能力の",
+        "掛け算で決まる。"
+      ]
+    },
+    {
+      "text": "ハングリーであれ。愚か者であれ。",
+      "author": "スティーブ・ジョブズ",
+      "verify": "2005年スタンフォード大学卒業式スピーチ(大学公式全文)。原文: Stay hungry, stay foolish.",
+      "categories": [
+        "mensetsu",
+        "vague",
+        "gd"
+      ],
+      "lines": [
+        "ハングリーであれ。",
+        "愚か者であれ。"
+      ]
+    },
+    {
+      "text": "楽観とは、達成へと導く信念。希望と自信がなければ、何事も成し遂げられない。",
+      "author": "ヘレン・ケラー",
+      "verify": "エッセイ『Optimism』(1903)。複数の名言集で紹介。原文: Optimism is the faith that leads to achievement...",
+      "categories": [
+        "vague",
+        "waiting",
+        "sleepless"
+      ],
+      "lines": [
+        "楽観とは、",
+        "達成へと導く信念。",
+        "希望と自信がなければ、",
+        "何事も成し遂げられない。"
+      ]
+    },
+    {
+      "text": "大きなことはできません。小さなことを、大きな愛をもって行うだけです。",
+      "author": "マザー・テレサ",
+      "verify": "広く知られる言葉として複数の書籍・媒体で紹介",
+      "categories": [
+        "webtest",
+        "gd",
+        "vague"
+      ],
+      "lines": [
+        "大きなことは",
+        "できません。",
+        "小さなことを、",
+        "大きな愛をもって",
+        "行うだけです。"
+      ]
+    },
+    {
+      "text": "踏み出せば、その一足が道となる。迷わず行けよ、行けばわかるさ。",
+      "author": "清沢哲夫『道』",
+      "verify": "清沢哲夫の詩『道』(1951年『同帰』掲載、1966年『無常断章』所収)。アントニオ猪木が引退時に朗読・一部改変し有名に",
+      "categories": [
+        "mensetsu",
+        "waiting",
+        "vague",
+        "gd"
+      ],
+      "lines": [
+        "踏み出せば、",
+        "その一足が道となる。",
+        "迷わず行けよ、",
+        "行けばわかるさ。"
+      ]
+    }
   ]
 }
