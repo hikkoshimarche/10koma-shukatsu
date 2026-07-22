@@ -280,9 +280,12 @@ def hard_gate(tslug, koma):
 
 
 # ---------- LINE / ログ ----------
-def push_line(text):
-    """運用/人QA系はオスカー個人宛て(pushoscar)。インターングループには出さない(漏洩防止)。
-    LINE_OSCAR_ID未設定時はGAS側でskip(グループへは絶対に送らない)。"""
+def push_line(text, emergency=False):
+    """【2026-07-22 恒久運用】CCの作業報告(CP/完了/集約/エラー/人QA依頼)はLINEに送らない=タブ内テキストのみ。
+    既定はprintのみでreturn。緊急アラート(本番障害/暴走停止/セキュリティ)は emergency=True または
+    PHASEC_LINE_SEND=1 の時だけ実送信(pushoscar)。"""
+    if not (emergency or _env("PHASEC_LINE_SEND", "") == "1"):
+        print(f"[報告/LINE抑止(タブ内テキストのみ)]\n{text}"); return
     url = _env("SHEET_WEBAPP_URL", "").strip()
     token = _env("SHEET_API_TOKEN", "").strip()
     if not url:

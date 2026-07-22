@@ -184,6 +184,11 @@ def _git(*a):
 
 
 def _line(msg):
+    # 【2026-07-22 恒久】CC作業報告はLINEに送らない=タブ内テキストのみ。既定はprintのみ。
+    # 明示 ROOM_LINE_SEND=1 の時だけ送信(人間宛実務連絡/緊急のみ想定)。
+    print("[報告/LINE抑止]", msg[:600])
+    if os.environ.get("ROOM_LINE_SEND", "") != "1":
+        return
     url = os.environ.get("SHEET_WEBAPP_URL", "").strip(); tok = os.environ.get("SHEET_API_TOKEN", "").strip()
     if url:
         try:

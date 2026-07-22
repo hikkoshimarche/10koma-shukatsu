@@ -109,6 +109,10 @@ def main():
                f"・隔離 {niso}社（room-lint5未通過＝要個別対応タブ）\n"
                f"・実費 概算${cost:.0f}（Sonnet4.6・ゲート実測$0.32/社ベース）\n"
                f"アーキタイプ別・隔離社リストは ROOM_V3_STATUS.md 参照。（トーキャリ運営）")
+        # 【2026-07-22 恒久】CC作業報告(完了報告)はLINEに送らない=テキストのみ。明示 ROOM_LINE_SEND=1 の時だけ送信。
+        if os.environ.get("ROOM_LINE_SEND", "") != "1":
+            print("[報告/LINE抑止]\n" + msg)
+            return
         try:
             r = requests.post(GAS_URL, data={"mode": "pushlinefull", "token": GAS_TOKEN, "text": msg}, timeout=60)
             code = r.json().get("code")
