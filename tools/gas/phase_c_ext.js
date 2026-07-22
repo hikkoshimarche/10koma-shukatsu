@@ -1005,7 +1005,19 @@ function handleExt(mode, e, token){
   if(mode === 'setuptriggers'){
     if(!_authed(e, token)) return _json({error:'unauthorized'});
     setupTriggers();
-    return _json({ok:true, note:'9時=要対応 / 12,15,18,21,0時=直近3h'});
+    // 変更後の実トリガー一覧を返す(報告用)
+    var _trs = ScriptApp.getProjectTriggers().map(function(t){
+      var src = '';
+      try { src = String(t.getTriggerSource()); } catch(err){}
+      return { fn: t.getHandlerFunction(), source: src, uid: t.getUniqueId() };
+    });
+    return _json({ok:true, note:'定時LINEは lineMorningList 9時のみ(line3hSummary廃止)', triggers:_trs, count:_trs.length});
+  }
+  if(mode === 'listtriggers'){
+    // 現行トリガー一覧(read-only・報告用)
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    var _t2 = ScriptApp.getProjectTriggers().map(function(t){ return { fn:t.getHandlerFunction(), uid:t.getUniqueId() }; });
+    return _json({count:_t2.length, triggers:_t2});
   }
 
   if(mode === 'celldiag'){
@@ -1488,23 +1500,23 @@ function line3hSummary(){
   }
 }
 
-/* 時刻トリガー設置(既存を消さず重複登録を防ぐ)。1回実行。夜中(3,6時)はなし。 */
+/* 時刻トリガー設置。2026-07-22 恒久変更: 定時LINEは朝9時の1日1回ダイジェストのみ(要対応+前日要点)。
+   旧・line3hSummary(12/15/18/21/0時=3h毎)は廃止。緊急アラート(障害/停止)はインライン即時送信で別途維持。 */
 function setupTriggers(){
-  const want = { 'lineMorningList':[9], 'line3hSummary':[12,15,18,21,0] };
+  const want = { 'lineMorningList':[9] };             // 9時のみ
+  const RETIRE = ['line3hSummary'];                    // 廃止する定時LINE(明示削除)
   const exist = ScriptApp.getProjectTriggers();
-  const have = {};
+  // want同名 + 廃止対象 の既存トリガーを一旦全削除(重複/残骸防止)
   exist.forEach(function(t){
     const fn = t.getHandlerFunction();
-    have[fn] = have[fn] || true;
+    if(want[fn] || RETIRE.indexOf(fn) >= 0) ScriptApp.deleteTrigger(t);
   });
   Object.keys(want).forEach(function(fn){
-    // 既存の同名トリガーは一旦削除して作り直し(時刻の重複防止)
-    exist.forEach(function(t){ if(t.getHandlerFunction()===fn) ScriptApp.deleteTrigger(t); });
     want[fn].forEach(function(h){
       ScriptApp.newTrigger(fn).timeBased().atHour(h).everyDays(1).inTimezone('Asia/Tokyo').create();
     });
   });
-  Logger.log('setupTriggers 完了: 9時=要対応 / 12,15,18,21,0時=直近3h');
+  Logger.log('setupTriggers 完了: lineMorningList 9時のみ(line3hSummary廃止)');
 }
 
 // roomtabvalidation getRanges fix v2

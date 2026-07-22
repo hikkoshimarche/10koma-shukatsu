@@ -67,6 +67,11 @@ def cost_ok():
         return _cost["usd"] < MAX_USD
 
 def line(msg):
+    # 【恒久運用】CCの作業報告(CP/完了/集約/エラー)は既定でテキストのみ=LINEに送らない。
+    # LINEは①人間宛実務連絡②緊急アラートのみ=明示 QUIZ_LINE_SEND=1 の時だけ送信。
+    print("[報告]", msg)
+    if os.environ.get("QUIZ_LINE_SEND", "") != "1":
+        return
     url = os.environ.get("SHEET_WEBAPP_URL", "").strip()
     tok = os.environ.get("SHEET_API_TOKEN", "").strip()
     if not url:
