@@ -147,8 +147,13 @@ def coverage_check(kit, verified):
 
 
 def build_kit(slug, name, ds, corpus):
+    # datasheetは既に「浄化(決定論)＋質的増強(意味検証済)」。ES kit側は決定論フィルタで安定に選別
+    # (LLM再検証はship/hold gateとして不安定=同一入力で5→2と揺れるため廃止)。ノーベル型は答えのcorpus不在で確実にdrop。
+    import clean_datasheets as CL
     cands = load_prose_facts(ds)
-    verified = verify_materials(cands, corpus)                # (1) 意味検証
+    ctext = CL._corpus_text(corpus)
+    cd = re.sub(r"\D", "", ctext)
+    verified = [c for c in cands if CL._answer_ok(c["fact"], ctext, cd)]   # (1) 決定論の実在検証
     if len(verified) < MIN_MATERIALS:                         # (4) 出荷保留
         return None, f"thin:実質材料{len(verified)}<{MIN_MATERIALS}", verified
     fact_lines = "\n".join(f"[{i}] ({m['axis']}) {m['fact']}" for i, m in enumerate(verified))
@@ -158,13 +163,14 @@ def build_kit(slug, name, ds, corpus):
     data = q._parse_json(txt)
     if not isinstance(data, dict):
         return None, "parse失敗", verified
+    # 材料は学生が選ぶ『メニュー』=検証済factを上位MAT_CAP件まで掲載(LLMの問いかけを付す・無ければ既定)。
+    MAT_CAP = 6
+    prompt_by_idx = {mp["idx"]: (mp.get("prompt") or "").strip()
+                     for mp in data.get("motivation_prompts", []) if isinstance(mp.get("idx"), int)}
     materials = []
-    for mp in data.get("motivation_prompts", []):
-        i = mp.get("idx")
-        if isinstance(i, int) and 0 <= i < len(verified):
-            m = verified[i]
-            materials.append({"axis": m["axis"], "fact": m["fact"], "source_url": m["source_url"],
-                              "prompt": (mp.get("prompt") or "あなたの経験で繋がるものは？").strip()})
+    for i, m in enumerate(verified[:MAT_CAP]):
+        materials.append({"axis": m["axis"], "fact": m["fact"], "source_url": m["source_url"],
+                          "prompt": prompt_by_idx.get(i) or "この事実について、あなたの経験で繋がるものは何ですか？"})
     raw_iqs = []
     for iq in data.get("interview_questions", []):
         i = iq.get("idx")
@@ -211,19 +217,17 @@ def to_md(kit):
 
 
 def selftest():
-    """★ノーベル賞型の反転を意味検証が検出するか。"""
+    """★ノーベル賞型の捏造(答えがcorpusに無い)を決定論フィルタが検出するか。"""
+    import clean_datasheets as CL
     body = ("講談社主催の賞として「講談社漫画賞」、江戸川乱歩氏を記念した「江戸川乱歩賞」、"
             "野間文芸賞などの「野間賞」があります。出版文化を担う優れた作品を顕彰しています。")
-    corpus = {"http://x": body}
-    cands = [{"axis": "事業・強み", "fact": "講談社が主催する賞: ノーベル賞", "source_url": "http://x"},   # 反転(不支持であるべき)
-             {"axis": "事業・強み", "fact": "講談社は江戸川乱歩賞を主催している", "source_url": "http://x"}]  # 支持
-    v = verify_materials(cands, corpus)
-    facts = [m["fact"] for m in v]
-    ok1 = "講談社が主催する賞: ノーベル賞" not in facts    # 反転はdrop
-    ok2 = any("江戸川乱歩賞" in f for f in facts)          # 正は残る
-    print(f"[selftest] ノーベル反転drop={ok1} / 正例keep={ok2}")
-    print("=== SELFTEST:", "PASS ===" if (ok1 and ok2) else "FAIL ===")
-    return ok1 and ok2
+    ct = CL._corpus_text({"http://x": body}); cd = re.sub(r"\D", "", ct)
+    ok1 = not CL._answer_ok("講談社が主催する賞: ノーベル賞", ct, cd)      # 答え不在→drop
+    ok2 = CL._answer_ok("講談社は江戸川乱歩賞を主催している", ct, cd)      # 散文(非colon)→keep
+    ok3 = not CL._answer_ok("講談社が発行している雑誌: 週刊少年ジャンプ", ct, cd)  # 集英社の雑誌→drop
+    print(f"[selftest] ノーベル反転drop={ok1} / 正例keep={ok2} / ジャンプ誤答drop={ok3}")
+    print("=== SELFTEST:", "PASS ===" if (ok1 and ok2 and ok3) else "FAIL ===")
+    return ok1 and ok2 and ok3
 
 
 def main():
