@@ -13,6 +13,10 @@ SHIP_MIN = q.SHIP_MIN
 
 # GYOKAIスラグ → {name(表示), fw(枠組みテキスト), members(corpus済slug)}
 MAP = {
+ # 初期5セット(sogo/senmon/finance/consulting/manufacturer)のうち鮮度再生成対象。member=corpus取得済社。
+ "manufacturer": {"name": "メーカー(精密・機械)",
+   "fw": "精密機器・機械メーカー大手(島津製作所/いすゞ自動車/クボタ)",
+   "members": ["shimadzu", "isuzu", "kubota"]},
  "medical-healthcare": {"name": "製薬・ヘルスケア",
    "fw": "内資製薬大手(武田薬品/アステラス/第一三共/中外製薬/エーザイ/塩野義)",
    "members": ["takeda", "astellas", "daiichi-sankyo", "chugai", "eisai", "shionogi"]},

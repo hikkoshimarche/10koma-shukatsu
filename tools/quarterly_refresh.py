@@ -80,6 +80,37 @@ def stage_d1(dry):
     return a.returncode == 0
 
 
+def stage_industry(dry):
+    """業界セット再生成(会社鮮度後=最新member corpusでmerge)→D1再同期→difficulty再充填。
+    gen_gyokai_sets.MAP のセットのみ再生成。初期5セット(consulting等未MAP)は locked→D1 再同期で拾う。"""
+    ts = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+    for f in ("tools/gen_gyokai_sets.py", "tools/build_gyokai_d1_insert.py"):
+        if not os.path.exists(os.path.join(ROOT, f)):
+            _log(f"(1b)業界再生成: ✗{f}欠落"); return False
+    if dry:
+        _log("(1b)業界再生成: 実行可 (gen_gyokai_sets→build_gyokai_d1_insert→difficulty再充填)")
+        return True
+    _log("(1b)業界再生成 開始 (最新corpusでmerge)")
+    g = _run([PY, "tools/gen_gyokai_sets.py"])
+    _log(f"(1b)gen_gyokai rc={g.returncode}: " + "\n".join(g.stdout.strip().splitlines()[-3:]))
+    # 生成済industry__* を locked→D1 再同期(slug自動=会社5本除外)
+    b = _run([PY, "tools/build_gyokai_d1_insert.py", ts])
+    if b.returncode != 0:
+        _log(f"(1b)D1 SQL構築失敗: {b.stderr[-160:]}"); return False
+    ins = next((l.split("->", 1)[1].strip().split(" ")[0] for l in b.stdout.splitlines() if "insert ->" in l), "")
+    if ins and os.path.exists(ins):
+        a = _run(["npx", "wrangler", "d1", "execute", "10koma-shukatsu-db", "--remote",
+                  "--config", "api/wrangler.toml", "--file", ins])
+        _log(f"(1b)業界D1再同期 rc={a.returncode} " + next((l.strip() for l in a.stdout.splitlines() if "rows_written" in l), ""))
+    # difficulty再充填(再同期でNULL化した industry 行: 財務Lv4/数値Lv3/他Lv2)
+    for sql in ("UPDATE quiz_questions SET difficulty=4 WHERE difficulty IS NULL AND set_type='industry' AND (category='財務数値' OR as_of LIKE '%年3月期%' OR q_text LIKE '%利益%' OR q_text LIKE '%売上%' OR q_text LIKE '%収益%' OR q_text LIKE '%配当%' OR q_text LIKE '%資産%');",
+                "UPDATE quiz_questions SET difficulty=3 WHERE difficulty IS NULL AND set_type='industry' AND (q_text LIKE '%従業員%' OR q_text LIKE '%拠点%' OR q_text LIKE '%資本金%');",
+                "UPDATE quiz_questions SET difficulty=2 WHERE difficulty IS NULL AND set_type='industry';"):
+        _run(["npx", "wrangler", "d1", "execute", "10koma-shukatsu-db", "--remote", "--config", "api/wrangler.toml", "--command", sql])
+    _log("(1b)業界再生成 完了 (difficulty再充填済)")
+    return True
+
+
 def stage_product_urls(dry):
     if dry:
         ok = os.path.exists(os.path.join(ROOT, "tools/build_product_urls.py"))
@@ -100,6 +131,8 @@ def main():
     results = {}
     if "--skip-fanout" not in sys.argv:
         results["fanout"] = stage_fanout(dry)
+    if "--skip-industry" not in sys.argv:
+        results["industry"] = stage_industry(dry)
     if "--skip-d1" not in sys.argv:
         results["d1"] = stage_d1(dry)
     results["product_urls"] = stage_product_urls(dry)
