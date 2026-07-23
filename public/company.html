@@ -962,6 +962,7 @@ async function main() {
     const menuItems = [];
     if (panels.length) menuItems.push({ ic: '📱', l: '10コマ', act: 'scroll' });
     if (company.video_url) menuItems.push({ ic: '🎬', l: '企業動画', act: 'video' });
+    if (company.kessan_url) menuItems.push({ ic: '💹', l: '決算書動画', act: 'kessan' });
     menuItems.push({ ic: '📊', l: 'データシート', href: `datasheet.html?id=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}` });
     menuItems.push({ ic: '🧠', l: 'クイズ', href: `quiz.html?company=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}` });
     menuItems.push({ ic: '🧰', l: 'ESキット', href: `es_kit.html?id=${encodeURIComponent(companyId)}` });
@@ -990,6 +991,7 @@ async function main() {
         if (!m) return;
         if (m.act === 'scroll') { const el = document.getElementById('panels'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
         else if (m.act === 'video') { openYoutube(company.video_url); }
+        else if (m.act === 'kessan') { openYoutube(company.kessan_url); }
         else if (m.href) { location.href = m.href; }
       });
     });
