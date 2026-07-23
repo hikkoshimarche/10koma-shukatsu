@@ -17,7 +17,10 @@
 
     .mp-sec{padding:14px 16px 2px}
     .mp-h{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px}
-    .mp-t{font-size:15px;font-weight:700;color:#fff}.mp-t .em{color:var(--gold)}
+    /* 見出しは背景(紺グラデ)に依存せず両語が読めるよう、濃い紺の四方ハロー(擬似アウトライン)で白語を締める */
+    .mp-t{font-size:15px;font-weight:800;color:#fff;
+      text-shadow:0 1px 3px rgba(0,8,26,0.95), 0 -1px 2px rgba(0,8,26,0.8), 1px 0 2px rgba(0,8,26,0.8), -1px 0 2px rgba(0,8,26,0.8)}
+    .mp-t .em{color:var(--gold)}
     .mp-more{font-size:12px;font-weight:700;color:rgba(255,255,255,0.8);text-decoration:none}
 
     .mp-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
