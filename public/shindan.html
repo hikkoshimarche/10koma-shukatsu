@@ -112,15 +112,25 @@ async function finish(){
   renderResult(data);
 }
 
+// 傾向文(trend_note)は生成データが途中で切れている社が多いため、文末(。！？」）)までで切り、
+// 文末が無い＝全体が断片の場合は出さない（途切れ表示・チップ割り込みを防ぐ）。
+function trimTrend(t){
+  t=String(t||'').trim(); if(!t) return '';
+  const re=/[。！？」）)]/g; let last=-1,m;
+  while((m=re.exec(t))) last=m.index;
+  return last>=0 ? t.slice(0,last+1) : '';
+}
 function whyBlock(rat){
   if(!rat) return '';
   const rows=[];
   const f=rat.facts||{};
-  if(f.avg_salary) rows.push(`<div class="sh-fact">・${esc(f.avg_salary.text)}${f.avg_salary.source?`<a class="src" href="${esc(f.avg_salary.source)}" target="_blank" rel="noopener">出典</a>`:''}${f.avg_salary.as_of?` <span style="font-size:10px;color:#94a0ac">(${esc(f.avg_salary.as_of)})</span>`:''}</div>`);
-  if(f.starting_salary) rows.push(`<div class="sh-fact">・${esc(f.starting_salary.text)}${f.starting_salary.source?`<a class="src" href="${esc(f.starting_salary.source)}" target="_blank" rel="noopener">出典</a>`:''}</div>`);
+  if(f.avg_salary) rows.push(`<div class="sh-fact">・${esc(f.avg_salary.text)}${f.avg_salary.source?`<a class="src" href="${esc(f.avg_salary.source)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">出典</a>`:''}${f.avg_salary.as_of?` <span style="font-size:10px;color:#94a0ac">(${esc(f.avg_salary.as_of)})</span>`:''}</div>`);
+  if(f.starting_salary) rows.push(`<div class="sh-fact">・${esc(f.starting_salary.text)}${f.starting_salary.source?`<a class="src" href="${esc(f.starting_salary.source)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">出典</a>`:''}</div>`);
   (rat.notes||[]).forEach(n=>rows.push(`<div class="sh-nosal">・${esc(n)}</div>`));
-  if(rat.trend) rows.push(`<div class="sh-trend">・${esc(rat.trend)}<span class="tg">傾向（推定）</span></div>`);
+  const tr=trimTrend(rat.trend);
+  if(tr) rows.push(`<div class="sh-trend">・${esc(tr)}<span class="tg">傾向（推定）</span></div>`);
   (rat.matched||[]).forEach(m=>rows.push(`<div class="sh-trend">・${esc(m)}<span class="tg">傾向</span></div>`));
+  if(!rows.length) return '';   // 理由が無い社は「なぜおすすめ？」ブロック自体を出さない(空箱禁止)
   return `<div class="sh-why"><div class="sh-why-t">なぜおすすめ？</div>${rows.join('')}</div>`;
 }
 
@@ -146,11 +156,12 @@ function renderResult(data){
         <span class="sh-rc-rank">おすすめ${idx+1}</span></div>
       <span class="sh-go">${slug?'業界詳細を見る':'業界をさがす'} ›</span></a>`;
   }).join('');
+  // カードは div（中に出典<a>を含むため<a>入れ子=DOM崩壊を避ける）。クリックで企業ページへ。
   const compCards=comps.map(c=>`
-    <a class="sh-rc" style="--acc:${hue(c.slug)}" href="/company.html?id=${encodeURIComponent(c.slug)}">
+    <div class="sh-rc sh-rc-click" style="--acc:${hue(c.slug)};cursor:pointer" data-href="/company.html?id=${encodeURIComponent(c.slug)}" role="link" tabindex="0">
       <div class="sh-rc-h"><span class="sh-rc-badge">${esc(String(c.name||'？').charAt(0))}</span>
         <span><span class="sh-rc-nm">${esc(c.name)}</span><span class="sh-rc-sub">${esc(c.industry||'')}</span></span></div>
-      ${whyBlock(c.rationale)}<span class="sh-go">企業ページへ ›</span></a>`).join('');
+      ${whyBlock(c.rationale)}<span class="sh-go">企業ページへ ›</span></div>`).join('');
   app().innerHTML=`<div class="sh-res">
     ${isReal?'':'<div style="text-align:center;margin-bottom:8px"><span class="sh-sample">サンプル</span></div>'}
     <div class="sh-disc">※${esc(disc)}</div>
@@ -163,6 +174,10 @@ function renderResult(data){
     </div></div>`;
   document.getElementById('sh-retry').onclick=()=>{qi=0;answers={};document.getElementById('sh-title').textContent='あなたに合う業界・企業は？';renderQ();};
   document.getElementById('btn-back').onclick=()=>{qi=0;answers={};renderQ();};
+  // divカードのクリック遷移（内部の出典<a>クリック時は遷移しない）
+  app().querySelectorAll('.sh-rc-click').forEach(el=>{
+    el.addEventListener('click', e=>{ if(e.target.closest('a')) return; const h=el.dataset.href; if(h) location.href=h; });
+  });
 }
 
 let SH_USER = new URLSearchParams(location.search).get('u') || null;  // ?u= はQA用オーバーライド

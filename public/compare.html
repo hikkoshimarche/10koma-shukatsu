@@ -120,7 +120,13 @@ function onSearch(){
     const picked=sel.find(s=>s.id===it.id); const full=sel.length>=3&&!picked;
     return `<div class="rrow ${picked||full?'dis':''}" data-id="${esc(it.id)}"><span class="rn">${esc(it.name)}</span><span class="rind">${esc(it.ind)}${picked?' ✓選択中':''}</span></div>`;
   }).join('');
-  box.querySelectorAll('.rrow').forEach(r=>r.onclick=()=>{ addId(r.dataset.id); document.getElementById('q').value=''; box.style.display='none'; box.innerHTML=''; drawChips(); });
+  // pointerdownで確定（clickだと入力欄blur→キーボード収納の再レイアウトで候補が先に動き、タップが外れる）。
+  // preventDefaultでフォーカス移動を抑止し、候補をタップ完了まで維持する。
+  box.querySelectorAll('.rrow').forEach(r=>{
+    const pick=(e)=>{ e.preventDefault(); addId(r.dataset.id); const inp=document.getElementById('q'); if(inp) inp.value=''; box.style.display='none'; box.innerHTML=''; drawChips(); };
+    r.addEventListener('pointerdown', pick);
+    r.addEventListener('click', pick);   // pointer非対応環境のフォールバック
+  });
 }
 
 // ===== 比較表 =====

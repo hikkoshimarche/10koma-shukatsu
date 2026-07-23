@@ -171,6 +171,23 @@
       margin-top: 10px;
     }
 
+    /* === この会社でできること (コンパクト入口メニュー) === */
+    .co-menu {
+      display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+      padding: 12px 14px 4px; scrollbar-width: none;
+    }
+    .co-menu::-webkit-scrollbar { display: none; }
+    .co-chip {
+      flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 4px;
+      width: 66px; padding: 9px 4px; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.16); border-radius: 12px;
+      color: var(--white); font-size: 10.5px; font-weight: 700; text-decoration: none;
+      cursor: pointer; -webkit-tap-highlight-color: transparent; text-align: center; line-height: 1.25;
+    }
+    .co-chip:active { background: rgba(255,255,255,0.18); }
+    .co-chip .cm-ic { font-size: 20px; line-height: 1; }
+    .co-menu-t { padding: 14px 16px 2px; font-size: 12px; font-weight: 800; color: var(--white-dim); letter-spacing: 0.04em; }
+
     /* === Panels === */
     .panels-section {
       padding: 20px 16px 28px;
@@ -941,16 +958,41 @@ async function main() {
           <span class="cta-text"><span class="cta-main">ES・面接対策キット</span><span class="cta-sub">志望動機の材料・想定質問</span></span>
         </button></div>`;
 
+    // 「この会社でできること」= 既存の遷移先を整理したコンパクト入口（複製CTAでなく導線集約・追加fetchなし）
+    const menuItems = [];
+    if (panels.length) menuItems.push({ ic: '📱', l: '10コマ', act: 'scroll' });
+    if (company.video_url) menuItems.push({ ic: '🎬', l: '企業動画', act: 'video' });
+    menuItems.push({ ic: '📊', l: 'データシート', href: `datasheet.html?id=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}` });
+    menuItems.push({ ic: '🧠', l: 'クイズ', href: `quiz.html?company=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}` });
+    menuItems.push({ ic: '🧰', l: 'ESキット', href: `es_kit.html?id=${encodeURIComponent(companyId)}` });
+    menuItems.push({ ic: '⚖️', l: '比較に追加', href: `compare.html?add=${encodeURIComponent(companyId)}` });
+    menuItems.push({ ic: '🚪', l: 'AI OB訪問', href: `room.html?company=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}` });
+    const menuHtml = `
+      <p class="co-menu-t">この会社でできること</p>
+      <div class="co-menu">${menuItems.map((m, i) => `
+        <div class="co-chip" data-i="${i}"><span class="cm-ic">${m.ic}</span><span>${esc(m.l)}</span></div>`).join('')}</div>`;
+
     app.innerHTML = `
       <div class="company-detail">
         <p class="company-detail-name">${esc(company.name)}</p>
         ${company.description ? `<p class="company-detail-desc">${esc(company.description)}</p>` : ''}
       </div>
-      <div class="panels-section">${panelsHtml}</div>
+      ${menuHtml}
+      <div class="panels-section" id="panels">${panelsHtml}</div>
       ${quizCtaHtml}
       ${videoHtml}
       ${recommendsHtml}
       ${buildVerificationFooter(company.last_verified_at)}`;
+
+    document.querySelectorAll('.co-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const m = menuItems[parseInt(chip.dataset.i, 10)];
+        if (!m) return;
+        if (m.act === 'scroll') { const el = document.getElementById('panels'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+        else if (m.act === 'video') { openYoutube(company.video_url); }
+        else if (m.href) { location.href = m.href; }
+      });
+    });
 
     const cq = document.getElementById('company-quiz');
     if (cq) cq.onclick = () => { location.href = `quiz.html?company=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}`; };
