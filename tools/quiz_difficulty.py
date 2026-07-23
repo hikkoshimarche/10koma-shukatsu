@@ -51,7 +51,9 @@ def classify(slug, quiz):
     out = []
     for i, x in enumerate(quiz):
         rl = rule_level(x)
-        lv = max(rl, llm.get(i, rl)) if rl >= 3 else min(llm.get(i, 2), 2) if rl == 1 else llm.get(i, 2)
+        # v2.6-0(2) 経営者・役員の人名問は全社Lv2に統一
+        if _PERSON_Q.search(x.get("q_text", "")) or x.get("category") == "人名・役員":
+            out.append(2); continue
         # 財務(rl=4)は4固定、数値(rl=3)は3以上、基本(rl=1)はLLMだが1-2に収める
         if rl == 4:
             lv = 4
@@ -61,6 +63,9 @@ def classify(slug, quiz):
             lv = min(2, max(1, llm.get(i, 2)))
         out.append(lv)
     return out
+
+
+_PERSON_Q = re.compile(r"社長|代表取締役|代表者|会長|役員|取締役|CEO|COO|CFO|氏名|(の名前|は誰)")
 
 
 _FOREIGN_CO = re.compile(r"\b(AS|Inc|Ltd|GmbH|Corp|S\.?A\.?|AG|PLC|LLC|N\.?V\.?)\b|Finnmark|Holding|Group\b")
@@ -434,7 +439,8 @@ def gen_lv(slug, name, level, n=10, exclude=None, sem_used=None, pool=None):
     hint = ("Lv1は『主力製品・何をする会社か・代表的な事業』の王道問題を優先。各製品・各事業について1問ずつ広く作る。"
             "★消費者向け製品が無い会社(商社・銀行等)は、業態(例『何をする会社か→総合商社』)や"
             "関与する事業分野・投資先(例 天然ガス/金属資源/食品/自動車/コンビニ等)を問う王道問題を作る。"
-            if level == 1 else "Lv2は事業の強み・社風・理念の理解。")
+            "★知名度の高いBtoC企業は『へぇと思う豆知識』(祖業・意外な創業の歴史。沿革ページの範囲・数値/専門用語なし)を1〜2問含める。"
+            if level == 1 else "Lv2は事業の強み・社風・理念の理解。経営者・役員の人名問はLv2で作ってよい。")
     fl = "\n".join(f"- {x['fact']} <出典:{x['source_url']}>" for x in facts[:24])
     if pool is None:
         pool = _source_pool(slug)                       # #4 該当ページ特定用の公式本文プール
@@ -469,6 +475,8 @@ def gen_lv(slug, name, level, n=10, exclude=None, sem_used=None, pool=None):
                 continue
             if lint_difficulty([x]) or not _distractor_ok(x, full_text):   # v2.5 誤答が自社全資料に実在→drop
                 continue
+            if not _explanation_ok(x, full_text):        # 解説も本文照合ゲート通過必須
+                continue
             fk = frozenset(QL._fact_keys(x))
             sig = _sem_sig(x)
             if fk & used or (sig and any(len(sig & s) >= max(2, min(len(sig), len(s)) - 1) for s in sused)):
@@ -476,6 +484,76 @@ def gen_lv(slug, name, level, n=10, exclude=None, sem_used=None, pool=None):
             used |= fk; sused.add(sig); covered.append(str(ans)[:20]); ok.append(x)
             if len(ok) >= n:
                 break
+    return ok[:n]
+
+
+L3_SYS = (
+ "就活生向けLv3(応用)の『正しい説明はどれ』型クイズを、提供された企業の一次情報の範囲だけで作る。"
+ "4つの選択肢は全て『会社/事業の説明文(1文)』。正解1つは本文で裏取りできる正確な説明、誤答3つは"
+ "『当社が実際にやっていない別業界の事業説明』(当社資料に現れない領域)にする。決算数値・専門用語は避ける。"
+ "各問に1〜2文の解説(本文で裏取りできる範囲)と source_url を付す。多角化企業の事業説明はこの型で。")
+L3_USER = ("企業: {name}\n以下は一次情報の事実(出典付)。この範囲だけで『正しい説明はどれ』型を{n}問。\n\n{facts}\n\n"
+           "出力JSON: {{\"questions\":[{{\"q_text\":\"{name}の説明として正しいものはどれですか？\","
+           "\"options\":[\"正しい説明(1文)\",\"誤り説明1\",\"誤り説明2\",\"誤り説明3\"],\"correct\":0,"
+           "\"explanation\":\"1〜2文の解説\",\"source_url\":\"<上記出典>\",\"category\":\"事業セグメント\"}}]}}\n"
+           "誤答は当社がやっていない別業界の事業説明のみ。決算数値/年3月期/専門用語は禁止。")
+
+
+def _explanation_ok(x, full_text):
+    """解説も本文照合ゲート: 解説の特徴語(4字以上・共通語除く)が自社全corpusに実在すること。"""
+    ex = str(x.get("explanation", ""))
+    if not ex:
+        return True
+    toks = [t for t in re.findall(r"[一-龥ァ-ヶーA-Za-z]{4,}", ex) if t not in _STOP]
+    if not toks:
+        return True
+    hit = sum(1 for t in toks if t in full_text)
+    return hit >= max(1, len(toks) // 2)                 # 過半の特徴語が本文に実在
+
+
+def gen_lv3(slug, name, n=3, exclude=None, sem_used=None, pool=None):
+    """Lv3応用: 『正しい説明はどれ』型(文章択)。正解=本文裏取りの正確な説明・誤答=別業界の事業説明。解説+出典付き。"""
+    dp = os.path.join(OUT, slug, "datasheet.json")
+    if not os.path.exists(dp):
+        return []
+    ds = json.load(open(dp))
+    corpus = json.load(open(os.path.join(OUT, slug, "quiz_corpus_locked_v3.json"))) if os.path.exists(os.path.join(OUT, slug, "quiz_corpus_locked_v3.json")) else {}
+    facts = _factsheet_facts(slug) + _scenario_facts(slug) + [dict(x, kind="basic") for x in _ds_facts(ds)]
+    if len(facts) < 3:
+        return []
+    for x in facts:
+        u = x["source_url"] or "ds://local"
+        corpus[u] = corpus.get(u, "") + " " + x["fact"]
+    if pool is None:
+        pool = _source_pool(slug)
+    home = _official_home(slug)
+    full_text = _full_corpus_text(slug, pool)
+    fl = "\n".join(f"- {x['fact']} <出典:{x['source_url']}>" for x in facts[:24])
+    data = q._parse_json(q.openai_chat([{"role": "system", "content": L3_SYS},
+                        {"role": "user", "content": L3_USER.format(name=name, n=n + 4, facts=fl)}],
+                        max_tokens=2600, temperature=0.4))
+    raw = data.get("questions", []) if isinstance(data, dict) else []
+    ok, used, sused = [], set(exclude or set()), set(sem_used or set())
+    for i, x in enumerate(raw):
+        if not (isinstance(x.get("options"), list) and len(x["options"]) == 4):
+            continue
+        x["id"] = f"{slug}_lv3_{len(ok)+1:02d}"; x["difficulty"] = 3
+        x["as_of"] = ""; x["explanation"] = x.get("explanation") or ""; x["category"] = x.get("category") or "事業セグメント"
+        # 正解説明の該当ページを解決(固有語=product mode。長文はkey entityで該当ページを特定)
+        src = _resolve_source(x["options"][x.get("correct", 0)], pool, home, product=True)
+        if not src:
+            continue
+        x["source_url"] = src
+        if QL.run_quiz_lints([x], corpus)["errors"] > 0:
+            continue
+        if not _distractor_ok(x, full_text) or not _explanation_ok(x, full_text):
+            continue
+        sig = _sem_sig(x); fk = frozenset(QL._fact_keys(x))
+        if fk & used or (sig and any(len(sig & s) >= max(2, min(len(sig), len(s)) - 1) for s in sused)):
+            continue
+        used |= fk; sused.add(sig); ok.append(x)
+        if len(ok) >= n:
+            break
     return ok[:n]
 
 
