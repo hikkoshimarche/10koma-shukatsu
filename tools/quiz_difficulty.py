@@ -32,9 +32,14 @@ def rule_level(qd):
         return 4
     if cat == "業界順位":
         return 3
-    if _NUM.search(txt) or _JARGON.search(txt):
+    # v2.1② 拠点数/店舗数/組織規模/従業員数 等の数量系は Lv1/2 に置かず Lv3 以上へ
+    if _SCALE.search(txt) or _NUM.search(txt) or _JARGON.search(txt):
         return 3
     return 1
+
+
+_SCALE = re.compile(r"拠点数|店舗数|事業所数|従業員数|社員数|カ国|ヶ国|営業所|グループ会社数|"
+                    r"連結子会社数|組織規模|人員|従業員|店舗網|拠点網")
 
 
 def classify(slug, quiz):
@@ -58,7 +63,22 @@ def classify(slug, quiz):
     return out
 
 
-# ── 難易度lint: Lv1に数値/決算/専門用語が混入したらerror ──
+def clean_existing(quiz_with_lv, corpus):
+    """v2.1③ 既存問題の機械clean: 崩れた選択肢・カテゴリ不一致の誤答(人名問に社名混入=unit_consistency)・
+    Lv1/2で紛らわしい誤答(誤答がcorpus実在) を drop。返り: (kept[], dropped[(id,reason)])."""
+    kept, dropped = [], []
+    for x in quiz_with_lv:
+        opts = x.get("options") or []
+        if len(opts) == 4 and any(_broken_option(o) for o in opts):
+            dropped.append((x.get("id"), "broken_option")); continue
+        uc = QL.lint_unit_consistency(x)                 # 人名問への社名混入等=カテゴリ不一致
+        if uc:
+            dropped.append((x.get("id"), "category_mismatch_distractor")); continue
+        kept.append(x)
+    return kept, dropped
+
+
+# ── 難易度lint: Lv1に数値/決算/専門用語が混入したらerャー ──
 def lint_difficulty(quiz_with_lv):
     errs = []
     for x in quiz_with_lv:
@@ -203,7 +223,75 @@ def _distractor_ok(x, corpus):
     return True
 
 
-def gen_lv(slug, name, level, n=10, exclude=None):
+_SRC_PATHS = ["/software/", "/hardware/", "/products/", "/product/", "/business/", "/company/business/",
+              "/company/", "/company/about/", "/about/", "/ir/", "/csr/", "/sustainability/",
+              "/lineup/", "/service/", "/brand/", "/ja/products/", "/jp/ja/business/", "/recruit/"]
+
+
+def _source_pool(slug):
+    """その社の公式ページ本文を集める(各factの該当ページ特定用)。datasheet出典＋公式パス候補を実取得。非公式は除外。"""
+    home = _official_home(slug)
+    pool = {}
+    if not home:
+        return pool
+    base = home.rstrip("/")
+    urls = [base + p for p in _SRC_PATHS]
+    # 公式トップのリンクから同一ドメインの主要ページを発見(製品/事業/会社ページを広く拾う)
+    hb = q.fetch_url(home)
+    if hb:
+        for m in re.findall(r'href="([^"#]+)"', hb):
+            lu = m if m.startswith("http") else (base + m if m.startswith("/") else None)
+            if lu and base in lu and not lu.lower().endswith((".pdf", ".jpg", ".png", ".zip", ".mp4")):
+                urls.append(lu.split("?")[0])
+    dp = os.path.join(OUT, slug, "datasheet.json")
+    if os.path.exists(dp):
+        for k, items in (json.load(open(dp)).get("sections", {}) or {}).items():
+            for it in items:
+                u = it.get("source_url", "")
+                if u and not _NONOFF.search(u):
+                    urls.append(u)
+    # 製品/事業/会社系URLを優先し、広めに取得(上限25ページ)
+    def _pri(u):
+        return 0 if re.search(r"/(software|products?|business|lineup|service|brand|company|about|hardware)", u, re.I) else 1
+    for u in sorted(dict.fromkeys(urls), key=_pri):
+        if u in pool or len(pool) >= 25:
+            continue
+        raw = q.fetch_url(u)
+        if raw and len(raw) > 300:
+            pool[u] = re.sub(r"\s+", "", raw)
+    return pool
+
+
+def _resolve_source(answer, pool, home):
+    """正解entityが実在する公式ページURLを返す(トップページ一括は禁止=具体ページ優先)。無ければ None(drop)。"""
+    toks = [t for t in re.findall(r"[一-龥ァ-ヶーA-Za-z0-9]{3,}", str(answer)) if t not in _STOP]
+    if not toks:
+        return None
+    key = max(toks, key=len)
+    hits = [u for u, b in pool.items() if key in b]
+    non_home = [u for u in hits if u.rstrip("/") != (home or "").rstrip("/") and not re.search(r"/index\.html?$", u)]
+    if non_home:
+        return sorted(non_home, key=len, reverse=True)[0]   # 最も具体的なページ
+    return None                                             # トップのみ/不在は drop
+
+
+_NONOFF = re.compile(r"\.ac\.jp|\.edu|wikipedia|yahoo|note\.com|j-lic|kyotonikanpai|renew-career|"
+                     r"hakenreco|talentsquare|fiit|visionguide|btj-|blog|ameblo|hatena|kabutan|minkabu", re.I)
+
+
+def _sem_sig(qd):
+    """設問の意味シグネチャ(表現違いの同一factを捕捉): q_text＋正解の特徴語集合。"""
+    txt = str(qd.get("q_text", "")) + " " + str((qd.get("options") or [""])[qd.get("correct", 0)] if qd.get("options") else "")
+    return frozenset(t for t in re.findall(r"[一-龥ァ-ヶーA-Za-z0-9]{3,}", txt) if t not in _STOP)
+
+
+def _broken_option(opt):
+    """崩れた選択肢(『98、海外：98』等の羅列・コロン混在)を検出。"""
+    s = str(opt)
+    return bool(re.search(r"[:：].*[:：]|[、,].*[:：]|[:：].*[、,]", s)) or (len(s) > 60)
+
+
+def gen_lv(slug, name, level, n=10, exclude=None, sem_used=None, pool=None):
     dp = os.path.join(OUT, slug, "datasheet.json")
     cp = os.path.join(OUT, slug, "quiz_corpus_locked_v3.json")
     if not os.path.exists(dp):
@@ -236,15 +324,25 @@ def gen_lv(slug, name, level, n=10, exclude=None):
                         {"role": "user", "content": GEN_USER.format(name=name, lv=level, n=n + 6, facts=fl) + "\n" + hint}],
                         max_tokens=2800, temperature=0.4))
     raw = data.get("questions", []) if isinstance(data, dict) else []
+    if pool is None:
+        pool = _source_pool(slug)                       # #4 該当ページ特定用の公式本文プール
+    home = _official_home(slug)
     ok, used = [], set(exclude or set())
+    sused = set(sem_used or set())
     for i, x in enumerate(raw):
         if not (isinstance(x.get("options"), list) and len(x["options"]) == 4):
+            continue
+        if any(_broken_option(o) for o in x["options"]):   # 崩れた選択肢→drop
             continue
         x["id"] = f"{slug}_lv{level}_{i+1:02d}"
         x["difficulty"] = level
         x["as_of"] = x.get("as_of") or ""
         x["explanation"] = x.get("explanation") or ""
-        x["source_url"] = x.get("source_url") or ""
+        # #4 出典を『正解が実在する具体ページ』へ張替(トップ一括禁止・特定不可なら drop)
+        src = _resolve_source(x["options"][x.get("correct", 0)], pool, home)
+        if not src:
+            continue
+        x["source_url"] = src
         rep = QL.run_quiz_lints([x], corpus)            # quiz-lint v3.3 全通過必須
         if rep["errors"] > 0:
             continue
@@ -253,9 +351,11 @@ def gen_lv(slug, name, level, n=10, exclude=None):
         if not _distractor_ok(x, corpus):               # 誤答がcorpusに実在=紛らわしい→drop
             continue
         fk = frozenset(QL._fact_keys(x))                # レベル間dedup(fact-key)
-        if fk & used:
+        sig = _sem_sig(x)                               # #1 意味dedup(表現違いの同一fact)
+        if fk & used or (sig and any(len(sig & s) >= max(2, min(len(sig), len(s)) - 1) for s in sused)):
             continue
         used |= fk
+        sused.add(sig)
         ok.append(x)
     return ok[:n]
 

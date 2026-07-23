@@ -46,28 +46,31 @@ def md_company(slug, name, existing, gen1, gen2):
 def main():
     os.makedirs(HANDOFF, exist_ok=True)
     summary = []
+    import quiz_lint as QL
     for slug, name in PILOT:
         f = os.path.join(OUT, slug, "quiz_30q_locked_v3.json")
         quiz = json.load(open(f))
+        corpus = json.load(open(os.path.join(OUT, slug, "quiz_corpus_locked_v3.json")))
         levels = D.classify(slug, quiz)
         for x, lv in zip(quiz, levels):
             x["difficulty"] = lv
-        # レベル間dedup: 既存問→gen1→gen2 の順にfact-keyを排他
-        import quiz_lint as QL
-        used = set()
+        n_before = len(quiz)
+        quiz, dropped = D.clean_existing(quiz, corpus)      # v2.1③ 既存clean
+        pool = D._source_pool(slug)                         # #4 公式本文プール(1社1回)
+        # レベル間dedup: 既存→gen1→gen2 を fact-key＋意味シグネチャで排他
+        used, sused = set(), set()
         for x in quiz:
-            used |= set(QL._fact_keys(x))
-        gen1 = D.gen_lv(slug, name, 1, 10, exclude=used)
+            used |= set(QL._fact_keys(x)); sused.add(D._sem_sig(x))
+        gen1 = D.gen_lv(slug, name, 1, 10, exclude=used, sem_used=sused, pool=pool)
         for x in gen1:
-            used |= set(QL._fact_keys(x))
-        gen2 = D.gen_lv(slug, name, 2, 10, exclude=used)
-        # 保存(本番D1には入れない)
-        out = {"existing": quiz, "gen_lv1": gen1, "gen_lv2": gen2}
-        json.dump(out, open(os.path.join(OUT, slug, "quiz_difficulty_v1.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+            used |= set(QL._fact_keys(x)); sused.add(D._sem_sig(x))
+        gen2 = D.gen_lv(slug, name, 2, 10, exclude=used, sem_used=sused, pool=pool)
+        out = {"existing": quiz, "gen_lv1": gen1, "gen_lv2": gen2, "dropped_existing": dropped}
+        json.dump(out, open(os.path.join(OUT, slug, "quiz_difficulty_v2.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         open(os.path.join(HANDOFF, f"{slug}.md"), "w", encoding="utf-8").write(md_company(slug, name, quiz, gen1, gen2))
         d = Counter(x["difficulty"] for x in quiz)
-        summary.append((slug, name, dict(d), len(gen1), len(gen2)))
-        print(f"{slug}: 既存Lv1={d[1]}/Lv2={d[2]}/Lv3={d[3]}/Lv4={d[4]} 新規Lv1={len(gen1)} Lv2={len(gen2)}", flush=True)
+        summary.append((slug, name, dict(d), len(gen1), len(gen2), n_before, len(dropped), dropped[:2]))
+        print(f"{slug}: 既存{n_before}→{len(quiz)}(drop{len(dropped)}) Lv1={d[1]}/Lv2={d[2]}/Lv3={d[3]}/Lv4={d[4]} 新規Lv1={len(gen1)} Lv2={len(gen2)} drop例={dropped[:1]}", flush=True)
     print("\n=== SUMMARY ===", json.dumps(summary, ensure_ascii=False))
     return summary
 
