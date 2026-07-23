@@ -15,6 +15,9 @@ PROSE_SECTIONS = {"事業内容・セグメント", "社風・求める人物像
 # 答え位置の否定形(クイズ『〜でないもの: X』型)のみ。文中の「以外」「ではない。」等の正当散文は誤爆させない。
 _NEG_SHAPE = re.compile(r"でないもの|一つでない|挙げられていないもの|ではないもの|該当しないもの|しないもの[:：]|"
                         r"含まないもの|やっていないもの|行っていないもの|扱っていないもの|展開していないもの|主催しない[^。]{0,8}[:：]")
+# meta-description/ナビ系ボイラープレート(Cookie通知・ブログ名・サイト運営メタ)=事業事実でない。精密に(正当な事業factは誤drop不可)。
+_BOILERPLATE = re.compile(r"Cookie|クッキー|ブログの(名称|名前|タイトル)|(公式|当)(ウェブ)?サイト(は|には)[^。]{0,14}(利用|使用|構成|運営|デザイン)|"
+                          r"プライバシーポリシー|サイトマップ|お問い合わせ(は|ページ|フォーム)")
 
 def _corpus_text(corpus):
     return re.sub(r"\s+", " ", " ".join(corpus.values()))
@@ -62,7 +65,7 @@ def clean_one(slug, dry=False):
         kept = []
         for it in items:
             f = (it.get("fact") or "")
-            if _NEG_SHAPE.search(f) or not _answer_ok(f, ctext, ctext_digits):   # 否定形/答え捏造をdrop
+            if _NEG_SHAPE.search(f) or _BOILERPLATE.search(f) or not _answer_ok(f, ctext, ctext_digits):   # 否定形/ボイラープレート/答え捏造をdrop
                 removed.append((k, f[:50]))
             else:
                 kept.append(it)

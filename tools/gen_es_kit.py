@@ -12,6 +12,7 @@ v2差し戻し対応(講談社「主催する賞:ノーベル賞」=否定事実
 import json, os, sys, re
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import quiz_fanout as q
+import clean_datasheets as CL
 
 OUT = q.OUT
 HANDOFF = os.path.expanduser("~/Desktop/kindle_受け渡し")
@@ -131,6 +132,8 @@ def load_prose_facts(ds):
             f = (it.get("fact") or "").strip()
             su = it.get("source_url", "")
             if not f or _DRY_FACT.search(f) or _NEG_SHAPE.search(f) or _FIN_EVENT.search(f):  # 登記系/否定形/財務イベント除外
+                continue
+            if CL._BOILERPLATE.search(f):              # Cookie/ブログ名/サイト運営メタ(build_datasheet再汚染)を除外
                 continue
             if _NONOFFICIAL.search(su):                # 非公式ソースの事実は不採用(Source-or-Silence)
                 continue
