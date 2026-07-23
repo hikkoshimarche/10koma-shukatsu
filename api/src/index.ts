@@ -1100,10 +1100,10 @@ app.get('/api/mypage', async (c) => {
   try {
     const nViewed = viewedIds.size
     const xp = nViewed * 10 + quizXP + (out.shindan ? 50 : 0)
-    // レベル閾値(5段階)。後から調整しやすいよう配列で定義。
+    // レベル閾値(5段階)。難易度重みXP導入に合わせ調整(2026-07-23)。実ユーザー増加後に再チューニング前提。
     const TIERS = [
-      { min: 0, name: '就活ビギナー' }, { min: 50, name: '就活見習い' },
-      { min: 150, name: '就活一人前' }, { min: 350, name: '就活ベテラン' }, { min: 700, name: '就活マスター' },
+      { min: 0, name: '就活ビギナー' }, { min: 200, name: '就活見習い' },
+      { min: 700, name: '就活一人前' }, { min: 1800, name: '就活ベテラン' }, { min: 4000, name: '就活マスター' },
     ]
     let li = 0
     for (let i = 0; i < TIERS.length; i++) if (xp >= TIERS[i].min) li = i
