@@ -120,6 +120,33 @@
     .fd-b{flex:1;min-width:0}.fd-t{font-size:13.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fd-d{font-size:11px;color:#7a8794;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .fd-date{font-size:10.5px;color:#94a0ac;flex-shrink:0}
     .fd-sub{font-size:11px;color:rgba(255,255,255,0.6);padding:2px 2px 8px}
+
+    /* 初回プロフィール登録モーダル */
+    .pm-overlay{position:fixed;inset:0;background:rgba(6,20,40,0.74);z-index:200;display:flex;align-items:flex-end;justify-content:center}
+    .pm-card{background:#fff;color:var(--ink);width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom,0px));max-height:94vh;overflow-y:auto}
+    .pm-h1{font-size:12.5px;font-weight:800;color:var(--navy);text-align:center}
+    .pm-h2{font-size:18px;font-weight:800;text-align:center;margin:7px 0 5px;line-height:1.35}
+    .pm-lead{font-size:12.5px;color:#5a6675;line-height:1.65;text-align:center;margin-bottom:14px}
+    .pm-q{font-size:14px;font-weight:800;margin:12px 0 8px}
+    .pm-opts{display:flex;flex-direction:column;gap:9px}
+    .pm-opt{display:flex;align-items:center;gap:11px;border:2px solid #e2e8f0;border-radius:12px;padding:13px 14px;font-size:15px;font-weight:700;cursor:pointer;background:#fff;text-align:left;width:100%;font-family:inherit;color:var(--ink)}
+    .pm-opt.on{border-color:var(--navy);background:#eef4fb}
+    .pm-opt .rd{width:20px;height:20px;border-radius:50%;border:2px solid #cbd5e1;flex-shrink:0}
+    .pm-opt.on .rd{border-color:var(--navy);background:var(--navy);box-shadow:inset 0 0 0 3px #fff}
+    .pm-field{margin-top:12px}
+    .pm-label{font-size:12px;font-weight:800;color:#5a6675;margin-bottom:5px;display:block}
+    .pm-input,.pm-select{width:100%;border:2px solid #e2e8f0;border-radius:10px;padding:11px 12px;font-size:15px;font-family:inherit;color:var(--ink);background:#fff}
+    .pm-sugg{border:1px solid #e2e8f0;border-radius:10px;margin-top:5px;max-height:190px;overflow-y:auto;background:#fff}
+    .pm-sugg div{padding:11px 13px;border-bottom:1px solid #f1f4f8;font-size:14px;cursor:pointer}
+    .pm-sugg div:active{background:#f4f7fb}
+    .pm-note{background:#f6f8fb;border-radius:12px;padding:12px 13px;margin-top:16px;font-size:11.5px;color:#5a6675;line-height:1.75}
+    .pm-note b{color:var(--ink)}
+    .pm-consent{display:flex;align-items:flex-start;gap:10px;margin-top:14px;font-size:13.5px;font-weight:700;line-height:1.5;cursor:pointer;color:var(--ink)}
+    .pm-consent input{width:20px;height:20px;margin-top:1px;flex-shrink:0}
+    .pm-submit{width:100%;margin-top:16px;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:800;background:var(--gold);color:#3a2c05;cursor:pointer;font-family:inherit}
+    .pm-submit:disabled{background:#e2e8f0;color:#9aa5b1;cursor:default}
+    .pm-del{display:block;text-align:center;margin-top:12px;color:#c0392b;font-size:12.5px;font-weight:700;background:none;border:none;cursor:pointer;width:100%;font-family:inherit}
+    .pm-edit{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.22);border-radius:999px;padding:5px 12px;cursor:pointer;font-family:inherit}
   </style>
 </head>
 <body>
@@ -290,8 +317,95 @@ function render(d){
     html = secLevel(d) + secNext3(d) + secRally(d)
          + secContinue(d) + secFavorites(d) + secStats(d) + secShindan(d) + secFeed(d);
   }
+  // プロフィール編集導線(登録済みユーザーのみ・変更/削除可)
+  if(CAN_EDIT) html = `<div style="text-align:right;padding:2px 16px 0"><button class="pm-edit" id="pm-edit-btn">⚙️ プロフィール編集</button></div>` + html;
   mp().innerHTML = html;
+  const eb=document.getElementById('pm-edit-btn'); if(eb) eb.onclick=()=>openProfileModal('edit', PROFILE||{});
   if(location.hash==='#favorites'){ const el=document.getElementById('favorites'); if(el) setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),200); }
+}
+
+// ===== 初回プロフィール登録 =====
+let PROFILE=null, CAN_EDIT=false, UNIV=null;
+const CONSENT_VERSION='v1_20260723';
+const P_TYPES=[{v:'student_univ',l:'大学生・大学院生'},{v:'student_pre',l:'高校生・中学生'},{v:'worker',l:'社会人'},{v:'other',l:'その他'}];
+const P_FAC=['文','法','経済','経営・商','理','工','情報','農','医・歯・薬','看護・保健','教育','国際','芸術','スポーツ','その他'];
+const P_GRAD=['2027年卒','2028年卒','2029年卒','2030年卒','2031年卒','既卒'];
+async function loadUniv(){ if(UNIV) return UNIV; try{ UNIV=(await fetch('/universities.json').then(r=>r.json())).universities||[]; }catch(e){ UNIV=[]; } return UNIV; }
+
+async function openProfileModal(mode, prefill){
+  await loadUniv();
+  const st={ type:(prefill&&prefill.user_type)||'', university:(prefill&&prefill.university)||'', faculty:(prefill&&prefill.faculty)||'', grad:(prefill&&prefill.grad_year)||'', consent: mode==='edit' };
+  const host=document.createElement('div'); host.className='pm-overlay';
+  document.body.appendChild(host);
+  function fieldsHTML(){
+    if(st.type==='student_univ') return `
+      <div class="pm-field"><label class="pm-label">大学名</label>
+        <input class="pm-input" id="pm-uni" placeholder="大学名で検索（例：早稲田）" autocomplete="off" value="${esc(st.university)}">
+        <div class="pm-sugg" id="pm-sugg" style="display:none"></div></div>
+      <div class="pm-field"><label class="pm-label">学部</label>
+        <select class="pm-select" id="pm-fac"><option value="">選択してください</option>${P_FAC.map(f=>`<option ${st.faculty===f?'selected':''}>${f}</option>`).join('')}</select></div>
+      <div class="pm-field"><label class="pm-label">卒業年度</label>
+        <select class="pm-select" id="pm-grad"><option value="">選択してください</option>${P_GRAD.map(g=>`<option ${st.grad===g?'selected':''}>${g}</option>`).join('')}</select></div>`;
+    if(st.type==='student_pre') return `
+      <div class="pm-field"><label class="pm-label">卒業予定年（任意）</label>
+        <select class="pm-select" id="pm-grad"><option value="">未選択でもOK</option>${P_GRAD.map(g=>`<option ${st.grad===g?'selected':''}>${g}</option>`).join('')}</select></div>`;
+    return '';
+  }
+  function valid(){
+    if(!st.type||!st.consent) return false;
+    if(st.type==='student_univ' && (!st.university||!st.faculty||!st.grad)) return false;
+    return true;
+  }
+  function refresh(){ const s=host.querySelector('#pm-submit'); if(s) s.disabled=!valid(); }
+  function draw(){
+    host.innerHTML=`<div class="pm-card">
+      <div class="pm-h1">あなたにぴったりの情報を届けるために</div>
+      <div class="pm-h2">はじめまして！最初に30秒だけ、3つ教えてください。</div>
+      <div class="pm-lead">学年や学部に合わせて、おすすめの企業や業界情報があなた仕様になります。</div>
+      <div class="pm-q">いまのあなたに一番近いのは？</div>
+      <div class="pm-opts">${P_TYPES.map(t=>`<button class="pm-opt ${st.type===t.v?'on':''}" data-t="${t.v}"><span class="rd"></span>${t.l}</button>`).join('')}</div>
+      <div id="pm-fields">${fieldsHTML()}</div>
+      <div class="pm-note"><b>入力内容について</b><br>
+        ・入力いただいた大学・学部・卒業年度は、あなたに合ったおすすめ企業・コンテンツの表示に使います。<br>
+        ・今後、あなたのことを「ぜひ会いたい」と思った企業から、直接スカウト（オファー）が届く機能を準備しています。その際、大学・学部・卒業年度を参加企業にお伝えすることがあります。<br>
+        ・氏名・住所・電話番号などは取得しません。入力内容はマイページからいつでも変更・削除できます。</div>
+      <label class="pm-consent"><input type="checkbox" id="pm-consent" ${st.consent?'checked':''}>上記に同意して、自分に合った情報を受け取る</label>
+      <button class="pm-submit" id="pm-submit">はじめる →</button>
+      ${mode==='edit'?'<button class="pm-del" id="pm-del">この情報を削除する（初回登録に戻る）</button>':''}
+    </div>`;
+    host.querySelectorAll('.pm-opt').forEach(b=>b.onclick=()=>{ st.type=b.dataset.t; st.university='';st.faculty='';st.grad=''; draw(); });
+    const uni=host.querySelector('#pm-uni'), sugg=host.querySelector('#pm-sugg');
+    if(uni) uni.addEventListener('input',()=>{ const q=uni.value.trim(); st.university=''; refresh();
+      if(!q){ sugg.style.display='none'; return; }
+      const hits=UNIV.filter(u=>u.includes(q)).slice(0,20);
+      sugg.style.display=hits.length?'block':'none';
+      sugg.innerHTML=hits.map(u=>`<div data-u="${esc(u)}">${esc(u)}</div>`).join('');
+      sugg.querySelectorAll('div').forEach(d=>{ const pick=e=>{ e.preventDefault(); st.university=d.dataset.u; uni.value=d.dataset.u; sugg.style.display='none'; refresh(); }; d.addEventListener('pointerdown',pick); d.addEventListener('click',pick); });
+    });
+    const fac=host.querySelector('#pm-fac'); if(fac) fac.onchange=()=>{ st.faculty=fac.value; refresh(); };
+    const grad=host.querySelector('#pm-grad'); if(grad) grad.onchange=()=>{ st.grad=grad.value; refresh(); };
+    host.querySelector('#pm-consent').onchange=e=>{ st.consent=e.target.checked; refresh(); };
+    host.querySelector('#pm-submit').onclick=async()=>{
+      if(!valid()) return;
+      const body={ user_id:userId, user_type:st.type, university:st.university||null, faculty:st.faculty||null, grad_year:st.grad||null, consented:true, consent_version:CONSENT_VERSION };
+      try{ await fetch(`${API_BASE}/api/profile`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); }catch(e){}
+      PROFILE={ user_type:st.type, university:body.university, faculty:body.faculty, grad_year:body.grad_year }; CAN_EDIT=true;
+      host.remove(); startMypage();
+    };
+    const del=host.querySelector('#pm-del'); if(del) del.onclick=async()=>{
+      try{ await fetch(`${API_BASE}/api/profile/delete`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user_id:userId})}); }catch(e){}
+      PROFILE=null; CAN_EDIT=false; host.remove(); openProfileModal('register');  // 削除→初回扱い
+    };
+    refresh();
+  }
+  draw();
+}
+
+async function startMypage(){
+  let d=null;
+  try{ const r=await fetch(`${API_BASE}/api/mypage?userId=${encodeURIComponent(userId)}`); if(r.ok) d=await r.json(); }catch(e){}
+  if(!d) d={continue:{recent:[],quiz_resume:null},bookmarks:[],quiz_stats:{companies:0,accuracy:null,answered:0,recent_scores:[]},shindan:null};
+  render(d);
 }
 
 async function main(){
@@ -300,10 +414,15 @@ async function main(){
     if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;}
     if(liff.isLoggedIn()){ try{ const p=await liff.getProfile(); if(!new URLSearchParams(location.search).get('u')) userId=p.userId; if(p.displayName) document.getElementById('mp-greet').textContent=`${p.displayName}さんの足あと・お気に入り・成績`; }catch(e){} }
   }catch(e){ console.warn('LIFF skipped (preview):', e&&e.message); }
-  let d=null;
-  try{ const r=await fetch(`${API_BASE}/api/mypage?userId=${encodeURIComponent(userId)}`); if(r.ok) d=await r.json(); }catch(e){}
-  if(!d) d={continue:{recent:[],quiz_resume:null},bookmarks:[],quiz_stats:{companies:0,accuracy:null,answered:0,recent_scores:[]},shindan:null};
-  render(d);
+  // LIFF外/ゲスト(userId取れない)はモーダルを出さず従来ゲスト表示
+  const isReal = userId && userId!=='guest-preview';
+  if(isReal){
+    let prof=null;
+    try{ const r=await fetch(`${API_BASE}/api/profile?userId=${encodeURIComponent(userId)}`); if(r.ok) prof=await r.json(); }catch(e){}
+    if(prof && !prof.registered){ openProfileModal('register'); return; }  // 登録完了まで本体を表示しない
+    if(prof && prof.registered){ PROFILE=prof.profile; CAN_EDIT=true; }
+  }
+  startMypage();
 }
 main();
 </script>

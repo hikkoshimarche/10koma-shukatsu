@@ -809,6 +809,48 @@ app.post('/api/shindan/save', async (c) => {
   } catch (e) { return c.json({ ok: true, skipped: true }) }
 })
 
+// === 初回プロフィール（所属種別 + 大学/学部/卒業年度 + 同意）。student_univ以外は学校情報NULL ===
+app.get('/api/profile', async (c) => {
+  const userId = c.req.query('userId') || c.req.query('user_id')
+  if (!userId) return c.json({ registered: false, profile: null })
+  try {
+    const row = await c.env.DB.prepare(
+      `SELECT user_id, user_type, university, faculty, grad_year, consented_at, consent_version FROM user_profiles WHERE user_id = ?`
+    ).bind(userId).first<any>()
+    return c.json({ registered: !!row, profile: row || null })
+  } catch (e) { return c.json({ registered: false, profile: null }) }
+})
+app.post('/api/profile', async (c) => {
+  try {
+    const b = await c.req.json().catch(() => ({}))
+    const userId = b.user_id || b.userId
+    const userType = b.user_type
+    const ALLOWED = ['student_univ', 'student_pre', 'worker', 'other']
+    if (!userId || ALLOWED.indexOf(userType) < 0) return c.json({ ok: false, error: 'user_id and valid user_type required' }, 400)
+    if (!b.consented || !b.consent_version) return c.json({ ok: false, error: 'consent required' }, 400)
+    // 大学生のみ大学/学部、卒業年度は大学生・高校生(任意)のみ保持。それ以外はNULL。
+    const uni = userType === 'student_univ' ? (b.university || null) : null
+    const fac = userType === 'student_univ' ? (b.faculty || null) : null
+    const grad = (userType === 'student_univ' || userType === 'student_pre') ? (b.grad_year || null) : null
+    await c.env.DB.prepare(
+      `INSERT INTO user_profiles (user_id, user_type, university, faculty, grad_year, consented_at, consent_version)
+       VALUES (?, ?, ?, ?, ?, datetime('now'), ?)
+       ON CONFLICT(user_id) DO UPDATE SET user_type=excluded.user_type, university=excluded.university,
+         faculty=excluded.faculty, grad_year=excluded.grad_year, consented_at=excluded.consented_at, consent_version=excluded.consent_version`
+    ).bind(userId, userType, uni, fac, grad, b.consent_version).run()
+    return c.json({ ok: true })
+  } catch (e) { return c.json({ ok: false }, 500) }
+})
+app.post('/api/profile/delete', async (c) => {
+  try {
+    const b = await c.req.json().catch(() => ({}))
+    const userId = b.user_id || b.userId
+    if (!userId) return c.json({ ok: false }, 400)
+    await c.env.DB.prepare(`DELETE FROM user_profiles WHERE user_id = ?`).bind(userId).run()
+    return c.json({ ok: true })
+  } catch (e) { return c.json({ ok: false }, 500) }
+})
+
 // === マイページ集約（続きから/お気に入り/クイズ成績/診断結果 を1レスポンスで・往復1回・各ブロックgraceful） ===
 app.get('/api/mypage', async (c) => {
   const userId = c.req.query('userId') || c.req.query('user_id')
