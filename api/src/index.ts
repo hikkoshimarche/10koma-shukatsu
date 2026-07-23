@@ -800,6 +800,11 @@ app.get('/api/mypage', async (c) => {
     bookmarks: [],
     quiz_stats: { companies: 0, accuracy: null, answered: 0, recent_scores: [] },
     shindan: null,
+    // v1.5 4本柱
+    stamp_rally: { industries: [], explored: 0, total: 0 },
+    level: { xp: 0, level: 1, level_name: '就活ビギナー', next_xp: 50, progress: 0, breakdown: { companies: 0, quiz_correct: 0, shindan: false }, badges: [] },
+    next3: [],
+    feed: { internal: [], official: [] },
   }
 
   // a-1. 続きから: 最近閲覧した企業 上位3社
@@ -880,6 +885,121 @@ app.get('/api/mypage', async (c) => {
       }
     }
   } catch (e) { /* graceful */ }
+
+  // ===== v1.5 4本柱（全て既存データの集計・追加AIなし・往復1回維持） =====
+
+  // 閲覧済み企業ID(distinct) — スタンプ/バッジ/次の3社で再利用
+  const viewedIds = new Set<string>()
+  try {
+    const { results } = await c.env.DB.prepare(
+      `SELECT DISTINCT content_id FROM view_logs WHERE line_user_id = ? AND content_type = 'company'`
+    ).bind(userId).all()
+    for (const r of (results || []) as any[]) viewedIds.add(r.content_id)
+  } catch (e) { /* graceful */ }
+
+  // クイズ正答数(累計)
+  let quizCorrect = 0
+  try {
+    const r = await c.env.DB.prepare(
+      `SELECT COUNT(*) n FROM user_quiz_progress WHERE line_user_id = ? AND is_correct = 1`
+    ).bind(userId).first<any>()
+    quizCorrect = (r && r.n) || 0
+  } catch (e) { /* graceful */ }
+
+  // 1. 業界制覇スタンプラリー（分母=D1 industries×companies実在社数、n>=2の実分類業界のみ）
+  try {
+    const totals = await c.env.DB.prepare(
+      `SELECT i.id, i.name, COUNT(c.id) total FROM industries i JOIN companies c ON c.industry_id = i.id
+       GROUP BY i.id HAVING total >= 2 ORDER BY total DESC`
+    ).all()
+    const viewedByInd: Record<string, number> = {}
+    const vr = await c.env.DB.prepare(
+      `SELECT c.industry_id ind, COUNT(DISTINCT v.content_id) n
+       FROM view_logs v JOIN companies c ON c.id = v.content_id
+       WHERE v.line_user_id = ? AND v.content_type = 'company' GROUP BY c.industry_id`
+    ).bind(userId).all()
+    for (const r of (vr.results || []) as any[]) viewedByInd[r.ind] = r.n
+    const inds = ((totals.results || []) as any[]).map(r => ({
+      id: r.id, name: r.name, total: r.total, viewed: viewedByInd[r.id] || 0,
+    }))
+    out.stamp_rally.industries = inds
+    out.stamp_rally.total = inds.length
+    out.stamp_rally.explored = inds.filter(x => x.viewed > 0).length
+  } catch (e) { /* graceful */ }
+
+  // 2. 就活レベル＆称号（決定論。経験値=閲覧社数*10 + クイズ正答*5 + 診断完了*50。閾値は調整可）
+  try {
+    const nViewed = viewedIds.size
+    const xp = nViewed * 10 + quizCorrect * 5 + (out.shindan ? 50 : 0)
+    // レベル閾値(5段階)。後から調整しやすいよう配列で定義。
+    const TIERS = [
+      { min: 0, name: '就活ビギナー' }, { min: 50, name: '就活見習い' },
+      { min: 150, name: '就活一人前' }, { min: 350, name: '就活ベテラン' }, { min: 700, name: '就活マスター' },
+    ]
+    let li = 0
+    for (let i = 0; i < TIERS.length; i++) if (xp >= TIERS[i].min) li = i
+    const nextMin = li < TIERS.length - 1 ? TIERS[li + 1].min : null
+    const progress = nextMin != null ? Math.round(((xp - TIERS[li].min) / (nextMin - TIERS[li].min)) * 100) : 100
+    // 称号バッジ(実績で決定論的に付与)
+    const SHOSHA5 = ['mitsubishi-corp', 'mitsui-bussan', 'itochu', 'sumitomo-corp', 'marubeni']
+    const shosha5n = SHOSHA5.filter(s => viewedIds.has(s)).length
+    const explored = out.stamp_rally.explored, totalInd = out.stamp_rally.total
+    const badges = [
+      { id: 'first', label: 'はじめの一歩', detail: '企業を1社見た', earned: nViewed >= 1 },
+      { id: 'shosha5', label: '5大商社コンプリート', detail: `${shosha5n}/5社`, earned: shosha5n >= 5 },
+      { id: 'quiz10', label: 'クイズ10問正解', detail: `${Math.min(quizCorrect, 10)}/10問`, earned: quizCorrect >= 10 },
+      { id: 'quiz100', label: 'クイズ100問正解', detail: `${Math.min(quizCorrect, 100)}/100問`, earned: quizCorrect >= 100 },
+      { id: 'ind_half', label: '業界の半分を制覇', detail: totalInd ? `${explored}/${totalInd}業界` : '', earned: totalInd > 0 && explored >= Math.ceil(totalInd / 2) },
+      { id: 'ind_all', label: '全業界制覇', detail: totalInd ? `${explored}/${totalInd}業界` : '', earned: totalInd > 0 && explored >= totalInd },
+    ]
+    out.level = { xp, level: li + 1, level_name: TIERS[li].name, next_xp: nextMin, progress,
+      breakdown: { companies: nViewed, quiz_correct: quizCorrect, shindan: !!out.shindan }, badges }
+  } catch (e) { /* graceful */ }
+
+  // 3. 次に見るべき3社（既存診断結果の上位企業から未閲覧を抽出。新規ロジックなし）
+  try {
+    if (out.shindan && Array.isArray(out.shindan.top_companies)) {
+      out.next3 = out.shindan.top_companies
+        .filter((c2: any) => c2 && c2.slug && !viewedIds.has(c2.slug))
+        .slice(0, 3)
+        .map((c2: any) => ({ slug: c2.slug, name: c2.name, industry: c2.industry || '', score: c2.score }))
+    }
+  } catch (e) { /* graceful */ }
+
+  // 4a. 更新フィード(内部)= 既存コンテンツのバッチ更新を要約(タイムスタンプ自動追従・手動メンテ不要)
+  try {
+    const norm = (t: any) => {
+      if (t == null) return ''
+      const s = String(t)
+      if (/^\d{10,}$/.test(s)) { const d = new Date(parseInt(s, 10) * 1000); return d.toISOString().slice(0, 10) }
+      return s.slice(0, 10)
+    }
+    const feed: any[] = []
+    const q = await c.env.DB.prepare(`SELECT COUNT(DISTINCT set_id) n, MAX(created_at) ts FROM quiz_questions WHERE set_type='company'`).first<any>()
+    if (q && q.n) feed.push({ kind: 'quiz', title: '企業クイズ', detail: `${q.n}社ぶん公開中`, date: norm(q.ts), href: '/quiz.html' })
+    const ds = await c.env.DB.prepare(`SELECT COUNT(*) n, MAX(updated_at) ts FROM datasheets`).first<any>()
+    if (ds && ds.n) feed.push({ kind: 'datasheet', title: '企業データシート', detail: `${ds.n}社ぶん公開中`, date: norm(ds.ts), href: '/home.html' })
+    const ek = await c.env.DB.prepare(`SELECT COUNT(*) n, MAX(updated_at) ts FROM es_kits`).first<any>()
+    if (ek && ek.n) feed.push({ kind: 'eskit', title: 'ES・面接対策キット', detail: `${ek.n}社ぶん公開中`, date: norm(ek.ts), href: '/es_guide.html' })
+    feed.sort((a, b) => (a.date < b.date ? 1 : -1))
+    out.feed.internal = feed
+  } catch (e) { /* graceful */ }
+
+  // 4b. 更新フィード(公式)= company_news(タブD生成) から お気に入り社分のみ。未作成/空でも壊れない。
+  try {
+    const favIds = (out.bookmarks || []).map((b: any) => b.id).filter(Boolean)
+    if (favIds.length) {
+      const ph = favIds.map(() => '?').join(',')
+      const { results } = await c.env.DB.prepare(
+        `SELECT n.company_id, c.name, n.title, n.url, n.published_at
+         FROM company_news n JOIN companies c ON c.id = n.company_id
+         WHERE n.company_id IN (${ph}) ORDER BY n.published_at DESC LIMIT 8`
+      ).bind(...favIds).all()
+      out.feed.official = (results || []).map((r: any) => ({
+        company_id: r.company_id, name: r.name, title: r.title, url: r.url, date: String(r.published_at || '').slice(0, 10),
+      }))
+    }
+  } catch (e) { /* company_news 未作成なら graceful に空 */ }
 
   return c.json(out)
 })

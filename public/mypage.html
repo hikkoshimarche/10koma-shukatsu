@@ -71,6 +71,52 @@
     .mp-empty-all .es{font-size:13px;color:rgba(255,255,255,0.8);line-height:1.6;margin-bottom:16px}
     .mp-empty-all a{display:inline-block;background:var(--gold);color:#3a2c05;text-decoration:none;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:800}
     .mp-load{text-align:center;color:rgba(255,255,255,0.7);padding:50px 0}
+
+    /* v1.5: レベル＆称号 */
+    .lv-card{background:linear-gradient(135deg,#12457f,#0a2f5c);border:1.5px solid rgba(231,184,75,0.45);border-radius:16px;padding:15px;box-shadow:0 6px 18px rgba(3,20,44,0.4)}
+    .lv-top{display:flex;align-items:center;gap:12px}
+    .lv-badge-ic{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--gold),var(--gold-deep));display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+    .lv-name{font-size:17px;font-weight:800;color:#fff}
+    .lv-sub{font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px}
+    .lv-xp{margin-left:auto;text-align:right;color:var(--gold);font-weight:800;font-size:15px}.lv-xp small{color:rgba(255,255,255,0.6);font-weight:600;font-size:10px;display:block}
+    .lv-bar{height:8px;border-radius:99px;background:rgba(255,255,255,0.14);overflow:hidden;margin:11px 0 4px}
+    .lv-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--gold-deep))}
+    .lv-next{font-size:10.5px;color:rgba(255,255,255,0.7);text-align:right}
+    .lv-badges{display:flex;gap:8px;overflow-x:auto;margin-top:11px;padding-bottom:3px;-webkit-overflow-scrolling:touch}
+    .lv-b{flex:0 0 auto;width:74px;text-align:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:11px;padding:9px 5px}
+    .lv-b.on{background:rgba(231,184,75,0.16);border-color:rgba(231,184,75,0.55)}
+    .lv-b .bi{font-size:20px;filter:grayscale(1);opacity:0.5}
+    .lv-b.on .bi{filter:none;opacity:1}
+    .lv-b .bl{font-size:9.5px;font-weight:700;color:rgba(255,255,255,0.7);line-height:1.2;margin-top:4px}
+    .lv-b.on .bl{color:#fff}
+    .lv-b .bd{font-size:9px;color:rgba(255,255,255,0.55);margin-top:2px}
+
+    /* v1.5: スタンプラリー */
+    .rl-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+    .rl-cell{background:#fff;border-radius:12px;padding:11px 12px;text-decoration:none;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,0.14)}
+    .rl-cell.done{background:linear-gradient(135deg,#fff,#fff7e6);box-shadow:0 2px 10px rgba(231,184,75,0.3)}
+    .rl-nm{font-size:13px;font-weight:800;display:flex;align-items:center;gap:5px}
+    .rl-nm .st{font-size:14px}
+    .rl-cnt{font-size:11px;color:#7a8794;margin-top:4px}
+    .rl-cnt b{color:var(--navy);font-weight:800}
+    .rl-bar{height:5px;border-radius:99px;background:#eef2f7;overflow:hidden;margin-top:6px}
+    .rl-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--gold-deep))}
+    .rl-cell.unexp{opacity:0.92}
+    .rl-cell.unexp .rl-cnt{color:#a7b0bb}
+
+    /* v1.5: 次に見るべき3社 */
+    .n3-card{display:flex;align-items:center;gap:11px;background:#fff;border-radius:14px;padding:12px 13px;text-decoration:none;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,0.14);margin-bottom:9px}
+    .n3-badge{width:40px;height:40px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:"Reggae One",sans-serif;font-size:19px;color:#fff;background-color:var(--acc);background-image:linear-gradient(135deg,rgba(255,255,255,0.3),rgba(255,255,255,0) 62%)}
+    .n3-info{flex:1;min-width:0}.n3-nm{font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.n3-sub{font-size:11px;color:#7a8794;margin-top:1px}
+    .n3-match{flex-shrink:0;font-size:11px;font-weight:800;color:#fff;background:var(--navy);border-radius:999px;padding:3px 9px}
+    .n3-arrow{color:#c3ccd6;font-size:18px;font-weight:700;flex-shrink:0}
+
+    /* v1.5: 更新フィード */
+    .fd-item{display:flex;align-items:center;gap:11px;background:#fff;border-radius:12px;padding:11px 13px;text-decoration:none;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,0.14);margin-bottom:8px}
+    .fd-ic{width:36px;height:36px;border-radius:10px;background:#eef3f9;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+    .fd-b{flex:1;min-width:0}.fd-t{font-size:13.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fd-d{font-size:11px;color:#7a8794;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .fd-date{font-size:10.5px;color:#94a0ac;flex-shrink:0}
+    .fd-sub{font-size:11px;color:rgba(255,255,255,0.6);padding:2px 2px 8px}
   </style>
 </head>
 <body>
@@ -161,17 +207,87 @@ function secShindan(d){
     </div></div>`;
 }
 
-function render(d){
-  const empty = !(d.continue.recent||[]).length && !d.continue.quiz_resume
-    && !(d.bookmarks||[]).length && !(d.quiz_stats&&d.quiz_stats.answered) && !d.shindan;
-  if(empty){
-    mp().innerHTML=`<div class="mp-empty-all">
-      <div class="ei">👣</div><div class="et">まだ足あとがありません</div>
-      <div class="es">企業研究・クイズ・相性診断をすると、<br>ここにあなた専用のページができます。</div>
-      <a href="/industry">企業研究をはじめる →</a></div>`;
-    return;
+// v1.5: 就活レベル＆称号
+function secLevel(d){
+  const L=d.level||{}; const bd=L.breakdown||{};
+  const icons={first:'👣',shosha5:'🏢',quiz10:'🧠',quiz100:'💯',ind_half:'🗺️',ind_all:'👑'};
+  const badges=(L.badges||[]).map(b=>`<div class="lv-b ${b.earned?'on':''}"><div class="bi">${icons[b.id]||'⭐'}</div><div class="bl">${esc(b.label)}</div>${b.detail?`<div class="bd">${esc(b.detail)}</div>`:''}</div>`).join('');
+  return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">就活<span class="em">レベル</span></span></div>
+    <div class="lv-card">
+      <div class="lv-top"><span class="lv-badge-ic">🎓</span>
+        <span><div class="lv-name">Lv.${L.level} ${esc(L.level_name||'')}</div>
+          <div class="lv-sub">閲覧${bd.companies||0}社・クイズ正答${bd.quiz_correct||0}・診断${bd.shindan?'済':'未'}</div></span>
+        <span class="lv-xp">${L.xp||0}<small>XP</small></span></div>
+      <div class="lv-bar"><i style="width:${L.progress||0}%"></i></div>
+      <div class="lv-next">${L.next_xp!=null?`次のレベルまで あと${Math.max(0,L.next_xp-(L.xp||0))}XP`:'最高レベル達成！'}</div>
+      <div class="lv-badges">${badges}</div>
+    </div></div>`;
+}
+// v1.5: 次に見るべき3社
+function secNext3(d){
+  const n3=d.next3||[];
+  if(!n3.length){
+    if(d.shindan) return '';  // 診断済だが未閲覧候補が無い→非表示
+    return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">次に見る<span class="em">べき3社</span></span></div>
+      <div class="mp-empty"><p>相性診断をすると、<br>あなたに合う企業を提案します。</p><a href="/shindan.html">診断してみる →</a></div></div>`;
   }
-  mp().innerHTML = secContinue(d)+secFavorites(d)+secStats(d)+secShindan(d);
+  return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">次に見る<span class="em">べき3社</span></span><span class="mp-more">診断より</span></div>
+    ${n3.map(c=>`<a class="n3-card" href="/company.html?id=${encodeURIComponent(c.slug)}">
+      <span class="n3-badge" style="--acc:${hue(c.slug)}">${esc(String(c.name||'？').charAt(0))}</span>
+      <span class="n3-info"><span class="n3-nm">${esc(c.name)}</span><span class="n3-sub">${esc(c.industry||'')}</span></span>
+      ${(c.score!=null)?`<span class="n3-match">相性${Math.round(c.score*100)}%</span>`:''}<span class="n3-arrow">›</span></a>`).join('')}</div>`;
+}
+// v1.5: 業界制覇スタンプラリー
+function secRally(d){
+  const r=d.stamp_rally||{}; const inds=r.industries||[];
+  if(!inds.length) return '';
+  const cells=inds.map(x=>{
+    const done=x.viewed>=x.total, started=x.viewed>0;
+    // 業界研究(/gyokai)へ誘導。D1 industry_id と業界研究側slugの体系差を避け、確実に動くトップへ。
+    const href = '/gyokai.html';
+    const pct=x.total?Math.round(x.viewed/x.total*100):0;
+    return `<a class="rl-cell ${done?'done':''} ${started?'':'unexp'}" href="${href}">
+      <div class="rl-nm">${done?'<span class="st">🏅</span>':''}${esc(x.name)}</div>
+      <div class="rl-cnt"><b>${x.viewed}</b>/${x.total}社${started?'':' ・未開拓'}</div>
+      <div class="rl-bar"><i style="width:${pct}%"></i></div></a>`;
+  }).join('');
+  return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">業界制覇<span class="em">スタンプ</span></span><span class="mp-more">${r.explored}/${r.total}業界</span></div>
+    <div class="rl-grid">${cells}</div></div>`;
+}
+// v1.5: 更新フィード
+function secFeed(d){
+  const f=d.feed||{}; const intl=f.internal||[], off=f.official||[];
+  const kic={quiz:'🧠',datasheet:'📊',eskit:'🧰'};
+  let inner='';
+  if(off.length){
+    inner+=`<div class="fd-sub">お気に入り企業の公式ニュース</div>`+off.map(o=>`<a class="fd-item" href="${esc(o.url)}" target="_blank" rel="noopener">
+      <span class="fd-ic">📰</span><span class="fd-b"><span class="fd-t">${esc(o.title)}</span><span class="fd-d">${esc(o.name)}</span></span><span class="fd-date">${esc(o.date||'')}</span></a>`).join('');
+  }
+  if(intl.length){
+    inner+=`<div class="fd-sub">トーキャリの新着</div>`+intl.map(i=>`<a class="fd-item" href="${esc(i.href||'#')}">
+      <span class="fd-ic">${kic[i.kind]||'✨'}</span><span class="fd-b"><span class="fd-t">${esc(i.title)}</span><span class="fd-d">${esc(i.detail||'')}</span></span><span class="fd-date">${esc(i.date||'')}</span></a>`).join('');
+  }
+  if(!inner) return '';
+  return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">更新<span class="em">フィード</span></span></div>${inner}</div>`;
+}
+
+function render(d){
+  const isNew = !(d.continue.recent||[]).length && !d.continue.quiz_resume
+    && !(d.bookmarks||[]).length && !(d.quiz_stats&&d.quiz_stats.answered) && !d.shindan
+    && !((d.stamp_rally||{}).explored);
+  let html='';
+  if(isNew){
+    // 空状態(新規): ブランクにせず、はじめよう導線＋レベル(Lv1)＋スタンプ(未開拓)＋新着 で満たす
+    html=`<div class="mp-sec"><div class="mp-empty-all" style="padding:28px 22px">
+      <div class="ei">👣</div><div class="et">ようこそ！</div>
+      <div class="es">企業研究・クイズ・相性診断をすると、<br>レベルが上がり、あなた専用のページになります。</div>
+      <a href="/industry">企業研究をはじめる →</a></div></div>`
+      + secLevel(d) + secRally(d) + secFeed(d);
+  } else {
+    html = secLevel(d) + secNext3(d) + secRally(d)
+         + secContinue(d) + secFavorites(d) + secStats(d) + secShindan(d) + secFeed(d);
+  }
+  mp().innerHTML = html;
   if(location.hash==='#favorites'){ const el=document.getElementById('favorites'); if(el) setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),200); }
 }
 
