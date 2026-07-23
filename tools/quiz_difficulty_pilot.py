@@ -9,7 +9,7 @@ import quiz_fanout as q
 from collections import Counter
 
 OUT = q.OUT
-HANDOFF = os.path.expanduser("~/Desktop/kindle_受け渡し/quiz_difficulty_pilot")
+HANDOFF = os.path.expanduser("~/Desktop/kindle_受け渡し/quiz_difficulty_pilot_v2")
 PILOT = [("mitsubishi-corp", "三菱商事"), ("keyence", "キーエンス"), ("nintendo", "任天堂"),
          ("mufg", "三菱UFJ銀行"), ("meiji-hd", "明治ホールディングス")]
 LVN = {1: "Lv1入門", 2: "Lv2基礎", 3: "Lv3応用", 4: "Lv4実践"}
@@ -52,8 +52,15 @@ def main():
         levels = D.classify(slug, quiz)
         for x, lv in zip(quiz, levels):
             x["difficulty"] = lv
-        gen1 = D.gen_lv(slug, name, 1, 10)
-        gen2 = D.gen_lv(slug, name, 2, 10)
+        # レベル間dedup: 既存問→gen1→gen2 の順にfact-keyを排他
+        import quiz_lint as QL
+        used = set()
+        for x in quiz:
+            used |= set(QL._fact_keys(x))
+        gen1 = D.gen_lv(slug, name, 1, 10, exclude=used)
+        for x in gen1:
+            used |= set(QL._fact_keys(x))
+        gen2 = D.gen_lv(slug, name, 2, 10, exclude=used)
         # 保存(本番D1には入れない)
         out = {"existing": quiz, "gen_lv1": gen1, "gen_lv2": gen2}
         json.dump(out, open(os.path.join(OUT, slug, "quiz_difficulty_v1.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)

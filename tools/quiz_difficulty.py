@@ -12,7 +12,8 @@ OUT = q.OUT
 # 決算数値・専門用語の強シグナル(Lv1に混ざったらerror)
 _NUM = re.compile(r"[0-9０-９][0-9０-９,\.]*\s*(円|%|％|百万|億|兆|倍|株|名|人|ヶ所|拠点|年3月期|億円|万円)")
 _FIN_TERM = re.compile(r"決算|売上高|収益|営業利益|純利益|経常利益|税引前|ROE|EPS|時価総額|自己資本|"
-                       r"セグメント利益|キャッシュフロー|配当|株価|有価証券|資本金|総資産|営業CF")
+                       r"セグメント利益|キャッシュフロー|配当|株価|有価証券|資本金|総資産|営業CF|"
+                       r"内部留保|利益率|株主還元|資金|増収|増益|減益|利益剰余金")   # v2③資金系→Lv3/4
 _JARGON = re.compile(r"ROE|EPS|ROIC|IFRS|EBITDA|セグメント|コーポレートガバナンス|サステナビリティ|"
                      r"バリューチェーン|M&A|のれん|持分法|連結子会社")
 
@@ -78,8 +79,10 @@ GEN_SYS = (
  "絶対規則: (1)datasheetに実在する内容のみ(捏造・新規リサーチ禁止)。(2)★決算数値・金額・年3月期・専門用語"
  "(ROE/EPS/セグメント/IFRS等)は使わない。(3)4択・正解1つ。★選択肢は4つとも『同じ形式の短い名詞句』で揃える"
  "(例: 事業なら『ゲーム』『自動車』『銀行』『医薬品』のような名詞。『〜する』等の文や会社名・人名は入れない)。"
- "誤答は正解と明らかに区別できる他業界/他分野の名詞。(4)各問にsource_url(根拠factの出典)。"
- "Lv1=会社が何をする会社か/主力事業・製品/業界の基本(10コマ漫画を1回見れば解ける)。Lv2=事業の強み・社風・求める人物像の理解。")
+ "★誤答は必ず『他業界の事業・製品』など出典上明らかに誤りと言い切れるものにする(その会社にも当てはまり得る"
+ "紛らわしい選択肢は禁止=例『危機管理→サイバー攻撃』はNG、任天堂の誤答に『自動車の製造』はOK)。(4)各問にsource_url。"
+ "Lv1=王道の入門問題=『何をする会社か/主力製品(例:任天堂ならNintendo Switch・マリオ)/代表的な事業』を問う"
+ "(10コマ漫画を1回見れば解ける)。抽象的なCSR/システム/取り組みは避け、具体的な製品・事業を問う。Lv2=事業の強み・社風・理念の理解。")
 GEN_USER = ("企業: {name} / 難易度: Lv{lv}\n以下は datasheet の事実(出典付)。この範囲だけで Lv{lv} を{n}問。\n\n{facts}\n\n"
             "出力JSON: {{\"questions\":[{{\"q_text\":\"..\",\"options\":[\"正解\",\"誤1\",\"誤2\",\"誤3\"],\"correct\":0,"
             "\"explanation\":\"..\",\"source_url\":\"<上記出典>\",\"category\":\"会社概要|事業セグメント|製品・サービス|沿革|その他\"}}]}}\n"
@@ -99,8 +102,52 @@ def _ds_facts(ds):
     return out
 
 
+def _official_home(slug):
+    """corpus多数派ドメインの公式トップ(台本/factsheet由来factの一次情報URL)。"""
+    cp = os.path.join(OUT, slug, "quiz_corpus_locked_v3.json")
+    if os.path.exists(cp):
+        try:
+            import collections
+            doms = [re.search(r"https?://([^/]+)", u).group(1) for u in json.load(open(cp))
+                    if re.search(r"https?://([^/]+)", u) and not re.search(r"\.ac\.jp|wikipedia|yahoo|note\.com|blog", u)]
+            if doms:
+                return "https://" + collections.Counter(doms).most_common(1)[0][0] + "/"
+        except Exception:
+            pass
+    return ""
+
+
+def _factsheet_facts(slug):
+    """ファクトシート(factsheet.md)から王道Lv1材料=主力製品/業態/理念を抽出(採用/待遇/決算は除外)。
+    『## 身近な接点』(製品)・『## 基本情報』の業態・『## 理念』を対象。決算数値は除外。出典=公式トップ。"""
+    p = os.path.join(OUT, slug, "factsheet.md")
+    if not os.path.exists(p):
+        return []
+    home = _official_home(slug)
+    lines = open(p, encoding="utf-8").read().splitlines()
+    out, sec = [], ""
+    for i, ln in enumerate(lines):
+        if ln.startswith("## "):
+            sec = ln[3:].strip(); continue
+        if sec in ("採用", "待遇", "直近トピック"):     # 決算/採用倍率/年収は Lv1 材料にしない
+            continue
+        m = re.match(r"^-\s*\*\*(.+?)\*\*:\s*(.*)$", ln)
+        name = desc = None
+        if m:
+            name, desc = m.group(1).strip(), m.group(2).strip()
+            if not desc and i + 1 < len(lines) and not lines[i + 1].startswith(("-", "#")):
+                desc = lines[i + 1].strip()
+        if not name or not desc or _NUM.search(desc) or _FIN_TERM.search(desc):
+            continue
+        if sec == "身近な接点":
+            out.append({"fact": f"{name}は{desc}", "source_url": home, "kind": "product"})
+        elif sec in ("基本情報", "理念"):
+            out.append({"fact": f"{name}: {desc}"[:160], "source_url": home, "kind": "basic"})
+    return out
+
+
 def _scenario_facts(slug):
-    """10コマ台本(scenario_v4)の script/overlay_text を Lv1/2の追加ソースに(会社の基本ナラティブ)。"""
+    """10コマ台本(scenario_v4)の視覚フック(固有product)・brand_object・script・overlayをLv1/2材料に。"""
     p = os.path.join(OUT, slug, "scenario_v4.json")
     if not os.path.exists(p):
         return []
@@ -108,37 +155,88 @@ def _scenario_facts(slug):
         s = json.load(open(p))
     except Exception:
         return []
+    home = _official_home(slug)
     out = []
     for k in s.get("koma", []):
-        for fld in ("script", "overlay_text"):
-            t = k.get(fld)
-            if isinstance(t, str):
-                t = re.sub(r"\s+", " ", t).strip()
-                if len(t) >= 10 and not _NUM.search(t):
-                    out.append({"fact": t[:160], "source_url": f"10コマ台本({slug})"})
+        vh = re.sub(r"^H\d+[:：]\s*", "", str(k.get("visual_hook", ""))).strip()   # 視覚フック=固有product
+        if vh and not _NUM.search(vh):
+            out.append({"fact": vh[:120], "source_url": home, "kind": "product"})
+        bo = k.get("brand_object")
+        if isinstance(bo, dict):
+            for key in ("object_type", "brand_form"):
+                v = str(bo.get(key, "")).strip()
+                if len(v) >= 6 and not _NUM.search(v):
+                    out.append({"fact": v[:120], "source_url": home, "kind": "product"})
+        ov = k.get("overlay_text")
+        if isinstance(ov, dict):
+            for key in ("main_copy", "sub"):
+                v = str(ov.get(key, "")).strip()
+                if len(v) >= 8 and not _NUM.search(v):
+                    out.append({"fact": v[:120], "source_url": home, "kind": "basic"})
+        sc = k.get("script")
+        if isinstance(sc, list):
+            for line in sc:
+                t = re.sub(r"^\[[^\]]+\]\s*", "", str(line)).strip()   # [nana] 除去
+                if len(t) >= 12 and not _NUM.search(t):
+                    out.append({"fact": t[:150], "source_url": home, "kind": "basic"})
     return out
 
 
-def gen_lv(slug, name, level, n=10):
+_STOP = set("サービス システム 事業 製品 提供 開発 管理 活動 技術 情報 グループ ビジネス 会社 企業 "
+            "戦略 市場 顧客 社会 世界 日本 製造 販売 運営 支援 推進 展開 生産 品質 環境 経営 業界".split())
+
+
+def _distractor_ok(x, corpus):
+    """誤答が『実は正しい可能性がある』型を排除。誤答の《特徴語(4字以上・共通語除く)》がその社のcorpus本文に
+    実在=実際に当てはまり得る→不可(例: 危機管理の誤答『サイバー攻撃』)。他業界の明白誤答(自動車/金融サービス
+    等・特徴語がcorpus不在)はOK。共通語(サービス/事業等)だけの一致では落とさない。"""
+    ctext = re.sub(r"\s+", "", " ".join(corpus.values()))
+    ci = x.get("correct", 0)
+    for j, o in enumerate(x.get("options", [])):
+        if j == ci:
+            continue
+        for t in re.findall(r"[一-龥ァ-ヶーA-Za-z]{4,}", str(o)):
+            if t in _STOP:
+                continue
+            if t in ctext:
+                return False
+    return True
+
+
+def gen_lv(slug, name, level, n=10, exclude=None):
     dp = os.path.join(OUT, slug, "datasheet.json")
     cp = os.path.join(OUT, slug, "quiz_corpus_locked_v3.json")
     if not os.path.exists(dp):
         return []
     ds = json.load(open(dp))
     corpus = json.load(open(cp)) if os.path.exists(cp) else {}
-    facts = _ds_facts(ds) + _scenario_facts(slug)      # datasheet + 10コマ台本
+    # ソース: ファクトシート(王道product/業態/理念) + 10コマ台本(視覚フック等) + datasheet
+    fsheet = _factsheet_facts(slug)
+    scen = _scenario_facts(slug)
+    dsf = [dict(x, kind="basic") for x in _ds_facts(ds)]
+    prod = [x for x in fsheet + scen if x.get("kind") == "product"]
+    basic = [x for x in fsheet + scen + dsf if x.get("kind") != "product"]
+    facts = (prod + basic) if level == 1 else (basic + prod)   # Lv1は主力製品を最優先
+    # 重複fact除去(正規化)
+    seen, uniq = set(), []
+    for x in facts:
+        kk = re.sub(r"[\s、。「」()（）・:：]", "", x["fact"])[:30]
+        if kk in seen:
+            continue
+        seen.add(kk); uniq.append(x)
+    facts = uniq
     if len(facts) < 3:
         return []
-    # lint用corpus: fact を出典別に束ねる(Lv1/2はdatasheet/台本範囲で接地=source_required充足)
     for x in facts:
         u = x["source_url"] or "ds://local"
         corpus[u] = (corpus.get(u, "") + " " + x["fact"])
-    fl = "\n".join(f"- {x['fact']} <出典:{x['source_url']}>" for x in facts[:20])
+    hint = "Lv1は『主力製品・何をする会社か・代表的な事業』の王道問題を優先。" if level == 1 else "Lv2は事業の強み・社風・理念の理解。"
+    fl = "\n".join(f"- {x['fact']} <出典:{x['source_url']}>" for x in facts[:24])
     data = q._parse_json(q.openai_chat([{"role": "system", "content": GEN_SYS},
-                        {"role": "user", "content": GEN_USER.format(name=name, lv=level, n=n + 4, facts=fl)}],
-                        max_tokens=2600, temperature=0.4))
+                        {"role": "user", "content": GEN_USER.format(name=name, lv=level, n=n + 6, facts=fl) + "\n" + hint}],
+                        max_tokens=2800, temperature=0.4))
     raw = data.get("questions", []) if isinstance(data, dict) else []
-    ok = []
+    ok, used = [], set(exclude or set())
     for i, x in enumerate(raw):
         if not (isinstance(x.get("options"), list) and len(x["options"]) == 4):
             continue
@@ -152,6 +250,12 @@ def gen_lv(slug, name, level, n=10):
             continue
         if lint_difficulty([x]):                        # Lv1/2に数値/決算/専門→drop
             continue
+        if not _distractor_ok(x, corpus):               # 誤答がcorpusに実在=紛らわしい→drop
+            continue
+        fk = frozenset(QL._fact_keys(x))                # レベル間dedup(fact-key)
+        if fk & used:
+            continue
+        used |= fk
         ok.append(x)
     return ok[:n]
 
