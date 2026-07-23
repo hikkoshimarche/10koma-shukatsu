@@ -557,6 +557,153 @@ def gen_lv3(slug, name, n=3, exclude=None, sem_used=None, pool=None):
     return ok[:n]
 
 
+PHIL_SYS = (
+ "就活生向けLv2『企業理念・パーパス・ミッション・バリュー』クイズを、提供された理念ページの本文だけで作る。"
+ "正解は本文に実在する理念/スローガン/価値観、誤答は当社資料に現れない別会社的な理念にする。数値・専門用語は使わない。"
+ "各問に1〜2文の解説(本文の範囲)と source_url を付す。")
+PHIL_USER = ("企業: {name}\n以下は理念/会社案内の事実(出典付)。この範囲だけで理念系Lv2を{n}問。\n\n{facts}\n\n"
+             "出力JSON: {{\"questions\":[{{\"q_text\":\"..\",\"options\":[\"正解\",\"誤1\",\"誤2\",\"誤3\"],\"correct\":0,"
+             "\"explanation\":\"1〜2文\",\"source_url\":\"<上記出典>\",\"category\":\"その他\"}}]}}\n"
+             "理念・パーパス・ミッション・バリューを問う。決算数値/年3月期/専門用語は禁止。")
+DEAL_SYS = (
+ "就活生向けLv4『近年の大型投資・買収・提携・新事業』クイズを、提供された決算資料/IR/公式リリース/ニュースの本文だけで作る。"
+ "★Source-or-Silence厳守: 金額・年度は本文の記載どおりに書き、記載が無い数値は一切出さない。正解は本文で裏取りできる案件、"
+ "誤答は当社資料に一切現れない別業界の架空案件にする。各問に1〜2文の解説と source_url、数値には as_of を付す。")
+DEAL_USER = ("企業: {name}\n以下は決算/IR/リリース/ニュースの本文(出典付)。ここに実在する案件だけでLv4を{n}問。\n\n{facts}\n\n"
+             "出力JSON: {{\"questions\":[{{\"q_text\":\"..\",\"options\":[\"正解\",\"誤1\",\"誤2\",\"誤3\"],\"correct\":0,"
+             "\"explanation\":\"1〜2文\",\"source_url\":\"<上記URL>\",\"as_of\":\"(年度/時点があれば)\",\"category\":\"事業セグメント\"}}]}}\n"
+             "投資/買収/提携/新事業の固有名(相手先・案件名)を問う。金額/年度は本文どおり・無い数値は出さない。案件が本文に無ければ問題を作らない。")
+
+
+def _philosophy_facts(slug, pool):
+    """理念ページ(factsheet理念 + philosophy/vision/missionクロール)から理念系factを収集。"""
+    out = []
+    home = _official_home(slug)
+    for x in _factsheet_facts(slug):
+        if x.get("kind") == "basic" and re.search(r"理念|パーパス|ミッション|バリュー|価値観|スローガン|使命|目指", x["fact"]):
+            out.append({"fact": x["fact"], "source_url": x["source_url"]})
+    for u, b in (pool or {}).items():
+        if re.search(r"/(philosophy|vision|mission|corporate|company|about|csr)", u, re.I):
+            for m in re.findall(r"[^。]{12,60}(?:理念|パーパス|ミッション|バリュー|価値観|使命|目指し)[^。]{0,30}", b):
+                out.append({"fact": m[:120], "source_url": u})
+    seen, uniq = set(), []
+    for x in out:
+        k = re.sub(r"\s", "", x["fact"])[:24]
+        if k in seen:
+            continue
+        seen.add(k); uniq.append(x)
+    return uniq[:12]
+
+
+def _deal_facts(slug, pool):
+    """決算/IR/リリース + company_news(D1) から大型案件factを収集(Source-or-Silence: 本文記載のみ)。"""
+    out = []
+    # company_news(D1) の見出し(案件系)
+    try:
+        rows = _d1(f"SELECT title,url,published_at FROM company_news WHERE company_id='{slug}'")
+        for r in rows:
+            t = r.get("title", "")
+            if re.search(r"買収|出資|投資|提携|合弁|子会社|新会社|新事業|資本業務|統合|取得|設立|参入|MOU|覚書", t):
+                out.append({"fact": t, "source_url": r.get("url", ""), "as_of": r.get("published_at", "")})
+    except Exception:
+        pass
+    # IR/決算ページ本文の案件記述
+    for u, b in (pool or {}).items():
+        if re.search(r"/(ir|earnings|library|news|release)", u, re.I) or u.lower().endswith(".pdf"):
+            for m in re.findall(r"[^。]{10,70}(?:買収|出資|投資|提携|合弁|新会社|新事業|子会社化|取得|設立)[^。]{0,30}", b)[:6]:
+                out.append({"fact": m[:130], "source_url": u, "as_of": ""})
+    seen, uniq = set(), []
+    for x in out:
+        k = re.sub(r"\s", "", x["fact"])[:26]
+        if k in seen:
+            continue
+        seen.add(k); uniq.append(x)
+    return uniq[:10]
+
+
+def _d1(sql):
+    import subprocess
+    p = subprocess.run(["npx", "wrangler", "d1", "execute", "10koma-shukatsu-db", "--remote",
+                        "--config", "api/wrangler.toml", "--json", "--command", sql],
+                       cwd=os.path.expanduser("~/projects/10koma-shukatsu"), capture_output=True, text=True)
+    t = p.stdout or ""; i = t.find("[")
+    if i < 0:
+        return []
+    rows = []
+    for blk in json.loads(t[i:]):
+        if isinstance(blk, dict):
+            rows.extend(blk.get("results", []))
+    return rows
+
+
+def gen_lv2_philosophy(slug, name, n=3, exclude=None, sem_used=None, pool=None):
+    if pool is None:
+        pool = _source_pool(slug)
+    facts = _philosophy_facts(slug, pool)
+    if len(facts) < 2:
+        return []
+    return _gen_generic(slug, name, 2, facts, PHIL_SYS, PHIL_USER, n, pool, exclude, sem_used, product=False)
+
+
+def gen_lv4_deals(slug, name, n=2, exclude=None, sem_used=None, pool=None):
+    if pool is None:
+        pool = _source_pool(slug)
+    facts = _deal_facts(slug, pool)
+    if len(facts) < 1:
+        return []                                        # 案件が本文に無い→スキップ
+    return _gen_generic(slug, name, 4, facts, DEAL_SYS, DEAL_USER, n, pool, exclude, sem_used, product=True, allow_num=True)
+
+
+def _gen_generic(slug, name, level, facts, sys_p, user_t, n, pool, exclude, sem_used, product=True, allow_num=False):
+    corpus = json.load(open(os.path.join(OUT, slug, "quiz_corpus_locked_v3.json"))) if os.path.exists(os.path.join(OUT, slug, "quiz_corpus_locked_v3.json")) else {}
+    # fact由来の出典ページ(company_news/IR/リリース)の実本文を取得→corpus+解決poolに追加
+    #  =案件名/理念語の該当ページ解決＋数値(金額/年度)のverbatim照合(no_fabrication_number)を成立させる
+    rpool = dict(pool or {})
+    for x in facts:
+        u = x.get("source_url") or "ds://local"
+        body = ""
+        if u.startswith("http") and not _NONOFF.search(u):
+            if u in rpool:
+                body = rpool[u]
+            else:
+                raw_b = q.fetch_url(u)
+                body = re.sub(r"\s+", "", raw_b) if raw_b and len(raw_b) > 200 else re.sub(r"\s+", "", x["fact"])
+                rpool[u] = body
+        corpus[u] = corpus.get(u, "") + " " + x["fact"] + " " + (body[:4000] if body else "")
+    pool = rpool
+    home = _official_home(slug)
+    full_text = _full_corpus_text(slug, pool)
+    fl = "\n".join(f"- {x['fact']} <出典:{x['source_url']}>" for x in facts[:16])
+    data = q._parse_json(q.openai_chat([{"role": "system", "content": sys_p},
+                        {"role": "user", "content": user_t.format(name=name, n=n + 4, facts=fl)}],
+                        max_tokens=2400, temperature=0.3))
+    raw = data.get("questions", []) if isinstance(data, dict) else []
+    ok, used, sused = [], set(exclude or set()), set(sem_used or set())
+    for x in raw:
+        if not (isinstance(x.get("options"), list) and len(x["options"]) == 4):
+            continue
+        x["id"] = f"{slug}_lv{level}_{len(ok)+1:02d}"; x["difficulty"] = level
+        x["as_of"] = x.get("as_of") or ""; x["explanation"] = x.get("explanation") or ""
+        x["category"] = x.get("category") or "その他"
+        src = _resolve_source(x["options"][x.get("correct", 0)], pool, home, product=product)
+        if not src:
+            continue
+        x["source_url"] = src
+        if QL.run_quiz_lints([x], corpus)["errors"] > 0:
+            continue
+        if not allow_num and lint_difficulty([x]):
+            continue
+        if not _distractor_ok(x, full_text) or not _explanation_ok(x, full_text):
+            continue
+        sig = _sem_sig(x); fk = frozenset(QL._fact_keys(x))
+        if fk & used or (sig and any(len(sig & s) >= max(2, min(len(sig), len(s)) - 1) for s in sused)):
+            continue
+        used |= fk; sused.add(sig); ok.append(x)
+        if len(ok) >= n:
+            break
+    return ok[:n]
+
+
 def selftest():
     good = {"difficulty": 1, "id": "t1", "q_text": "任天堂の主力事業は何ですか", "options": ["ゲーム", "鉄道", "銀行", "石油"]}
     bad = {"difficulty": 1, "id": "t2", "q_text": "2026年3月期の売上高は？", "options": ["1兆円", "2兆円", "3兆円", "4兆円"]}
