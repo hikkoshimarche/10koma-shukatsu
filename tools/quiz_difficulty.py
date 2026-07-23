@@ -229,9 +229,19 @@ _SRC_PATHS = ["/software/", "/hardware/", "/products/", "/product/", "/business/
 
 
 def _source_pool(slug):
-    """その社の公式ページ本文を集める(各factの該当ページ特定用)。datasheet出典＋公式パス候補を実取得。非公式は除外。"""
+    """その社の公式ページ本文(各factの該当ページ特定用)。#4(b): ヘッドレスでJS描画済みの
+    rendered_corpus.json を最優先(製品ページ本文が取れる)。無ければ datasheet出典＋curlで補完。非公式除外。"""
     home = _official_home(slug)
     pool = {}
+    # (b) レンダ済corpus(playwright)を最優先で使用
+    rc = os.path.join(OUT, slug, "rendered_corpus.json")
+    if os.path.exists(rc):
+        try:
+            for u, v in json.load(open(rc)).items():
+                if not _NONOFF.search(u):
+                    pool[u] = re.sub(r"\s+", "", v.get("text", "") if isinstance(v, dict) else str(v))
+        except Exception:
+            pass
     if not home:
         return pool
     base = home.rstrip("/")
@@ -263,16 +273,23 @@ def _source_pool(slug):
 
 
 def _resolve_source(answer, pool, home):
-    """正解entityが実在する公式ページURLを返す(トップページ一括は禁止=具体ページ優先)。無ければ None(drop)。"""
+    """正解entityが実在する公式ページURLを返す(トップ一括禁止=具体ページ優先)。無ければ None(drop)。
+    答えの特徴語のいずれかがページ本文にあれば該当(『ポケモンGO』→『ポケモン』一致等)。一致語数が多いページを優先。"""
     toks = [t for t in re.findall(r"[一-龥ァ-ヶーA-Za-z0-9]{3,}", str(answer)) if t not in _STOP]
-    if not toks:
+    # 全体一致しない長い答えは短い構成語も試す(ポケモンGO→ポケモン)
+    extra = [t[:k] for t in toks for k in (5, 4, 3) if len(t) > k]
+    cand = list(dict.fromkeys(toks + extra))
+    if not cand:
         return None
-    key = max(toks, key=len)
-    hits = [u for u, b in pool.items() if key in b]
-    non_home = [u for u in hits if u.rstrip("/") != (home or "").rstrip("/") and not re.search(r"/index\.html?$", u)]
-    if non_home:
-        return sorted(non_home, key=len, reverse=True)[0]   # 最も具体的なページ
-    return None                                             # トップのみ/不在は drop
+    best, best_n = None, 0
+    hbase = (home or "").rstrip("/")
+    for u, b in pool.items():
+        if u.rstrip("/") == hbase or re.search(r"/index\.html?$", u):
+            continue                                        # トップ/indexは不可
+        n = sum(1 for t in cand if t in b)
+        if n > best_n or (n == best_n and best and len(u) > len(best)):
+            best, best_n = u, n
+    return best if best_n >= 1 else None
 
 
 _NONOFF = re.compile(r"\.ac\.jp|\.edu|wikipedia|yahoo|note\.com|j-lic|kyotonikanpai|renew-career|"
@@ -318,45 +335,48 @@ def gen_lv(slug, name, level, n=10, exclude=None, sem_used=None, pool=None):
     for x in facts:
         u = x["source_url"] or "ds://local"
         corpus[u] = (corpus.get(u, "") + " " + x["fact"])
-    hint = "Lv1は『主力製品・何をする会社か・代表的な事業』の王道問題を優先。" if level == 1 else "Lv2は事業の強み・社風・理念の理解。"
+    hint = ("Lv1は『主力製品・何をする会社か・代表的な事業』の王道問題を優先。各製品・各事業について1問ずつ広く作る。"
+            if level == 1 else "Lv2は事業の強み・社風・理念の理解。")
     fl = "\n".join(f"- {x['fact']} <出典:{x['source_url']}>" for x in facts[:24])
-    data = q._parse_json(q.openai_chat([{"role": "system", "content": GEN_SYS},
-                        {"role": "user", "content": GEN_USER.format(name=name, lv=level, n=n + 6, facts=fl) + "\n" + hint}],
-                        max_tokens=2800, temperature=0.4))
-    raw = data.get("questions", []) if isinstance(data, dict) else []
     if pool is None:
         pool = _source_pool(slug)                       # #4 該当ページ特定用の公式本文プール
     home = _official_home(slug)
     ok, used = [], set(exclude or set())
     sused = set(sem_used or set())
-    for i, x in enumerate(raw):
-        if not (isinstance(x.get("options"), list) and len(x["options"]) == 4):
-            continue
-        if any(_broken_option(o) for o in x["options"]):   # 崩れた選択肢→drop
-            continue
-        x["id"] = f"{slug}_lv{level}_{i+1:02d}"
-        x["difficulty"] = level
-        x["as_of"] = x.get("as_of") or ""
-        x["explanation"] = x.get("explanation") or ""
-        # #4 出典を『正解が実在する具体ページ』へ張替(トップ一括禁止・特定不可なら drop)
-        src = _resolve_source(x["options"][x.get("correct", 0)], pool, home)
-        if not src:
-            continue
-        x["source_url"] = src
-        rep = QL.run_quiz_lints([x], corpus)            # quiz-lint v3.3 全通過必須
-        if rep["errors"] > 0:
-            continue
-        if lint_difficulty([x]):                        # Lv1/2に数値/決算/専門→drop
-            continue
-        if not _distractor_ok(x, corpus):               # 誤答がcorpusに実在=紛らわしい→drop
-            continue
-        fk = frozenset(QL._fact_keys(x))                # レベル間dedup(fact-key)
-        sig = _sem_sig(x)                               # #1 意味dedup(表現違いの同一fact)
-        if fk & used or (sig and any(len(sig & s) >= max(2, min(len(sig), len(s)) - 1) for s in sused)):
-            continue
-        used |= fk
-        sused.add(sig)
-        ok.append(x)
+    covered = []                                        # 既出の正解(2パス目で回避)
+    for rnd in range(2):                                # 最大2パス(不足時に別題材で追加生成)
+        if len(ok) >= n:
+            break
+        avoid = ("\nすでに次を出題済み=別の製品/事業/接点で作れ: " + "、".join(covered[:20])) if covered else ""
+        data = q._parse_json(q.openai_chat([{"role": "system", "content": GEN_SYS},
+                            {"role": "user", "content": GEN_USER.format(name=name, lv=level, n=n + 6, facts=fl) + "\n" + hint + avoid}],
+                            max_tokens=2800, temperature=0.5 if rnd else 0.4))
+        raw = data.get("questions", []) if isinstance(data, dict) else []
+        for x in raw:
+            if not (isinstance(x.get("options"), list) and len(x["options"]) == 4):
+                continue
+            if any(_broken_option(o) for o in x["options"]):
+                continue
+            x["id"] = f"{slug}_lv{level}_{len(ok)+1:02d}"
+            x["difficulty"] = level
+            x["as_of"] = x.get("as_of") or ""
+            x["explanation"] = x.get("explanation") or ""
+            ans = x["options"][x.get("correct", 0)]
+            src = _resolve_source(ans, pool, home)      # #4 具体ページ or drop
+            if not src:
+                continue
+            x["source_url"] = src
+            if QL.run_quiz_lints([x], corpus)["errors"] > 0:
+                continue
+            if lint_difficulty([x]) or not _distractor_ok(x, corpus):
+                continue
+            fk = frozenset(QL._fact_keys(x))
+            sig = _sem_sig(x)
+            if fk & used or (sig and any(len(sig & s) >= max(2, min(len(sig), len(s)) - 1) for s in sused)):
+                continue
+            used |= fk; sused.add(sig); covered.append(str(ans)[:20]); ok.append(x)
+            if len(ok) >= n:
+                break
     return ok[:n]
 
 
