@@ -49,3 +49,6 @@ REPORT.md
 *_REPORT.md
 *ゲート報告*
 *_internal.md
+
+# clasp local (scriptId/spreadsheetId — 非公開)
+tools/gas_userprofiles/.clasp.json

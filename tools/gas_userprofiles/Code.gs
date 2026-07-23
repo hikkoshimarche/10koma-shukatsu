@@ -1,23 +1,30 @@
 /**
- * トーキャリ_ユーザープロフィール同期（GAS Web App・オスカー所有・別スプシ）。
+ * トーキャリ_ユーザープロフィール同期（GAS・スプシにコンテナバインド・オスカー所有）。
  * D1 user_profiles を tools/sync_user_profiles.py から受け取り、全件洗い替えで書き込む。
  * 進捗管理表(インターン共有)とは別スプシ・相互リンクなし。
- * Script Properties に SYNC_TOKEN と SPREADSHEET_ID を設定して使う（下記 申し送り 参照）。
+ * SYNC_TOKEN は Script Properties に設定（setSyncToken で投入・ソースに秘匿情報を持たない）。
  */
+function setSyncToken(t) { PropertiesService.getScriptProperties().setProperty('SYNC_TOKEN', t); return 'ok'; }
+// 初回スコープ承認用（副作用なし）。エディタでこの関数を1回実行→権限を承認 で Web App が有効化される。
+function authorize() { return ss_().getName(); }
+function ss_() { return SpreadsheetApp.getActiveSpreadsheet(); }  // バインド先スプシ
+
 function doPost(e) {
   try {
     var body = JSON.parse(e.postData.contents);
     var props = PropertiesService.getScriptProperties();
     var tok = props.getProperty('SYNC_TOKEN');
+    // TOFU: 未設定なら最初のPOSTのtokenで確定（以後は不発）。URL新規発行直後に自分で確保する。
+    if (!tok && body.token) { props.setProperty('SYNC_TOKEN', body.token); tok = body.token; }
     if (!tok || body.token !== tok) return json_({ ok: false, error: 'unauthorized' });
-    var ss = SpreadsheetApp.openById(props.getProperty('SPREADSHEET_ID'));
+    var ss = ss_();
     var n = (body.detail ? body.detail.length - 1 : 0);
     writeDetail_(ss, body.detail || []);
     writeSummary_(ss, body.summary || {});
     appendLog_(ss, n, '');
     return json_({ ok: true, rows: n });
   } catch (err) {
-    try { appendLog_(SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID')), -1, String(err)); } catch (e2) {}
+    try { appendLog_(ss_(), -1, String(err)); } catch (e2) {}
     return json_({ ok: false, error: String(err) });
   }
 }
@@ -27,13 +34,13 @@ function sheet_(ss, name) { var s = ss.getSheetByName(name); if (!s) s = ss.inse
 
 function writeDetail_(ss, detail) {
   var s = sheet_(ss, '明細');
-  s.clearContents();
+  s.clear();
   if (detail.length) s.getRange(1, 1, detail.length, detail[0].length).setValues(detail);
   s.setFrozenRows(1);
 }
 function writeSummary_(ss, sm) {
   var s = sheet_(ss, 'サマリ');
-  s.clearContents();
+  s.clear();
   var now = Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyy-MM-dd HH:mm:ss');
   var out = [];
   out.push(['トーキャリ ユーザープロフィール サマリ', '', '最終更新', now]);
