@@ -365,11 +365,21 @@ def _unit_class(opt):
         return "company"
     return "number"
 
+# 強い社名マーカー(これがある時だけ company 混在を実社名の混入とみなす)。業界語(自動車/銀行等)単体は
+# 事業説明の可能性が高く、Lv1入門クイズの選択肢(『ゲーム』『自動車』等)を誤爆させないため区別する。
+STRONG_COMPANY = re.compile(r"(株式会社|（株）|\(株\)|ホールディングス|ホールディング|ＨＤ|グループ|"
+                            r"Corporation|Corp\.?|Inc\.?|Ltd\.?|LIMITED|Company|PLC|LLC)")
 def lint_unit_consistency(q):
     opts = q.get("options") or []
     if len(opts) != 4:
         return []
     classes = {_unit_class(o) for o in opts}
+    # company/text 混在: 人名問(社名混入=defect)か強い社名マーカーがある時のみ発火。
+    # それ以外(Lv1入門の業界名選択肢『ゲーム/自動車/銀行』等)は業界名記述として誤爆させない。
+    if classes == {"company", "text"}:
+        strong = any(STRONG_COMPANY.search(str(o)) for o in opts)
+        if not strong and q.get("category") != "人名・役員":
+            return []
     if len(classes) > 1:
         detail = " / ".join(f"{_unit_class(o)}:{str(o)[:14]}" for o in opts)
         return [_f("unit_consistency", "error", q.get("id"),
