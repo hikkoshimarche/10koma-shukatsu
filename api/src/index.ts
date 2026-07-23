@@ -711,6 +711,24 @@ app.get('/api/recent-companies', async (c) => {
   } catch (e) { return c.json([]) }
 })
 
+// === 企業一覧ページ用（人気順=view_logs集計 + 一言hook=description）を1レスポンスで。名前/業界はcompanies.json流用 ===
+app.get('/api/company-list', async (c) => {
+  const out: any = { views: {}, hooks: {} }
+  try {
+    const { results } = await c.env.DB.prepare(
+      `SELECT content_id id, COUNT(*) n FROM view_logs WHERE content_type = 'company' GROUP BY content_id`
+    ).all()
+    for (const r of (results || []) as any[]) out.views[r.id] = r.n
+  } catch (e) { /* graceful: 人気順は0扱い */ }
+  try {
+    const { results } = await c.env.DB.prepare(
+      `SELECT id, description FROM companies WHERE description IS NOT NULL AND description != ''`
+    ).all()
+    for (const r of (results || []) as any[]) out.hooks[r.id] = String(r.description).slice(0, 46)
+  } catch (e) { /* graceful: hookは省略 */ }
+  return c.json(out)
+})
+
 // === 企業データシート（タブD投入・未投入時はgraceful 404→フロントはサンプル/導線非表示） ===
 app.get('/api/datasheet', async (c) => {
   const id = c.req.query('id')

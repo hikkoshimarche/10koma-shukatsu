@@ -3,101 +3,164 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>業界をえらぶ | トーキャリ</title>
-  <link rel="stylesheet" href="entry.css">
+  <title>企業を探す | トーキャリ</title>
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <script src="entry.js"></script>
+  <script src="config.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{ --navy:#003F7D; --navy2:#0a5aa8; --ink:#1a2733; --mute:#6a7686; --line:#e6ebf1; --tool:#1f6feb; }
+    body{font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;color:var(--ink);
+      background:linear-gradient(180deg,#0b3566 0%,#0a2f5c 240px,#eef2f7 240px,#eef2f7 100%);-webkit-font-smoothing:antialiased;min-height:100vh}
+    .wrap{max-width:520px;margin:0 auto;min-height:100vh;padding-bottom:40px}
+    /* ヘッダー(企業研究=探す道具 / 青のツール感アクセント) */
+    .hd{padding:16px 16px 12px;color:#fff}
+    .hd .role{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;background:rgba(255,255,255,0.16);border:1px solid rgba(255,255,255,0.25);border-radius:999px;padding:3px 11px}
+    .hd h1{font-size:23px;font-weight:800;margin:9px 0 3px;letter-spacing:0.02em}
+    .hd .sub{font-size:12px;color:rgba(255,255,255,0.82);line-height:1.5}
+    /* 検索 */
+    .search{position:relative;margin:2px 16px 0}
+    .search input{width:100%;border:none;border-radius:12px;padding:12px 40px 12px 40px;font-size:16px;font-family:inherit;color:var(--ink);box-shadow:0 3px 12px rgba(0,0,0,0.18)}
+    .search .ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:16px;opacity:0.55}
+    .search .cl{position:absolute;right:9px;top:50%;transform:translateY(-50%);border:none;background:#eef2f7;color:#66707c;width:24px;height:24px;border-radius:50%;font-size:15px;line-height:1;cursor:pointer;display:none}
+    /* フィルタchip */
+    .chips{display:flex;gap:7px;overflow-x:auto;padding:12px 16px 4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+    .chips::-webkit-scrollbar{display:none}
+    .chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;background:#fff;border:1.5px solid var(--line);color:var(--ink);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+    .chip.on{background:var(--tool);border-color:var(--tool);color:#fff}
+    .chip .ci{font-size:14px}
+    /* ソート */
+    .bar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 6px}
+    .bar .cnt{font-size:12px;color:var(--mute);font-weight:700}
+    .sorts{display:flex;gap:4px;background:#e2e8f0;border-radius:10px;padding:3px}
+    .sortb{border:none;background:transparent;color:#5a6675;font-size:12px;font-weight:800;padding:6px 10px;border-radius:8px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+    .sortb.on{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(0,0,0,0.12)}
+    /* 業界を学ぶ相互導線 */
+    .learn-link{margin:2px 16px 8px;display:flex;align-items:center;gap:9px;background:#fff8e6;border:1px solid #f0dca8;border-radius:12px;padding:11px 13px;text-decoration:none;color:#7a5a10}
+    .learn-link .li{font-size:18px}.learn-link .lt{font-size:13px;font-weight:800}.learn-link .ls{font-size:11px;color:#a2843a}
+    .learn-link .la{margin-left:auto;color:#c9a94e;font-weight:800}
+    /* リスト */
+    .list{padding:0 16px}
+    .row{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:12px 13px;margin-bottom:9px;box-shadow:0 2px 7px rgba(0,0,0,0.10);cursor:pointer;
+      content-visibility:auto;contain-intrinsic-size:auto 66px}
+    .row:active{background:#f6f9fd}
+    .row .badge{width:40px;height:40px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:19px;color:#fff}
+    .row .info{flex:1;min-width:0}
+    .row .nm{font-size:15px;font-weight:800;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .row .meta{display:flex;align-items:center;gap:7px;margin-top:2px}
+    .row .tag{font-size:10.5px;font-weight:700;color:#fff;border-radius:999px;padding:1px 8px;white-space:nowrap}
+    .row .hook{font-size:11px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .row .arrow{color:#c3ccd6;font-size:18px;font-weight:700;flex-shrink:0}
+    .empty{text-align:center;color:var(--mute);padding:40px 20px;font-size:14px}
+    .empty a{display:inline-block;margin-top:12px;background:var(--navy);color:#fff;text-decoration:none;padding:9px 18px;border-radius:999px;font-size:13px;font-weight:700}
+    .loading{text-align:center;color:var(--mute);padding:40px}
+    .backbar{padding:10px 16px 0}
+    .backbar a{color:rgba(255,255,255,0.9);text-decoration:none;font-size:13px;font-weight:700}
+  </style>
 </head>
 <body>
-<div class="e-wrap">
-  <header class="e-header">
-    <p class="e-kicker">STEP 1 ／ 業界をえらぶ</p>
-    <h1 class="e-title">気になる業界から<br>のぞいてみよう</h1>
-    <div id="guide"></div>
-  </header>
-
-  <div class="e-list" id="cards">
-    <div class="e-skel"></div><div class="e-skel"></div><div class="e-skel"></div>
+<div class="wrap">
+  <div class="backbar"><a href="/home.html">‹ ホーム</a></div>
+  <div class="hd">
+    <span class="role">🔎 企業研究</span>
+    <h1>企業を探す</h1>
+    <p class="sub">会社を一覧・検索・絞り込みで探す道具です。（業界のしくみを学ぶなら「業界研究」へ）</p>
   </div>
-
-  <footer class="e-footer">
-    <span class="brand-panel"><img class="brand-logo" src="/images/brand/tokyari_logo_wide.png" alt="トーキャリ"></span>
-  </footer>
+  <div class="search"><span class="ic">🔍</span>
+    <input id="q" type="search" inputmode="search" autocomplete="off" placeholder="会社名でさがす（例：三菱商事、じゃる）">
+    <button class="cl" id="cl" aria-label="クリア">×</button></div>
+  <div class="chips" id="chips"></div>
+  <div id="learn"></div>
+  <div class="bar"><span class="cnt" id="cnt"></span>
+    <div class="sorts">
+      <button class="sortb on" data-s="kana">50音</button>
+      <button class="sortb" data-s="industry">業界</button>
+      <button class="sortb" data-s="popular">人気</button>
+    </div></div>
+  <div class="list" id="list"><div class="loading">読み込み中…</div></div>
 </div>
-
 <script>
-const LIFF_ID = '2010075487-89AJxZnA';
-
-const IND = {
-  '総合商社':             {icon:'🌐', color:'#2f6fb0'},
-  '自動車・モビリティ':    {icon:'🚗', color:'#c0392b'},
-  '電機・精密・重工':      {icon:'⚙️', color:'#4a6b8a'},
-  '鉄鋼・素材・化学':      {icon:'🏭', color:'#8a6d3b'},
-  '製薬・ヘルスケア':      {icon:'💊', color:'#16a085'},
-  '銀行・証券・保険':      {icon:'🏦', color:'#1f6f54'},
-  'IT・通信・SaaS':       {icon:'💻', color:'#3b5bdb'},
-  'ゲーム・エンタメ':      {icon:'🎮', color:'#7d3c98'},
-  'コンサル':             {icon:'📈', color:'#2c6fa8'},
-  '専門商社':             {icon:'📦', color:'#b8823a'},
-  'インフラ・エネルギー':  {icon:'⚡', color:'#d17d00'},
-  '不動産・建設':          {icon:'🏗️', color:'#9a6a2f'},
-  '小売・流通':            {icon:'🛍️', color:'#c0448a'},
-  '食品・飲料':            {icon:'🍽️', color:'#d1495b'},
-  '日用品・化粧品':        {icon:'🧴', color:'#c85a9c'},
-  '航空・運輸・物流':      {icon:'✈️', color:'#2f8fbf'},
-  '広告・メディア':        {icon:'📣', color:'#e0913a'},
-  'その他（外資・新興等）': {icon:'🌱', color:'#3a9d6b'},
-};
-
+const CFG=window.TOKYARI||{};
+const LIFF_ID=CFG.LIFF_HUB||'2010075487-89AJxZnA';
+const API_BASE=CFG.API_BASE||'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
 function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function normJ(s){return String(s||'').toLowerCase().replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60)).replace(/[Ａ-Ｚａ-ｚ０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/[\s・･。、，,.／/（）()\[\]「」【】\-‐－—~〜'`"&＆]/g,'');}
+const PAL=['#2f6fb0','#c0392b','#7d3c98','#16a085','#d17d00','#2d8659','#c0448a','#3b5bdb','#b8823a','#2f8fbf'];
+function hue(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return PAL[h%PAL.length];}
+// 業界→アイコン/色（企業研究の視覚キー）
+const IND={'総合商社':{i:'🌐',c:'#2f6fb0'},'自動車・モビリティ':{i:'🚗',c:'#c0392b'},'電機・精密・重工':{i:'⚙️',c:'#4a6b8a'},'鉄鋼・素材・化学':{i:'🏭',c:'#8a6d3b'},'製薬・ヘルスケア':{i:'💊',c:'#16a085'},'銀行・証券・保険':{i:'🏦',c:'#1f6f54'},'IT・通信・SaaS':{i:'💻',c:'#3b5bdb'},'ゲーム・エンタメ':{i:'🎮',c:'#7d3c98'},'コンサル':{i:'📈',c:'#2c6fa8'},'専門商社':{i:'📦',c:'#b8823a'},'インフラ・エネルギー':{i:'⚡',c:'#d17d00'},'不動産・建設':{i:'🏗️',c:'#9a6a2f'},'小売・流通':{i:'🛍️',c:'#c0448a'},'食品・飲料':{i:'🍽️',c:'#d1495b'},'日用品・化粧品':{i:'🧴',c:'#c85a9c'},'航空・運輸・物流':{i:'✈️',c:'#2f8fbf'},'広告・メディア':{i:'📣',c:'#e0913a'},'その他（外資・新興等）':{i:'🌱',c:'#3a9d6b'}};
 
-async function main() {
-  mountGuide('どの業界から<br>見にいく？');
+let ALL=[], INDS=[], sel=new Set(), sort='kana';
 
-  const params = new URLSearchParams(location.search);
-  const from = params.get('from') ?? '';
-  const cardsEl = document.getElementById('cards');
-
-  try {
-    const res = await fetch('/companies.json');
-    if (!res.ok) throw new Error(`fetch error ${res.status}`);
-    const data = await res.json();
-
-    const industries = Object.keys(data);
-    if (industries.length === 0) {
-      cardsEl.innerHTML = '<p class="error-text">業界データがありません</p>';
-      return;
-    }
-
-    cardsEl.innerHTML = industries.map(name => {
-      const meta = IND[name] || {icon:'🏢', color:'#4a90d9'};
-      const count = Array.isArray(data[name]) ? data[name].length : 0;
-      return `
-        <button class="e-card" data-industry="${esc(encodeURIComponent(name))}" style="--acc:${meta.color}">
-          <span class="e-icon">${meta.icon}</span>
-          <span class="e-card-body">
-            <span class="e-card-label">${esc(name)}</span>
-            <span class="e-card-sub">${count}社をのぞける</span>
-          </span>
-          <span class="e-card-arrow">›</span>
-        </button>`;
-    }).join('');
-
-    cardsEl.addEventListener('click', e => {
-      const card = e.target.closest('.e-card');
-      if (!card) return;
-      const industry = decodeURIComponent(card.dataset.industry);
-      location.href = `/company-list?industry=${encodeURIComponent(industry)}&from=${encodeURIComponent(from)}`;
-    });
-  } catch (err) {
-    cardsEl.innerHTML = `<p class="error-text">エラー: ${esc(err.message)}</p>`;
-    console.error(err);
-  }
-
-  try { await liff.init({ liffId: LIFF_ID }); }
-  catch (e) { console.warn('LIFF init skipped:', e.message); }
+function drawChips(){
+  const box=document.getElementById('chips');
+  const all=sel.size===0;
+  box.innerHTML=`<button class="chip ${all?'on':''}" data-ind="__all__">すべて</button>`+
+    INDS.map(n=>{const m=IND[n]||{i:'🏢'};return `<button class="chip ${sel.has(n)?'on':''}" data-ind="${esc(n)}"><span class="ci">${m.i}</span>${esc(n)}</button>`;}).join('');
+  box.querySelectorAll('.chip').forEach(ch=>ch.onclick=()=>{
+    const v=ch.dataset.ind;
+    if(v==='__all__'){ sel.clear(); } else { sel.has(v)?sel.delete(v):sel.add(v); }
+    drawChips(); apply();
+  });
+}
+function drawLearn(){
+  const el=document.getElementById('learn');
+  if(sel.size===1){ const n=[...sel][0];
+    el.innerHTML=`<a class="learn-link" href="/gyokai.html"><span class="li">📚</span><span><span class="lt">${esc(n)}のしくみを学ぶ</span><span class="ls">業界研究（業界10コマ・クイズ）へ</span></span><span class="la">›</span></a>`;
+  } else el.innerHTML='';
+}
+function apply(){
+  const q=normJ((document.getElementById('q')||{}).value||'');
+  let rows=ALL.filter(r=> (sel.size===0||sel.has(r.industry)) && (!q||r.key.includes(q)));
+  if(sort==='kana') rows.sort((a,b)=>a.kana<b.kana?-1:a.kana>b.kana?1:0);
+  else if(sort==='popular') rows.sort((a,b)=> b.views-a.views || (a.kana<b.kana?-1:1));
+  else rows.sort((a,b)=> (a.indOrd-b.indOrd) || (a.kana<b.kana?-1:1));
+  document.getElementById('cnt').textContent=`${rows.length}社`;
+  drawLearn();
+  const list=document.getElementById('list');
+  if(!rows.length){ list.innerHTML=`<div class="empty">該当する企業がありません。<br><a href="/gyokai.html">業界研究からさがす →</a></div>`; return; }
+  list.innerHTML=rows.map(r=>{const m=IND[r.industry]||{i:'🏢',c:'#4a90d9'};
+    return `<div class="row" data-id="${esc(r.id)}">
+      <span class="badge" style="background:${m.c}">${m.i}</span>
+      <span class="info"><span class="nm">${esc(r.name)}</span>
+        <span class="meta"><span class="tag" style="background:${m.c}">${esc(r.industry)}</span>${r.hook?`<span class="hook">${esc(r.hook)}</span>`:''}</span></span>
+      <span class="arrow">›</span></div>`;}).join('');
+  // 行タップ = pointerdown方式(compareで直したのと同系。確実に発火)
+  list.querySelectorAll('.row').forEach(row=>{
+    const go=e=>{ e.preventDefault(); location.href=`/company.html?id=${encodeURIComponent(row.dataset.id)}`; };
+    row.addEventListener('pointerdown',go); row.addEventListener('click',go);
+  });
 }
 
+async function main(){
+  try{ await liff.init({liffId:LIFF_ID}); if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;} }catch(e){}
+  let comp={}, aliases={}, api={views:{},hooks:{}};
+  try{
+    [comp,aliases,api]=await Promise.all([
+      fetch('/companies.json').then(r=>r.json()),
+      fetch('/search_aliases.json').then(r=>r.ok?r.json():({})).catch(()=>({})),
+      fetch(`${API_BASE}/api/company-list`).then(r=>r.ok?r.json():({views:{},hooks:{}})).catch(()=>({views:{},hooks:{}})),
+    ]);
+  }catch(e){ document.getElementById('list').innerHTML='<div class="empty">読み込みに失敗しました</div>'; return; }
+  INDS=Object.keys(comp);
+  const ord={}; INDS.forEach((n,i)=>ord[n]=i);
+  for(const [ind,arr] of Object.entries(comp)){
+    for(const c of (arr||[])){
+      const al=aliases[c.id]||[];
+      ALL.push({ id:c.id, name:c.name, industry:ind, indOrd:ord[ind],
+        hook:(api.hooks||{})[c.id]||'', views:(api.views||{})[c.id]||0,
+        kana:(al[0]||normJ(c.name)), key:normJ([c.name,c.id,c.id.replace(/-/g,' '),...al].join(' ')) });
+    }
+  }
+  // ?ind= で業界フィルタを事前適用(業界研究からの相互導線)
+  const p=new URLSearchParams(location.search).get('ind');
+  if(p && INDS.includes(p)) sel.add(p);
+  drawChips();
+  const input=document.getElementById('q'), cl=document.getElementById('cl');
+  input.addEventListener('input',()=>{ cl.style.display=input.value?'block':'none'; apply(); });
+  cl.addEventListener('click',()=>{ input.value=''; cl.style.display='none'; apply(); input.focus(); });
+  document.querySelectorAll('.sortb').forEach(b=>b.onclick=()=>{ sort=b.dataset.s; document.querySelectorAll('.sortb').forEach(x=>x.classList.toggle('on',x===b)); apply(); });
+  apply();
+}
 main();
 </script>
 </body>

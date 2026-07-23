@@ -4,80 +4,88 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>業界研究 | トーキャリ</title>
-  <link rel="stylesheet" href="entry.css">
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="config.js"></script>
-  <script src="entry.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{ --ink:#2a2113; --mute:#8a7a5a; --gold:#c8912a; --gold-d:#a5741a; --cream:#fbf4e4; }
+    /* 業界研究=学ぶ教材 / 温かいクリーム＆ゴールドのアクセント(企業研究の青と明確に差別化) */
+    body{font-family:-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;color:var(--ink);
+      background:linear-gradient(180deg,#6b4f16 0%,#5a4212 190px,var(--cream) 190px,var(--cream) 100%);min-height:100vh;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:520px;margin:0 auto;min-height:100vh;padding-bottom:40px}
+    .backbar{padding:10px 16px 0}.backbar a{color:rgba(255,255,255,0.92);text-decoration:none;font-size:13px;font-weight:700}
+    .hd{padding:14px 16px 14px;color:#fff}
+    .hd .role{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.3);border-radius:999px;padding:3px 11px}
+    .hd h1{font-size:23px;font-weight:800;margin:9px 0 6px}
+    .hd .roles{font-size:12px;line-height:1.6;background:rgba(0,0,0,0.16);border-radius:10px;padding:9px 12px}
+    .hd .roles b{color:#ffe6a8}
+    .list{padding:6px 16px 0}
+    .gk-card{background:#fff;border-radius:16px;box-shadow:0 3px 12px rgba(120,90,20,0.14);margin-bottom:12px;overflow:hidden;border-left:5px solid var(--acc,#c8912a)}
+    .gk-main{display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:none;border:none;padding:14px 15px 12px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
+    .gk-ic{width:46px;height:46px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;background:var(--acc,#c8912a);color:#fff}
+    .gk-body{flex:1;min-width:0}
+    .gk-label{font-size:17px;font-weight:800;display:block}
+    .gk-sub{font-size:11.5px;color:var(--mute);margin-top:3px;display:block}
+    .gk-go{margin-left:auto;flex-shrink:0;font-size:12px;font-weight:800;color:#fff;background:var(--acc,#c8912a);border-radius:999px;padding:5px 12px}
+    .gk-find{display:flex;align-items:center;gap:6px;border-top:1px dashed #eadfc6;padding:10px 15px;text-decoration:none;color:var(--gold-d);font-size:12.5px;font-weight:700;background:#fdf9ef}
+    .gk-find .fa{margin-left:auto;font-weight:800}
+    .foot{text-align:center;padding:18px 0 8px}.foot img{height:30px}
+    .loading{text-align:center;color:var(--mute);padding:40px}
+  </style>
 </head>
 <body>
-<div class="e-wrap">
-  <header class="e-header">
-    <p class="e-kicker">業界研究</p>
-    <h1 class="e-title">業界を丸ごと知る</h1>
-    <div id="guide"></div>
-  </header>
-
-  <div class="e-list" id="cards">
-    <div class="e-skel"></div><div class="e-skel"></div><div class="e-skel"></div>
+<div class="wrap">
+  <div class="backbar"><a href="/home.html">‹ ホーム</a></div>
+  <div class="hd">
+    <span class="role">📚 業界研究</span>
+    <h1>業界のしくみを学ぶ</h1>
+    <div class="roles"><b>業界研究</b>＝業界のしくみを学ぶ教材　／　<b>企業研究</b>＝会社を探す道具</div>
   </div>
-
-  <footer class="e-footer">
-    <span class="brand-panel"><img class="brand-logo" src="/images/brand/tokyari_logo_wide.png" alt="トーキャリ"></span>
-  </footer>
+  <div class="list" id="list"><div class="loading">読み込み中…</div></div>
+  <div class="foot"><img src="/images/brand/tokyari_logo_wide.png" alt="トーキャリ"></div>
 </div>
-
 <script>
-const CFG     = window.TOKYARI || {};
-const LIFF_ID = CFG.LIFF_HUB || '2010075487-89AJxZnA';
-
-// 業界10コマ(industry_10koma__<slug>)の16業界タクソノミー。企業研究とミラー構造。
-const INDUSTRIES = [
-  { slug:'sogo-shosha',            name:'総合商社',              icon:'🌐', acc:'#2f6fb0' },
-  { slug:'senmon-shosha',          name:'専門商社',              icon:'📦', acc:'#b8823a' },
-  { slug:'finance',                name:'銀行・証券・保険',       icon:'🏦', acc:'#1f6f54' },
-  { slug:'it-ai-saas-game',        name:'IT・AI・SaaS・ゲーム',   icon:'💻', acc:'#3b5bdb' },
-  { slug:'consulting',             name:'コンサル',              icon:'📈', acc:'#2c6fa8' },
-  { slug:'manufacturer',           name:'メーカー',              icon:'🏭', acc:'#4a6b8a' },
-  { slug:'ad-media',               name:'広告・メディア',         icon:'📣', acc:'#e0913a' },
-  { slug:'infra-energy',           name:'インフラ・エネルギー',    icon:'⚡', acc:'#d17d00' },
-  { slug:'realestate-construction',name:'不動産・建設',           icon:'🏗️', acc:'#9a6a2f' },
-  { slug:'retail',                 name:'小売・流通',             icon:'🛍️', acc:'#c0448a' },
-  { slug:'food-beverage',          name:'食品・飲料',             icon:'🍽️', acc:'#d1495b' },
-  { slug:'medical-healthcare',     name:'医療・ヘルスケア',        icon:'💊', acc:'#16a085' },
-  { slug:'transport-logistics',    name:'航空・運輸・物流',        icon:'✈️', acc:'#2f8fbf' },
-  { slug:'education-hr',           name:'教育・人材',             icon:'🎓', acc:'#7d3c98' },
-  { slug:'startup',                name:'スタートアップ',          icon:'🚀', acc:'#c0392b' },
-  { slug:'deeptech-space-ai',      name:'ディープテック・宇宙・AI', icon:'🛰️', acc:'#3a9d6b' },
-];
-
+const CFG=window.TOKYARI||{};
+const LIFF_ID=CFG.LIFF_HUB||'2010075487-89AJxZnA';
 function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-
-function render() {
-  mountGuide('どの業界を<br>研究する？');
-  const html = INDUSTRIES.map(ind => `
-    <button class="e-card" data-slug="${esc(ind.slug)}" data-name="${esc(ind.name)}" style="--acc:${ind.acc}">
-      <span class="e-icon">${ind.icon}</span>
-      <span class="e-card-body">
-        <span class="e-card-label">${esc(ind.name)}</span>
-        <span class="e-card-sub">10コマ＋クイズで業界を知る</span>
-      </span>
-      <span class="e-card-arrow">›</span>
-    </button>`).join('');
-  document.getElementById('cards').innerHTML = html;
-  document.getElementById('cards').addEventListener('click', e => {
-    const c = e.target.closest('.e-card'); if(!c) return;
-    // 企業研究とミラー: 業界10コマビューア(company.htmlの業界モード)へ。業界クイズはその詳細内から。
-    location.href = `/company.html?industry=${encodeURIComponent(c.dataset.slug)}&name=${encodeURIComponent(c.dataset.name)}`;
+// 業界10コマの16業界。学ぶ導線=業界モードへ。「企業を探す」=企業一覧(?ind=)へ相互接続(名称一致する業界のみフィルタ、他は一覧トップ)。
+const INDUSTRIES=[
+  {slug:'sogo-shosha',name:'総合商社',icon:'🌐',acc:'#2f6fb0',find:'総合商社'},
+  {slug:'senmon-shosha',name:'専門商社',icon:'📦',acc:'#b8823a',find:'専門商社'},
+  {slug:'finance',name:'銀行・証券・保険',icon:'🏦',acc:'#1f6f54',find:'銀行・証券・保険'},
+  {slug:'it-ai-saas-game',name:'IT・AI・SaaS・ゲーム',icon:'💻',acc:'#3b5bdb',find:'IT・通信・SaaS'},
+  {slug:'consulting',name:'コンサル',icon:'📈',acc:'#2c6fa8',find:'コンサル'},
+  {slug:'manufacturer',name:'メーカー',icon:'🏭',acc:'#4a6b8a',find:''},
+  {slug:'ad-media',name:'広告・メディア',icon:'📣',acc:'#e0913a',find:'広告・メディア'},
+  {slug:'infra-energy',name:'インフラ・エネルギー',icon:'⚡',acc:'#d17d00',find:'インフラ・エネルギー'},
+  {slug:'realestate-construction',name:'不動産・建設',icon:'🏗️',acc:'#9a6a2f',find:'不動産・建設'},
+  {slug:'retail',name:'小売・流通',icon:'🛍️',acc:'#c0448a',find:'小売・流通'},
+  {slug:'food-beverage',name:'食品・飲料',icon:'🍽️',acc:'#d1495b',find:'食品・飲料'},
+  {slug:'medical-healthcare',name:'医療・ヘルスケア',icon:'💊',acc:'#16a085',find:'製薬・ヘルスケア'},
+  {slug:'transport-logistics',name:'航空・運輸・物流',icon:'✈️',acc:'#2f8fbf',find:'航空・運輸・物流'},
+  {slug:'education-hr',name:'教育・人材',icon:'🎓',acc:'#7d3c98',find:''},
+  {slug:'startup',name:'スタートアップ',icon:'🚀',acc:'#c0392b',find:''},
+  {slug:'deeptech-space-ai',name:'ディープテック・宇宙・AI',icon:'🛰️',acc:'#3a9d6b',find:''},
+];
+function render(){
+  document.getElementById('list').innerHTML=INDUSTRIES.map(ind=>`
+    <div class="gk-card" style="--acc:${ind.acc}">
+      <button class="gk-main" data-slug="${esc(ind.slug)}" data-name="${esc(ind.name)}">
+        <span class="gk-ic">${ind.icon}</span>
+        <span class="gk-body"><span class="gk-label">${esc(ind.name)}</span>
+          <span class="gk-sub">📖 業界10コマ ・ 🎬 業界動画 ・ 🧠 業界クイズ で学ぶ</span></span>
+        <span class="gk-go">学ぶ ›</span>
+      </button>
+      <a class="gk-find" href="/industry.html${ind.find?('?ind='+encodeURIComponent(ind.find)):''}">🔎 この業界の企業を探す<span class="fa">›</span></a>
+    </div>`).join('');
+  document.querySelectorAll('.gk-main').forEach(b=>b.onclick=()=>{
+    location.href=`/company.html?industry=${encodeURIComponent(b.dataset.slug)}&name=${encodeURIComponent(b.dataset.name)}`;
   });
 }
-
-async function main() {
-  try{ localStorage.setItem('tk_gyokai_seen','1'); }catch(e){} // ホームの就活ロードマップ用フラグ
+async function main(){
+  try{ localStorage.setItem('tk_gyokai_seen','1'); }catch(e){}
   render();
-  try {
-    await liff.init({ liffId: LIFF_ID });
-    if (!liff.isLoggedIn() && liff.isInClient()) { liff.login(); return; }
-  } catch(e){ console.warn('LIFF skipped (preview):', e && e.message); }
+  try{ await liff.init({liffId:LIFF_ID}); if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;} }catch(e){}
 }
 main();
 </script>
