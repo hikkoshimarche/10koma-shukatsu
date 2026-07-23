@@ -142,8 +142,9 @@ GEN_SYS = (
  "絶対規則: (1)datasheetに実在する内容のみ(捏造・新規リサーチ禁止)。(2)★決算数値・金額・年3月期・専門用語"
  "(ROE/EPS/セグメント/IFRS等)は使わない。(3)4択・正解1つ。★選択肢は4つとも『同じ形式の短い名詞句』で揃える"
  "(例: 事業なら『ゲーム』『自動車』『銀行』『医薬品』のような名詞。『〜する』等の文や会社名・人名は入れない)。"
- "★誤答は必ず『他業界の事業・製品』など出典上明らかに誤りと言い切れるものにする(その会社にも当てはまり得る"
- "紛らわしい選択肢は禁止=例『危機管理→サイバー攻撃』はNG、任天堂の誤答に『自動車の製造』はOK)。(4)各問にsource_url。"
+ "★誤答は『当社が事業として一切やっていない別業界の固有領域』(例: 商社の誤答にゲーム開発/医薬品製造/アニメ制作)"
+ "のみにする。★総合商社・多角化企業(コングロマリット)では『やっていない事業』型の誤答は禁止(当社は多くの事業を持つため"
+ "紛らわしい)=不動産/エネルギー/食品/金融等の当社が実際に関与し得る分野を誤答に使わない。(4)各問にsource_url。"
  "Lv1=王道の入門問題=『何をする会社か/主力製品(例:任天堂ならNintendo Switch・マリオ)/代表的な事業』を問う"
  "(10コマ漫画を1回見れば解ける)。抽象的なCSR/システム/取り組みは避け、具体的な製品・事業を問う。Lv2=事業の強み・社風・理念の理解。")
 GEN_USER = ("企業: {name} / 難易度: Lv{lv}\n以下は datasheet の事実(出典付)。この範囲だけで Lv{lv} を{n}問。\n\n{facts}\n\n"
@@ -249,29 +250,53 @@ _STOP = set("サービス システム 事業 製品 提供 開発 管理 活動
             "戦略 市場 顧客 社会 世界 日本 製造 販売 運営 支援 推進 展開 生産 品質 環境 経営 業界".split())
 
 
-def _distractor_ok(x, corpus, own_text=""):
-    """誤答が『実は正しい可能性がある』型を排除。誤答の《特徴語(4字以上・共通語除く)》がその社のcorpus本文に
-    実在=実際に当てはまり得る→不可(例: 危機管理の誤答『サイバー攻撃』)。他業界の明白誤答(自動車/金融サービス
-    等・特徴語がcorpus不在)はOK。#4b own_text(自社の製品ページ本文)に誤答が載る=自社製品を誤答に置いた→不可。"""
-    ctext = re.sub(r"\s+", "", " ".join(corpus.values()))
+def _full_corpus_text(slug, pool=None):
+    """v2.5 その社の《全資料》本文を連結(全クロールページ＋datasheet＋factsheet＋10コマ台本＋quiz_corpus)。
+    誤答が『自社資料のどこかに事業・製品として実在』するかを判定するための土台=『ページに無い≠事実でない』を根治。"""
+    parts = []
+    if pool is None:
+        pool = _source_pool(slug)
+    parts.extend(pool.values())                          # 全クロール(rendered+curl)ページ
+    dp = os.path.join(OUT, slug, "datasheet.json")
+    if os.path.exists(dp):
+        for k, items in (json.load(open(dp)).get("sections", {}) or {}).items():
+            for it in items:
+                parts.append(it.get("fact", ""))
+    fp = os.path.join(OUT, slug, "factsheet.md")
+    if os.path.exists(fp):
+        parts.append(open(fp, encoding="utf-8").read())
+    for x in _factsheet_facts(slug) + _scenario_facts(slug):
+        parts.append(x.get("fact", ""))
+    cp = os.path.join(OUT, slug, "quiz_corpus_locked_v3.json")
+    if os.path.exists(cp):
+        try:
+            parts.extend(json.load(open(cp)).values())
+        except Exception:
+            pass
+    return re.sub(r"\s+", "", " ".join(str(p) for p in parts))
+
+
+def _distractor_ok(x, full_text=""):
+    """v2.5 誤答が『自社資料のどこかに事業・製品として実在』したら使用禁止(=当社が実際にやっている→誤答に不適)。
+    誤答の特徴語(4字以上・共通語除く)が full_text(全corpus)にあれば不可。明確に別業界の固有領域
+    (ゲーム開発/医薬品製造 等・当社資料のどこにも現れない)のみ誤答として許可。カテゴリ整合(人名問)も維持。"""
     ci = x.get("correct", 0)
     opts = x.get("options", [])
-    # v2.4① カテゴリ整合: 人名問(2つ以上が人名)なら誤答も人名のみ(『スマートフォン』等の異カテゴリ混入を排除)
-    if sum(1 for o in opts if _is_person(o)) >= 2:
+    if sum(1 for o in opts if _is_person(o)) >= 2:       # 人名問の誤答は人名のみ
         if any((j != ci) and not _is_person(o) for j, o in enumerate(opts)):
             return False
+    ft = full_text if isinstance(full_text, str) else re.sub(r"\s+", "", " ".join(full_text.values()))
     for j, o in enumerate(opts):
         if j == ci:
             continue
-        for t in re.findall(r"[一-龥ァ-ヶーA-Za-z]{4,}", str(o)):
+        os_ = re.sub(r"\s", "", str(o))
+        if len(os_) >= 4 and os_ in ft:                  # 誤答の完全名が自社資料に実在→不可
+            return False
+        for t in re.findall(r"[一-龥ァ-ヶーA-Za-z]{3,}", str(o)):   # 3字以上の特徴語も判定
             if t in _STOP:
                 continue
-            if t in ctext:                               # 社corpus(datasheet+台本)に実在→紛らわしい
+            if t in ft:
                 return False
-        # #4b 自社製品を誤答に置かない: 誤答の完全名(空白除去・4字以上)が『製品ページ本文』に実在→drop
-        os_ = re.sub(r"\s", "", str(o))
-        if own_text and len(os_) >= 4 and os_ in own_text:
-            return False
     return True
 
 
@@ -414,9 +439,7 @@ def gen_lv(slug, name, level, n=10, exclude=None, sem_used=None, pool=None):
     if pool is None:
         pool = _source_pool(slug)                       # #4 該当ページ特定用の公式本文プール
     home = _official_home(slug)
-    # #4b 自社製品ページ(製品/ラインナップ系)本文のみ=誤答に自社製品を置いた場合の検出(競合言及の誤爆回避)
-    own_text = "".join(b for u, b in pool.items()
-                       if re.search(r"/(software|hardware|products?|lineup|brand|service|consumer|corporate/history|company/history|/history)", u, re.I))
+    full_text = _full_corpus_text(slug, pool)            # v2.5 誤答判定=自社の全資料に実在するか
     ok, used = [], set(exclude or set())
     sused = set(sem_used or set())
     covered = []                                        # 既出の正解(2パス目で回避)
@@ -444,7 +467,7 @@ def gen_lv(slug, name, level, n=10, exclude=None, sem_used=None, pool=None):
             x["source_url"] = src
             if QL.run_quiz_lints([x], corpus)["errors"] > 0:
                 continue
-            if lint_difficulty([x]) or not _distractor_ok(x, corpus, own_text):   # #4b 自社製品を誤答に置かない
+            if lint_difficulty([x]) or not _distractor_ok(x, full_text):   # v2.5 誤答が自社全資料に実在→drop
                 continue
             fk = frozenset(QL._fact_keys(x))
             sig = _sem_sig(x)
@@ -461,12 +484,12 @@ def selftest():
     bad = {"difficulty": 1, "id": "t2", "q_text": "2026年3月期の売上高は？", "options": ["1兆円", "2兆円", "3兆円", "4兆円"]}
     e = lint_difficulty([good, bad])
     ok = len(e) == 1 and e[0][1] == "t2"
-    # #4b 自社製品を誤答に置かない(Game Boy=任天堂自社ハード が own_text にあれば drop)
-    q_gb = {"correct": 0, "options": ["Nintendo Switch", "Game Boy", "PlayStation", "Xbox"]}
-    own = "NintendoSwitchGameBoyamiibo"
-    ok2 = (not _distractor_ok(q_gb, {}, own)) and _distractor_ok(
-        {"correct": 0, "options": ["Nintendo Switch", "PlayStation", "Xbox", "自動車"]}, {}, own)
-    print(f"[selftest] Lv1決算error={ok} / 自社製品誤答drop={ok2}")
+    # v2.5 誤答が自社全資料に実在→drop / 別業界固有領域→OK。三菱商事は都市開発=不動産を持つ→不動産は誤答不可
+    full = "総合商社エネルギー金属都市開発不動産ローソン天然ガス"
+    ng = {"correct": 0, "options": ["天然ガス", "不動産", "ゲーム開発", "医薬品製造"]}   # 不動産が自社実在→NG
+    okd = {"correct": 0, "options": ["天然ガス", "ゲーム開発", "医薬品製造", "アニメ制作"]}  # 全て別業界→OK
+    ok2 = (not _distractor_ok(ng, full)) and _distractor_ok(okd, full)
+    print(f"[selftest] Lv1決算error={ok} / 自社実在誤答drop(不動産)={ok2}")
     print("=== SELFTEST:", "PASS ===" if (ok and ok2) else "FAIL ===")
     return ok and ok2
 
