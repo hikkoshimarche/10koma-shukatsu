@@ -645,17 +645,92 @@ app.post('/api/room/init', async (c) => {
 // options(JSON文字列)を安全にparse
 function safeJson(s: any) { try { return typeof s === 'string' ? JSON.parse(s) : s } catch { return s } }
 
-// === クイズ（quiz_questions 未migrationの間はどれも空/no-opで安全に握りつぶす→フロントはサンプル/空状態） ===
+// === クイズ 難易度4段階（difficulty 1..4）===
+// 正解1問あたりXP重み。NULL は Lv2 相当（COALESCE(difficulty,2)）。
+const QUIZ_LV_WEIGHT: Record<number, number> = { 1: 10, 2: 20, 3: 40, 4: 80 }
+const QUIZ_PASS_RATE = 0.8        // Lv正答率≥80%で次Lv解放
+const QUIZ_PASS_MIN = 8           // 判定に必要な最小回答数（levelの実在問数が少なければそれに合わせる）
+const QUIZ_BONUS_LEVEL = 100      // 各Lv初回80%達成ボーナス
+const QUIZ_BONUS_SET = 300        // setのLv4クリア（全Lv制覇）ボーナス
+const diffWeightSql = `CASE COALESCE(q.difficulty,2) WHEN 1 THEN 10 WHEN 3 THEN 40 WHEN 4 THEN 80 ELSE 20 END`
+
+// (set_id,level) ごとの解放判定。空Lv(実在0問)は透過的にpass扱い＝次の実在Lvへ進める。
+type LvStat = { level: number; available: number; answered: number; correct: number; rate: number; passed: boolean; unlocked: boolean }
+async function computeUnlock(env: any, userId: string, setType: string, setId: string): Promise<{ unlocked_max: number; by_level: Record<string, LvStat> }> {
+  // 実在問数 / 回答・正答（COALESCEでNULL→Lv2）
+  const avail: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0 }
+  const ans: Record<number, { answered: number; correct: number }> = { 1: { answered: 0, correct: 0 }, 2: { answered: 0, correct: 0 }, 3: { answered: 0, correct: 0 }, 4: { answered: 0, correct: 0 } }
+  try {
+    const a = await env.DB.prepare(
+      `SELECT COALESCE(difficulty,2) lv, COUNT(*) n FROM quiz_questions WHERE set_type=? AND set_id=? GROUP BY lv`
+    ).bind(setType, setId).all()
+    for (const r of (a.results || []) as any[]) if (avail[r.lv] != null) avail[r.lv] = r.n
+  } catch (e) { /* graceful */ }
+  if (userId) {
+    try {
+      const p = await env.DB.prepare(
+        `SELECT COALESCE(q.difficulty,2) lv, COUNT(*) answered, SUM(p.is_correct) correct
+         FROM user_quiz_progress p JOIN quiz_questions q ON q.id = p.question_id
+         WHERE p.line_user_id=? AND p.set_type=? AND p.set_id=? GROUP BY lv`
+      ).bind(userId, setType, setId).all()
+      for (const r of (p.results || []) as any[]) if (ans[r.lv]) ans[r.lv] = { answered: r.answered || 0, correct: r.correct || 0 }
+    } catch (e) { /* graceful */ }
+  }
+  const by_level: Record<string, LvStat> = {}
+  let prevPassed: boolean = true, unlocked_max = 1
+  for (let lv = 1; lv <= 4; lv++) {
+    const available = avail[lv], { answered, correct } = ans[lv]
+    const rate = answered ? correct / answered : 0
+    const need = Math.min(QUIZ_PASS_MIN, available || QUIZ_PASS_MIN)
+    // 実在0問のLvは透過pass（次の実在Lvへ）。実在ありは 回答≥need かつ 正答率≥80% でpass。
+    const passed = available === 0 ? true : (answered >= need && rate >= QUIZ_PASS_RATE)
+    const unlocked: boolean = lv === 1 ? true : prevPassed
+    if (unlocked) unlocked_max = lv
+    by_level[String(lv)] = { level: lv, available, answered, correct, rate: Math.round(rate * 100) / 100, passed, unlocked }
+    prevPassed = unlocked && passed
+  }
+  return { unlocked_max, by_level }
+}
+
 app.get('/api/quiz', async (c) => {
   const setType = c.req.query('set_type'); const setId = c.req.query('set_id')
+  const levelRaw = c.req.query('level'); const userId = c.req.query('user_id')
   if (!setType || !setId) return c.json([])
+  const cols = `id, category, q_text, options, correct, explanation, source_url, as_of, COALESCE(difficulty,2) difficulty`
   try {
-    const { results } = await c.env.DB.prepare(
-      `SELECT id, category, q_text, options, correct, explanation, source_url, as_of
-       FROM quiz_questions WHERE set_type = ? AND set_id = ? ORDER BY ord, id`
-    ).bind(setType, setId).all()
-    return c.json((results || []).map((r: any) => ({ ...r, options: safeJson(r.options) })))
+    let results: any[]
+    if (levelRaw) {
+      const level = Math.max(1, Math.min(4, parseInt(levelRaw, 10) || 1))
+      const r = await c.env.DB.prepare(
+        `SELECT ${cols} FROM quiz_questions WHERE set_type=? AND set_id=? AND COALESCE(difficulty,2)=? ORDER BY ord, id`
+      ).bind(setType, setId, level).all()
+      results = r.results || []
+    } else if (userId) {
+      // level省略＋user_id: 解放済み最大levelまで
+      const { unlocked_max } = await computeUnlock(c.env, userId, setType, setId)
+      const r = await c.env.DB.prepare(
+        `SELECT ${cols} FROM quiz_questions WHERE set_type=? AND set_id=? AND COALESCE(difficulty,2)<=? ORDER BY COALESCE(difficulty,2), ord, id`
+      ).bind(setType, setId, unlocked_max).all()
+      results = r.results || []
+    } else {
+      // 従来互換: level・user_id無し＝全問
+      const r = await c.env.DB.prepare(
+        `SELECT ${cols} FROM quiz_questions WHERE set_type=? AND set_id=? ORDER BY ord, id`
+      ).bind(setType, setId).all()
+      results = r.results || []
+    }
+    return c.json(results.map((r: any) => ({ ...r, options: safeJson(r.options) })))
   } catch (e) { return c.json([]) }
+})
+
+// Lv解放状態（フロントのレベルはしご表示用）
+app.get('/api/quiz/unlock', async (c) => {
+  const userId = c.req.query('user_id') || ''
+  const setType = c.req.query('set_type'); const setId = c.req.query('set_id')
+  if (!setType || !setId) return c.json({ unlocked_max: 1, by_level: {} })
+  try {
+    return c.json(await computeUnlock(c.env, userId, setType, setId))
+  } catch (e) { return c.json({ unlocked_max: 1, by_level: {} }) }
 })
 
 app.post('/api/quiz/answer', async (c) => {
@@ -957,13 +1032,47 @@ app.get('/api/mypage', async (c) => {
     for (const r of (results || []) as any[]) viewedIds.add(r.content_id)
   } catch (e) { /* graceful */ }
 
-  // クイズ正答数(累計)
-  let quizCorrect = 0
+  // クイズ正答数(累計) + 難易度重みXP + Lv解放ボーナス（決定論・冪等）
+  let quizCorrect = 0, quizXP = 0
   try {
     const r = await c.env.DB.prepare(
       `SELECT COUNT(*) n FROM user_quiz_progress WHERE line_user_id = ? AND is_correct = 1`
     ).bind(userId).first<any>()
     quizCorrect = (r && r.n) || 0
+    // (1) 正解の難易度重み合計（Lv1=10/2=20/3=40/4=80。旧形式=NULLはLv2重み）
+    const wc = await c.env.DB.prepare(
+      `SELECT COALESCE(SUM(${diffWeightSql}),0) xp
+       FROM user_quiz_progress p JOIN quiz_questions q ON q.id = p.question_id
+       WHERE p.line_user_id = ? AND p.is_correct = 1`
+    ).bind(userId).first<any>()
+    quizXP = (wc && wc.xp) || 0
+    // (2) Lv解放ボーナス: (set_id,level)ごとに 回答/正答 と 実在問数 を突合し pass 判定
+    const pl = await c.env.DB.prepare(
+      `SELECT p.set_type, p.set_id, COALESCE(q.difficulty,2) lv, COUNT(*) answered, SUM(p.is_correct) correct
+       FROM user_quiz_progress p JOIN quiz_questions q ON q.id = p.question_id
+       WHERE p.line_user_id = ? GROUP BY p.set_type, p.set_id, lv`
+    ).bind(userId).all()
+    const rows = (pl.results || []) as any[]
+    if (rows.length) {
+      const setIds = Array.from(new Set(rows.map(r => r.set_id)))
+      const ph = setIds.map(() => '?').join(',')
+      const av = await c.env.DB.prepare(
+        `SELECT set_type, set_id, COALESCE(difficulty,2) lv, COUNT(*) avail FROM quiz_questions
+         WHERE set_id IN (${ph}) GROUP BY set_type, set_id, lv`
+      ).bind(...setIds).all()
+      const availMap: Record<string, number> = {}
+      for (const r of (av.results || []) as any[]) availMap[`${r.set_type}${r.set_id}${r.lv}`] = r.avail
+      let bonus = 0
+      for (const r of rows) {
+        const available = availMap[`${r.set_type}${r.set_id}${r.lv}`] || 0
+        if (available === 0) continue
+        const need = Math.min(QUIZ_PASS_MIN, available)
+        const answered = r.answered || 0, correct = r.correct || 0
+        const passed = answered >= need && (correct / answered) >= QUIZ_PASS_RATE
+        if (passed) { bonus += QUIZ_BONUS_LEVEL; if (r.lv === 4) bonus += QUIZ_BONUS_SET }
+      }
+      quizXP += bonus
+    }
   } catch (e) { /* graceful */ }
 
   // 1. 業界制覇スタンプラリー（分母=D1 industries×companies実在社数、n>=2の実分類業界のみ）
@@ -987,10 +1096,10 @@ app.get('/api/mypage', async (c) => {
     out.stamp_rally.explored = inds.filter(x => x.viewed > 0).length
   } catch (e) { /* graceful */ }
 
-  // 2. 就活レベル＆称号（決定論。経験値=閲覧社数*10 + クイズ正答*5 + 診断完了*50。閾値は調整可）
+  // 2. 就活レベル＆称号（決定論。経験値=閲覧社数*10 + クイズ難易度重みXP(Lv1=10/2=20/3=40/4=80+解放ボーナス) + 診断完了*50。閾値は調整可）
   try {
     const nViewed = viewedIds.size
-    const xp = nViewed * 10 + quizCorrect * 5 + (out.shindan ? 50 : 0)
+    const xp = nViewed * 10 + quizXP + (out.shindan ? 50 : 0)
     // レベル閾値(5段階)。後から調整しやすいよう配列で定義。
     const TIERS = [
       { min: 0, name: '就活ビギナー' }, { min: 50, name: '就活見習い' },
@@ -1013,7 +1122,7 @@ app.get('/api/mypage', async (c) => {
       { id: 'ind_all', label: '全業界制覇', detail: totalInd ? `${explored}/${totalInd}業界` : '', earned: totalInd > 0 && explored >= totalInd },
     ]
     out.level = { xp, level: li + 1, level_name: TIERS[li].name, next_xp: nextMin, progress,
-      breakdown: { companies: nViewed, quiz_correct: quizCorrect, shindan: !!out.shindan }, badges }
+      breakdown: { companies: nViewed, quiz_correct: quizCorrect, quiz_xp: quizXP, shindan: !!out.shindan }, badges }
   } catch (e) { /* graceful */ }
 
   // 3. 次に見るべき3社（既存診断結果の上位企業から未閲覧を抽出。新規ロジックなし）

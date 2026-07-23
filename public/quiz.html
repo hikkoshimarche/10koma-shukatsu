@@ -81,6 +81,44 @@
     }
     .quiz-btn.primary { background:var(--gold); color:#2a1c00; box-shadow:0 4px 12px rgba(231,184,75,0.4); }
     .quiz-btn.ghost { background:rgba(255,255,255,0.12); color:#fff; border:1.5px solid rgba(255,255,255,0.25); }
+
+    /* === レベルはしご（Lv1→Lv4 段階解放） === */
+    .lv-intro { padding:2px 16px 6px; font-size:13px; color:rgba(255,255,255,0.82); line-height:1.6; }
+    .lv-ladder { padding:10px 16px 24px; display:flex; flex-direction:column; gap:11px; }
+    .lv-card {
+      display:flex; align-items:center; gap:13px; width:100%; text-align:left; font-family:inherit;
+      background:#fff; border-radius:16px; padding:15px 15px; border:2px solid transparent;
+      box-shadow:0 4px 14px rgba(0,0,0,0.16); cursor:pointer; -webkit-tap-highlight-color:transparent;
+      transition:transform .08s;
+    }
+    .lv-card:active { transform:scale(0.99); }
+    .lv-card.locked, .lv-card.empty { background:rgba(255,255,255,0.10); box-shadow:none; cursor:default; }
+    .lv-num {
+      flex-shrink:0; width:48px; height:48px; border-radius:14px; color:#fff;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1;
+    }
+    .lv-num b { font-size:19px; font-weight:800; }
+    .lv-num span { font-size:9px; font-weight:700; opacity:0.9; margin-top:2px; }
+    .lv-card.locked .lv-num, .lv-card.empty .lv-num { background:#8a96a6 !important; }
+    .lv-body { flex:1; min-width:0; }
+    .lv-name { font-size:15px; font-weight:800; color:var(--ink); }
+    .lv-card.locked .lv-name, .lv-card.empty .lv-name { color:rgba(255,255,255,0.72); }
+    .lv-sub { font-size:11.5px; color:#64748b; margin-top:3px; line-height:1.5; }
+    .lv-card.locked .lv-sub, .lv-card.empty .lv-sub { color:rgba(255,255,255,0.6); }
+    .lv-meta { flex-shrink:0; text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:3px; }
+    .lv-chip { font-size:11px; font-weight:800; padding:3px 9px; border-radius:999px; }
+    .lv-chip.pass { background:#e7f7ee; color:#1f8a4c; }
+    .lv-chip.try  { background:#fff3d6; color:#8a6d00; }
+    .lv-chip.go   { background:var(--navy); color:#fff; }
+    .lv-lockic { font-size:19px; }
+    .lv-arrow { flex-shrink:0; font-size:22px; color:#c0ccda; }
+    .lv-rate  { font-size:11px; color:#64748b; }
+
+    /* 級バッジ（出題中ヘッダ） */
+    .lv-badge { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:800; color:#fff; padding:4px 11px; border-radius:999px; }
+    /* XP／解放演出 */
+    .xp-pop { display:inline-block; margin-top:6px; font-size:14px; font-weight:800; color:var(--gold); }
+    .unlock-burst { background:linear-gradient(135deg,#fff6df,#ffe9a8); color:#7a5a00; border-radius:16px; padding:14px 16px; margin:2px 0 14px; font-weight:800; font-size:15px; box-shadow:0 4px 14px rgba(231,184,75,0.4); }
   </style>
 </head>
 <body>
@@ -106,6 +144,15 @@ const CFG      = window.TOKYARI || {};
 const LIFF_ID  = CFG.LIFF_HUB || '2010075487-89AJxZnA';
 const API_BASE = CFG.API_BASE  || 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
 const N_PER_SET = 10; // 1セッションの出題数
+// 難易度4段階（difficulty 1..4）。色・重みはAPI(QUIZ_LV_WEIGHT)と一致。
+const LEVELS = [
+  { lv:1, name:'入門', sub:'10コマを見れば解ける基本', color:'#28a45c', weight:10 },
+  { lv:2, name:'基礎', sub:'主力製品・人物・沿革',     color:'#2f6fb0', weight:20 },
+  { lv:3, name:'応用', sub:'「正しい説明はどれ」',       color:'#7d3c98', weight:40 },
+  { lv:4, name:'実践', sub:'決算・数字で勝負',           color:'#d17d00', weight:80 },
+];
+const LV = lv => LEVELS[(lv||1)-1] || LEVELS[1];
+const PASS_RATE = 0.8, PASS_MIN = 8; // API側 QUIZ_PASS_RATE / QUIZ_PASS_MIN と一致
 
 // プレビュー用サンプル(本番はAPIから取得)
 const SAMPLE = [
@@ -155,6 +202,10 @@ function quizBack(){
 }
 let mode = 'company';           // 'company' | 'industry'
 let QSET = [], qi = 0, score = 0, curLabel = '', curSetType = '', curSetId = '';
+let curApiSetId = '';           // 保存/照会用のset_id（業界は industry__<slug>）
+let curLevel = 1;               // 出題中のレベル
+let curUnlock = null;           // /api/quiz/unlock の最新状態
+let pendingWrites = [];         // recordAnswer のPOST完了待ち（unlock再取得前にawait）
 function datasheetHref(){ return (curSetType==='company' && curSetId) ? `datasheet.html?id=${encodeURIComponent(curSetId)}&name=${encodeURIComponent(curLabel||'')}` : ''; }
 
 function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -231,30 +282,90 @@ async function renderCompanyList(industry){
   document.getElementById('btn-back').onclick = ()=>quizBack();
 }
 
-/* ---------- クイズ本体 ---------- */
+/* ---------- クイズ本体（レベル制） ---------- */
 async function startQuiz(setType, setId, label){
   curLabel = label; curSetType = setType; curSetId = setId;
+  // クイズセットID正規化: 業界は industry__<slug>（会社は company_id そのまま）
+  curApiSetId = setType==='industry' ? `industry__${setId}` : setId;
   document.getElementById('quiz-title').textContent = label;
   document.getElementById('guide').innerHTML = '';
+  document.getElementById('btn-back').onclick = ()=>quizBack();
+  app().innerHTML = `<div class="e-list"><div class="e-skel"></div><div class="e-skel"></div><div class="e-skel"></div></div>`;
+  curUnlock = await fetchUnlock();
+  renderLevelLadder();
+}
+
+async function fetchUnlock(){
+  try {
+    const r = await fetch(`${API_BASE}/api/quiz/unlock?user_id=${encodeURIComponent(lineUserId)}&set_type=${encodeURIComponent(curSetType)}&set_id=${encodeURIComponent(curApiSetId)}`);
+    if (r.ok) return await r.json();
+  } catch(e){ /* API未実装 */ }
+  // フォールバック: Lv1のみ解放（実在問数は不明→0扱いにせずundefinedで「準備中」判定を避ける）
+  return { unlocked_max:1, by_level:{} };
+}
+
+// レベルはしご: Lv1→Lv4 の解放状況を表示
+function renderLevelLadder(){
+  document.getElementById('quiz-title').textContent = curLabel;
+  const bl = (curUnlock && curUnlock.by_level) || {};
+  const hasData = Object.keys(bl).length > 0;
+  const cards = LEVELS.map(m=>{
+    const st = bl[String(m.lv)] || { available:undefined, answered:0, correct:0, passed:false, unlocked:m.lv===1 };
+    const available = st.available;         // undefined=不明(APIフォールバック時)
+    const empty = available === 0;          // 実在0問=準備中
+    const unlocked = !!st.unlocked;
+    const passed = !!st.passed && !empty;
+    const pct = st.answered ? Math.round((st.correct/st.answered)*100) : null;
+    const need = Math.min(PASS_MIN, available || PASS_MIN);
+    let cls='lv-card', meta='', tap=false;
+    if (empty) { cls+=' empty'; meta = `<span class="lv-rate">問題準備中</span>`; }
+    else if (!unlocked) {
+      cls+=' locked';
+      meta = `<span class="lv-lockic">🔒</span><span class="lv-rate">Lv${m.lv-1}を80%クリアで解放</span>`;
+    } else {
+      tap=true;
+      const chip = passed ? `<span class="lv-chip pass">✓ 合格</span>`
+                          : (st.answered>0 ? `<span class="lv-chip try">再挑戦</span>` : `<span class="lv-chip go">挑戦</span>`);
+      const rate = pct!=null ? `<span class="lv-rate">正答率 ${pct}%（合格80%）</span>`
+                             : (available!=null ? `<span class="lv-rate">${available}問・${need}問正解で解放</span>` : '');
+      meta = chip + rate;
+    }
+    const arrow = tap ? `<span class="lv-arrow">›</span>` : '';
+    const inner = `
+      <span class="lv-num" style="background:${m.color}"><b>Lv${m.lv}</b><span>${esc(m.name)}</span></span>
+      <span class="lv-body"><span class="lv-name">Lv${m.lv} ${esc(m.name)}</span><span class="lv-sub">${esc(m.sub)}</span></span>
+      <span class="lv-meta">${meta}</span>${arrow}`;
+    return tap
+      ? `<button class="${cls}" data-lv="${m.lv}">${inner}</button>`
+      : `<div class="${cls}">${inner}</div>`;
+  }).join('');
+  app().innerHTML = `
+    <p class="lv-intro">Lv1から挑戦！ そのレベルの<b>正答率80%</b>で次のレベルが解放されます。</p>
+    <div class="lv-ladder">${cards}</div>`;
+  app().querySelectorAll('.lv-card[data-lv]').forEach(b=> b.onclick = ()=> startLevel(parseInt(b.dataset.lv,10)) );
+  document.getElementById('btn-back').onclick = ()=>quizBack();
+}
+
+async function startLevel(level){
+  curLevel = level;
+  document.getElementById('guide').innerHTML = '';
   app().innerHTML = `<div class="e-list"><div class="e-skel"></div><div class="e-skel"></div></div>`;
-  // クイズセットID正規化: 業界は industry__<slug>（会社は company_id そのまま）
-  const apiSetId = setType==='industry' ? `industry__${setId}` : setId;
   let qs = null, isSample = false;
   try {
-    const r = await fetch(`${API_BASE}/api/quiz?set_type=${encodeURIComponent(setType)}&set_id=${encodeURIComponent(apiSetId)}`);
+    const r = await fetch(`${API_BASE}/api/quiz?set_type=${encodeURIComponent(curSetType)}&set_id=${encodeURIComponent(curApiSetId)}&level=${level}`);
     if (r.ok) { const d = await r.json(); qs = Array.isArray(d) ? d : (d.questions || []); }
   } catch(e){ /* API未実装 → サンプル */ }
-  if (!qs || !qs.length) { qs = SAMPLE; isSample = true; }
+  if (!qs || !qs.length) { qs = SAMPLE.map(s=>({...s, difficulty:level})); isSample = true; }
   QSET = qs.slice(0, N_PER_SET).map(shuffled);
-  qi = 0; score = 0;
-  document.getElementById('btn-back').onclick = ()=>quizBack();
+  qi = 0; score = 0; pendingWrites = [];
+  document.getElementById('btn-back').onclick = ()=>renderLevelLadder();
   renderQuestion(isSample);
 }
 
 // 復習: user_quiz_progress をルールで集計するAPIから出題
 async function startReview(rmode){
   const LBL = { recent:'直近の間違い', frequent:'よく間違える', weak_category:'苦手カテゴリ' };
-  curLabel = `復習：${LBL[rmode] || ''}`; curSetType = 'review'; curSetId = '';
+  curLabel = `復習：${LBL[rmode] || ''}`; curSetType = 'review'; curSetId = ''; curApiSetId = '';
   document.getElementById('quiz-title').textContent = '復習';
   document.getElementById('guide').innerHTML = '';
   app().innerHTML = `<div class="e-list"><div class="e-skel"></div><div class="e-skel"></div></div>`;
@@ -289,8 +400,13 @@ function renderQuestion(isSample){
     <button class="quiz-opt" data-i="${i}">
       <span class="mark">${'ABCD'[i]}</span><span>${esc(o)}</span>
     </button>`).join('');
+  const m = LV(curLevel);
+  const levelBadge = curSetType!=='review'
+    ? `<div style="margin-bottom:10px"><span class="lv-badge" style="background:${m.color}">Lv${m.lv} ${esc(m.name)}</span> <span style="font-size:11.5px;color:rgba(255,255,255,0.72)">${esc(m.sub)}</span></div>`
+    : '';
   app().innerHTML = `
     <div class="quiz-play">
+      ${levelBadge}
       <div class="quiz-progress-wrap">
         <div class="quiz-bar"><div class="quiz-bar-fill" style="width:${pct}%"></div></div>
         <span class="quiz-count">Q ${qi+1} / ${QSET.length}</span>
@@ -335,32 +451,85 @@ function answer(chosen){
   recordAnswer(q, chosen, ok);
 }
 
-function renderResult(){
+async function renderResult(){
   const total = QSET.length, pct = Math.round(score/total*100);
+  // 復習モードは従来どおり（レベル無し）
+  if (curSetType==='review'){
+    const emoji = pct>=80?'🏆':pct>=50?'👍':'📚';
+    const msg = pct>=80?'素晴らしい！バッチリ。':pct>=50?'いい調子！もう一歩。':'復習して再挑戦しよう！';
+    app().innerHTML = `
+      <div class="quiz-result">
+        <div class="quiz-result-emoji">${emoji}</div>
+        <p class="quiz-score">${score}<small> / ${total}</small></p>
+        <p class="quiz-result-msg">${esc(curLabel)}｜${msg}</p>
+        <div class="quiz-actions">
+          <button class="quiz-btn primary" id="retry">もう一度挑戦</button>
+          <button class="quiz-btn ghost" id="other">ほかのクイズを選ぶ</button>
+        </div>
+      </div>`;
+    document.getElementById('retry').onclick = ()=>{ QSET=QSET.map(shuffled); qi=0; score=0; renderQuestion(); };
+    document.getElementById('other').onclick = ()=>renderSelect();
+    return;
+  }
+
+  // レベルモード: サーバ集計を正として解放を再判定
+  const m = LV(curLevel);
+  app().innerHTML = `<div class="quiz-result" style="padding-top:34px"><div class="quiz-result-emoji">⏳</div><p class="quiz-result-msg">結果を集計中…</p></div>`;
+  const prevPassed = !!(curUnlock && curUnlock.by_level && curUnlock.by_level[String(curLevel)] && curUnlock.by_level[String(curLevel)].passed);
+  await Promise.allSettled(pendingWrites); pendingWrites = [];
+  curUnlock = await fetchUnlock();
+  const nowPassed = !!(curUnlock.by_level && curUnlock.by_level[String(curLevel)] && curUnlock.by_level[String(curLevel)].passed);
+  const newlyPassed = nowPassed && !prevPassed;
+  const nextLv = curLevel + 1;
+  const nextSt = curUnlock.by_level && curUnlock.by_level[String(nextLv)];
+  const nextPlayable = nextLv<=4 && nextSt && nextSt.unlocked && (nextSt.available==null || nextSt.available>0);
+  const isSample = QSET.length && !QSET[0].id;
+
+  // 今回の獲得XP（正解×難易度重み ＋ 新規解放ボーナス）※マイページ総XPはサーバ集計が正
+  let earned = score * m.weight;
+  if (newlyPassed) { earned += 100; if (curLevel===4) earned += 300; }
+
   const emoji = pct>=80?'🏆':pct>=50?'👍':'📚';
-  const msg = pct>=80?'素晴らしい！この企業はバッチリ。':pct>=50?'いい調子！もう一歩で完璧。':'復習して再挑戦しよう！';
+  const msg = nowPassed ? `Lv${m.lv} 合格！` : (pct>=50?'もう一歩で合格（80%）！':'復習して再挑戦しよう！');
+  const burst = newlyPassed
+    ? (curLevel===4 ? `<div class="unlock-burst">🎉 実践マスター達成！ この企業は完全制覇です</div>`
+                    : `<div class="unlock-burst">🎊 Lv${nextLv} ${esc(LV(nextLv).name)} 解放！</div>`)
+    : '';
+  const xpLine = (!isSample && earned>0) ? `<p class="xp-pop">＋${earned} XP 獲得！</p>` : '';
+
+  let actions = '';
+  if (nextPlayable && nowPassed) actions += `<button class="quiz-btn primary" id="nextlv">Lv${nextLv} ${esc(LV(nextLv).name)}へ進む</button>`;
+  if (!nowPassed) actions += `<button class="quiz-btn primary" id="retry">このレベルをもう一度</button>`;
+  actions += `<button class="quiz-btn ghost" id="ladder">レベル一覧へ</button>`;
+  if (datasheetHref()) actions += `<a class="quiz-btn ghost" href="${datasheetHref()}" style="text-decoration:none;text-align:center;display:block">📖 データシートで復習</a>`;
+  actions += `<button class="quiz-btn ghost" id="other">ほかのクイズを選ぶ</button>`;
+
   app().innerHTML = `
     <div class="quiz-result">
       <div class="quiz-result-emoji">${emoji}</div>
       <p class="quiz-score">${score}<small> / ${total}</small></p>
-      <p class="quiz-result-msg">${curLabel}｜${msg}</p>
-      <div class="quiz-actions">
-        <button class="quiz-btn primary" id="retry">もう一度挑戦</button>
-        ${datasheetHref()?`<a class="quiz-btn ghost" href="${datasheetHref()}" style="text-decoration:none;text-align:center;display:block">📖 データシートで復習</a>`:''}
-        <button class="quiz-btn ghost" id="other">ほかのクイズを選ぶ</button>
-      </div>
+      <p class="quiz-result-msg">${esc(curLabel)}｜Lv${m.lv} ${esc(m.name)}｜${msg}</p>
+      ${xpLine}
+      ${burst}
+      <div class="quiz-actions" style="margin-top:14px">${actions}</div>
     </div>`;
-  document.getElementById('retry').onclick = ()=>{ QSET=QSET.map(shuffled); qi=0; score=0; renderQuestion(); };
+  const nx = document.getElementById('nextlv'); if (nx) nx.onclick = ()=>startLevel(nextLv);
+  const rt = document.getElementById('retry'); if (rt) rt.onclick = ()=>startLevel(curLevel);
+  document.getElementById('ladder').onclick = ()=>renderLevelLadder();
   document.getElementById('other').onclick = ()=>renderSelect();
 }
 
-// 進捗記録(API未実装なら黙って失敗＝将来 user_quiz_progress へ)
+// 進捗記録(API未実装なら黙って失敗)。set_type/set_id を必ず送る（NOT NULL・Lv集計/解放/XPの元）。
+// 復習・サンプルは記録しない（question_idが実DBに無い／set未確定のため）。
 function recordAnswer(q, chosen, ok){
+  if (curSetType==='review' || !q.id || !curApiSetId) return;
   try {
-    fetch(`${API_BASE}/api/quiz/answer`, {
+    const p = fetch(`${API_BASE}/api/quiz/answer`, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ line_user_id: lineUserId, question_id: q.id||null, chosen, is_correct: ok?1:0 })
+      body: JSON.stringify({ line_user_id: lineUserId, question_id: q.id, chosen, is_correct: ok?1:0,
+        set_type: curSetType, set_id: curApiSetId })
     }).catch(()=>{});
+    pendingWrites.push(p);
   } catch(e){}
 }
 
