@@ -32,9 +32,14 @@ def rule_level(qd):
         return 4
     if cat == "業界順位":
         return 3
-    if _NUM.search(txt) or _JARGON.search(txt):
+    # v2.1② 拠点数/店舗数/組織規模/従業員数 等の数量系は Lv1/2 に置かず Lv3 以上へ
+    if _SCALE.search(txt) or _NUM.search(txt) or _JARGON.search(txt):
         return 3
     return 1
+
+
+_SCALE = re.compile(r"拠点数|店舗数|事業所数|従業員数|社員数|カ国|ヶ国|営業所|グループ会社数|"
+                    r"連結子会社数|組織規模|人員|従業員|店舗網|拠点網")
 
 
 def classify(slug, quiz):
@@ -58,7 +63,65 @@ def classify(slug, quiz):
     return out
 
 
-# ── 難易度lint: Lv1に数値/決算/専門用語が混入したらerror ──
+_FOREIGN_CO = re.compile(r"\b(AS|Inc|Ltd|GmbH|Corp|S\.?A\.?|AG|PLC|LLC|N\.?V\.?)\b|Finnmark|Holding|Group\b")
+
+
+# 製品・事業・一般語の接尾辞(人名でない=name_pool/差替から除外)
+_NOTNAME = re.compile(r"(器|機|械|装置|システム|事業|削減|費|品|業務|サービス|処理|技術|部門|"
+                      r"製造|販売|開発|投資|資源|エネルギー|ガス|化学|金属|食品|銀行|保険|証券|"
+                      r"商社|会社|工業|産業|センター|ソリューション|ネットワーク|プラットフォーム)$")
+
+
+def _is_person(o):
+    s = str(o).replace(" ", "").replace("　", "").strip()
+    # 日本語の経営者名は漢字(＋﨑等異体字)のみの姓名2-6字。ひらがな(助詞『の』等)/カタカナ/英字/数字/
+    #  製品・事業接尾辞を含むものは人名でない(測定器・新技術の研究・スマートフォン等を排除)。
+    return (2 <= len(s) <= 6) and bool(re.fullmatch(r"[一-龥々〆ヶ㐀-鿿豈-﫿]+", s)) \
+        and not QL.COMPANY_SUF.search(s) and not _FOREIGN_CO.search(s) and not _NOTNAME.search(s)
+
+
+def clean_existing(quiz_with_lv, corpus, name_pool=None):
+    """v2.1③+v2.3③④a 既存問の機械clean: (broken選択肢)(人名問の社名混入=日本語人名に差替/不可ならdrop)
+    (unit_consistency不一致)(#3 レベル内fact-key重複→inactive)。返り: (kept, dropped, inactive)."""
+    kept, dropped, inactive = [], [], []
+    seen_by_lv = {}
+    name_pool = list(name_pool or [])
+    for x in quiz_with_lv:
+        opts = x.get("options") or []
+        ci = x.get("correct", 0)
+        if len(opts) == 4 and any(_broken_option(o) for o in opts):
+            dropped.append((x.get("id"), "broken_option")); continue
+        # #4a/v2.4① 人名問(多数が人名)の非人名誤答(社名/外国法人/『スマートフォン』等)は
+        #   同一カテゴリ=corpus実在の人名にのみ差替。差替不可ならdrop。
+        persons = [o for o in opts if _is_person(o)]
+        if len(persons) >= 2:
+            for k, o in enumerate(opts):
+                if k == ci or _is_person(o):
+                    continue
+                repl = next((nm for nm in name_pool if nm not in opts and nm != opts[ci]), None)
+                if repl:
+                    opts[k] = repl
+                    x["_fixed"] = "person_distractor_replaced"
+            if any((k != ci) and not _is_person(opts[k]) for k in range(4)):   # なお非人名が残る→drop
+                dropped.append((x.get("id"), "category_mismatch_distractor")); continue
+        if QL.lint_unit_consistency(x):
+            dropped.append((x.get("id"), "category_mismatch_distractor")); continue
+        # #3 レベル内 重複(言い換え含む)→ inactive(削除でなく記録)。fact-key＋意味シグネチャで捕捉
+        lv = x.get("difficulty", 2)
+        fk = frozenset(QL._fact_keys(x))
+        sig = _sem_sig(x)
+        st = seen_by_lv.setdefault(lv, {"fk": set(), "sigs": []})
+        dup = (fk and fk & st["fk"]) or (sig and any(len(sig & s) >= max(2, min(len(sig), len(s)) - 1) for s in st["sigs"]))
+        if dup:
+            x["active"] = False
+            inactive.append((x.get("id"), f"intra_lv{lv}_dup")); continue
+        st["fk"] |= fk; st["sigs"].append(sig)
+        x["active"] = True
+        kept.append(x)
+    return kept, dropped, inactive
+
+
+# ── 難易度lint: Lv1に数値/決算/専門用語が混入したらerャー ──
 def lint_difficulty(quiz_with_lv):
     errs = []
     for x in quiz_with_lv:
@@ -186,24 +249,137 @@ _STOP = set("サービス システム 事業 製品 提供 開発 管理 活動
             "戦略 市場 顧客 社会 世界 日本 製造 販売 運営 支援 推進 展開 生産 品質 環境 経営 業界".split())
 
 
-def _distractor_ok(x, corpus):
+def _distractor_ok(x, corpus, own_text=""):
     """誤答が『実は正しい可能性がある』型を排除。誤答の《特徴語(4字以上・共通語除く)》がその社のcorpus本文に
     実在=実際に当てはまり得る→不可(例: 危機管理の誤答『サイバー攻撃』)。他業界の明白誤答(自動車/金融サービス
-    等・特徴語がcorpus不在)はOK。共通語(サービス/事業等)だけの一致では落とさない。"""
+    等・特徴語がcorpus不在)はOK。#4b own_text(自社の製品ページ本文)に誤答が載る=自社製品を誤答に置いた→不可。"""
     ctext = re.sub(r"\s+", "", " ".join(corpus.values()))
     ci = x.get("correct", 0)
-    for j, o in enumerate(x.get("options", [])):
+    opts = x.get("options", [])
+    # v2.4① カテゴリ整合: 人名問(2つ以上が人名)なら誤答も人名のみ(『スマートフォン』等の異カテゴリ混入を排除)
+    if sum(1 for o in opts if _is_person(o)) >= 2:
+        if any((j != ci) and not _is_person(o) for j, o in enumerate(opts)):
+            return False
+    for j, o in enumerate(opts):
         if j == ci:
             continue
         for t in re.findall(r"[一-龥ァ-ヶーA-Za-z]{4,}", str(o)):
             if t in _STOP:
                 continue
-            if t in ctext:
+            if t in ctext:                               # 社corpus(datasheet+台本)に実在→紛らわしい
                 return False
+        # #4b 自社製品を誤答に置かない: 誤答の完全名(空白除去・4字以上)が『製品ページ本文』に実在→drop
+        os_ = re.sub(r"\s", "", str(o))
+        if own_text and len(os_) >= 4 and os_ in own_text:
+            return False
     return True
 
 
-def gen_lv(slug, name, level, n=10, exclude=None):
+_SRC_PATHS = ["/software/", "/hardware/", "/products/", "/product/", "/business/", "/company/business/",
+              "/company/", "/company/about/", "/about/", "/ir/", "/csr/", "/sustainability/",
+              "/lineup/", "/service/", "/brand/", "/ja/products/", "/jp/ja/business/", "/recruit/"]
+
+
+def _source_pool(slug):
+    """その社の公式ページ本文(各factの該当ページ特定用)。#4(b): ヘッドレスでJS描画済みの
+    rendered_corpus.json を最優先(製品ページ本文が取れる)。無ければ datasheet出典＋curlで補完。非公式除外。"""
+    home = _official_home(slug)
+    pool = {}
+    # (b) レンダ済corpus(playwright)を最優先で使用
+    rc = os.path.join(OUT, slug, "rendered_corpus.json")
+    if os.path.exists(rc):
+        try:
+            for u, v in json.load(open(rc)).items():
+                if not _NONOFF.search(u):
+                    pool[u] = re.sub(r"\s+", "", v.get("text", "") if isinstance(v, dict) else str(v))
+        except Exception:
+            pass
+    if not home:
+        return pool
+    base = home.rstrip("/")
+    urls = [base + p for p in _SRC_PATHS]
+    # 公式トップのリンクから同一ドメインの主要ページを発見(製品/事業/会社ページを広く拾う)
+    hb = q.fetch_url(home)
+    if hb:
+        for m in re.findall(r'href="([^"#]+)"', hb):
+            lu = m if m.startswith("http") else (base + m if m.startswith("/") else None)
+            if lu and base in lu and not lu.lower().endswith((".pdf", ".jpg", ".png", ".zip", ".mp4")):
+                urls.append(lu.split("?")[0])
+    # バグ#2: datasheet出典(PDF含む)は各factの該当ページ=最優先で取り込む(q.fetch_urlはfitzでPDF本文抽出)
+    ds_urls = []
+    dp = os.path.join(OUT, slug, "datasheet.json")
+    if os.path.exists(dp):
+        for k, items in (json.load(open(dp)).get("sections", {}) or {}).items():
+            for it in items:
+                u = it.get("source_url", "")
+                if u and not _NONOFF.search(u):
+                    ds_urls.append(u)
+    for u in dict.fromkeys(ds_urls):                      # datasheet出典を先に(上限に関係なく)
+        if u in pool:
+            continue
+        raw = q.fetch_url(u)
+        if raw and len(raw) > 300:
+            pool[u] = re.sub(r"\s+", "", raw)
+    # 製品/事業/会社系URLを優先し、広めに取得(総上限32ページ)
+    def _pri(u):
+        return 0 if re.search(r"/(software|products?|business|lineup|service|brand|company|about|hardware)", u, re.I) else 1
+    for u in sorted(dict.fromkeys(urls), key=_pri):
+        if u in pool or len(pool) >= 32:
+            continue
+        raw = q.fetch_url(u)
+        if raw and len(raw) > 300:
+            pool[u] = re.sub(r"\s+", "", raw)
+    return pool
+
+
+def _resolve_source(answer, pool, home, product=True):
+    """正解が実在する公式の具体ページURLを返す(トップ一括禁止・無ければNone=drop)。
+    product=True(Lv1製品問): 固有名詞トークンが本文にあれば該当(ポケモンGO→ポケモン)。
+    product=False(Lv2等): #2 正解の『語句(フレーズ)』が本文に実在(固有名詞は不要)。"""
+    hbase = (home or "").rstrip("/")
+    pages = [(u, b) for u, b in pool.items() if u.rstrip("/") != hbase and not re.search(r"/index\.html?$", u)]
+    if product:
+        toks = [t for t in re.findall(r"[一-龥ァ-ヶーA-Za-z0-9]{3,}", str(answer)) if t not in _STOP]
+        extra = [t[:k] for t in toks for k in (5, 4, 3) if len(t) > k]
+        cand = list(dict.fromkeys(toks + extra))
+        if not cand:
+            return None
+        best, best_n = None, 0
+        for u, b in pages:
+            n = sum(1 for t in cand if t in b)
+            if n > best_n or (n == best_n and best and len(u) > len(best)):
+                best, best_n = u, n
+        return best if best_n >= 1 else None
+    # Lv2: 正解フレーズ(空白除去)が本文に実在。長ければ先頭substringでも可(表記ゆれ吸収)
+    ph = re.sub(r"\s", "", str(answer))
+    if len(ph) < 4:
+        return None
+    subs = [ph] + ([ph[:12], ph[:8]] if len(ph) >= 8 else [])
+    best = None
+    for u, b in pages:
+        if any(s in b for s in subs):
+            if best is None or len(u) > len(best):
+                best = u
+    return best
+
+
+_NONOFF = re.compile(r"\.ac\.jp|\.edu|wikipedia|yahoo|note\.com|j-lic|kyotonikanpai|renew-career|"
+                     r"hakenreco|talentsquare|fiit|visionguide|btj-|blog|ameblo|hatena|kabutan|minkabu", re.I)
+
+
+def _sem_sig(qd):
+    """設問の意味シグネチャ(表現違いの同一factを捕捉): q_text＋正解の特徴語集合。"""
+    txt = str(qd.get("q_text", "")) + " " + str((qd.get("options") or [""])[qd.get("correct", 0)] if qd.get("options") else "")
+    return frozenset(t for t in re.findall(r"[一-龥ァ-ヶーA-Za-z0-9]{3,}", txt) if t not in _STOP)
+
+
+def _broken_option(opt):
+    """崩れた選択肢(『98、海外：98』等の羅列・コロン混在)を検出。"""
+    s = str(opt)
+    return bool(re.search(r"[:：].*[:：]|[、,].*[:：]|[:：].*[、,]", s)) or (len(s) > 60)
+
+
+def gen_lv(slug, name, level, n=10, exclude=None, sem_used=None, pool=None):
     dp = os.path.join(OUT, slug, "datasheet.json")
     cp = os.path.join(OUT, slug, "quiz_corpus_locked_v3.json")
     if not os.path.exists(dp):
@@ -230,33 +406,53 @@ def gen_lv(slug, name, level, n=10, exclude=None):
     for x in facts:
         u = x["source_url"] or "ds://local"
         corpus[u] = (corpus.get(u, "") + " " + x["fact"])
-    hint = "Lv1は『主力製品・何をする会社か・代表的な事業』の王道問題を優先。" if level == 1 else "Lv2は事業の強み・社風・理念の理解。"
+    hint = ("Lv1は『主力製品・何をする会社か・代表的な事業』の王道問題を優先。各製品・各事業について1問ずつ広く作る。"
+            "★消費者向け製品が無い会社(商社・銀行等)は、業態(例『何をする会社か→総合商社』)や"
+            "関与する事業分野・投資先(例 天然ガス/金属資源/食品/自動車/コンビニ等)を問う王道問題を作る。"
+            if level == 1 else "Lv2は事業の強み・社風・理念の理解。")
     fl = "\n".join(f"- {x['fact']} <出典:{x['source_url']}>" for x in facts[:24])
-    data = q._parse_json(q.openai_chat([{"role": "system", "content": GEN_SYS},
-                        {"role": "user", "content": GEN_USER.format(name=name, lv=level, n=n + 6, facts=fl) + "\n" + hint}],
-                        max_tokens=2800, temperature=0.4))
-    raw = data.get("questions", []) if isinstance(data, dict) else []
+    if pool is None:
+        pool = _source_pool(slug)                       # #4 該当ページ特定用の公式本文プール
+    home = _official_home(slug)
+    # #4b 自社製品ページ(製品/ラインナップ系)本文のみ=誤答に自社製品を置いた場合の検出(競合言及の誤爆回避)
+    own_text = "".join(b for u, b in pool.items()
+                       if re.search(r"/(software|hardware|products?|lineup|brand|service|consumer|corporate/history|company/history|/history)", u, re.I))
     ok, used = [], set(exclude or set())
-    for i, x in enumerate(raw):
-        if not (isinstance(x.get("options"), list) and len(x["options"]) == 4):
-            continue
-        x["id"] = f"{slug}_lv{level}_{i+1:02d}"
-        x["difficulty"] = level
-        x["as_of"] = x.get("as_of") or ""
-        x["explanation"] = x.get("explanation") or ""
-        x["source_url"] = x.get("source_url") or ""
-        rep = QL.run_quiz_lints([x], corpus)            # quiz-lint v3.3 全通過必須
-        if rep["errors"] > 0:
-            continue
-        if lint_difficulty([x]):                        # Lv1/2に数値/決算/専門→drop
-            continue
-        if not _distractor_ok(x, corpus):               # 誤答がcorpusに実在=紛らわしい→drop
-            continue
-        fk = frozenset(QL._fact_keys(x))                # レベル間dedup(fact-key)
-        if fk & used:
-            continue
-        used |= fk
-        ok.append(x)
+    sused = set(sem_used or set())
+    covered = []                                        # 既出の正解(2パス目で回避)
+    for rnd in range(2):                                # 最大2パス(不足時に別題材で追加生成)
+        if len(ok) >= n:
+            break
+        avoid = ("\nすでに次を出題済み=別の製品/事業/接点で作れ: " + "、".join(covered[:20])) if covered else ""
+        data = q._parse_json(q.openai_chat([{"role": "system", "content": GEN_SYS},
+                            {"role": "user", "content": GEN_USER.format(name=name, lv=level, n=n + 6, facts=fl) + "\n" + hint + avoid}],
+                            max_tokens=2800, temperature=0.5 if rnd else 0.4))
+        raw = data.get("questions", []) if isinstance(data, dict) else []
+        for x in raw:
+            if not (isinstance(x.get("options"), list) and len(x["options"]) == 4):
+                continue
+            if any(_broken_option(o) for o in x["options"]):
+                continue
+            x["id"] = f"{slug}_lv{level}_{len(ok)+1:02d}"
+            x["difficulty"] = level
+            x["as_of"] = x.get("as_of") or ""
+            x["explanation"] = x.get("explanation") or ""
+            ans = x["options"][x.get("correct", 0)]
+            src = _resolve_source(ans, pool, home, product=(level == 1))   # #2 Lv1=固有名詞/Lv2=フレーズ実在
+            if not src:
+                continue
+            x["source_url"] = src
+            if QL.run_quiz_lints([x], corpus)["errors"] > 0:
+                continue
+            if lint_difficulty([x]) or not _distractor_ok(x, corpus, own_text):   # #4b 自社製品を誤答に置かない
+                continue
+            fk = frozenset(QL._fact_keys(x))
+            sig = _sem_sig(x)
+            if fk & used or (sig and any(len(sig & s) >= max(2, min(len(sig), len(s)) - 1) for s in sused)):
+                continue
+            used |= fk; sused.add(sig); covered.append(str(ans)[:20]); ok.append(x)
+            if len(ok) >= n:
+                break
     return ok[:n]
 
 
@@ -265,9 +461,14 @@ def selftest():
     bad = {"difficulty": 1, "id": "t2", "q_text": "2026年3月期の売上高は？", "options": ["1兆円", "2兆円", "3兆円", "4兆円"]}
     e = lint_difficulty([good, bad])
     ok = len(e) == 1 and e[0][1] == "t2"
-    print(f"[selftest] Lv1に決算混入をerror検出={ok} ({e})")
-    print("=== SELFTEST:", "PASS ===" if ok else "FAIL ===")
-    return ok
+    # #4b 自社製品を誤答に置かない(Game Boy=任天堂自社ハード が own_text にあれば drop)
+    q_gb = {"correct": 0, "options": ["Nintendo Switch", "Game Boy", "PlayStation", "Xbox"]}
+    own = "NintendoSwitchGameBoyamiibo"
+    ok2 = (not _distractor_ok(q_gb, {}, own)) and _distractor_ok(
+        {"correct": 0, "options": ["Nintendo Switch", "PlayStation", "Xbox", "自動車"]}, {}, own)
+    print(f"[selftest] Lv1決算error={ok} / 自社製品誤答drop={ok2}")
+    print("=== SELFTEST:", "PASS ===" if (ok and ok2) else "FAIL ===")
+    return ok and ok2
 
 
 if __name__ == "__main__":

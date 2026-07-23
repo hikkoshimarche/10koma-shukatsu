@@ -41,3 +41,19 @@
 - ispace: 公式library(ispace-inc.com)は広報PDFのみ・決算短信リンク無し。自動取得は第三者サイト(kitaishihon.com)を掴む=無効。
 - astroscale(186A): 公式IR(astroscale.com/ja/ir/)に xj-storage.jp(TDnet)開示PDF有るが、取得できたのは通知/議決権行使書で「年3月期」決算短信の形でない(3月決算か要確認)。
 - TODO: 両社の正しい決算短信PDF(TDnet/xj-storage)を手動シード → corpus取得 → deeptech-space-ai の members に追加して再生成(AI+宇宙の完全枠)。
+
+## [キュー] build_datasheet の根本修正(再汚染防止) 2026-07-22
+- 汚染の出所は build_datasheet が corpus からdatasheetを作る際、クイズ的な否定事実/distractorを事実化していたこと(例「主催する賞:ノーベル賞」「小田急の事業:製造業」)。
+- clean_datasheets.py で既存266を浄化済み(130社226fact除去・D1反映済)だが、**build_datasheet自体は未修正**=run_freshnessや新規生成で再汚染し得る。
+- TODO: build_datasheet(quiz_fanout.py)に _NEG_SHAPE除外 + 答えのcorpus実在チェック(clean_datasheetsの_answer_ok)を配線。以後の生成でクイズdistractorを事実化しない。
+- 参考: 決定論cleaner=答えのcorpus桁列/特徴語一致で捏造のみdrop・正当な数値/散文は温存。
+
+## [キュー] ES kit メタ記述フィルタ(次回バッチ) 2026-07-22
+- 軽微改善: 「〜を公開/紹介/伝えています」型=サイト自体についての記述(会社の事実でない)を材料から除外。
+  CA(サイバーエージェント)で2件検出。gen_es_kit.load_prose_facts / enrich_datasheet の生成に _META_DESC 除外を追加。
+- 例パターン: (公開|紹介|掲載|伝え|発信|お知らせ)(して|する)?(います|いる|中)。「当サイトでは」「ページでは」等。
+- 保留9社(takeda等=非公式corpus)は es_thin 管理・公式corpus取得後に追補。
+
+## [キュー] (c) ファクトシートに製品単位の一次情報URLを記録 (2026-07-23)
+- 難易度v2.2で#4=(b)headlessクロールを採用したが、根本解決は factsheet生成側で製品ごとに一次情報URLを記録すること。
+- Web Claude側でキュー管理。四半期鮮度リフレッシュの監視URLレジストリ(quiz-live-and-freshness)と統合設計予定。

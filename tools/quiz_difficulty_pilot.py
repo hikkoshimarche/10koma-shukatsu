@@ -9,7 +9,7 @@ import quiz_fanout as q
 from collections import Counter
 
 OUT = q.OUT
-HANDOFF = os.path.expanduser("~/Desktop/kindle_受け渡し/quiz_difficulty_pilot_v2")
+HANDOFF = os.path.expanduser("~/Desktop/kindle_受け渡し/quiz_pilot_v23_final")
 PILOT = [("mitsubishi-corp", "三菱商事"), ("keyence", "キーエンス"), ("nintendo", "任天堂"),
          ("mufg", "三菱UFJ銀行"), ("meiji-hd", "明治ホールディングス")]
 LVN = {1: "Lv1入門", 2: "Lv2基礎", 3: "Lv3応用", 4: "Lv4実践"}
@@ -43,32 +43,66 @@ def md_company(slug, name, existing, gen1, gen2):
     return "\n".join(L)
 
 
+def _naturalize(qt):
+    """#4c 不自然な問文を日本語らしく軽微修正(例: LNG輸送に関する特徴は?)。"""
+    import quiz_fanout as q
+    try:
+        r = q.openai_chat([{"role": "system", "content": "就活クイズの問文を、意味を変えず日本語として自然な1文に直す。固有名詞・数値は保持。"},
+                           {"role": "user", "content": f"問文: 「{qt}」\n自然な問文だけを出力(前置き無し)"}], max_tokens=120, temperature=0)
+        r = re.sub(r"^[「『]|[」』]$", "", (r or "").strip().splitlines()[0]) if r else qt
+        return r or qt
+    except Exception:
+        return qt
+
+
 def main():
     os.makedirs(HANDOFF, exist_ok=True)
     summary = []
+    SHA_LIST = []
+    import quiz_lint as QL, re
+    # #4a 人名差替用: 全5社の既存人名選択肢を実在名プールに収集
+    name_pool = []
+    for slug, _ in PILOT:
+        for x in json.load(open(os.path.join(OUT, slug, "quiz_30q_locked_v3.json"))):
+            for o in x.get("options", []):
+                if D._is_person(o) and o not in name_pool:
+                    name_pool.append(o)
     for slug, name in PILOT:
         f = os.path.join(OUT, slug, "quiz_30q_locked_v3.json")
         quiz = json.load(open(f))
+        corpus = json.load(open(os.path.join(OUT, slug, "quiz_corpus_locked_v3.json")))
         levels = D.classify(slug, quiz)
         for x, lv in zip(quiz, levels):
             x["difficulty"] = lv
-        # レベル間dedup: 既存問→gen1→gen2 の順にfact-keyを排他
-        import quiz_lint as QL
-        used = set()
+        # #4c 不自然な問文(『〜に関する特徴は？』等)を自然化
         for x in quiz:
-            used |= set(QL._fact_keys(x))
-        gen1 = D.gen_lv(slug, name, 1, 10, exclude=used)
+            if re.search(r"に関する特徴|について正しい|に関して正しい|の特徴は？$", x.get("q_text", "")):
+                x["q_text"] = _naturalize(x["q_text"]); x["_qfixed"] = True
+        n_before = len(quiz)
+        quiz, dropped, inactive = D.clean_existing(quiz, corpus, name_pool=name_pool)   # #3④a
+        pool = D._source_pool(slug)
+        used, sused = set(), set()
+        for x in quiz:
+            used |= set(QL._fact_keys(x)); sused.add(D._sem_sig(x))
+        gen1 = D.gen_lv(slug, name, 1, 10, exclude=used, sem_used=sused, pool=pool)
         for x in gen1:
-            used |= set(QL._fact_keys(x))
-        gen2 = D.gen_lv(slug, name, 2, 10, exclude=used)
-        # 保存(本番D1には入れない)
-        out = {"existing": quiz, "gen_lv1": gen1, "gen_lv2": gen2}
-        json.dump(out, open(os.path.join(OUT, slug, "quiz_difficulty_v1.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-        open(os.path.join(HANDOFF, f"{slug}.md"), "w", encoding="utf-8").write(md_company(slug, name, quiz, gen1, gen2))
-        d = Counter(x["difficulty"] for x in quiz)
-        summary.append((slug, name, dict(d), len(gen1), len(gen2)))
-        print(f"{slug}: 既存Lv1={d[1]}/Lv2={d[2]}/Lv3={d[3]}/Lv4={d[4]} 新規Lv1={len(gen1)} Lv2={len(gen2)}", flush=True)
-    print("\n=== SUMMARY ===", json.dumps(summary, ensure_ascii=False))
+            used |= set(QL._fact_keys(x)); sused.add(D._sem_sig(x))
+        gen2 = D.gen_lv(slug, name, 2, 10, exclude=used, sem_used=sused, pool=pool)
+        out = {"existing": quiz, "gen_lv1": gen1, "gen_lv2": gen2,
+               "dropped_existing": dropped, "inactive_existing": inactive}
+        json.dump(out, open(os.path.join(OUT, slug, "quiz_difficulty_v2.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+        _md = md_company(slug, name, quiz, gen1, gen2)
+        import hashlib as _hl
+        _sha8 = _hl.sha256(_md.encode()).hexdigest()[:8]
+        open(os.path.join(HANDOFF, f"{slug}__{_sha8}.md"), "w", encoding="utf-8").write(_md)
+        SHA_LIST.append((f"{slug}__{_sha8}.md", _sha8))
+        d = Counter(x["difficulty"] for x in quiz if x.get("active", True))
+        summary.append((slug, name, dict(d), len(gen1), len(gen2), n_before, len(dropped), len(inactive)))
+        print(f"{slug}: 既存{n_before}→有効{len(quiz)}(drop{len(dropped)}/inactive{len(inactive)}) Lv3/4={d.get(3,0)}/{d.get(4,0)} 新規Lv1={len(gen1)} Lv2={len(gen2)}", flush=True)
+    print("\n=== SHA8 ===")
+    for fn, sh in SHA_LIST:
+        print(f"  {fn}  {sh}")
+    print("=== SUMMARY ===", json.dumps(summary, ensure_ascii=False))
     return summary
 
 
