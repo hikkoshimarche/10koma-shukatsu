@@ -22,6 +22,7 @@ function doPost(e) {
     writeDetail_(ss, body.detail || []);
     writeSummary_(ss, body.summary || {});
     appendLog_(ss, n, '');
+    tidySheets_(ss);
     return json_({ ok: true, rows: n });
   } catch (err) {
     try { appendLog_(ss_(), -1, String(err)); } catch (e2) {}
@@ -31,6 +32,17 @@ function doPost(e) {
 function doGet() { return json_({ ok: true, note: 'user profile sync webapp. POST only.' }); }
 function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 function sheet_(ss, name) { var s = ss.getSheetByName(name); if (!s) s = ss.insertSheet(name); return s; }
+// 既定の空「シート1/Sheet1」を除去し、明細→サマリ→実行ログの順に並べる。
+function tidySheets_(ss) {
+  ['シート1', 'Sheet1'].forEach(function (nm) {
+    var s = ss.getSheetByName(nm);
+    if (s && ss.getSheets().length > 1 && s.getLastRow() === 0) ss.deleteSheet(s);
+  });
+  ['明細', 'サマリ', '実行ログ'].forEach(function (nm, i) {
+    var s = ss.getSheetByName(nm);
+    if (s) { ss.setActiveSheet(s); ss.moveActiveSheet(i + 1); }
+  });
+}
 
 function writeDetail_(ss, detail) {
   var s = sheet_(ss, '明細');
