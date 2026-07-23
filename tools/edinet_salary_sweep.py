@@ -118,7 +118,13 @@ def fetch_text(docid):
 
 
 def _employee_table(text):
-    """従業員の状況表: 平均年齢・勤続(小数2連続)直後の整数 = 平均年間給与(円)。"""
+    """従業員の状況表: 提出会社行 [従業員数, 平均年齢, 平均勤続, 平均年間給与]。
+    年齢(15-70)・勤続(0-45)らしい2連続の直後の給与レンジ値を採用(小数/整数の両方に対応=emp_missing回収)。"""
+    def fnum(x):
+        try:
+            return float(x.replace(",", ""))
+        except ValueError:
+            return None
     for m in re.finditer("平均年間給与", text):
         i = m.start()
         ctx = text[max(0, i - 120):i + 500]
@@ -126,9 +132,17 @@ def _employee_table(text):
             continue
         unit = 1000 if "千円" in text[i:i + 20] else 1
         toks = re.findall(r"[\d,]+\.\d+|[\d,]+", text[i:i + 500])
+        # (a) 小数2連続(年齢.・勤続.)直後
         for k in range(len(toks) - 2):
             if "." in toks[k] and "." in toks[k + 1] and "." not in toks[k + 2]:
                 yen = int(toks[k + 2].replace(",", "")) * unit
+                if 2_000_000 <= yen <= 80_000_000:
+                    return yen
+        # (b) 年齢らしい(15-70)・勤続らしい(0-45)の2連続 直後の給与レンジ値(整数年齢の表)
+        for k in range(len(toks) - 2):
+            a, b, c = fnum(toks[k]), fnum(toks[k + 1]), fnum(toks[k + 2])
+            if a and b and c and 15 <= a <= 70 and 0 <= b <= 45 and "." not in toks[k + 2]:
+                yen = int(c) * unit
                 if 2_000_000 <= yen <= 80_000_000:
                     return yen
     return None
