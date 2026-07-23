@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8979626,
   "starting_salary": null,
   "industry": {
    "value": "小売・流通",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100Y6K0"
  },
  "trend_note": "48歳最年少社長の登用と先義後利理念で若手裁量が強化。全国15店舗+PARCO展開で転勤多。インバウンド・DXで成長駆動",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

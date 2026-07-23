@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9739000,
   "starting_salary": null,
   "industry": {
    "value": "総合商社",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YEV4"
  },
  "trend_note": "神戸製鋼グループ中核商社。採用少数(7-15名/年)で競争激化。安定性高いが成長機会・若手裁量は限定的。転勤・海外配置は",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

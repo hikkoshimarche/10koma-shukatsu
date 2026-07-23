@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8420008,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YHHO"
  },
  "trend_note": "老舗インフラ企業として安定性極高。九州7県の地域密着型で転勤多。原発・火力・水力の多様な発電所管理で理系技術職需要が中心",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

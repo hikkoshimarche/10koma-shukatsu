@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7733539,
   "starting_salary": null,
   "industry": {
    "value": "食品・飲料",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YC5I"
  },
  "trend_note": "創業100周年を機に理念刷新し成長志向を強調。北海道と東京拠点で全国転勤あり。安定性は業界随一。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

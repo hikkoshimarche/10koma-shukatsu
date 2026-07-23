@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 16285818,
   "starting_salary": null,
   "industry": {
    "value": "専門商社",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YGVR"
  },
  "trend_note": "世界23ヵ国81拠点のグローバル展開で海外適性高い。半導体商社として営業主体。安定した売上規模ながら利益減少で成長課題あ",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

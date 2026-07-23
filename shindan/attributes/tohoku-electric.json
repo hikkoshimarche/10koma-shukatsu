@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8725434,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YEK2"
  },
  "trend_note": "インフラ企業として全国配置と転勤は不可避。海外展開は限定的。2期連続赤字で経営環境は厳しいが、原発再稼働・水力最多など技",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

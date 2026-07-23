@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10382444,
   "starting_salary": null,
   "industry": {
    "value": "不動産・建設",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YG3E"
  },
  "trend_note": "143年の老舗準大手ゼネコン。全国拠点での建築プロジェクト遂行で転勤多め。病院・学校・大型ビルに強み、安定基盤が厚い。新",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

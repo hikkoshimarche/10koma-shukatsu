@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10396546,
   "starting_salary": null,
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YG5L"
  },
  "trend_note": "グローバル金融グループで海外事業展開が多く、新規事業・不動産開発など成長ドライバーが豊富。若手には専門性と裁量が段階的に",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

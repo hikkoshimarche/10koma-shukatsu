@@ -57,22 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 1037,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=2802",
-    "quote": "味の素(2802) 平均年収 約1,037万円（有報単体平均年収）"
-   },
-   "as_of": "2025年3月期",
-   "confidence": "high",
-   "estimated": false
-  },
+  "avg_salary": 10613479,
   "starting_salary": null,
   "industry": {
    "value": "食品・飲料",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100Y992"
  },
  "trend_note": "グローバル展開で海外駐在機会増加、半導体材料事業が成長エンジン。調味料の安定基盤と多角化で長期安定性高い",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

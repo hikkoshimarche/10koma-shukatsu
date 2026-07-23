@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10206000,
   "starting_salary": null,
   "industry": {
    "value": "総合商社",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YBEM"
  },
  "trend_note": "1930年創業の老舗商社で50年以上トップシェア維持。BtoC接点豊富で認知度高い。水素・カセットコンロなど成長領域も拡",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

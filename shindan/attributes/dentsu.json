@@ -57,22 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 1596,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=4324",
-    "quote": "電通グループ(4324) 平均年収 約1,596万円（有報単体平均年収）"
-   },
-   "as_of": "2025年12月期",
-   "confidence": "high",
-   "estimated": false
-  },
+  "avg_salary": 15959402,
   "starting_salary": null,
   "industry": {
    "value": "広告・メディア",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XS0O"
  },
  "trend_note": "創業120年超の老舗大手で安定性高い。リモート手当記載で柔軟性確保。「アイデア×実現力」採用基準から若手の企画裁量大きい",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

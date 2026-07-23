@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8754000,
   "starting_salary": null,
   "industry": {
    "value": "日用品・化粧品",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XSEU"
  },
  "trend_note": "海外売上6割超・約80国展開で国際志向強い。老舗安定大手で基盤堅牢。新卒60名採用で成長機会は限定的。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

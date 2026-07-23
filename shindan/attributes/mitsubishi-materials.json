@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7329000,
   "starting_salary": null,
   "industry": {
    "value": "鉄鋼・素材・化学",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YFRY"
  },
  "trend_note": "150年以上の老舗・インフラメーカーで安定性高い。直島など大規模製錬所は転勤多め。リサイクル・都市鉱山事業の拡大で新領域",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

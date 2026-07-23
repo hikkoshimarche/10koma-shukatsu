@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9522132,
   "starting_salary": null,
   "industry": {
    "value": "広告・メディア",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100Y5O3"
  },
  "trend_note": "老舗大手で安定性高い。採用少数・高倍率で選別厳しい。映画・演劇コンテンツ中心で成長限定的。本社東京集中で転勤少なめ。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

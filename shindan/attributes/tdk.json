@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9211552,
   "starting_salary": null,
   "industry": {
    "value": "電機・精密・重工",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YD2Y"
  },
  "trend_note": "売上高2兆円超・営業利益+29.7%と高成長。1935年創業の老舗で安定性極めて高い。全世界拠点展開で転勤・海外駐在機会",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

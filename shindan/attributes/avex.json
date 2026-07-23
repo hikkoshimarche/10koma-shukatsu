@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7100000,
   "starting_salary": null,
   "industry": {
    "value": "広告・メディア",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YKQ4"
  },
  "trend_note": "創業1988年の成長企業。直近赤字だが2026年度黒字化予想で上昇軌道。裁量度高く若手抜擢強調。音楽・アニメ・デジタル事",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9755717,
   "starting_salary": null,
   "industry": {
    "value": "不動産・建設",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XTVO"
  },
  "trend_note": "330年超の老舗で財務安定性極高。米豪主要な海外事業拡大中。木造超高層(W350)など新領域チャレンジで成長志向も顕著。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

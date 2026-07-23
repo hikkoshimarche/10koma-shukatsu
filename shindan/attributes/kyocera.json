@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7397108,
   "starting_salary": null,
   "industry": {
    "value": "電機・精密・重工",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YF47"
  },
  "trend_note": "創業者フィロソフィと経営理念が強調され、人格適合度が採用基準で高い。セラミックス・医療など多角化しており技術職志向向け。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

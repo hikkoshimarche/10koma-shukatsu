@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8376000,
   "starting_salary": null,
   "industry": {
    "value": "自動車・モビリティ",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YFBQ"
  },
  "trend_note": "日本最古の商用車メーカー、安定基盤と長期ビジョン。「主体的キャリア形成」重視で若手裁量拡大。150カ国展開で海外経験機会",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

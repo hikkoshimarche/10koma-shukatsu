@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8210646,
   "starting_salary": null,
   "industry": {
    "value": "食品・飲料",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YE5V"
  },
  "trend_note": "老舗食品大手で安定性極高。海外売上76%・5ヶ国7工場でグローバル適応必須。新卒30名採用で個性発揮より組織適応重視傾向",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

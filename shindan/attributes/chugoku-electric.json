@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8945510,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YGCV"
  },
  "trend_note": "地域インフラ企業で転勤多い。赤字決算・新卒増加も安定志向強く、革新性は限定的。若手裁量は従来型組織構造で低め。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 16541845,
   "starting_salary": null,
   "industry": {
    "value": "航空・運輸・物流",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YI2T"
  },
  "trend_note": "140年超の歴史を持つ社会インフラ企業。世界展開する船舶運航で海外駐在機会多く、本社東京中心に全国拠点。安定性高い一方、",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

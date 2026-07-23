@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7772000,
   "starting_salary": null,
   "industry": {
    "value": "自動車・モビリティ",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YAWO"
  },
  "trend_note": "トヨタグループ中核で売上4.9兆円・純利益900億円超。安定性高い。世界約200拠点で海外・転勤機会豊富。新規事業（BE",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

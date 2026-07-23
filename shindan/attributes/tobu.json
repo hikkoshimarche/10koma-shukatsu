@@ -58,17 +58,7 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 710,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=9001",
-    "quote": "**平均年収**: 710万円（2025年3月期・有価証券報告書） [出典](https://www.nikkei.com/nkd/company/salary/?scode=9001)"
-   },
-   "as_of": "",
-   "confidence": "medium",
-   "estimated": false
-  },
+  "avg_salary": 7446807,
   "starting_salary": {
    "value": 252000,
    "unit": "円/月",
@@ -83,7 +73,9 @@
   "industry": {
    "value": "航空・運輸・物流",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100Y8FK"
  },
  "trend_note": "創業1897年の老舗インフラ企業で安定性高い。関東1都4県に広域ネットワーク展開により転勤多め。レジャー・百貨店事業など",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

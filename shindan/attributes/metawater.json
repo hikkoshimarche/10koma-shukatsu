@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9040509,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YBSD"
  },
  "trend_note": "売上高17.2%増・営業利益21.2%増で成長加速。水処理専業最大手で社会インフラ支え、安定性は極めて高い。全国の浄水場",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

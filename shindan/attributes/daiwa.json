@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 4020000,
   "starting_salary": null,
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100Y7D9"
  },
  "trend_note": "創業120年超の老舗大手証券。全国120店舗網と営業利益27%増で安定性極高。転勤は多めだが新規事業・裁量は限定的。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

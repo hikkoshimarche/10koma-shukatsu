@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9036730,
   "starting_salary": null,
   "industry": {
    "value": "食品・飲料",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XQN0"
  },
  "trend_note": "125年の歴史と安定基盤が強固。直近決算で営業利益107%増と成長加速。名古屋本社と東京拠点で転勤機会あり。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

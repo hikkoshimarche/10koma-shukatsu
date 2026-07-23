@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8386723,
   "starting_salary": null,
   "industry": {
    "value": "専門商社",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YH29"
  },
  "trend_note": "医薬品卸売の国内首位で安定性高。全国177店舗展開と物流センター投資で転勤・現場配置が多い。海外事業記述が限定的で調整。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

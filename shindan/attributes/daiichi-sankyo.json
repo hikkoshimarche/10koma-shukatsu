@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10976771,
   "starting_salary": null,
   "industry": {
    "value": "製薬・ヘルスケア",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YEY0"
  },
  "trend_note": "グローバル製品(エンハーツ等)展開で海外拠点機会増加。老舗基盤と革新事業の並行で安定性高い。新卒採用急増(260名)で若",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

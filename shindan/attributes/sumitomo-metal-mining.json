@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8054000,
   "starting_salary": null,
   "industry": {
    "value": "鉄鋼・素材・化学",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YJ6N"
  },
  "trend_note": "430年の歴史と安定基盤、海外主要拠点(チリ・フィリピン)での鉱山・製錬事業、電池材料の成長領域で次世代産業への適応が進",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

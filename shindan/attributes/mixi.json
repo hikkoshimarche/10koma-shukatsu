@@ -57,22 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 792,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://sincereed-agent.com/interview/mixi-salary/",
-    "quote": "**平均年収**: 792万円（2025年3月期有価証券報告書、平均年齢37.4歳） [出典](https://sincereed-agent.com/interview/mixi-salary/)"
-   },
-   "as_of": "",
-   "confidence": "medium",
-   "estimated": false
-  },
+  "avg_salary": 8470000,
   "starting_salary": null,
   "industry": {
    "value": "IT・通信・SaaS",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YE1D"
  },
  "trend_note": "モンスト大型タイトル維持で安定しつつ、営業利益38.7%増で高成長。若手発明・夢中重視のバリュー、9階層内階段設計でフラ",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

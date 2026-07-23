@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7804768,
   "starting_salary": null,
   "industry": {
    "value": "その他（外資・新興等）",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YLC6"
  },
  "trend_note": "急速拡大期（採用600人超/年）で若手抜擢・裁量大。熊本拠点集約でtenkin_doは3相当。台湾TSMC技術移転で国際",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

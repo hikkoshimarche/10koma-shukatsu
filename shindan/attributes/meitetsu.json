@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 6614236,
   "starting_salary": null,
   "industry": {
    "value": "航空・運輸・物流",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YHOL"
  },
  "trend_note": "中部圏の大型インフラ企業。経営ビジョン刷新と採用拡大で成長志向が高まり、転勤は必至だが海外駐在機会は限定的。安定性が高い",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

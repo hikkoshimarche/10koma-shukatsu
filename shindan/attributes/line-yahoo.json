@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9023870,
   "starting_salary": null,
   "industry": {
    "value": "IT・通信・SaaS",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YBXD"
  },
  "trend_note": "東証プライム上場で安定性向上。売上1.9兆円・営業利益51%増で成長加速。LINEヤフー統合による組織安定化傾向で、st",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

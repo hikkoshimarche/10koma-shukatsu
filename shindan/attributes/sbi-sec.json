@@ -57,7 +57,7 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10209822,
   "starting_salary": {
    "value": 340000,
    "unit": "円/月",
@@ -72,7 +72,9 @@
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YNPY"
  },
  "trend_note": "オンライン証券で急成長(1500万口座突破)も、採用は極少人数で入社難度高い。顧客中心主義と変革志向の文化が特徴。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

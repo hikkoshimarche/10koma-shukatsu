@@ -58,22 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 766,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://m-careerguide.jp/articles/600-2/",
-    "quote": "**平均年収**: 766万円（2024年3月期有価証券報告書）[出典](https://m-careerguide.jp/articles/600-2/)"
-   },
-   "as_of": "",
-   "confidence": "medium",
-   "estimated": false
-  },
+  "avg_salary": 8738019,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YH23"
  },
  "trend_note": "四国4県のインフラ事業で転勤多い。海外拠点限定的、年功序列強く若手裁量限定。安定性極高で成長緩。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

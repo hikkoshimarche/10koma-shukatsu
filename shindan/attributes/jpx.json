@@ -57,17 +57,7 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 1110,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=8697",
-    "quote": "**平均年収**: 1,110万円（2024年度有価証券報告書） [出典](https://www.nikkei.com/nkd/company/salary/?scode=8697)"
-   },
-   "as_of": "",
-   "confidence": "medium",
-   "estimated": false
-  },
+  "avg_salary": 11132643,
   "starting_salary": {
    "value": 258000,
    "unit": "円/月",
@@ -82,7 +72,9 @@
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YA84"
  },
  "trend_note": "インフラ企業的な高い安定性。採用30名程度で競争激しく、裁量は限定的。金融知識より経済への知的好奇心を重視。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10618000,
   "starting_salary": null,
   "industry": {
    "value": "不動産・建設",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YEDU"
  },
  "trend_note": "創業150年の老舗ゼネコン、安定基盤強固。土木特化による技術力と現場力重視の文化が強い。理系職の比率が高い傾向。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

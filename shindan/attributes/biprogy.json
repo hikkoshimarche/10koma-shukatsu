@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8846208,
   "starting_salary": null,
   "industry": {
    "value": "IT・通信・SaaS",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YFCP"
  },
  "trend_note": "老舗SIで売上9.2%増・営業益12%増と安定成長。平均残業16.6h/月、有給取得率85.67%と働き方改革が浸透。新",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

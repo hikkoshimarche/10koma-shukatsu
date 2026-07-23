@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8817253,
   "starting_salary": null,
   "industry": {
    "value": "電機・精密・重工",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XTLJ"
  },
  "trend_note": "海外売上80%、宇都宮新工場500億投資、ナノインプリント実用化で成長加速。グローバル派遣多数。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

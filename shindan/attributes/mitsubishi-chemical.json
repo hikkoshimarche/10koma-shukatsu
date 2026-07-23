@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 11889000,
   "starting_salary": null,
   "industry": {
    "value": "鉄鋼・素材・化学",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YFSR"
  },
  "trend_note": "1933年創業の老舗大手総合化学メーカー。年収1,060万円、56,678名規模で安定性極高。グローバル展開(kaiga",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

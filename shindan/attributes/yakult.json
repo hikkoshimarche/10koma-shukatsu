@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8549009,
   "starting_salary": null,
   "industry": {
    "value": "食品・飲料",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YCBJ"
  },
  "trend_note": "海外売上4割・39カ国展開で国際性高い。創業90年の歴史と高採用倍率26.3倍から安定と競争環境の両立。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

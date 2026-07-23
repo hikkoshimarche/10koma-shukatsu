@@ -58,17 +58,7 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 1145,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=6098",
-    "quote": "リクルートHD(6098) 平均年収 約1,145万円（有報単体平均年収）"
-   },
-   "as_of": "2025年3月期",
-   "confidence": "high",
-   "estimated": false
-  },
+  "avg_salary": 11624997,
   "starting_salary": {
    "value": 326551,
    "unit": "円/月",
@@ -83,7 +73,9 @@
   "industry": {
    "value": "IT・通信・SaaS",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YDHL"
  },
  "trend_note": "グローバルHRテック企業で海外拠点多数、成長戦略とセルフドリブン文化により若手裁量が極めて高い。安定性と成長性の両立。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

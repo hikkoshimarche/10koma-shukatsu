@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10119431,
   "starting_salary": null,
   "industry": {
    "value": "専門商社",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100Y935"
  },
  "trend_note": "世界12か国137拠点のグローバルネットワーク、売上15.7%増の成長局面。海外駐在機会が豊富で国際志向が強い商社。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

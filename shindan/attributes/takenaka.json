@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 11527044,
   "starting_salary": null,
   "industry": {
    "value": "不動産・建設",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XU22"
  },
  "trend_note": "創業1610年の超老舗ゼネコン。全国有名施設多数施工で安定度最高。采算性改善中だが海外展開は限定的。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

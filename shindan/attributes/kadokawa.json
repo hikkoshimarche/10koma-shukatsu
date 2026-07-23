@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8715000,
   "starting_salary": null,
   "industry": {
    "value": "広告・メディア",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YGF5"
  },
  "trend_note": "電子書籍・アニメ・ゲーム好調で成長加速。ところざわサクラタウン新オフィスで働き方改革推進。若手抜擢・創造性重視の社風。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

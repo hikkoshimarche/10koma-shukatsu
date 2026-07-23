@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8242230,
   "starting_salary": null,
   "industry": {
    "value": "不動産・建設",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YI5D"
  },
  "trend_note": "東京中心の大手不動産で安定性高い。リフォーム・再開発などの成長事業ありも、採用枠少なく若手裁量は限定的",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

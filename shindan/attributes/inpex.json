@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 13233495,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XU9L"
  },
  "trend_note": "世界20カ国展開で海外駐在機会豊富。洋上施設・基地運営で転勤必至。安定収益基盤と新規事業Vision2035推進で成長性",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

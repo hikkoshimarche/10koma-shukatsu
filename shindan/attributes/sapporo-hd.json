@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10139000,
   "starting_salary": null,
   "industry": {
    "value": "食品・飲料",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XTM0"
  },
  "trend_note": "1876年創業の老舗インフラ企業。売上減少・営業利益低下で成長鈍化。安定性と伝統が強み。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7215000,
   "starting_salary": null,
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YBXA"
  },
  "trend_note": "全国約600店舗ネットワーク構築による転勤機会が多い。MUFG傘下で安定性高いが、消費者金融市場の成熟により成長性は限定",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

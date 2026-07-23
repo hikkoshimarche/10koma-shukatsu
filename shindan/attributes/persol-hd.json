@@ -58,22 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 819,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=2181",
-    "quote": "パーソルHD(2181) 平均年収 約819万円（有報単体平均年収）"
-   },
-   "as_of": "2025年3月期",
-   "confidence": "high",
-   "estimated": false
-  },
+  "avg_salary": 8818492,
   "starting_salary": null,
   "industry": {
    "value": "その他（外資・新興等）",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YGCS"
  },
  "trend_note": "5年連続増収増益で高成長。持株会社傘下136社に分散、転勤は限定的。若手主体性・自律性を重視する採用方針。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

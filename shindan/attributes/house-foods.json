@@ -57,7 +57,7 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8404405,
   "starting_salary": {
    "value": 259600,
    "unit": "円/月",
@@ -72,7 +72,9 @@
   "industry": {
    "value": "食品・飲料",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YD7A"
  },
  "trend_note": "創業111年の老舗大手食品企業。国内カレー市場60%シェアと安定基盤が強く、安定性を向上。海外事業は現状維持。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

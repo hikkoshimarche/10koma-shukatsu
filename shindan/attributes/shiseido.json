@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7080304,
   "starting_salary": null,
   "industry": {
    "value": "日用品・化粧品",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XSCU"
  },
  "trend_note": "約120国で事業展開し海外志向が強い。新卒採用が約50名に絞られ、構造改革中で成長性は鈍化。安定性は高いが裁量度は限定的",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

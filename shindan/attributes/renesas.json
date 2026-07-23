@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7495552,
   "starting_salary": null,
   "industry": {
    "value": "電機・精密・重工",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XR06"
  },
  "trend_note": "海外売上70%超・30カ国以上拠点で国際性強い。車載トップシェアで基盤安定。採用縮小傾向だが初任給大幅引き上げで新卒重視",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

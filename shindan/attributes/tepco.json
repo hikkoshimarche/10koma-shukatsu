@@ -58,22 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 860,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=9501",
-    "quote": "東京電力HD(9501) 平均年収 約860万円（有報単体平均年収）"
-   },
-   "as_of": "2025年3月期",
-   "confidence": "high",
-   "estimated": false
-  },
+  "avg_salary": 8828772,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YIHR"
  },
  "trend_note": "原発再稼働・廃炉事業で技術人財需要が高い。関東圏本社・全国拠点で転勤多め。インフラ型安定性は業界最高水準。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

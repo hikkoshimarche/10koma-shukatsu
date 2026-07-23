@@ -58,7 +58,7 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 13983167,
   "starting_salary": {
    "value": 240000,
    "unit": "円/月",
@@ -73,7 +73,9 @@
   "industry": {
    "value": "広告・メディア",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100Y9BG"
  },
  "trend_note": "グローバルコンテンツ企業への変革推進、Hulu運営、中期計画で国際展開強化。安定基盤の上での成長トレンド顕著。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7594000,
   "starting_salary": null,
   "industry": {
    "value": "IT・通信・SaaS",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XSJP"
  },
  "trend_note": "高成長SaaS企業で裁量大きく、リモート環境整備。本社一拠点集約（転勤少）だが海外拡張志向。若手が価値実感できる文化。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

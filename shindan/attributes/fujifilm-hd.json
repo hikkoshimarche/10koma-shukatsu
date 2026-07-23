@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10855077,
   "starting_salary": null,
   "industry": {
    "value": "電機・精密・重工",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YIBH"
  },
  "trend_note": "バイオCDMO(デンマーク・米国)・半導体材料など海外拠点で成長事業を展開。1934年創立の歴史ある大手で安定性高い。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

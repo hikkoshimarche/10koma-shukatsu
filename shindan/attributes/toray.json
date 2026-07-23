@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8384000,
   "starting_salary": null,
   "industry": {
    "value": "鉄鋼・素材・化学",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YFG9"
  },
  "trend_note": "世界首位の炭素繊維など先端材料でグローバル展開。営利増3.6倍で成長加速。安定大手だが技術革新がドライバー。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 11233821,
   "starting_salary": null,
   "industry": {
    "value": "製薬・ヘルスケア",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YB05"
  },
  "trend_note": "33カ国49社のグローバル展開と14の研究開発拠点で海外機会が充実。HHC理念で患者志向を強調し、年1.7兆円超の研究開",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

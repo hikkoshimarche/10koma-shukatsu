@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 14504365,
   "starting_salary": null,
   "industry": {
    "value": "航空・運輸・物流",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YC6B"
  },
  "trend_note": "創立100年超の老舗海運大手。連結5,788名規模で全国・海外拠点多く、転勤・駐在必至。純利益3倍増で成長モメンタム高く",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

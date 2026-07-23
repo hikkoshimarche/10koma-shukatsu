@@ -57,7 +57,7 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8571467,
   "starting_salary": {
    "value": 250000,
    "unit": "円/月",
@@ -72,7 +72,9 @@
   "industry": {
    "value": "自動車・モビリティ",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YH2B"
  },
  "trend_note": "過去最大赤字・大規模人員削減中で安定性大幅低下。EV・e-POWER等の技術開発フォーカス続行も成長性は閉塞感。グローバ",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

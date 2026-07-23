@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9838000,
   "starting_salary": null,
   "industry": {
    "value": "ゲーム・エンタメ",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YBXE"
  },
  "trend_note": "1950年創業の歴史と1兆3,482億円規模の安定性。ガンダムIP過去最高2,543億円など成長実績も顕著。グローバルI",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

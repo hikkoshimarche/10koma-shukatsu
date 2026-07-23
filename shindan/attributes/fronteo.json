@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9064814,
   "starting_salary": null,
   "industry": {
    "value": "IT・通信・SaaS",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YGJA"
  },
  "trend_note": "自然言語処理AI「KIBIT」を軸とした高成長企業。米国・韓国・台湾の複数国拠点があり国際訴訟支援で海外展開活発。データ",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

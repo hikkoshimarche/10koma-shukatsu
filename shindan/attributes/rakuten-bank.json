@@ -58,22 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 627,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://xn--pckua2a7gp15o89zb.com/%E6%A5%BD%E5%A4%A9%E9%8A%80%E8%A1%8C%E6%A0%AA%E5%BC%8F%E4%BC%9A%E7%A4%BE%E3%81%AE%E5%B9%B4%E5%8F%8E",
-    "quote": "**平均年収**: 627万円（2024年度・有価証券報告書）[出典](https://xn--pckua2a7gp15o89zb.com/%E6%A5%BD%E5%A4%A9%E9%8A%80%E8%A1%8C%E6%A0%AA%E5%BC%8F%E4%BC%9A%E7%A4%BE%E3%81%AE%E5%B9%B4%E5%8F%8E)"
-   },
-   "as_of": "",
-   "confidence": "medium",
-   "estimated": false
-  },
+  "avg_salary": 7072000,
   "starting_salary": null,
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YGME"
  },
  "trend_note": "ネット銀行専業で純利益47%増の成長段階。イノベーション重視の採用と楽天グループシナジーで若手裁量が相対的に向上。転勤は",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

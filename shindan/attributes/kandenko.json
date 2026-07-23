@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10123347,
   "starting_salary": null,
   "industry": {
    "value": "不動産・建設",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YDOZ"
  },
  "trend_note": "東京電力グループ系で電力インフラ・大型プロジェクト中心。80年歴史で高安定性。技術職比重高く、スカイツリー・国立競技場な",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

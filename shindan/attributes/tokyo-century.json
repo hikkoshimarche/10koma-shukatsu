@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9316000,
   "starting_salary": null,
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YDRI"
  },
  "trend_note": "過去最高益更新・国内25,000社顧客・30ヵ国以上海外展開で成長加速。全国502拠点ネットワークと海外事業で転勤・駐在",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

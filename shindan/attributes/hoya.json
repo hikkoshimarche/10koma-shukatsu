@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9704451,
   "starting_salary": null,
   "industry": {
    "value": "電機・精密・重工",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100Y90T"
  },
  "trend_note": "海外従業員90%・160拠点で国際配置多い。5期連続最高益で安定成長。精密光学は理系高度人材向け。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8600121,
   "starting_salary": null,
   "industry": {
    "value": "食品・飲料",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XRXN"
  },
  "trend_note": "1922年創業の老舗大手で安定基盤強固。道頓堀など大阪拠点中心で全国転勤あり。海外展開は緒についたばかり。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

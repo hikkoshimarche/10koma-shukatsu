@@ -57,22 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 883,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://medivoke.co.jp/tenshoku-kairou/14/3099/",
-    "quote": "**平均年収**: 883万円（2024年3月期・有価証券報告書）[出典](https://medivoke.co.jp/tenshoku-kairou/14/3099/)、922万円（2024年3月期・日経）[出典](https://www.nikkei.com/nkd/company/salary/?scode=3099)"
-   },
-   "as_of": "",
-   "confidence": "medium",
-   "estimated": false
-  },
+  "avg_salary": 8964463,
   "starting_salary": null,
   "industry": {
    "value": "小売・流通",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YD7C"
  },
  "trend_note": "350年超の老舗百貨店で安定基盤は強い。一方、売上・利益の成長期待と「新ビジネスモデル創出」の企業理念から変革志向も明示",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

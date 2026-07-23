@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 11883541,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YISC"
  },
  "trend_note": "全国98ヵ所の発電所配属で転勤多い。1952年創業の国策企業で基盤安定。海外事業は営業領域主体で駐在機会は限定的。年収1",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

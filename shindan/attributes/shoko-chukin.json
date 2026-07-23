@@ -58,7 +58,7 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8522000,
   "starting_salary": {
    "value": 260000,
    "unit": "円/月",
@@ -73,7 +73,9 @@
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YBW3"
  },
  "trend_note": "完全民営化で経営の自由度向上見込みも、中小企業専門・対面営業が本質。全国103店舗で転勤多。海外5拠点は限定的。安定性は",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

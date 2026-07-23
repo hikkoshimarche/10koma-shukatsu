@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8754140,
   "starting_salary": null,
   "industry": {
    "value": "食品・飲料",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YEEQ"
  },
  "trend_note": "創業82年の老舗総合食品メーカー。垂直統合体制と堅実な経営基盤で安定性が高い。転勤は全国拠点・配送網維持で継続。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

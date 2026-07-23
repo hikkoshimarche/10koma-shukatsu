@@ -58,22 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 767,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=9020",
-    "quote": "JR東日本(9020) 平均年収 約767万円（有報単体平均年収）"
-   },
-   "as_of": "2025年3月期",
-   "confidence": "high",
-   "estimated": false
-  },
+  "avg_salary": 8191696,
   "starting_salary": null,
   "industry": {
    "value": "航空・運輸・物流",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YC7N"
  },
  "trend_note": "公営的インフラ企業で転勤必須・海外少。安定度極高。新幹線・駅舎など大規模プロジェクトで成長投資あるも経営安定志向。リモー",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

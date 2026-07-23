@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8276143,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YDWY"
  },
  "trend_note": "北海道全域の広大な供給区域で転勤多。原子力・火力・LNG発電など技術職の配置が多く、安定インフラ企業の典型。ラピダス進出",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

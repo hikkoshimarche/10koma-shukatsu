@@ -57,7 +57,7 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9086300,
   "starting_salary": {
    "value": 265000,
    "unit": "円/月",
@@ -72,7 +72,9 @@
   "industry": {
    "value": "鉄鋼・素材・化学",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YF8E"
  },
  "trend_note": "老舗インフラ企業として安定性極高。一方近期利益減・成長率低迷傾向。製鉄所転勤は必須、若手裁量は限定的。理系技術職向け。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

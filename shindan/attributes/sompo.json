@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7416687,
   "starting_salary": null,
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YC6H"
  },
  "trend_note": "メガ損保の老舗で安定性極高。全国125支店で転勤多い。成長率は業界基準で低めだが、損保ジャパン大学など学習文化強化で若手",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

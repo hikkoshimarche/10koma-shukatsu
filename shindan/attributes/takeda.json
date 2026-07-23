@@ -57,17 +57,7 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 1104,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=4502",
-    "quote": "武田薬品(4502) 平均年収 約1,104万円（有報単体平均年収）"
-   },
-   "as_of": "2025年3月期",
-   "confidence": "high",
-   "estimated": false
-  },
+  "avg_salary": 11445000,
   "starting_salary": {
    "value": 300000,
    "unit": "円/月",
@@ -82,7 +72,9 @@
   "industry": {
    "value": "製薬・ヘルスケア",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YB5L"
  },
  "trend_note": "海外売上比率90.9%・グローバル本社・47,455名の国際体制。老舗安定性と創薬成長のバランス型",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

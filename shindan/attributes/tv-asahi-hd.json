@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 15002000,
   "starting_salary": null,
   "industry": {
    "value": "広告・メディア",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YCD2"
  },
  "trend_note": "老舗放送局で安定性が高い一方、業界構造上成長は限定的。東京集約型で転勤少ない。コンテンツ制作志向の文系人材向け。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

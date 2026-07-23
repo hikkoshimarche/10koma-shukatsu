@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 13326000,
   "starting_salary": null,
   "industry": {
    "value": "コンサル",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YBM8"
  },
  "trend_note": "60年以上の老舗シンクタンク×SIの安定性と、売上成長率+3.8%・営業利益+12.0%の堅実成長。若手抜擢と専門性深化",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

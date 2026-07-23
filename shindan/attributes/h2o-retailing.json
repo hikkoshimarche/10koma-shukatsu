@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10012000,
   "starting_salary": null,
   "industry": {
    "value": "小売・流通",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YDD0"
  },
  "trend_note": "関西を基盤とした安定した百貨店・食品スーパー事業。インバウンド好調で成長加速。全国転勤機会は一定程度あり。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

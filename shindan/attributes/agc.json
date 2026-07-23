@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9053185,
   "starting_salary": null,
   "industry": {
    "value": "鉄鋼・素材・化学",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XSTU"
  },
  "trend_note": "海外子会社175社うち140社が海外拠点。グローバル素材メーカーとして転勤・駐在機会多く、古い歴史と安定性が高い。有給取",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

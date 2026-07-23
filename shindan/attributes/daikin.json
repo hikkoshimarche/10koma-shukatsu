@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8964767,
   "starting_salary": null,
   "industry": {
    "value": "電機・精密・重工",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YFQL"
  },
  "trend_note": "創業100周年の老舗・インフラ企業で安定性高い。若手が盆踊り企画運営など裁量機会あり。グローバル展開で海外駐在も有望。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

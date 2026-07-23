@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8322000,
   "starting_salary": null,
   "industry": {
    "value": "鉄鋼・素材・化学",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YCDA"
  },
  "trend_note": "120年の歴史と2兆5千億売上で安定性が高い。素材複合経営で転勤多く、若手裁量は製造業慣行で限定的。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

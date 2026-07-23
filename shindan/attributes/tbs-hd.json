@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 13279000,
   "starting_salary": null,
   "industry": {
    "value": "広告・メディア",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YI1U"
  },
  "trend_note": "東証プライム上場の老舗放送局で安定性高い。コンテンツ創出と多事業展開で成長志向も維持。赤坂拠点集中で転勤は限定的。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

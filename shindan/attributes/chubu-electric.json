@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9452983,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YDH0"
  },
  "trend_note": "インフラ企業として安定性と転勤が顕著。海外拠点記載なく海外志向は低調。若手裁量・リモート制度の記述なく、従来型組織構造を",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

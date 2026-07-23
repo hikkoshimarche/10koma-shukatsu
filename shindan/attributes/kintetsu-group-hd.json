@@ -58,17 +58,7 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 797,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=9041",
-    "quote": "**平均年収**: 797万円（2025年3月期・有価証券報告書）[出典](https://www.nikkei.com/nkd/company/salary/?scode=9041)"
-   },
-   "as_of": "",
-   "confidence": "medium",
-   "estimated": false
-  },
+  "avg_salary": 8228945,
   "starting_salary": {
    "value": 262000,
    "unit": "円/月",
@@ -83,7 +73,9 @@
   "industry": {
    "value": "航空・運輸・物流",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YCLR"
  },
  "trend_note": "老舗私鉄の安定基盤に加え、不動産・観光・流通で多角化。全国路線網により転勤可能性高い。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

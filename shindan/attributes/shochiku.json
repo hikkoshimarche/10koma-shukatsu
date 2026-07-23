@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8301791,
   "starting_salary": null,
   "industry": {
    "value": "広告・メディア",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100Y66K"
  },
  "trend_note": "創業130年の老舗エンタメ企業で安定性高い。経営者志向・創造性を求める求人姿勢から若手裁量大。海外拠点は明記なく調整。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

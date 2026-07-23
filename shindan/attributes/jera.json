@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9796000,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YCJZ"
  },
  "trend_note": "国内26拠点の火力発電所運営で転勤多い。LNG調達・上流開発で海外展開あり。老舗インフラで安定度極高。平均年齢43.8歳",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

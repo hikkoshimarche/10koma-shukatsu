@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7655000,
   "starting_salary": null,
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YBGJ"
  },
  "trend_note": "日本最大規模の信託銀行で基盤安定。全国拠点展開で転勤可能性高い。純利益最高更新も成長率は緩やか。リモート制度は限定的。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

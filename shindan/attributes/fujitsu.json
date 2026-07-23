@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10122665,
   "starting_salary": null,
   "industry": {
    "value": "IT・通信・SaaS",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YM3K"
  },
  "trend_note": "国内最大手IT企業で安定性が高い。ジョブ型導入で成長性・裁量度向上。グローバルSI案件多く海外駐在機会あり。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

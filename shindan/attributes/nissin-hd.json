@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8425365,
   "starting_salary": null,
   "industry": {
    "value": "食品・飲料",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YEWB"
  },
  "trend_note": "創業者精神と四大理念が強く、安定性は高い。過去最高益を更新する業績が安定志向を強化。海外拠点は限定的。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9047000,
   "starting_salary": null,
   "industry": {
    "value": "その他（外資・新興等）",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100Y7A4"
  },
  "trend_note": "初上場後の成長期企業。黒字化達成で安定感増し、全国配荷・人員128名の組織で主体性求む。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

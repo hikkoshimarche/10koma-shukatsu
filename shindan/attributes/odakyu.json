@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8274183,
   "starting_salary": null,
   "industry": {
    "value": "航空・運輸・物流",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YIM7"
  },
  "trend_note": "1927年創業の老舗インフラ企業。平均勤続年数22年、安定性極高。転勤多、海外拠点限定的。保守的人事文化で若手裁量小。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

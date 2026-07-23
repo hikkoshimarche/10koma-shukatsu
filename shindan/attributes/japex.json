@@ -57,17 +57,7 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 958,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://xn--pckua2a7gp15o89zb.com/%E7%9F%B3%E6%B2%B9%E8%B3%87%E6%BA%90%E9%96%8B%E7%99%BA%E6%A0%AA%E5%BC%8F%E4%BC%9A%E7%A4%BE%E3%81%AE%E5%B9%B4%E5%8F%8E",
-    "quote": "**平均年収**: 958万円（2024年度有価証券報告書）、1,031万円（2025年度有価証券報告書） [出典](https://xn--pckua2a7gp15o89zb.com/%E7%9F%B3%E6%B2%B9%E8%B3%87%E6%BA%90%E9%96%8B%E7%99%BA%E6%A0%AA%E5%BC%8F%E4%BC%9A%E7%A4%BE%E3%81%AE%E5%B9%B4%E5%8F%8E) [出典](https://www.nikkei.com/nkd/company/salary/?scode=1662)"
-   },
-   "as_of": "",
-   "confidence": "medium",
-   "estimated": false
-  },
+  "avg_salary": 10606937,
   "starting_salary": {
    "value": 237300,
    "unit": "円/月",
@@ -82,7 +72,9 @@
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YERU"
  },
  "trend_note": "国策インフラ企業で安定性最高。国内ガス田・パイプライン運営で転勤多。新卒採用少数20名で難関。平均年齢40超で若手裁量は",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

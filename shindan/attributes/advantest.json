@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10977033,
   "starting_salary": null,
   "industry": {
    "value": "電機・精密・重工",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YKTA"
  },
  "trend_note": "売上高44.7%増、営業利益118.8%増と急成長中。世界シェア1位の半導体テスト装置で安定性と成長性を両立。群馬R&D",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

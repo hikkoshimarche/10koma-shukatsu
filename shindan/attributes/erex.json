@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8857104,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YKV1"
  },
  "trend_note": "ベトナム・海外バイオマス展開で国際性↑。新卒30名弱の少数精鋭で裁量↑。豊前・新潟300MW等大型プロジェクト成長機会が",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

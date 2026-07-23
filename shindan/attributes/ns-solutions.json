@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9357000,
   "starting_salary": null,
   "industry": {
    "value": "IT・通信・SaaS",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YAEV"
  },
  "trend_note": "日本製鉄傘下の安定基盤×SIer成長領域。月残9時間・離職率2.8%で働き方環境良好。ユーザー系で国内大手顧客層厚く、海",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

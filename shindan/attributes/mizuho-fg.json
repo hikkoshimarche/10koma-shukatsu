@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 11665000,
   "starting_salary": null,
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YF8Y"
  },
  "trend_note": "過去最高益で経営安定。全国約450店舗ネットワークで転勤多い。老舗且つインフラ的地位で安定性極高。若手裁量は限定的。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

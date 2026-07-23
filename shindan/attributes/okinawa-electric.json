@@ -57,22 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 786,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://medivoke.co.jp/tenshoku-kairou/11/9511/",
-    "quote": "**平均年収**: 786万円 (2025年3月期・有価証券報告書) [出典](https://medivoke.co.jp/tenshoku-kairou/11/9511/)"
-   },
-   "as_of": "",
-   "confidence": "medium",
-   "estimated": false
-  },
+  "avg_salary": 8079519,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YGEA"
  },
  "trend_note": "沖縄県全域供給の独占事業体で安定性極高。本島・37離島への全県配置が必要で転勤度は高い。再生可能エネルギーへの転換模索も",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

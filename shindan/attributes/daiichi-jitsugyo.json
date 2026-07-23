@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9720000,
   "starting_salary": null,
   "industry": {
    "value": "専門商社",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YGOV"
  },
  "trend_note": "世界17ヶ国35拠点・全売上50%海外、2025年営業利益44.1%増と成長基調。転勤・海外駐在機会が豊富で国際性求める",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -57,22 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 832,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://irbank.net/E03462/salary",
-    "quote": "**平均年収**: 832万円（2025年2月期、有価証券報告書） [出典](https://irbank.net/E03462/salary)"
-   },
-   "as_of": "",
-   "confidence": "medium",
-   "estimated": false
-  },
+  "avg_salary": 8550415,
   "starting_salary": null,
   "industry": {
    "value": "小売・流通",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100Y4VB"
  },
  "trend_note": "全国21,000店超の運営体制で転勤が多い。平均勤続15.8年で安定志向が強い。持株会社でデジタル変革中だが、新卒57名",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

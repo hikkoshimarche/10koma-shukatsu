@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7771794,
   "starting_salary": null,
   "industry": {
    "value": "自動車・モビリティ",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YFKZ"
  },
  "trend_note": "1917年創業の老舗メーカー、4.6兆円売上で安定性極高。群馬製作所等全国拠点多く転勤頻度高い傾向。航空宇宙部門の新領域",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

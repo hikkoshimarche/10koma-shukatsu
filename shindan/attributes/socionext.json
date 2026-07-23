@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9590000,
   "starting_salary": null,
   "industry": {
    "value": "その他（外資・新興等）",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YHHK"
  },
  "trend_note": "ファブレスの高度な設計開発企業。TSMCなど海外パートナーとの協業が多く、グローバル環境。直近売上減で安定性は相対的に低",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

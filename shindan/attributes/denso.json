@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9152532,
   "starting_salary": null,
   "industry": {
    "value": "自動車・モビリティ",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100Y9T1"
  },
  "trend_note": "創業75年の老舗・安定基盤。36カ国拠点で海外配置多い。理系技術職中心だが採用倍率15倍超で難関。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

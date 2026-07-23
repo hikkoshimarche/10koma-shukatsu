@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9389646,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YFXZ"
  },
  "trend_note": "インフラ企業の典型。安定性と全国転勤は高いまま。賃上げ動向と初任給上昇から若干の成長意欲が見られるが、営業利益減による構",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

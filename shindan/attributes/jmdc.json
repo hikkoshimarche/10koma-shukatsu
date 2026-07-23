@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8227757,
   "starting_salary": null,
   "industry": {
    "value": "その他（外資・新興等）",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YJCA"
  },
  "trend_note": "ヘルステック業界の高成長企業。医療ビッグデータ活用による急速な売上拡大(16.4%増)と若手抜擢文化が顕著。本社一極集中",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10005041,
   "starting_salary": null,
   "industry": {
    "value": "電機・精密・重工",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YENT"
  },
  "trend_note": "創業1853年の老舗重工業で社会インフラ担当。離職率1.5%・平均年齢41歳で安定性高し。全国拠点・海外事業多く転勤・駐",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

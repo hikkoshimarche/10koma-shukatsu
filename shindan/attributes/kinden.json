@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9970353,
   "starting_salary": null,
   "industry": {
    "value": "不動産・建設",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YFY8"
  },
  "trend_note": "売上高・利益が急成長(48%増)し、世界90ヵ国での海外展開も拡大中。インフラ系の安定性と成長力を併せ持つ総合設備工事の",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10276291,
   "starting_salary": null,
   "industry": {
    "value": "IT・通信・SaaS",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XU0X"
  },
  "trend_note": "東証プライム上場で3年連続過去最高収益更新。老舗（1961年創業）と成長両立型。全国130万社取引で転勤・駐在機会あり、",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

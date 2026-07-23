@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8352549,
   "starting_salary": null,
   "industry": {
    "value": "食品・飲料",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YHJS"
  },
  "trend_note": "1899年創業の老舗食品大手で安定性が高い。ハイチュウの海外展開(米国中心)で国際機会増。採用倍率1,745倍の狭き門。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

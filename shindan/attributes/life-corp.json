@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 5827088,
   "starting_salary": null,
   "industry": {
    "value": "小売・流通",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100Y63D"
  },
  "trend_note": "21期連続増収・過去最高利益で安定性向上。近畿・首都圏での全国転勤は必須。ネットスーパー・PB拡大で新規事業機会あり。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

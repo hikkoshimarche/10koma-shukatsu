@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 11901000,
   "starting_salary": null,
   "industry": {
    "value": "専門商社",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YBTV"
  },
  "trend_note": "創業192年超の老舗でありながら営業利益過去最高更新、R&D拠点保有で成長と安定両立。大阪・東京・神戸・尼崎に複数拠点で",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

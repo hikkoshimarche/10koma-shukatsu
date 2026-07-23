@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 11840000,
   "starting_salary": null,
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YLAV"
  },
  "trend_note": "政府系金融機関として安定性極高。長期経営人材育成重視で若手裁量は限定的。総合職採用で社会課題解決志向が強い。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

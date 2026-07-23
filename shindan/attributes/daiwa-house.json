@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 11011469,
   "starting_salary": null,
   "industry": {
    "value": "不動産・建設",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YAZ5"
  },
  "trend_note": "創業70年の総合建設大手で大規模採用削減中。安定性高いが成長事業は限定的。全国転勤多く海外駐在は少なめ",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

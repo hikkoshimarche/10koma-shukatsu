@@ -57,22 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 773,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=9733",
-    "quote": "**平均年収**: 818万4199円（2024年3月期） [出典](https://www.nikkei.com/nkd/company/salary/?scode=9733) ※別出典では773万円（2022年3月末時点） [出典](https://www.toshin.com/nagase/new/recruiting/information.php)"
-   },
-   "as_of": "",
-   "confidence": "medium",
-   "estimated": false
-  },
+  "avg_salary": 8917862,
   "starting_salary": null,
   "industry": {
    "value": "その他（外資・新興等）",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YK8I"
  },
  "trend_note": "全国95校舎+衛星約1000校で転勤可能性あり。映像授業・模試システムなどIT活用が進み成長分野。安定した教育事業基盤な",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

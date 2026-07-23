@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 13804159,
   "starting_salary": null,
   "industry": {
    "value": "電機・精密・重工",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YEOO"
  },
  "trend_note": "海外売上比率92%で国際展開が強い。世界第3位の安定性と成長予想26%増で高い基盤。理系技術職が主軸。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 4901289,
   "starting_salary": null,
   "industry": {
    "value": "小売・流通",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YJBF"
  },
  "trend_note": "全国1,234店舗展開で転勤多め。安定経営（利益増）と長年勤続（12.4年）から安定性上方調整。成長は緩やかで基本維持。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

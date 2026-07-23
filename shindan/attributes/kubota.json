@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8609216,
   "starting_salary": null,
   "industry": {
    "value": "電機・精密・重工",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XR0M"
  },
  "trend_note": "売上3兆円、創業134年の老舗重工で安定性が高い。海外売上78%・120カ国展開で国際志向層向き。新本社移転・自動運転農",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

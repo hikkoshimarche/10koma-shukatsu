@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7523505,
   "starting_salary": null,
   "industry": {
    "value": "広告・メディア",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YBX4"
  },
  "trend_note": "上場大手で営業利益118%増など成長加速。モノづくり好き・チームワーク重視の人物像が明確。安定性上向き。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

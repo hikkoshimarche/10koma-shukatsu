@@ -57,7 +57,7 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 13150577,
   "starting_salary": {
    "value": 288000,
    "unit": "円/月",
@@ -72,7 +72,9 @@
   "industry": {
    "value": "ゲーム・エンタメ",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YHJ4"
  },
  "trend_note": "老舗大型IPで安定感増。新規事業・拠点展開(渋谷サクラステージ)で成長継続。若手裁量・リモート制度は業界標準維持。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

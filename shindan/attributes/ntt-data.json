@@ -57,22 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 923,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=9613",
-    "quote": "NTTデータグループ(9613) 平均年収 約923万円（有報単体平均年収）"
-   },
-   "as_of": "2025年3月期",
-   "confidence": "high",
-   "estimated": false
-  },
+  "avg_salary": 10562434,
   "starting_salary": null,
   "industry": {
    "value": "IT・通信・SaaS",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YCP3"
  },
  "trend_note": "社会インフラを支える金融・公共システムで高い安定性。世界70ヵ国展開で海外機会あり。平均残業29時間/月と働き方改革も進",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

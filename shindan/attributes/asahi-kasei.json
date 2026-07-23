@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8483519,
   "starting_salary": null,
   "industry": {
    "value": "鉄鋼・素材・化学",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YGRD"
  },
  "trend_note": "売上高・利益の大幅成長(営業利益+50.6%)により成長動向を上方修正。リチウムイオン電池等の先端事業拡大。有給取得率8",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

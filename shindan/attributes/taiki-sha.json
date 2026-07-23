@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 11600212,
   "starting_salary": null,
   "industry": {
    "value": "不動産・建設",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YCPQ"
  },
  "trend_note": "海外売上比47.7%、50カ国以上展開で海外配置リスク増。採用107名・売上2,861億円で成長加速。エンジニアリング主",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9358808,
   "starting_salary": null,
   "industry": {
    "value": "不動産・建設",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YF3Y"
  },
  "trend_note": "海洋土木の最大手として国内外メガプロジェクト多数。純利益178%増と成長加速中。技術職向けの難度の高い工事が豊富。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

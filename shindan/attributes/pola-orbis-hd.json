@@ -57,22 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 783,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=4927",
-    "quote": "**平均年収**: 783万円（2024年度有価証券報告書）[出典](https://www.nikkei.com/nkd/company/salary/?scode=4927)"
-   },
-   "as_of": "",
-   "confidence": "medium",
-   "estimated": false
-  },
+  "avg_salary": 7662268,
   "starting_salary": null,
   "industry": {
    "value": "日用品・化粧品",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XSDL"
  },
  "trend_note": "創業95年の老舗で売上減少局面。個人中心経営理念が強く、感受性・個性重視の社風が特徴。安定基盤と創意工夫のバランス求める",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 11708279,
   "starting_salary": null,
   "industry": {
    "value": "食品・飲料",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XSOA"
  },
  "trend_note": "創業1899年の歴史ある老舗で安定性が高い。グローバル展開とマルチカテゴリ事業で国内外の転勤・異動機会が豊富。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

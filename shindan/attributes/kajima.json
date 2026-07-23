@@ -58,17 +58,7 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 1185,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=1812",
-    "quote": "鹿島建設(1812) 平均年収 約1,185万円（有報単体平均年収）"
-   },
-   "as_of": "2025年3月期",
-   "confidence": "high",
-   "estimated": false
-  },
+  "avg_salary": 12454406,
   "starting_salary": {
    "value": 300000,
    "unit": "円/月",
@@ -83,7 +73,9 @@
   "industry": {
    "value": "不動産・建設",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YGGI"
  },
  "trend_note": "4期連続増収増益と世界級プロジェクト実績で成長・安定性を両立。転勤は建設業務特性から必須だが、老舗スーパーゼネコンとして",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -57,7 +57,7 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8632000,
   "starting_salary": {
    "value": 260000,
    "unit": "円/月",
@@ -72,7 +72,9 @@
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YECJ"
  },
  "trend_note": "政府100%出資の特殊銀行で安定性極高。18駐在員事務所と海外現場主義で国際志向が強く、現場密着型キャリア。採用100倍",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

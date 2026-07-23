@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7348000,
   "starting_salary": null,
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YD29"
  },
  "trend_note": "郵便局2万拠点の全国ネットワーク活動で転勤多い。公的インフラ性が強く安定性最高峰。海外拠点限定的で国内志向。平均年齢44",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

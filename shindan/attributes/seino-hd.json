@@ -57,22 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 671,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=9076",
-    "quote": "**平均年収**: 671万円（2024年度）[出典](https://www.nikkei.com/nkd/company/salary/?scode=9076)"
-   },
-   "as_of": "",
-   "confidence": "medium",
-   "estimated": false
-  },
+  "avg_salary": 7118000,
   "starting_salary": null,
   "industry": {
    "value": "航空・運輸・物流",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YI52"
  },
  "trend_note": "創業94年の老舗で安定性向上。直近営業利益27.7%増と成長トレンド加速。全国路線網で転勤機会高い",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 6288000,
   "starting_salary": null,
   "industry": {
    "value": "広告・メディア",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XUOH"
  },
  "trend_note": "25周年の成長局面で大型施設拠点固定。パーク現場での若手抜擢と創意工夫が求められる環境。給与水準は業界中堅。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

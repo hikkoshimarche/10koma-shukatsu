@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10793000,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YEDH"
  },
  "trend_note": "EPC大型プロジェクト(カタール、米国等)が主体で海外駐在必然的。新卒採用1～5名と極少で若手裁量は限定的。エンジニアリ",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -58,7 +58,7 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10862278,
   "starting_salary": {
    "value": 330000,
    "unit": "円/月",
@@ -73,7 +73,9 @@
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YD7F"
  },
  "trend_note": "全国複数バイオマス・太陽光・地熱発電所+ベトナム風力で転勤・海外駐在の可能性高い。急成長期から安定化フェーズへ移行中で成",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

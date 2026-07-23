@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7276931,
   "starting_salary": null,
   "industry": {
    "value": "航空・運輸・物流",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YCFK"
  },
  "trend_note": "全国1150駅・4897kmネットワーク運営で転勤必須。インフラ企業として経営利益過去最高で安定性極高。海外駐在機会は限",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

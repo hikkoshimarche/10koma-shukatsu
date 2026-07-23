@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8715652,
   "starting_salary": null,
   "industry": {
    "value": "航空・運輸・物流",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YEFI"
  },
  "trend_note": "老舗大型持株会社。鉄道・ホテル・リゾートで全国拠点多く転勤あり。初任給引上げで待遇改善進行中だが採用枠は極小(年4-9名",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

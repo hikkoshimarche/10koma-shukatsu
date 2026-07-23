@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7580511,
   "starting_salary": null,
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YN5G"
  },
  "trend_note": "老舗損保の安定性と2027年大型合併控える構造変化。テレマティクス・防災DXで革新性強化、若手への挑戦機会も増進中。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

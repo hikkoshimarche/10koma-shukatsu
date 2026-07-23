@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8960000,
   "starting_salary": null,
   "industry": {
    "value": "鉄鋼・素材・化学",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YL2M"
  },
  "trend_note": "1897年創業の老舗大手、約40国400社の海外拠点。転勤多め。安定性極高い一方、成長率は緩慢。理系志向強し。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

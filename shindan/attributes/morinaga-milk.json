@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7990598,
   "starting_salary": null,
   "industry": {
    "value": "食品・飲料",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YIHY"
  },
  "trend_note": "老舗大手乳業メーカーで安定性が高い。営業・研究・企画の採用が中心。全国流通・転勤の可能性あり。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

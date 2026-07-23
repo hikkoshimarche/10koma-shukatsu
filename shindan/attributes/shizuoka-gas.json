@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7740918,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XTDX"
  },
  "trend_note": "地域限定型インフラ企業。「若手から仕事を任せる」明示で young_discretion 微上。海外事業なく kaiga",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

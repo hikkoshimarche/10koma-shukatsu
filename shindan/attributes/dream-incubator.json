@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 12208000,
   "starting_salary": null,
   "industry": {
    "value": "コンサル",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YD1A"
  },
  "trend_note": "ベトナム・インド拠点あり海外志向強い。超少数精鋭採用（1～5名）で個人裁量大きく、成長性・挑戦志向が必須文化。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

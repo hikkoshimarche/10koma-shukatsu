@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8196000,
   "starting_salary": null,
   "industry": {
    "value": "専門商社",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YNQJ"
  },
  "trend_note": "グローバル生産網（10カ国22拠点）で海外配置の機会大。FYT行動指針で若手抜擢と挑戦風土が明確。上場企業で安定基盤。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

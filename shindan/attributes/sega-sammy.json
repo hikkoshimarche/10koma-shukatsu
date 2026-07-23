@@ -57,7 +57,7 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8844458,
   "starting_salary": {
    "value": 300000,
    "unit": "円/月",
@@ -72,7 +72,9 @@
   "industry": {
    "value": "ゲーム・エンタメ",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YD3K"
  },
  "trend_note": "持株会社で採用少数（年6名）。本社一極集約で転勤少。遊技機事業の周期変動で成長性調整。グループ横断キャリアの裁量度は中程",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

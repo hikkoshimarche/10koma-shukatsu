@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9179351,
   "starting_salary": null,
   "industry": {
    "value": "不動産・建設",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YK9Q"
  },
  "trend_note": "創業127年の老舗準大手ゼネコン。安定性が高く、全国拠点での転勤多い。技術者育成重視で理系優遇。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

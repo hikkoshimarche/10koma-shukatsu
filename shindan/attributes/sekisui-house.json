@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9071924,
   "starting_salary": null,
   "industry": {
    "value": "不動産・建設",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XZ22"
  },
  "trend_note": "売上4兆円突破・過去最高益で安定性強化。全国拠点展開と転勤多めだが、米国MDC買収で海外事業も拡大中。若手配置は部門依存",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

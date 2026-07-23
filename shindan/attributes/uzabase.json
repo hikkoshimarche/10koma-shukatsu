@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 6038927,
   "starting_salary": null,
   "industry": {
    "value": "IT・通信・SaaS",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100XUKI"
  },
  "trend_note": "グローバル6拠点＋フリーアドレス・リモート推奨で海外・裁量環境充実。上場廃止後も高成長志向で若手抜擢が強い。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

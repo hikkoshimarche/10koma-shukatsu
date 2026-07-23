@@ -58,22 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 597,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=9536",
-    "quote": "**平均年収**: 597万円（2024年度） [出典](https://www.nikkei.com/nkd/company/salary/?scode=9536)"
-   },
-   "as_of": "",
-   "confidence": "medium",
-   "estimated": false
-  },
+  "avg_salary": 6555364,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YE54"
  },
  "trend_note": "インフラ企業の安定性維持。海外拠点記述なく、地域内転勤（福岡・北九州・熊本・長崎・佐世保）が中心。賃上げ・奨学金制度で待",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

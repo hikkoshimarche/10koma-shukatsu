@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9585195,
   "starting_salary": null,
   "industry": {
    "value": "鉄鋼・素材・化学",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YAUO"
  },
  "trend_note": "創業110年超の老舗総合化学メーカー。安定基盤強く、全国複数拠点での転勤多い。理系研究職主体で若手裁量は限定的。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

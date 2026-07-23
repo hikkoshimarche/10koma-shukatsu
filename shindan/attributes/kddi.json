@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10510939,
   "starting_salary": null,
   "industry": {
    "value": "IT・通信・SaaS",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YKG2"
  },
  "trend_note": "国内インフラ企業の安定性を維持しつつ、デジタル化・新規事業で成長軌道。平均残業24.9h/月・有給83.6%で働き方改革",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

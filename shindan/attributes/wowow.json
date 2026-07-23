@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 10769000,
   "starting_salary": null,
   "industry": {
    "value": "広告・メディア",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YDWH"
  },
  "trend_note": "東京本社・江東区放送センター中心の限定拠点。老舗民間放送で安定性高く成長緩慢。若手抜擢・裁量の文化は強く、エンタメ志向の",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

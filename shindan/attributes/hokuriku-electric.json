@@ -58,22 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 802,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://www.nikkei.com/nkd/company/salary/?scode=9505",
-    "quote": "**平均年収**: 802万円（2024年度）[出典](https://www.nikkei.com/nkd/company/salary/?scode=9505)"
-   },
-   "as_of": "",
-   "confidence": "medium",
-   "estimated": false
-  },
+  "avg_salary": 8260680,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YE68"
  },
  "trend_note": "北陸三県+岐阜の限定エリア供給で転勤多。原発停止・火力依存で成長鈍。インフラ安定企業で若手裁量少なく堅牢志向。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
