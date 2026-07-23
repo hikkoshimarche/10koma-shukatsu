@@ -121,6 +121,29 @@
     .fd-date{font-size:10.5px;color:#94a0ac;flex-shrink:0}
     .fd-sub{font-size:11px;color:rgba(255,255,255,0.6);padding:2px 2px 8px}
 
+    /* v1.6: ニュースやさしい表示（タグ＋一言ガイド＋用語辞書） */
+    .nw-item{background:#fff;border-radius:12px;padding:12px 13px;box-shadow:0 2px 8px rgba(0,0,0,0.14);margin-bottom:8px}
+    .nw-top{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+    .nw-tag{font-size:10.5px;font-weight:800;color:#fff;padding:2px 9px;border-radius:999px;flex-shrink:0}
+    .nw-tag.t-kessan{background:#c0392b}.nw-tag.t-product{background:#1f8a4c}.nw-tag.t-hire{background:#d17d00}
+    .nw-tag.t-ma{background:#7d3c98}.nw-tag.t-hr{background:#2f6fb0}.nw-tag.t-info{background:#64748b}
+    .nw-date{font-size:10.5px;color:#94a0ac;margin-left:auto;flex-shrink:0}
+    .nw-title{font-size:13.5px;font-weight:700;line-height:1.55;color:var(--ink)}
+    .nw-guide{font-size:11.5px;color:#5a6675;line-height:1.55;margin-top:6px;background:#f4f7fb;border-radius:8px;padding:6px 9px}
+    .nw-guide .gi{margin-right:3px}
+    .nw-foot{display:flex;align-items:center;justify-content:space-between;margin-top:9px}
+    .nw-name{font-size:11px;color:#7a8794;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .nw-link{font-size:11.5px;font-weight:700;color:var(--nana,#2f6fb0);text-decoration:none;flex-shrink:0;margin-left:10px}
+    .nw-link::after{content:" ↗"}
+    .gl{border-bottom:1.5px dotted #2f6fb0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+    /* 用語ポップ */
+    .gl-pop{position:fixed;z-index:240;max-width:280px;background:#0e2a4d;color:#fff;border-radius:12px;padding:11px 13px;box-shadow:0 8px 26px rgba(0,0,0,0.4);font-size:12.5px;line-height:1.6}
+    .gl-pop .gt{font-weight:800;color:var(--gold,#e7b84b);display:block;margin-bottom:3px;font-size:13px}
+    .gl-pop .gd{color:#eaf1fa}
+    .gl-pop::after{content:"";position:absolute;width:12px;height:12px;background:inherit;transform:rotate(45deg)}
+    .gl-pop.below::after{top:-6px;left:var(--ax,20px)}
+    .gl-pop.above::after{bottom:-6px;left:var(--ax,20px)}
+
     /* 初回プロフィール登録モーダル */
     .pm-overlay{position:fixed;inset:0;background:rgba(6,20,40,0.74);z-index:200;display:flex;align-items:flex-end;justify-content:center}
     .pm-card{background:#fff;color:var(--ink);width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom,0px));max-height:94vh;overflow-y:auto}
@@ -284,14 +307,90 @@ function secRally(d){
   return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">業界制覇<span class="em">スタンプ</span></span><span class="mp-more">${r.explored}/${r.total}業界</span></div>
     <div class="rl-grid">${cells}</div></div>`;
 }
+// ===== v1.6: ニュースやさしい表示（決定論・AI不使用） =====
+// タグ分類ルール（キーワードは追加しやすいよう配列で明記）。上から順に最初に一致したタグを採用。
+const NEWS_TAGS = [
+  { key:'kessan',  label:'決算',           cls:'t-kessan',  kw:['決算','配当','業績','通期','四半期'],
+    guide:'面接で「最近の業績は？」と聞かれたら、ここが答えの種。' },
+  { key:'hire',    label:'採用',           cls:'t-hire',    kw:['採用','インターン','新卒'],
+    guide:'エントリー関連。締切を要チェック。' },
+  { key:'ma',      label:'提携・M&A',      cls:'t-ma',      kw:['提携','資本','買収','合弁','統合'],
+    guide:'会社の次の一手。逆質問のネタになる。' },
+  { key:'product', label:'新製品・サービス', cls:'t-product', kw:['新発売','開始','リリース','新型'],
+    guide:'志望動機の「最近気になったニュース」に使える。' },
+  { key:'hr',      label:'人事',           cls:'t-hr',      kw:['人事','役員'],
+    guide:'経営体制の動き。トップの交代は方針変化のサイン。' },
+];
+const NEWS_INFO = { key:'info', label:'お知らせ', cls:'t-info', guide:'会社の公式発表。まず一次情報に触れておこう。' };
+function classifyNews(title){
+  const t=String(title||'');
+  for(const g of NEWS_TAGS){ if(g.kw.some(k=>t.includes(k))) return g; }
+  return NEWS_INFO;
+}
+
+// 用語ミニ辞書（静的JSON・中立/一般知識のみ）。GALL=lookup, GSORTED=最長一致用。
+let GALL=[], GSORTED=[];
+async function loadGlossary(){
+  try{
+    const r=await fetch('/terms_glossary.json'); if(!r.ok) return;
+    const j=await r.json();
+    GALL=(j.terms||[]).map(x=>({t:x.t,d:x.d,e:esc(x.t)}));
+    GSORTED=GALL.map((x,i)=>({...x,i})).sort((a,b)=>b.e.length-a.e.length);
+  }catch(e){ GALL=[]; GSORTED=[]; }
+}
+// 見出し内の用語に点線下線を付与（見出し文言は改変しない・エスケープ済みHTMLを返す）
+function annotateGlossary(title){
+  const s=esc(title);
+  if(!GSORTED.length) return s;
+  let out='', i=0;
+  while(i<s.length){
+    let hit=null;
+    for(const g of GSORTED){ if(g.e && s.startsWith(g.e, i)){ hit=g; break; } }
+    if(hit){ out+=`<span class="gl" data-i="${hit.i}">${hit.e}</span>`; i+=hit.e.length; }
+    else { out+=s[i]; i++; }
+  }
+  return out;
+}
+function showGlossaryPop(el, item){
+  let pop=document.getElementById('gl-pop');
+  if(!pop){ pop=document.createElement('div'); pop.id='gl-pop'; document.body.appendChild(pop); }
+  pop.innerHTML=`<span class="gt">${esc(item.t)}</span><span class="gd">${esc(item.d)}</span>`;
+  pop.style.visibility='hidden'; pop.style.display='block';
+  const pw=Math.min(280, window.innerWidth-24); pop.style.maxWidth=pw+'px';
+  const r=el.getBoundingClientRect();
+  let left=Math.max(12, Math.min(r.left + r.width/2 - pw/2, window.innerWidth-pw-12));
+  const ph=pop.offsetHeight;
+  let top, cls;
+  if(r.top - ph - 10 > 8){ top=r.top - ph - 10; cls='above'; } else { top=r.bottom + 10; cls='below'; }
+  pop.className='gl-pop '+cls;
+  pop.style.left=left+'px'; pop.style.top=top+'px';
+  const ax=Math.max(10, Math.min(r.left + r.width/2 - left - 6, pw-22));
+  pop.style.setProperty('--ax', ax+'px');
+  pop.style.visibility='visible';
+}
+function hideGlossaryPop(){ const p=document.getElementById('gl-pop'); if(p) p.style.display='none'; }
+document.addEventListener('click', e=>{
+  const g=e.target.closest && e.target.closest('.gl');
+  if(g){ e.preventDefault(); e.stopPropagation(); const i=+g.dataset.i; if(GALL[i]) showGlossaryPop(g, GALL[i]); }
+  else if(!(e.target.closest && e.target.closest('#gl-pop'))) hideGlossaryPop();
+});
+window.addEventListener('scroll', hideGlossaryPop, true);
+
 // v1.5: 更新フィード
 function secFeed(d){
   const f=d.feed||{}; const intl=f.internal||[], off=f.official||[];
   const kic={quiz:'🧠',datasheet:'📊',eskit:'🧰'};
   let inner='';
   if(off.length){
-    inner+=`<div class="fd-sub">お気に入り企業の公式ニュース</div>`+off.map(o=>`<a class="fd-item" href="${esc(o.url)}" target="_blank" rel="noopener">
-      <span class="fd-ic">📰</span><span class="fd-b"><span class="fd-t">${esc(o.title)}</span><span class="fd-d">${esc(o.name)}</span></span><span class="fd-date">${esc(o.date||'')}</span></a>`).join('');
+    inner+=`<div class="fd-sub">お気に入り企業の公式ニュース</div>`+off.map(o=>{
+      const g=classifyNews(o.title);
+      return `<div class="nw-item">
+        <div class="nw-top"><span class="nw-tag ${g.cls}">${esc(g.label)}</span><span class="nw-date">${esc(o.date||'')}</span></div>
+        <div class="nw-title">${annotateGlossary(o.title)}</div>
+        <div class="nw-guide"><span class="gi">💡</span>${esc(g.guide)}</div>
+        <div class="nw-foot"><span class="nw-name">${esc(o.name)}</span><a class="nw-link" href="${esc(o.url)}" target="_blank" rel="noopener">公式ページ</a></div>
+      </div>`;
+    }).join('');
   }
   if(intl.length){
     inner+=`<div class="fd-sub">トーキャリの新着</div>`+intl.map(i=>`<a class="fd-item" href="${esc(i.href||'#')}">
@@ -402,9 +501,11 @@ async function openProfileModal(mode, prefill){
 }
 
 async function startMypage(){
+  const gp=loadGlossary();   // 用語辞書を並行ロード(フィード注釈に必要)
   let d=null;
   try{ const r=await fetch(`${API_BASE}/api/mypage?userId=${encodeURIComponent(userId)}`); if(r.ok) d=await r.json(); }catch(e){}
   if(!d) d={continue:{recent:[],quiz_resume:null},bookmarks:[],quiz_stats:{companies:0,accuracy:null,answered:0,recent_scores:[]},shindan:null};
+  try{ await gp; }catch(e){}
   render(d);
 }
 
