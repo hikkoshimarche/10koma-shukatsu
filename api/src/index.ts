@@ -775,4 +775,113 @@ app.post('/api/shindan', async (c) => {
   } catch (e) { return c.json({ error: 'bad request' }, 400) }
 })
 
+// 診断結果の保存（user_idごと最新1件を上書き。shindan.htmlからfire-and-forget） ===
+app.post('/api/shindan/save', async (c) => {
+  try {
+    const body = await c.req.json().catch(() => ({}))
+    const userId = body.user_id || body.userId
+    const result = body.result
+    if (!userId || !result) return c.json({ ok: false })
+    await c.env.DB.prepare(
+      `INSERT INTO shindan_results (user_id, result_json, created_at)
+       VALUES (?, ?, datetime('now'))
+       ON CONFLICT(user_id) DO UPDATE SET result_json = excluded.result_json, created_at = excluded.created_at`
+    ).bind(userId, JSON.stringify(result)).run()
+    return c.json({ ok: true })
+  } catch (e) { return c.json({ ok: true, skipped: true }) }
+})
+
+// === マイページ集約（続きから/お気に入り/クイズ成績/診断結果 を1レスポンスで・往復1回・各ブロックgraceful） ===
+app.get('/api/mypage', async (c) => {
+  const userId = c.req.query('userId') || c.req.query('user_id')
+  if (!userId) return c.json({ error: 'userId required' }, 400)
+  const out: any = {
+    continue: { recent: [], quiz_resume: null },
+    bookmarks: [],
+    quiz_stats: { companies: 0, accuracy: null, answered: 0, recent_scores: [] },
+    shindan: null,
+  }
+
+  // a-1. 続きから: 最近閲覧した企業 上位3社
+  try {
+    const { results } = await c.env.DB.prepare(
+      `SELECT c.id, c.name, c.description, MAX(v.viewed_at) last_viewed
+       FROM view_logs v JOIN companies c ON c.id = v.content_id
+       WHERE v.line_user_id = ? AND v.content_type = 'company'
+       GROUP BY v.content_id ORDER BY last_viewed DESC LIMIT 3`
+    ).bind(userId).all()
+    out.continue.recent = results || []
+  } catch (e) { /* graceful */ }
+
+  // a-2. クイズの続き: 直近の会社クイズsetが未完なら
+  try {
+    const row = await c.env.DB.prepare(
+      `SELECT set_id, COUNT(*) answered, MAX(answered_at) last_ans
+       FROM user_quiz_progress
+       WHERE line_user_id = ? AND set_type = 'company' AND set_id IS NOT NULL
+       GROUP BY set_id ORDER BY last_ans DESC LIMIT 1`
+    ).bind(userId).first<any>()
+    if (row && row.set_id) {
+      const tot = await c.env.DB.prepare(
+        `SELECT COUNT(*) total FROM quiz_questions WHERE set_type = 'company' AND set_id = ?`
+      ).bind(row.set_id).first<any>()
+      const total = (tot && tot.total) || 0
+      if (total > 0 && row.answered < total) {
+        const cq = await c.env.DB.prepare(`SELECT name FROM companies WHERE id = ?`).bind(row.set_id).first<any>()
+        out.continue.quiz_resume = { set_id: row.set_id, name: (cq && cq.name) || row.set_id, answered: row.answered, total }
+      }
+    }
+  } catch (e) { /* graceful */ }
+
+  // b. お気に入り
+  try {
+    const { results } = await c.env.DB.prepare(
+      `SELECT c.id, c.name, c.description, c.industry_id, c.thumbnail_url, b.created_at
+       FROM bookmarks b JOIN companies c ON c.id = b.company_id
+       WHERE b.line_user_id = ? ORDER BY b.created_at DESC`
+    ).bind(userId).all()
+    out.bookmarks = results || []
+  } catch (e) { /* graceful */ }
+
+  // c. クイズ成績（受験社数・累計正答率・直近3社スコア）
+  try {
+    const agg = await c.env.DB.prepare(
+      `SELECT COUNT(DISTINCT set_id) companies, AVG(is_correct) acc, COUNT(*) answered
+       FROM user_quiz_progress WHERE line_user_id = ? AND set_type = 'company'`
+    ).bind(userId).first<any>()
+    if (agg) {
+      out.quiz_stats.companies = agg.companies || 0
+      out.quiz_stats.answered = agg.answered || 0
+      out.quiz_stats.accuracy = agg.answered ? Math.round((agg.acc || 0) * 100) : null
+    }
+    const { results } = await c.env.DB.prepare(
+      `SELECT p.set_id, c.name, AVG(p.is_correct) acc, COUNT(*) answered, MAX(p.answered_at) last_ans
+       FROM user_quiz_progress p LEFT JOIN companies c ON c.id = p.set_id
+       WHERE p.line_user_id = ? AND p.set_type = 'company'
+       GROUP BY p.set_id ORDER BY last_ans DESC LIMIT 3`
+    ).bind(userId).all()
+    out.quiz_stats.recent_scores = (results || []).map((r: any) => ({
+      set_id: r.set_id, name: r.name || r.set_id, score: Math.round((r.acc || 0) * 100), answered: r.answered || 0,
+    }))
+  } catch (e) { /* graceful */ }
+
+  // d. 診断結果（最新1件）
+  try {
+    const row = await c.env.DB.prepare(
+      `SELECT result_json, created_at FROM shindan_results WHERE user_id = ?`
+    ).bind(userId).first<any>()
+    if (row && row.result_json) {
+      const r = safeJson(row.result_json)
+      out.shindan = {
+        top_industries: (r && r.top_industries) || [],
+        top_companies: (r && r.top_companies) || [],
+        disclaimer: (r && r.disclaimer) || '',
+        created_at: row.created_at,
+      }
+    }
+  } catch (e) { /* graceful */ }
+
+  return c.json(out)
+})
+
 export default app

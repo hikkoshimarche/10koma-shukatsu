@@ -126,6 +126,11 @@ function whyBlock(rat){
 
 function renderResult(data){
   try{ localStorage.setItem('tk_shindan_done','1'); }catch(e){} // ホームの就活ロードマップ用フラグ
+  // 診断結果をマイページ用に保存（fire-and-forget・失敗してもUIは壊さない）
+  if(SH_USER && data && data.top_companies){
+    try{ fetch(`${API_BASE}/api/shindan/save`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({user_id:SH_USER, result:data})}).catch(()=>{}); }catch(e){}
+  }
   document.getElementById('sh-title').textContent='診断結果';
   const isReal=!!(data&&data.top_companies);
   connected=isReal;
@@ -160,9 +165,14 @@ function renderResult(data){
   document.getElementById('btn-back').onclick=()=>{qi=0;answers={};renderQ();};
 }
 
+let SH_USER = new URLSearchParams(location.search).get('u') || null;  // ?u= はQA用オーバーライド
 async function main(){
   document.getElementById('btn-back').onclick=()=>history.length>1?history.back():location.href='/home.html';
-  try{ await liff.init({liffId:LIFF_ID}); if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;} }catch(e){}
+  try{
+    await liff.init({liffId:LIFF_ID});
+    if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;}
+    if(liff.isLoggedIn()){ try{ const p=await liff.getProfile(); SH_USER=SH_USER||p.userId; }catch(e){} }
+  }catch(e){}
   try{ const r=await fetch('/shindan_questions.json'); if(r.ok){ const d=await r.json(); const qs=d.questions||d; if(Array.isArray(qs)&&qs.length){QUESTIONS=qs;} } }catch(e){}
   mountGuide('かんたん質問に<br>答えるだけ！');
   renderQ();

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>マイページ | トーキャリ</title>
+  <link rel="stylesheet" href="entry.css">
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="config.js"></script>
+  <script src="entry.js"></script>
+  <style>
+    .mp-hero{display:flex;align-items:center;gap:12px;padding:22px 18px 6px}
+    .mp-hero .circ{width:52px;height:52px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,0.25);flex-shrink:0}
+    .mp-hero .circ img{width:86%;height:86%;object-fit:contain;border-radius:50%}
+    .mp-hero h1{font-size:20px;font-weight:800;color:#fff;line-height:1.2}
+    .mp-hero p{font-size:12px;color:rgba(255,255,255,0.78);margin-top:2px}
+
+    .mp-sec{padding:14px 16px 2px}
+    .mp-h{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px}
+    .mp-t{font-size:15px;font-weight:700;color:#fff}.mp-t .em{color:var(--gold)}
+    .mp-more{font-size:12px;font-weight:700;color:rgba(255,255,255,0.8);text-decoration:none}
+
+    .mp-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+    .mp-mini{flex:0 0 auto;width:132px;background:#fff;color:var(--ink);border-radius:14px;padding:12px;text-decoration:none;box-shadow:0 3px 10px rgba(0,0,0,0.16)}
+    .mp-mini .badge{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-family:"Reggae One",sans-serif;font-size:19px;color:#fff;margin-bottom:8px;background-color:var(--acc);background-image:linear-gradient(135deg,rgba(255,255,255,0.3),rgba(255,255,255,0) 62%)}
+    .mp-mini .nm{font-size:13.5px;font-weight:700;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .mp-mini .sub{font-size:11px;color:#8792a3;margin-top:3px}
+
+    .mp-resume{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#12457f,#0a2f5c);border:1.5px solid rgba(231,184,75,0.5);border-radius:16px;padding:13px 15px;color:#fff;text-decoration:none;box-shadow:0 6px 18px rgba(3,20,44,0.4);margin-top:10px}
+    .mp-resume .ic{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--gold-deep));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+    .mp-resume .tx b{font-size:14.5px}.mp-resume .tx span{display:block;font-size:11.5px;color:rgba(255,255,255,0.82);margin-top:2px}
+    .mp-resume .arrow{margin-left:auto;color:var(--gold);font-weight:700;font-size:20px}
+
+    /* お気に入り */
+    .mp-fav{display:flex;flex-direction:column;gap:10px}
+    .mp-fav-card{display:flex;align-items:center;gap:12px;background:#fff;color:var(--ink);border-radius:14px;padding:12px 13px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.14)}
+    .mp-fav-card .star{color:var(--gold);font-size:18px;flex-shrink:0}
+    .mp-fav-card .fi{flex:1;min-width:0}
+    .mp-fav-card .fn{font-size:15px;font-weight:700;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .mp-fav-card .fd{font-size:11px;color:#7a8794;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .mp-fav-card .fa{color:#c3ccd6;font-size:18px;font-weight:700;flex-shrink:0}
+
+    /* 成績 */
+    .mp-card{background:#fff;border-radius:16px;padding:14px;box-shadow:0 3px 12px rgba(0,0,0,0.16);color:var(--ink)}
+    .mp-stats{display:flex;gap:10px}
+    .mp-stat{flex:1;text-align:center;background:#f4f7fb;border-radius:12px;padding:11px 6px}
+    .mp-stat .v{font-size:22px;font-weight:800;color:var(--navy);line-height:1.1}
+    .mp-stat .v small{font-size:12px;font-weight:700}
+    .mp-stat .l{font-size:10.5px;color:#7a8794;margin-top:3px}
+    .mp-scores{margin-top:11px;display:flex;flex-direction:column;gap:7px}
+    .mp-score-row{display:flex;align-items:center;gap:10px;font-size:13px}
+    .mp-score-row .sn{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .mp-score-row .bar{flex:1;height:7px;border-radius:99px;background:#eef2f7;overflow:hidden;min-width:40px}
+    .mp-score-row .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--gold-deep))}
+    .mp-score-row .sp{font-weight:800;color:var(--navy);width:38px;text-align:right;flex-shrink:0}
+
+    /* 診断 */
+    .mp-chip{display:inline-block;font-size:12px;font-weight:700;color:#fff;background:var(--navy);border-radius:999px;padding:4px 11px;margin:0 6px 6px 0}
+    .mp-diag-co{font-size:13px;color:var(--ink);line-height:1.7}
+    .mp-diag-co b{font-weight:700}
+    .mp-diag-date{font-size:11px;color:#94a0ac;margin-top:8px}
+    .mp-btn{display:block;text-align:center;margin-top:11px;background:var(--navy);color:#fff;text-decoration:none;border-radius:12px;padding:12px;font-size:14px;font-weight:800}
+
+    /* 空状態 */
+    .mp-empty{background:rgba(255,255,255,0.06);border:1px dashed rgba(255,255,255,0.22);border-radius:14px;padding:16px;text-align:center;color:rgba(255,255,255,0.82)}
+    .mp-empty p{font-size:13px;line-height:1.6;margin-bottom:10px}
+    .mp-empty a{display:inline-block;background:var(--gold);color:#3a2c05;text-decoration:none;padding:9px 18px;border-radius:999px;font-size:13px;font-weight:800}
+    .mp-empty-all{padding:44px 22px;text-align:center}
+    .mp-empty-all .ei{font-size:44px;margin-bottom:10px}
+    .mp-empty-all .et{font-size:17px;font-weight:800;color:#fff;margin-bottom:6px}
+    .mp-empty-all .es{font-size:13px;color:rgba(255,255,255,0.8);line-height:1.6;margin-bottom:16px}
+    .mp-empty-all a{display:inline-block;background:var(--gold);color:#3a2c05;text-decoration:none;padding:12px 24px;border-radius:999px;font-size:14px;font-weight:800}
+    .mp-load{text-align:center;color:rgba(255,255,255,0.7);padding:50px 0}
+  </style>
+</head>
+<body>
+<div class="e-wrap">
+  <header class="e-header">
+    <div class="mp-hero">
+      <span class="circ"><img src="/images/brand/tokyari_logo_mark.jpg" alt="トーキャリ"></span>
+      <div><h1>マイページ</h1><p id="mp-greet">あなたの足あと・お気に入り・成績</p></div>
+    </div>
+  </header>
+  <div id="mp"><div class="mp-load">読み込み中…</div></div>
+  <footer class="e-footer"><span class="brand-panel"><img class="brand-logo" src="/images/brand/tokyari_logo_wide.png" alt="トーキャリ"></span></footer>
+</div>
+<script>
+const CFG=window.TOKYARI||{};
+const LIFF_ID=CFG.LIFF_HUB||'2010075487-89AJxZnA';
+const API_BASE=CFG.API_BASE||'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+let userId=new URLSearchParams(location.search).get('u')||'guest-preview';
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+const PAL=['#2f6fb0','#c0392b','#7d3c98','#16a085','#d17d00','#2d8659','#c0448a','#3b5bdb','#b8823a','#2f8fbf'];
+function hue(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return PAL[h%PAL.length];}
+const mp=()=>document.getElementById('mp');
+
+function secContinue(d){
+  const rec=d.continue.recent||[], rz=d.continue.quiz_resume;
+  if(!rec.length && !rz){
+    return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">続き<span class="em">から</span></span></div>
+      <div class="mp-empty"><p>まだ足あとがありません。<br>気になる企業から見てみよう。</p><a href="/industry">企業研究へ →</a></div></div>`;
+  }
+  const cards=rec.map(c=>`<a class="mp-mini" href="/company.html?id=${encodeURIComponent(c.id)}">
+      <span class="badge" style="--acc:${hue(c.id)}">${esc(String(c.name||'？').charAt(0))}</span>
+      <span class="nm">${esc(c.name)}</span><span class="sub">最近見た企業</span></a>`).join('');
+  const resume=rz?`<a class="mp-resume" href="/quiz.html?company=${encodeURIComponent(rz.set_id)}&name=${encodeURIComponent(rz.name)}">
+      <span class="ic">🧠</span><span class="tx"><b>クイズの続き</b><span>${esc(rz.name)}（${rz.answered}/${rz.total}問）</span></span><span class="arrow">›</span></a>`:'';
+  return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">続き<span class="em">から</span></span></div>
+    ${rec.length?`<div class="mp-row">${cards}</div>`:''}${resume}</div>`;
+}
+
+function secFavorites(d){
+  const b=d.bookmarks||[];
+  let body;
+  if(!b.length){
+    body=`<div class="mp-empty"><p>まだ保存した企業はありません。<br>企業ページの「保存」で、あとで見返せます。</p><a href="/industry">企業をさがす →</a></div>`;
+  }else{
+    body=`<div class="mp-fav">${b.map(c=>`<a class="mp-fav-card" href="/company.html?id=${encodeURIComponent(c.id)}">
+      <span class="star">★</span><span class="fi"><span class="fn">${esc(c.name)}</span>${c.description?`<span class="fd">${esc(c.description)}</span>`:''}</span><span class="fa">›</span></a>`).join('')}</div>`;
+  }
+  return `<div class="mp-sec" id="favorites"><div class="mp-h"><span class="mp-t">お気に<span class="em">入り</span></span>${b.length?`<span class="mp-more">${b.length}社</span>`:''}</div>${body}</div>`;
+}
+
+function secStats(d){
+  const s=d.quiz_stats||{};
+  if(!s.answered){
+    return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">あなたのクイズ<span class="em">成績</span></span></div>
+      <div class="mp-empty"><p>まだクイズの記録がありません。<br>1問解くと成績がここに出ます。</p><a href="/quiz.html">クイズに挑戦 →</a></div></div>`;
+  }
+  const acc=(s.accuracy==null?'—':s.accuracy);
+  const rows=(s.recent_scores||[]).map(r=>`<div class="mp-score-row">
+      <span class="sn" style="flex:0 0 92px">${esc(r.name)}</span>
+      <span class="bar"><i style="width:${Math.max(4,r.score)}%"></i></span>
+      <span class="sp">${r.score}%</span></div>`).join('');
+  return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">あなたのクイズ<span class="em">成績</span></span></div>
+    <div class="mp-card">
+      <div class="mp-stats">
+        <div class="mp-stat"><div class="v">${s.companies}<small>社</small></div><div class="l">受験社数</div></div>
+        <div class="mp-stat"><div class="v">${acc}<small>${acc==='—'?'':'%'}</small></div><div class="l">累計正答率</div></div>
+        <div class="mp-stat"><div class="v">${s.answered}<small>問</small></div><div class="l">回答数</div></div>
+      </div>
+      ${rows?`<div class="mp-scores">${rows}</div>`:''}
+    </div></div>`;
+}
+
+function secShindan(d){
+  const sh=d.shindan;
+  if(!sh){
+    return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">あなたの<span class="em">診断結果</span></span></div>
+      <div class="mp-empty"><p>まだ診断していません。<br>数問であなたに合う業界・企業がわかります。</p><a href="/shindan.html">相性診断をする →</a></div></div>`;
+  }
+  const inds=(sh.top_industries||[]).slice(0,3).map(i=>`<span class="mp-chip">${esc(i.industry||i.name||'')}</span>`).join('');
+  const cos=(sh.top_companies||[]).slice(0,3).map(c=>esc(c.name)).join('、');
+  const date=sh.created_at?String(sh.created_at).slice(0,10):'';
+  return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">あなたの<span class="em">診断結果</span></span></div>
+    <div class="mp-card">
+      <div style="font-size:12px;color:#7a8794;font-weight:700;margin-bottom:6px">おすすめ業界</div>${inds||'<span class="mp-chip">—</span>'}
+      ${cos?`<div class="mp-diag-co" style="margin-top:8px"><b>おすすめ企業：</b>${cos}</div>`:''}
+      ${date?`<div class="mp-diag-date">診断日：${esc(date)}</div>`:''}
+      <a class="mp-btn" href="/shindan.html">もう一度診断する</a>
+    </div></div>`;
+}
+
+function render(d){
+  const empty = !(d.continue.recent||[]).length && !d.continue.quiz_resume
+    && !(d.bookmarks||[]).length && !(d.quiz_stats&&d.quiz_stats.answered) && !d.shindan;
+  if(empty){
+    mp().innerHTML=`<div class="mp-empty-all">
+      <div class="ei">👣</div><div class="et">まだ足あとがありません</div>
+      <div class="es">企業研究・クイズ・相性診断をすると、<br>ここにあなた専用のページができます。</div>
+      <a href="/industry">企業研究をはじめる →</a></div>`;
+    return;
+  }
+  mp().innerHTML = secContinue(d)+secFavorites(d)+secStats(d)+secShindan(d);
+  if(location.hash==='#favorites'){ const el=document.getElementById('favorites'); if(el) setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),200); }
+}
+
+async function main(){
+  try{
+    await liff.init({liffId:LIFF_ID});
+    if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;}
+    if(liff.isLoggedIn()){ try{ const p=await liff.getProfile(); if(!new URLSearchParams(location.search).get('u')) userId=p.userId; if(p.displayName) document.getElementById('mp-greet').textContent=`${p.displayName}さんの足あと・お気に入り・成績`; }catch(e){} }
+  }catch(e){ console.warn('LIFF skipped (preview):', e&&e.message); }
+  let d=null;
+  try{ const r=await fetch(`${API_BASE}/api/mypage?userId=${encodeURIComponent(userId)}`); if(r.ok) d=await r.json(); }catch(e){}
+  if(!d) d={continue:{recent:[],quiz_resume:null},bookmarks:[],quiz_stats:{companies:0,accuracy:null,answered:0,recent_scores:[]},shindan:null};
+  render(d);
+}
+main();
+</script>
+</body>
+</html>

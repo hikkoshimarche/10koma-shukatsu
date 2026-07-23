@@ -228,7 +228,7 @@ async function renderFavorites(){
     if(!list.length) return;
     const el=document.getElementById('favorites');
     el.innerHTML=`<div class="home-sec-head"><span class="home-sec-title">お気に入り<span class="em">の企業</span></span>
-        <a class="home-sec-more" href="/bookmarks.html">すべて見る (${list.length}) ›</a></div>
+        <a class="home-sec-more" href="/mypage.html#favorites">すべて見る (${list.length}) ›</a></div>
       <div class="home-row">${list.slice(0,6).map(c=>`
         <a class="home-mini" href="/company.html?id=${encodeURIComponent(c.id)}">
           <span class="badge" style="--acc:${hue(c.id)}">${esc(String(c.name||'？').charAt(0))}</span>
