@@ -66,10 +66,18 @@ def classify(slug, quiz):
 _FOREIGN_CO = re.compile(r"\b(AS|Inc|Ltd|GmbH|Corp|S\.?A\.?|AG|PLC|LLC|N\.?V\.?)\b|Finnmark|Holding|Group\b")
 
 
+# 製品・事業・一般語の接尾辞(人名でない=name_pool/差替から除外)
+_NOTNAME = re.compile(r"(器|機|械|装置|システム|事業|削減|費|品|業務|サービス|処理|技術|部門|"
+                      r"製造|販売|開発|投資|資源|エネルギー|ガス|化学|金属|食品|銀行|保険|証券|"
+                      r"商社|会社|工業|産業|センター|ソリューション|ネットワーク|プラットフォーム)$")
+
+
 def _is_person(o):
-    s = str(o).strip()
-    return (2 <= len(s.replace(" ", "")) <= 8) and not QL.COMPANY_SUF.search(s) \
-        and not _FOREIGN_CO.search(s) and not re.search(r"[0-9０-９%％円年]", s) and " " not in s.strip()
+    s = str(o).replace(" ", "").replace("　", "").strip()
+    # 日本語の経営者名は漢字(＋﨑等異体字)のみの姓名2-6字。ひらがな(助詞『の』等)/カタカナ/英字/数字/
+    #  製品・事業接尾辞を含むものは人名でない(測定器・新技術の研究・スマートフォン等を排除)。
+    return (2 <= len(s) <= 6) and bool(re.fullmatch(r"[一-龥々〆ヶ㐀-鿿豈-﫿]+", s)) \
+        and not QL.COMPANY_SUF.search(s) and not _FOREIGN_CO.search(s) and not _NOTNAME.search(s)
 
 
 def clean_existing(quiz_with_lv, corpus, name_pool=None):
@@ -83,18 +91,18 @@ def clean_existing(quiz_with_lv, corpus, name_pool=None):
         ci = x.get("correct", 0)
         if len(opts) == 4 and any(_broken_option(o) for o in opts):
             dropped.append((x.get("id"), "broken_option")); continue
-        # #4a 人名問(選択肢の多数が人名)に社名/外国法人が誤答混入 → 日本語人名に差替、無理ならdrop
+        # #4a/v2.4① 人名問(多数が人名)の非人名誤答(社名/外国法人/『スマートフォン』等)は
+        #   同一カテゴリ=corpus実在の人名にのみ差替。差替不可ならdrop。
         persons = [o for o in opts if _is_person(o)]
         if len(persons) >= 2:
             for k, o in enumerate(opts):
-                if k == ci:
+                if k == ci or _is_person(o):
                     continue
-                if QL.COMPANY_SUF.search(str(o)) or _FOREIGN_CO.search(str(o)):
-                    repl = next((nm for nm in name_pool if nm not in opts and nm != opts[ci]), None)
-                    if repl:
-                        opts[k] = repl
-                        x["_fixed"] = "person_distractor_replaced"
-            if any((k != ci) and (QL.COMPANY_SUF.search(str(opts[k])) or _FOREIGN_CO.search(str(opts[k]))) for k in range(4)):
+                repl = next((nm for nm in name_pool if nm not in opts and nm != opts[ci]), None)
+                if repl:
+                    opts[k] = repl
+                    x["_fixed"] = "person_distractor_replaced"
+            if any((k != ci) and not _is_person(opts[k]) for k in range(4)):   # なお非人名が残る→drop
                 dropped.append((x.get("id"), "category_mismatch_distractor")); continue
         if QL.lint_unit_consistency(x):
             dropped.append((x.get("id"), "category_mismatch_distractor")); continue
@@ -247,7 +255,12 @@ def _distractor_ok(x, corpus, own_text=""):
     等・特徴語がcorpus不在)はOK。#4b own_text(自社の製品ページ本文)に誤答が載る=自社製品を誤答に置いた→不可。"""
     ctext = re.sub(r"\s+", "", " ".join(corpus.values()))
     ci = x.get("correct", 0)
-    for j, o in enumerate(x.get("options", [])):
+    opts = x.get("options", [])
+    # v2.4① カテゴリ整合: 人名問(2つ以上が人名)なら誤答も人名のみ(『スマートフォン』等の異カテゴリ混入を排除)
+    if sum(1 for o in opts if _is_person(o)) >= 2:
+        if any((j != ci) and not _is_person(o) for j, o in enumerate(opts)):
+            return False
+    for j, o in enumerate(opts):
         if j == ci:
             continue
         for t in re.findall(r"[一-龥ァ-ヶーA-Za-z]{4,}", str(o)):
@@ -292,18 +305,26 @@ def _source_pool(slug):
             lu = m if m.startswith("http") else (base + m if m.startswith("/") else None)
             if lu and base in lu and not lu.lower().endswith((".pdf", ".jpg", ".png", ".zip", ".mp4")):
                 urls.append(lu.split("?")[0])
+    # バグ#2: datasheet出典(PDF含む)は各factの該当ページ=最優先で取り込む(q.fetch_urlはfitzでPDF本文抽出)
+    ds_urls = []
     dp = os.path.join(OUT, slug, "datasheet.json")
     if os.path.exists(dp):
         for k, items in (json.load(open(dp)).get("sections", {}) or {}).items():
             for it in items:
                 u = it.get("source_url", "")
                 if u and not _NONOFF.search(u):
-                    urls.append(u)
-    # 製品/事業/会社系URLを優先し、広めに取得(上限25ページ)
+                    ds_urls.append(u)
+    for u in dict.fromkeys(ds_urls):                      # datasheet出典を先に(上限に関係なく)
+        if u in pool:
+            continue
+        raw = q.fetch_url(u)
+        if raw and len(raw) > 300:
+            pool[u] = re.sub(r"\s+", "", raw)
+    # 製品/事業/会社系URLを優先し、広めに取得(総上限32ページ)
     def _pri(u):
         return 0 if re.search(r"/(software|products?|business|lineup|service|brand|company|about|hardware)", u, re.I) else 1
     for u in sorted(dict.fromkeys(urls), key=_pri):
-        if u in pool or len(pool) >= 25:
+        if u in pool or len(pool) >= 32:
             continue
         raw = q.fetch_url(u)
         if raw and len(raw) > 300:
@@ -386,6 +407,8 @@ def gen_lv(slug, name, level, n=10, exclude=None, sem_used=None, pool=None):
         u = x["source_url"] or "ds://local"
         corpus[u] = (corpus.get(u, "") + " " + x["fact"])
     hint = ("Lv1は『主力製品・何をする会社か・代表的な事業』の王道問題を優先。各製品・各事業について1問ずつ広く作る。"
+            "★消費者向け製品が無い会社(商社・銀行等)は、業態(例『何をする会社か→総合商社』)や"
+            "関与する事業分野・投資先(例 天然ガス/金属資源/食品/自動車/コンビニ等)を問う王道問題を作る。"
             if level == 1 else "Lv2は事業の強み・社風・理念の理解。")
     fl = "\n".join(f"- {x['fact']} <出典:{x['source_url']}>" for x in facts[:24])
     if pool is None:
