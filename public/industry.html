@@ -6,6 +6,7 @@
   <title>企業を探す | トーキャリ</title>
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="config.js"></script>
+  <script src="nav.js"></script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     :root{ --navy:#003F7D; --navy2:#0a5aa8; --ink:#1a2733; --mute:#6a7686; --line:#e6ebf1; --tool:#1f6feb; }
@@ -59,7 +60,7 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="backbar"><a href="/home.html">‹ ホーム</a></div>
+  <div class="backbar"><a href="#" onclick="tkBack('/home.html');return false">‹ 戻る</a></div>
   <div class="hd">
     <span class="role">🔎 企業研究</span>
     <h1>企業を探す</h1>
@@ -105,7 +106,7 @@ function drawChips(){
 function drawLearn(){
   const el=document.getElementById('learn');
   if(sel.size===1){ const n=[...sel][0];
-    el.innerHTML=`<a class="learn-link" href="/gyokai.html"><span class="li">📚</span><span><span class="lt">${esc(n)}のしくみを学ぶ</span><span class="ls">業界研究（業界10コマ・クイズ）へ</span></span><span class="la">›</span></a>`;
+    el.innerHTML=`<a class="learn-link" href="/gyokai.html?from=list&fromInd=${encodeURIComponent(n)}"><span class="li">📚</span><span><span class="lt">${esc(n)}のしくみを学ぶ</span><span class="ls">業界研究（業界10コマ・クイズ）へ</span></span><span class="la">›</span></a>`;
   } else el.innerHTML='';
 }
 function apply(){
@@ -124,9 +125,11 @@ function apply(){
       <span class="info"><span class="nm">${esc(r.name)}</span>
         <span class="meta"><span class="tag" style="background:${m.c}">${esc(r.industry)}</span>${r.hook?`<span class="hook">${esc(r.hook)}</span>`:''}</span></span>
       <span class="arrow">›</span></div>`;}).join('');
-  // 行タップ = pointerdown方式(compareで直したのと同系。確実に発火)
+  // 行タップ = pointerdown方式(compareで直したのと同系。確実に発火)。戻る先=企業一覧(フィルタ保持)
+  const fromInd = (sel.size===1)?[...sel][0]:'';
+  const backQS = `&from=list${fromInd?('&fromInd='+encodeURIComponent(fromInd)):''}`;
   list.querySelectorAll('.row').forEach(row=>{
-    const go=e=>{ e.preventDefault(); location.href=`/company.html?id=${encodeURIComponent(row.dataset.id)}`; };
+    const go=e=>{ e.preventDefault(); location.href=`/company.html?id=${encodeURIComponent(row.dataset.id)}${backQS}`; };
     row.addEventListener('pointerdown',go); row.addEventListener('click',go);
   });
 }

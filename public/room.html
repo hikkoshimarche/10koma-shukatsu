@@ -10,6 +10,7 @@
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="config.js"></script>
+  <script src="nav.js"></script>
 </head>
 <body>
 <div class="page-wrapper">
@@ -99,11 +100,8 @@ async function main() {
   const companyName = params.get('name') || (companyId === 'mitsui_corp' ? '三井物産' : company);
 
   document.getElementById('btn-back').addEventListener('click', () => {
-    if (company) {
-      location.href = `/hub?company=${encodeURIComponent(company)}&industry=${encodeURIComponent(industry)}&from=room`;
-    } else {
-      location.href = '/industry';
-    }
+    // 来た場所(?from=)へ。無ければ企業ページ(この会社)へ。
+    tkBack(company ? ('/company.html?id=' + encodeURIComponent(company)) : '/home.html');
   });
 
   const app = document.getElementById('app');

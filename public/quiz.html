@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="entry.css">
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="config.js"></script>
+  <script src="nav.js"></script>
   <script src="entry.js"></script>
   <style>
     /* === クイズ専用 === */
@@ -144,6 +145,14 @@ const REVIEW_MODES = [
 
 let COMPANIES = null;
 let lineUserId = 'guest-preview';
+let DEEP = false;  // 企業/業界から直リンクで開かれたか(戻る=呼び出し元へ / 内部select経由なら選択画面へ)
+function quizBack(){
+  if(DEEP){ const p=new URLSearchParams(location.search);
+    if(p.get('company')) tkBack('/company.html?id='+encodeURIComponent(p.get('company')));
+    else if(p.get('industry')) tkBack('/company.html?industry='+encodeURIComponent(p.get('industry')));
+    else tkBack('/home.html');
+  } else renderSelect();
+}
 let mode = 'company';           // 'company' | 'industry'
 let QSET = [], qi = 0, score = 0, curLabel = '', curSetType = '', curSetId = '';
 function datasheetHref(){ return (curSetType==='company' && curSetId) ? `datasheet.html?id=${encodeURIComponent(curSetId)}&name=${encodeURIComponent(curLabel||'')}` : ''; }
@@ -219,7 +228,7 @@ async function renderCompanyList(industry){
     const c = e.target.closest('.e-card'); if(!c) return;
     startQuiz('company', c.dataset.id, c.dataset.name);
   };
-  document.getElementById('btn-back').onclick = ()=>renderSelect();
+  document.getElementById('btn-back').onclick = ()=>quizBack();
 }
 
 /* ---------- クイズ本体 ---------- */
@@ -238,7 +247,7 @@ async function startQuiz(setType, setId, label){
   if (!qs || !qs.length) { qs = SAMPLE; isSample = true; }
   QSET = qs.slice(0, N_PER_SET).map(shuffled);
   qi = 0; score = 0;
-  document.getElementById('btn-back').onclick = ()=>renderSelect();
+  document.getElementById('btn-back').onclick = ()=>quizBack();
   renderQuestion(isSample);
 }
 
@@ -249,7 +258,7 @@ async function startReview(rmode){
   document.getElementById('quiz-title').textContent = '復習';
   document.getElementById('guide').innerHTML = '';
   app().innerHTML = `<div class="e-list"><div class="e-skel"></div><div class="e-skel"></div></div>`;
-  document.getElementById('btn-back').onclick = ()=>renderSelect();
+  document.getElementById('btn-back').onclick = ()=>quizBack();
 
   let qs = null, apiOk = false;
   try {
@@ -356,7 +365,7 @@ function recordAnswer(q, chosen, ok){
 }
 
 async function main(){
-  document.getElementById('btn-back').onclick = ()=>history.back();
+  document.getElementById('btn-back').onclick = ()=>tkBack('/home.html');
   // LIFF: 本番はログイン、外部ブラウザ(プレビュー)はゲスト
   try {
     await liff.init({ liffId: LIFF_ID });
@@ -367,8 +376,8 @@ async function main(){
   const params = new URLSearchParams(location.search);
   const company = params.get('company'), industry = params.get('industry');
   const name = params.get('name') || company || industry;
-  if (company) startQuiz('company', company, name);
-  else if (industry) startQuiz('industry', industry, name);
+  if (company) { DEEP=true; startQuiz('company', company, name); }
+  else if (industry) { DEEP=true; startQuiz('industry', industry, name); }
   else renderSelect();
 }
 main();

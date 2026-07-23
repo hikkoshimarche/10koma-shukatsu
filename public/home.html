@@ -198,7 +198,7 @@ async function renderContinue(){
     const el=document.getElementById('continue');
     el.innerHTML=`<div class="home-sec-head"><span class="home-sec-title">続きから<span class="em">見る</span></span></div>
       <div class="home-row">${list.map(c=>`
-        <a class="home-mini" href="/company.html?id=${encodeURIComponent(c.id)}">
+        <a class="home-mini" href="/company.html?id=${encodeURIComponent(c.id)}&from=home">
           <span class="badge" style="--acc:${hue(c.id)}">${esc(String(c.name||'？').charAt(0))}</span>
           <span class="nm">${esc(c.name)}</span><span class="sub">最近見た企業</span></a>`).join('')}</div>`;
     el.style.display='';
@@ -230,7 +230,7 @@ async function renderFavorites(){
     el.innerHTML=`<div class="home-sec-head"><span class="home-sec-title">お気に入り<span class="em">の企業</span></span>
         <a class="home-sec-more" href="/mypage.html#favorites">すべて見る (${list.length}) ›</a></div>
       <div class="home-row">${list.slice(0,6).map(c=>`
-        <a class="home-mini" href="/company.html?id=${encodeURIComponent(c.id)}">
+        <a class="home-mini" href="/company.html?id=${encodeURIComponent(c.id)}&from=home">
           <span class="badge" style="--acc:${hue(c.id)}">${esc(String(c.name||'？').charAt(0))}</span>
           <span class="nm">${esc(c.name)}</span><span class="sub">★ 保存済み</span></a>`).join('')}</div>`;
     el.style.display='';
@@ -295,7 +295,7 @@ function renderSearchResults(q){
          <span class="sr-icon">${it.icon}</span>
          <span class="sr-body"><span class="sr-name">${esc(it.name)}</span><span class="sr-sub">業界研究</span></span>
          <span class="sr-arrow">›</span></a>`
-    : `<a class="sr-item" style="--acc:${hue(it.id)}" href="/company.html?id=${encodeURIComponent(it.id)}">
+    : `<a class="sr-item" style="--acc:${hue(it.id)}" href="/company.html?id=${encodeURIComponent(it.id)}&from=home">
          <span class="sr-badge">${esc(String(it.name||'？').charAt(0))}</span>
          <span class="sr-body"><span class="sr-name">${esc(it.name)}</span><span class="sr-sub">${esc(it.industry)}</span></span>
          <span class="sr-arrow">›</span></a>`

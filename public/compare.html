@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@500;700&display=swap" rel="stylesheet">
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="config.js"></script>
+  <script src="nav.js"></script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     :root{ --bg:#0f2647; --bg2:#16335c; --ink:#1c2733; --acc:#2f6fb0; --gold:#e0a52a; --line:#e2e8f0; --muted:#7a8794; }
@@ -94,7 +95,7 @@ function renderPicker(){
     <div class="results" id="results" style="display:none"></div>
     <p class="hint" id="hint"></p>
     <button class="cta" id="go" disabled>比較する</button>`;
-  document.getElementById('bk').onclick=()=>{ if(history.length>1) history.back(); else location.href='/home.html'; };
+  document.getElementById('bk').onclick=()=>tkBack('/home.html');
   document.getElementById('q').addEventListener('input', onSearch);
   document.getElementById('go').onclick=()=>{ if(sel.length>=2){ saveSel(); renderResult(sel.map(s=>s.id)); } };
   drawChips();

@@ -149,10 +149,10 @@ function secContinue(d){
     return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">続き<span class="em">から</span></span></div>
       <div class="mp-empty"><p>まだ足あとがありません。<br>気になる企業から見てみよう。</p><a href="/industry">企業研究へ →</a></div></div>`;
   }
-  const cards=rec.map(c=>`<a class="mp-mini" href="/company.html?id=${encodeURIComponent(c.id)}">
+  const cards=rec.map(c=>`<a class="mp-mini" href="/company.html?id=${encodeURIComponent(c.id)}&from=mypage">
       <span class="badge" style="--acc:${hue(c.id)}">${esc(String(c.name||'？').charAt(0))}</span>
       <span class="nm">${esc(c.name)}</span><span class="sub">最近見た企業</span></a>`).join('');
-  const resume=rz?`<a class="mp-resume" href="/quiz.html?company=${encodeURIComponent(rz.set_id)}&name=${encodeURIComponent(rz.name)}">
+  const resume=rz?`<a class="mp-resume" href="/quiz.html?company=${encodeURIComponent(rz.set_id)}&name=${encodeURIComponent(rz.name)}&from=mypage">
       <span class="ic">🧠</span><span class="tx"><b>クイズの続き</b><span>${esc(rz.name)}（${rz.answered}/${rz.total}問）</span></span><span class="arrow">›</span></a>`:'';
   return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">続き<span class="em">から</span></span></div>
     ${rec.length?`<div class="mp-row">${cards}</div>`:''}${resume}</div>`;
@@ -164,7 +164,7 @@ function secFavorites(d){
   if(!b.length){
     body=`<div class="mp-empty"><p>まだ保存した企業はありません。<br>企業ページの「保存」で、あとで見返せます。</p><a href="/industry">企業をさがす →</a></div>`;
   }else{
-    body=`<div class="mp-fav">${b.map(c=>`<a class="mp-fav-card" href="/company.html?id=${encodeURIComponent(c.id)}">
+    body=`<div class="mp-fav">${b.map(c=>`<a class="mp-fav-card" href="/company.html?id=${encodeURIComponent(c.id)}&from=mypage">
       <span class="star">★</span><span class="fi"><span class="fn">${esc(c.name)}</span>${c.description?`<span class="fd">${esc(c.description)}</span>`:''}</span><span class="fa">›</span></a>`).join('')}</div>`;
   }
   return `<div class="mp-sec" id="favorites"><div class="mp-h"><span class="mp-t">お気に<span class="em">入り</span></span>${b.length?`<span class="mp-more">${b.length}社</span>`:''}</div>${body}</div>`;
@@ -235,7 +235,7 @@ function secNext3(d){
       <div class="mp-empty"><p>相性診断をすると、<br>あなたに合う企業を提案します。</p><a href="/shindan.html">診断してみる →</a></div></div>`;
   }
   return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">次に見る<span class="em">べき3社</span></span><span class="mp-more">診断より</span></div>
-    ${n3.map(c=>`<a class="n3-card" href="/company.html?id=${encodeURIComponent(c.slug)}">
+    ${n3.map(c=>`<a class="n3-card" href="/company.html?id=${encodeURIComponent(c.slug)}&from=mypage">
       <span class="n3-badge" style="--acc:${hue(c.slug)}">${esc(String(c.name||'？').charAt(0))}</span>
       <span class="n3-info"><span class="n3-nm">${esc(c.name)}</span><span class="n3-sub">${esc(c.industry||'')}</span></span>
       ${(c.score!=null)?`<span class="n3-match">相性${Math.round(c.score*100)}%</span>`:''}<span class="n3-arrow">›</span></a>`).join('')}</div>`;

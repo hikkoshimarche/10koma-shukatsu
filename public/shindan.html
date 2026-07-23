@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="entry.css">
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="config.js"></script>
+  <script src="nav.js"></script>
   <script src="entry.js"></script>
   <style>
     .sh-play{padding:14px 16px 26px}
@@ -136,6 +137,7 @@ function whyBlock(rat){
 
 function renderResult(data){
   try{ localStorage.setItem('tk_shindan_done','1'); }catch(e){} // ホームの就活ロードマップ用フラグ
+  try{ if(data&&data.top_companies) sessionStorage.setItem('tk_shindan_result', JSON.stringify(data)); }catch(e){} // 企業ページから戻った時に結果を復元(3c)
   // 診断結果をマイページ用に保存（fire-and-forget・失敗してもUIは壊さない）
   if(SH_USER && data && data.top_companies){
     try{ fetch(`${API_BASE}/api/shindan/save`,{method:'POST',headers:{'Content-Type':'application/json'},
@@ -158,7 +160,7 @@ function renderResult(data){
   }).join('');
   // カードは div（中に出典<a>を含むため<a>入れ子=DOM崩壊を避ける）。クリックで企業ページへ。
   const compCards=comps.map(c=>`
-    <div class="sh-rc sh-rc-click" style="--acc:${hue(c.slug)};cursor:pointer" data-href="/company.html?id=${encodeURIComponent(c.slug)}" role="link" tabindex="0">
+    <div class="sh-rc sh-rc-click" style="--acc:${hue(c.slug)};cursor:pointer" data-href="/company.html?id=${encodeURIComponent(c.slug)}&from=shindan" role="link" tabindex="0">
       <div class="sh-rc-h"><span class="sh-rc-badge">${esc(String(c.name||'？').charAt(0))}</span>
         <span><span class="sh-rc-nm">${esc(c.name)}</span><span class="sh-rc-sub">${esc(c.industry||'')}</span></span></div>
       ${whyBlock(c.rationale)}<span class="sh-go">企業ページへ ›</span></div>`).join('');
@@ -173,7 +175,7 @@ function renderResult(data){
       <a class="sh-btn g" href="/home.html">ホームへ戻る</a>
     </div></div>`;
   document.getElementById('sh-retry').onclick=()=>{qi=0;answers={};document.getElementById('sh-title').textContent='あなたに合う業界・企業は？';renderQ();};
-  document.getElementById('btn-back').onclick=()=>{qi=0;answers={};renderQ();};
+  document.getElementById('btn-back').onclick=()=>tkBack('/home.html');
   // divカードのクリック遷移（内部の出典<a>クリック時は遷移しない）
   app().querySelectorAll('.sh-rc-click').forEach(el=>{
     el.addEventListener('click', e=>{ if(e.target.closest('a')) return; const h=el.dataset.href; if(h) location.href=h; });
@@ -182,12 +184,16 @@ function renderResult(data){
 
 let SH_USER = new URLSearchParams(location.search).get('u') || null;  // ?u= はQA用オーバーライド
 async function main(){
-  document.getElementById('btn-back').onclick=()=>history.length>1?history.back():location.href='/home.html';
+  document.getElementById('btn-back').onclick=()=>tkBack('/home.html');
   try{
     await liff.init({liffId:LIFF_ID});
     if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;}
     if(liff.isLoggedIn()){ try{ const p=await liff.getProfile(); SH_USER=SH_USER||p.userId; }catch(e){} }
   }catch(e){}
+  // 企業ページから戻ってきた(?view=result)ら、保存済み結果を復元して質問をやり直させない(3c)
+  if(new URLSearchParams(location.search).get('view')==='result'){
+    try{ const saved=sessionStorage.getItem('tk_shindan_result'); if(saved){ renderResult(JSON.parse(saved)); return; } }catch(e){}
+  }
   try{ const r=await fetch('/shindan_questions.json'); if(r.ok){ const d=await r.json(); const qs=d.questions||d; if(Array.isArray(qs)&&qs.length){QUESTIONS=qs;} } }catch(e){}
   mountGuide('かんたん質問に<br>答えるだけ！');
   renderQ();

@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="nav.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Reggae+One&family=Kaisei+Decol:wght@400;500;700&display=swap');
 
@@ -542,16 +543,10 @@ const LIFF_ID = '2010075487-89AJxZnA';
 const API_BASE = 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
 
 function goBack() {
+  // ?from= を正とする(nav.js)。無ければモード別の親: 業界mode→業界研究 / 企業mode→企業一覧
   const params = new URLSearchParams(location.search);
-  const industry = params.get('industry');
-  const from     = params.get('from');
-  if (industry && from) {
-    location.href = `/company-list?industry=${encodeURIComponent(industry)}&from=${encodeURIComponent(from)}`;
-  } else if (industry) {
-    location.href = `/company-list?industry=${encodeURIComponent(industry)}`;
-  } else {
-    history.go(-2);
-  }
+  const industryMode = params.get('industry') && !params.get('id');
+  tkBack(industryMode ? '/gyokai.html' : '/industry.html');
 }
 let currentUserId = null;
 let currentCompanyId = null;
@@ -932,7 +927,7 @@ async function main() {
         <p class="recommend-title">▼ 次の企業を読む</p>
         <div class="recommend-grid">
           ${recommends.map(r => `
-            <a href="company.html?id=${encodeURIComponent(r.id)}" class="recommend-card">
+            <a href="company.html?id=${encodeURIComponent(r.id)}&from=company&fromId=${encodeURIComponent(companyId)}" class="recommend-card">
               <div class="recommend-name">${esc(r.name)}</div>
               ${r.description ? `<div class="recommend-desc">${esc(r.description).slice(0, 50)}…</div>` : ''}
             </a>`).join('')}
@@ -967,7 +962,7 @@ async function main() {
     menuItems.push({ ic: '🧠', l: 'クイズ', href: `quiz.html?company=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}` });
     menuItems.push({ ic: '🧰', l: 'ESキット', href: `es_kit.html?id=${encodeURIComponent(companyId)}` });
     menuItems.push({ ic: '⚖️', l: '比較に追加', href: `compare.html?add=${encodeURIComponent(companyId)}` });
-    menuItems.push({ ic: '🚪', l: 'AI OB訪問', href: `room.html?company=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}` });
+    menuItems.push({ ic: '🚪', l: 'AI OB訪問', href: `room.html?company=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}&from=company&fromId=${encodeURIComponent(companyId)}` });
     const menuHtml = `
       <p class="co-menu-t">この会社でできること</p>
       <div class="co-menu">${menuItems.map((m, i) => `
@@ -997,13 +992,14 @@ async function main() {
     });
 
     const cq = document.getElementById('company-quiz');
-    if (cq) cq.onclick = () => { location.href = `quiz.html?company=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}`; };
+    const F = `&from=company&fromId=${encodeURIComponent(companyId)}`;  // 各機能から企業ページへ戻す
+    if (cq) cq.onclick = () => { location.href = `quiz.html?company=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}${F}`; };
     const cc = document.getElementById('company-compare');
-    if (cc) cc.onclick = () => { location.href = `compare.html?add=${encodeURIComponent(companyId)}`; };
+    if (cc) cc.onclick = () => { location.href = `compare.html?add=${encodeURIComponent(companyId)}${F}`; };
     const ck = document.getElementById('company-eskit');
-    if (ck) ck.onclick = () => { location.href = `es_kit.html?id=${encodeURIComponent(companyId)}`; };
+    if (ck) ck.onclick = () => { location.href = `es_kit.html?id=${encodeURIComponent(companyId)}${F}`; };
     const cds = document.getElementById('company-datasheet');
-    if (cds) cds.onclick = () => { location.href = `datasheet.html?id=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}`; };
+    if (cds) cds.onclick = () => { location.href = `datasheet.html?id=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}${F}`; };
 
     document.querySelectorAll('.panel-like').forEach(btn => {
       btn.addEventListener('click', e => {

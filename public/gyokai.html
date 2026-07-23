@@ -6,6 +6,7 @@
   <title>業界研究 | トーキャリ</title>
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="config.js"></script>
+  <script src="nav.js"></script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     :root{ --ink:#2a2113; --mute:#8a7a5a; --gold:#c8912a; --gold-d:#a5741a; --cream:#fbf4e4; }
@@ -35,7 +36,7 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="backbar"><a href="/home.html">‹ ホーム</a></div>
+  <div class="backbar"><a href="#" onclick="tkBack('/home.html');return false">‹ 戻る</a></div>
   <div class="hd">
     <span class="role">📚 業界研究</span>
     <h1>業界のしくみを学ぶ</h1>
@@ -76,10 +77,10 @@ function render(){
           <span class="gk-sub">📖 業界10コマ ・ 🎬 業界動画 ・ 🧠 業界クイズ で学ぶ</span></span>
         <span class="gk-go">学ぶ ›</span>
       </button>
-      <a class="gk-find" href="/industry.html${ind.find?('?ind='+encodeURIComponent(ind.find)):''}">🔎 この業界の企業を探す<span class="fa">›</span></a>
+      <a class="gk-find" href="/industry.html?from=gyokai${ind.find?('&ind='+encodeURIComponent(ind.find)):''}">🔎 この業界の企業を探す<span class="fa">›</span></a>
     </div>`).join('');
   document.querySelectorAll('.gk-main').forEach(b=>b.onclick=()=>{
-    location.href=`/company.html?industry=${encodeURIComponent(b.dataset.slug)}&name=${encodeURIComponent(b.dataset.name)}`;
+    location.href=`/company.html?industry=${encodeURIComponent(b.dataset.slug)}&name=${encodeURIComponent(b.dataset.name)}&from=gyokai`;
   });
 }
 async function main(){
