@@ -4,29 +4,50 @@
            発リンク → href に &from=<originKey> (必要なら &fromId=/&fromInd=) を付ける */
 (function () {
   function q(k) { try { return new URLSearchParams(location.search).get(k); } catch (e) { return null; } }
-  // originKey → 戻り先URL（文脈が要るものは from に添えた fromId/fromInd を使う）
-  window.tkBack = function (fallback) {
+  // fallback URL(.html) → 行き先ラベル
+  function labelForUrl(url) {
+    var b = String(url || '').split('/').pop().split('?')[0].replace(/\.html?$/, '');
+    return ({ home: 'ホーム', industry: '企業一覧', gyokai: '業界研究TOP', company: '企業ページ',
+      mypage: 'マイページ', compare: '企業比較', howto: '使い方', shindan: '診断結果',
+      quiz: 'クイズ', datasheet: 'データシート', es_guide: '選考対策', es_kit: 'ESキット' })[b] || '戻る';
+  }
+  // 戻り先を {href, label} で返す（from= を正・無ければ fallback）。tkBack と表示ラベルが必ず一致する。
+  window.tkBackDest = function (fallback) {
     var from = q('from');
     switch (from) {
-      case 'home':    location.href = '/home.html'; return;
-      case 'mypage':  location.href = '/mypage.html'; return;
-      case 'gyokai':  location.href = '/gyokai.html'; return;
-      case 'howto':   location.href = '/howto.html'; return;
-      case 'compare': location.href = '/compare.html'; return;
-      case 'shindan': location.href = '/shindan.html?view=result'; return; // 診断結果を復元表示
-      case 'list': {  // 企業一覧(industry.html) フィルタ状態も可能な範囲で復元
+      case 'home':    return { href: '/home.html', label: 'ホーム' };
+      case 'mypage':  return { href: '/mypage.html', label: 'マイページ' };
+      case 'gyokai':  return { href: '/gyokai.html', label: '業界研究TOP' };
+      case 'howto':   return { href: '/howto.html', label: '使い方' };
+      case 'compare': return { href: '/compare.html', label: '企業比較' };
+      case 'shindan': return { href: '/shindan.html?view=result', label: '診断結果' };
+      case 'list': {
         var ind = q('fromInd');
-        location.href = ind ? ('/industry.html?ind=' + encodeURIComponent(ind)) : '/industry.html';
-        return;
+        return { href: ind ? ('/industry.html?ind=' + encodeURIComponent(ind)) : '/industry.html', label: '企業一覧' };
       }
-      case 'company': { // 企業ページ配下(データシート/ESキット/クイズ/ルーム等)から戻る
+      case 'company': {
         var id = q('fromId');
-        location.href = id ? ('/company.html?id=' + encodeURIComponent(id)) : (fallback || '/home.html');
-        return;
+        return { href: id ? ('/company.html?id=' + encodeURIComponent(id)) : (fallback || '/home.html'), label: '企業ページ' };
       }
     }
-    // from 無し: そのページの親(呼び出し側指定のフォールバック)へ
-    location.href = fallback || '/home.html';
+    return { href: fallback || '/home.html', label: labelForUrl(fallback || '/home.html') };
+  };
+  window.tkBack = function (fallback) { location.href = window.tkBackDest(fallback).href; };
+  // [data-tkback="<fallbackUrl>"] を「‹ 行き先ラベル」ピルに整える。
+  //   data-tkback-keep があれば onclick は各ページの既存ハンドラを尊重（ラベルのみ差し込み）。
+  window.tkInitBack = function () {
+    var els = document.querySelectorAll('[data-tkback]');
+    for (var i = 0; i < els.length; i++) {
+      (function (el) {
+        var fb = el.getAttribute('data-tkback') || '/home.html';
+        var d = window.tkBackDest(fb);
+        el.textContent = '‹ ' + d.label;
+        el.setAttribute('aria-label', d.label + 'へ戻る');
+        if (!el.hasAttribute('data-tkback-keep')) {
+          el.onclick = function (e) { if (e && e.preventDefault) e.preventDefault(); location.href = d.href; return false; };
+        }
+      })(els[i]);
+    }
   };
   // 発リンクに付ける from サフィックスを組み立てる（?既存クエリの有無を考慮）
   window.tkFromSuffix = function (originKey, ctx) {
@@ -81,6 +102,17 @@
     }).join('');
     document.body.appendChild(nav);
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', injectMiniNav);
-  else injectMiniNav();
+  // 戻るピル: 各ページのテーマ色は保ちつつ、ラベルが収まるようサイズだけ整える。
+  function injectBackCss() {
+    if (document.getElementById('tk-back-css')) return;
+    var css = '[data-tkback]{width:auto!important;height:auto!important;min-width:0!important;'
+      + 'border-radius:999px!important;padding:6px 13px 6px 11px!important;font-size:13px!important;'
+      + 'line-height:1!important;white-space:nowrap!important;display:inline-flex!important;'
+      + 'align-items:center!important;justify-content:center!important;gap:0!important}';
+    var st = document.createElement('style'); st.id = 'tk-back-css'; st.textContent = css;
+    document.head.appendChild(st);
+  }
+  function tkInit() { injectBackCss(); injectMiniNav(); window.tkInitBack(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', tkInit);
+  else tkInit();
 })();

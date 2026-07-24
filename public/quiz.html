@@ -124,7 +124,7 @@
 <body>
 <div class="e-wrap">
   <header class="e-header has-back">
-    <button class="e-back" id="btn-back" aria-label="戻る">‹</button>
+    <button class="e-back" id="btn-back" data-tkback="/home.html" data-tkback-keep aria-label="戻る">‹</button>
     <p class="e-kicker">理解度クイズ</p>
     <h1 class="e-title" id="quiz-title">クイズで腕試し</h1>
     <div id="guide"></div>
@@ -193,6 +193,10 @@ const REVIEW_MODES = [
 let COMPANIES = null;
 let lineUserId = 'guest-preview';
 let DEEP = false;  // 企業/業界から直リンクで開かれたか(戻る=呼び出し元へ / 内部select経由なら選択画面へ)
+function qbLabel(){ if(!DEEP) return 'クイズ選択';
+  const p=new URLSearchParams(location.search);
+  return (p.get('company')||p.get('industry'))?'企業ページ':'ホーム'; }
+function setBack(fn,label){ const b=document.getElementById('btn-back'); if(b){ b.onclick=fn; b.textContent='‹ '+label; } }
 function quizBack(){
   if(DEEP){ const p=new URLSearchParams(location.search);
     if(p.get('company')) tkBack('/company.html?id='+encodeURIComponent(p.get('company')));
@@ -279,7 +283,7 @@ async function renderCompanyList(industry){
     const c = e.target.closest('.e-card'); if(!c) return;
     startQuiz('company', c.dataset.id, c.dataset.name);
   };
-  document.getElementById('btn-back').onclick = ()=>quizBack();
+  setBack(()=>quizBack(), qbLabel());
 }
 
 /* ---------- クイズ本体（レベル制） ---------- */
@@ -289,7 +293,7 @@ async function startQuiz(setType, setId, label){
   curApiSetId = setType==='industry' ? `industry__${setId}` : setId;
   document.getElementById('quiz-title').textContent = label;
   document.getElementById('guide').innerHTML = '';
-  document.getElementById('btn-back').onclick = ()=>quizBack();
+  setBack(()=>quizBack(), qbLabel());
   app().innerHTML = `<div class="e-list"><div class="e-skel"></div><div class="e-skel"></div><div class="e-skel"></div></div>`;
   curUnlock = await fetchUnlock();
   renderLevelLadder();
@@ -343,7 +347,7 @@ function renderLevelLadder(){
     <p class="lv-intro">Lv1から挑戦！ そのレベルの<b>正答率80%</b>で次のレベルが解放されます。</p>
     <div class="lv-ladder">${cards}</div>`;
   app().querySelectorAll('.lv-card[data-lv]').forEach(b=> b.onclick = ()=> startLevel(parseInt(b.dataset.lv,10)) );
-  document.getElementById('btn-back').onclick = ()=>quizBack();
+  setBack(()=>quizBack(), qbLabel());
 }
 
 async function startLevel(level){
@@ -358,7 +362,7 @@ async function startLevel(level){
   if (!qs || !qs.length) { qs = SAMPLE.map(s=>({...s, difficulty:level})); isSample = true; }
   QSET = qs.slice(0, N_PER_SET).map(shuffled);
   qi = 0; score = 0; pendingWrites = [];
-  document.getElementById('btn-back').onclick = ()=>renderLevelLadder();
+  setBack(()=>renderLevelLadder(), 'レベル一覧');
   renderQuestion(isSample);
 }
 
@@ -369,7 +373,7 @@ async function startReview(rmode){
   document.getElementById('quiz-title').textContent = '復習';
   document.getElementById('guide').innerHTML = '';
   app().innerHTML = `<div class="e-list"><div class="e-skel"></div><div class="e-skel"></div></div>`;
-  document.getElementById('btn-back').onclick = ()=>quizBack();
+  setBack(()=>quizBack(), qbLabel());
 
   let qs = null, apiOk = false;
   try {
@@ -534,7 +538,7 @@ function recordAnswer(q, chosen, ok){
 }
 
 async function main(){
-  document.getElementById('btn-back').onclick = ()=>tkBack('/home.html');
+  setBack(()=>tkBack('/home.html'), (window.tkBackDest?tkBackDest('/home.html').label:'ホーム'));
   // LIFF: 本番はログイン、外部ブラウザ(プレビュー)はゲスト
   try {
     await liff.init({ liffId: LIFF_ID });

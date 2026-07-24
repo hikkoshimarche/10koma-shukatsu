@@ -88,14 +88,14 @@ function addId(id){ if(!NAME[id]) return; if(sel.find(s=>s.id===id)) return; if(
 // ===== 選択画面 =====
 function renderPicker(){
   wrap().innerHTML=`
-    <div class="top"><button class="back" id="bk">‹</button><h1>企業<span class="gold">比較</span></h1></div>
+    <div class="top"><button class="back" id="bk" data-tkback="/home.html" data-tkback-keep>‹</button><h1>企業<span class="gold">比較</span></h1></div>
     <p class="sub">2〜3社を選ぶと、一次情報で横並び比較できます（優劣づけはしません）。</p>
     <div class="chips" id="chips"></div>
     <div class="searchbox"><input id="q" type="search" placeholder="会社名で検索（例：三菱商事、じゃる）" autocomplete="off"></div>
     <div class="results" id="results" style="display:none"></div>
     <p class="hint" id="hint"></p>
     <button class="cta" id="go" disabled>比較する</button>`;
-  document.getElementById('bk').onclick=()=>tkBack('/home.html');
+  document.getElementById('bk').onclick=()=>tkBack('/home.html'); window.tkInitBack&&window.tkInitBack();
   document.getElementById('q').addEventListener('input', onSearch);
   document.getElementById('go').onclick=()=>{ if(sel.length>=2){ saveSel(); renderResult(sel.map(s=>s.id)); } };
   drawChips();
@@ -142,12 +142,12 @@ function trendCell(t){
 }
 
 function renderResult(ids){
-  wrap().innerHTML=`<div class="top"><button class="back" id="bk">‹</button><h1>企業<span class="gold">比較</span></h1></div><div class="loading">一次情報を集めています…</div>`;
+  wrap().innerHTML=`<div class="top"><button class="back" id="bk" style="width:auto;border-radius:999px;padding:6px 12px 6px 10px;font-size:13px;white-space:nowrap">‹ 選択に戻る</button><h1>企業<span class="gold">比較</span></h1></div><div class="loading">一次情報を集めています…</div>`;
   document.getElementById('bk').onclick=()=>renderPicker();
   fetch(`${API_BASE}/api/compare?ids=${encodeURIComponent(ids.join(','))}`)
     .then(r=>r.ok?r.json():Promise.reject(r.status))
     .then(data=>drawTable(data))
-    .catch(()=>{ wrap().innerHTML=`<div class="top"><button class="back" id="bk2">‹</button><h1>企業比較</h1></div><p class="sub">読み込みに失敗しました。時間をおいて試してください。</p>`; document.getElementById('bk2').onclick=()=>renderPicker(); });
+    .catch(()=>{ wrap().innerHTML=`<div class="top"><button class="back" id="bk2" style="width:auto;border-radius:999px;padding:6px 12px 6px 10px;font-size:13px;white-space:nowrap">‹ 選択に戻る</button><h1>企業比較</h1></div><p class="sub">読み込みに失敗しました。時間をおいて試してください。</p>`; document.getElementById('bk2').onclick=()=>renderPicker(); });
 }
 
 function drawTable(data){
@@ -164,7 +164,7 @@ function drawTable(data){
   const head=`<tr><th class="rowlabel"></th>${cs.map(c=>`<th class="cell"><div class="cname"><a href="/company.html?id=${esc(c.id)}">${esc(c.name)}</a></div><div class="cind">${esc(c.industry||'')}</div></th>`).join('')}</tr>`;
   const body=rows.map(([label,fn])=>`<tr><td class="rowlabel">${label}</td>${cs.map(c=>`<td class="cell">${fn(c)}</td>`).join('')}</tr>`).join('');
   wrap().innerHTML=`
-    <div class="top"><button class="back" id="bk">‹</button><h1>企業<span class="gold">比較</span></h1></div>
+    <div class="top"><button class="back" id="bk" style="width:auto;border-radius:999px;padding:6px 12px 6px 10px;font-size:13px;white-space:nowrap">‹ 選択に戻る</button><h1>企業<span class="gold">比較</span></h1></div>
     <p class="sub">${cs.map(c=>esc(c.name)).join(' ／ ')}</p>
     <button class="editbtn" id="edit">＋ 会社を選びなおす</button>
     <div class="tblwrap"><table><thead>${head}</thead><tbody>${body}</tbody></table></div>
