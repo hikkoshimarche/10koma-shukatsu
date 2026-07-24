@@ -307,6 +307,32 @@ def gas(params):
         return {"error": str(e)}
 
 
+COMMON_SHEET_NAME = "共通の修正案"
+
+
+def commonfixes_fast():
+    """共通の修正案の未適用行を readsheet(bulk getValues 1回)で取得。
+    GAS `mode=commonfixes` は getRange を行ループで呼ぶ O(n) で肥大シートだと timeout(30s)し
+    ドレインが静かに失敗する(2026-07 backlog 7892行膨張の真因)。返り値は commonfixes と同形。"""
+    url = _env("SHEET_WEBAPP_URL", "").strip()
+    token = _env("SHEET_API_TOKEN", "").strip()
+    try:
+        import requests
+        r = requests.get(url, params={"mode": "readsheet", "token": token, "sheet": COMMON_SHEET_NAME}, timeout=120)
+        vals = r.json().get("values", [])
+    except Exception as e:
+        return {"error": str(e), "items": []}
+    items = []
+    for i, row in enumerate(vals):
+        if i == 0 or len(row) < 4:
+            continue
+        if str(row[3]).strip() == "適用済":
+            continue
+        items.append({"row": i + 1, "date": row[0], "rule": row[1], "scope": row[2],
+                      "status": row[3], "note": row[4] if len(row) > 4 else ""})
+    return {"count": len(items), "items": items}
+
+
 def record_knowledge(rule, note, scope="system"):
     """横断ルールを📚共通の修正案(知見集)に蓄積。"""
     gas({"mode": "addcommonfix", "rule": rule, "scope": scope, "note": note})

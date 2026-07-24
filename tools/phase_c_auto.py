@@ -452,7 +452,7 @@ def collect_image_fbs(c, results):
     try:
         import phase_c_autoloop as A
         drained = _drained_set()
-        cf = PCI.gas({"mode": "commonfixes"})
+        cf = PCI.commonfixes_fast()
         seen_bk = set(f"{it['slug']}#{it['koma']}" for it in safe_items)
         for x in cf.get("items", []):
             m = _re.match(r"\[要画像再生成\]\s*([^:：]+?)[:：]\s*(.*)", str(x.get("rule", "")), _re.S)
@@ -492,7 +492,7 @@ def _pending_image_map(cf_items=None, qa_items=None):
     import phase_c_autoloop as A
     drained = _drained_set()
     if cf_items is None:
-        cf_items = PCI.gas({"mode": "commonfixes"}).get("items", [])
+        cf_items = PCI.commonfixes_fast().get("items", [])
     if qa_items is None:
         qa_items = PCI.gas({"mode": "imageqa_list"}).get("items", [])
     m = {}
@@ -744,7 +744,7 @@ def run_batch(dry=True):
         qn = 0
         try:
             import re as _re
-            cf = PCI.gas({"mode": "commonfixes"})
+            cf = PCI.commonfixes_fast()
             seen = set()
             for x in cf.get("items", []):
                 m = _re.match(r"\[要画像再生成\]\s*([^:：]+?)[:：]\s*(.*)", str(x.get("rule", "")), _re.S)
