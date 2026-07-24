@@ -91,6 +91,15 @@ function hue(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;
 const IND={'総合商社':{i:'🌐',c:'#2f6fb0'},'自動車・モビリティ':{i:'🚗',c:'#c0392b'},'電機・精密・重工':{i:'⚙️',c:'#4a6b8a'},'鉄鋼・素材・化学':{i:'🏭',c:'#8a6d3b'},'製薬・ヘルスケア':{i:'💊',c:'#16a085'},'銀行・証券・保険':{i:'🏦',c:'#1f6f54'},'IT・通信・SaaS':{i:'💻',c:'#3b5bdb'},'ゲーム・エンタメ':{i:'🎮',c:'#7d3c98'},'コンサル':{i:'📈',c:'#2c6fa8'},'専門商社':{i:'📦',c:'#b8823a'},'インフラ・エネルギー':{i:'⚡',c:'#d17d00'},'不動産・建設':{i:'🏗️',c:'#9a6a2f'},'小売・流通':{i:'🛍️',c:'#c0448a'},'食品・飲料':{i:'🍽️',c:'#d1495b'},'日用品・化粧品':{i:'🧴',c:'#c85a9c'},'航空・運輸・物流':{i:'✈️',c:'#2f8fbf'},'広告・メディア':{i:'📣',c:'#e0913a'},'その他（外資・新興等）':{i:'🌱',c:'#3a9d6b'}};
 
 let ALL=[], INDS=[], sel=new Set(), sort='kana';
+// 50音ソート用: カタカナ→ひらがな。並びは先頭が仮名で始まる読みを使う。
+const toHira=s=>String(s||'').replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60));
+const startsKana=s=>/^[ぁ-ゖ]/.test(String(s||''));
+// 読みがな決定: ①補完マップ ②仮名始まりの別名 ③(無ければ)英字別名/社名 の順。全て toHira。
+function readingOf(id, name, aliases, readings){
+  const sup=readings[id]; if(sup) return toHira(sup);
+  const ka=(aliases||[]).map(toHira).find(startsKana); if(ka) return ka;
+  return toHira((aliases&&aliases[0])||name||'');
+}
 
 function drawChips(){
   const box=document.getElementById('chips');
@@ -136,13 +145,16 @@ function apply(){
 
 async function main(){
   try{ await liff.init({liffId:LIFF_ID}); if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;} }catch(e){}
-  let comp={}, aliases={}, api={views:{},hooks:{}};
+  let comp={}, aliases={}, api={views:{},hooks:{}}, readings={};
   try{
-    [comp,aliases,api]=await Promise.all([
+    let rd={};
+    [comp,aliases,api,rd]=await Promise.all([
       fetch('/companies.json').then(r=>r.json()),
       fetch('/search_aliases.json').then(r=>r.ok?r.json():({})).catch(()=>({})),
       fetch(`${API_BASE}/api/company-list`).then(r=>r.ok?r.json():({views:{},hooks:{}})).catch(()=>({views:{},hooks:{}})),
+      fetch('/company_readings.json').then(r=>r.ok?r.json():({})).catch(()=>({})),
     ]);
+    readings=(rd&&rd.readings)||{};
   }catch(e){ document.getElementById('list').innerHTML='<div class="empty">読み込みに失敗しました</div>'; return; }
   INDS=Object.keys(comp);
   const ord={}; INDS.forEach((n,i)=>ord[n]=i);
@@ -151,7 +163,7 @@ async function main(){
       const al=aliases[c.id]||[];
       ALL.push({ id:c.id, name:c.name, industry:ind, indOrd:ord[ind],
         hook:(api.hooks||{})[c.id]||'', views:(api.views||{})[c.id]||0,
-        kana:(al[0]||normJ(c.name)), key:normJ([c.name,c.id,c.id.replace(/-/g,' '),...al].join(' ')) });
+        kana:readingOf(c.id, c.name, al, readings), key:normJ([c.name,c.id,c.id.replace(/-/g,' '),...al].join(' ')) });
     }
   }
   // ?ind= で業界フィルタを事前適用(業界研究からの相互導線)
