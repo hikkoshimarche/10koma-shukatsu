@@ -111,6 +111,27 @@ def stage_industry(dry):
     return True
 
 
+def stage_selection(dry):
+    """(1d)選考情報の再取得(腐りやすい・月次plistとは別に四半期でも実施)→D1反映。"""
+    for f in ("tools/gen_selection_info.py", "tools/build_selection_d1.py"):
+        if not os.path.exists(os.path.join(ROOT, f)):
+            _log(f"(1d)選考情報: ✗{f}欠落"); return False
+    if dry:
+        _log("(1d)選考情報 再取得: 実行可 (gen_selection_info --all --force→build_selection_d1→D1)")
+        return True
+    _log("(1d)選考情報 再取得 開始")
+    g = _run([PY, "tools/gen_selection_info.py", "--all", "--force"], timeout=5400)
+    _log(f"(1d)取得 rc={g.returncode}: " + "\n".join(g.stdout.strip().splitlines()[-2:]))
+    ts = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+    b = _run([PY, "tools/build_selection_d1.py", ts])
+    ins = next((l.split("->", 1)[1].strip().split(" ")[0] for l in b.stdout.splitlines() if "insert ->" in l), "")
+    if ins and os.path.exists(ins):
+        a = _run(["npx", "wrangler", "d1", "execute", "10koma-shukatsu-db", "--remote",
+                  "--config", "api/wrangler.toml", "--file", ins])
+        _log(f"(1d)選考情報D1 rc={a.returncode} " + next((l.strip() for l in a.stdout.splitlines() if "rows_written" in l), ""))
+    return True
+
+
 def stage_product_urls(dry):
     if dry:
         ok = os.path.exists(os.path.join(ROOT, "tools/build_product_urls.py"))
@@ -172,6 +193,8 @@ def main():
         results["industry"] = stage_industry(dry)
     if "--skip-salary" not in sys.argv:
         results["salary"] = stage_salary(dry)
+    if "--skip-selection" not in sys.argv:
+        results["selection"] = stage_selection(dry)
     if "--skip-d1" not in sys.argv:
         results["d1"] = stage_d1(dry)
     results["product_urls"] = stage_product_urls(dry)

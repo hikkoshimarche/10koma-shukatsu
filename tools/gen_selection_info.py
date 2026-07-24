@@ -112,12 +112,14 @@ def _grounded(val, body):
 
 
 def _schedule_fresh(v, body):
-    """未来日付 or 直近有効(過去60日以内)のみ採用。過去年度の告知ログは除外。"""
+    """date必須・未来 or 直近有効(過去60日以内)のみ採用。date無し/過去年度の告知ログは除外。"""
     out = []
     for it in (v or []):
         if not isinstance(it, dict):
             continue
-        dt = str(it.get("date", ""))
+        dt = str(it.get("date") or "").strip()
+        if not dt or dt.lower() == "null":            # date必須(null項目はフォールバック扱い)
+            continue
         ym = re.search(r"(20\d\d)\D+(\d{1,2})(?:\D+(\d{1,2}))?", dt)
         keep = True
         if ym:
@@ -136,8 +138,12 @@ def _schedule_fresh(v, body):
     return out
 
 
+def _norm_job(x):
+    return re.sub(r"([^（）\s]+)＝([^（）\s]+)", r"\1（\2）", x.strip())   # 編集＝記者→編集（記者）
+
+
 def _clean_shokushu(v):
-    return [x for x in (v or []) if isinstance(x, str) and not _CATEGORY.match(x.strip()) and not _NONGRAD_WORD.search(x)]
+    return [_norm_job(x) for x in (v or []) if isinstance(x, str) and not _CATEGORY.match(x.strip()) and not _NONGRAD_WORD.search(x)]
 
 
 def gen_one(slug, name):
@@ -147,13 +153,13 @@ def gen_one(slug, name):
     # 新卒ページに到達できない(中途のみ)/本文薄い → 表示は採用リンク1本のみ(空カード禁止)
     if len(body) < 200 or not is_newgrad:
         return {"slug": slug, "name": name, "status": "link_only",
-                "selection_info": {"as_of": asof, "source_url": src, "link_only": True, "disclaimer": DISCLAIMER},
+                "selection_info": {"as_of": asof, "source_url": src, "link_only": True, "disclaimer": DISCLAIMER, "freshness_days": 45},
                 "reason": "新卒ページ未到達/本文薄" }
     txt = q.openai_chat([{"role": "system", "content": SYS},
                          {"role": "user", "content": USER.format(name=name, body=body[:5500])}],
                         max_tokens=800, temperature=0.1)
     d = q._parse_json(txt) or {}
-    info = {"as_of": asof, "source_url": src, "disclaimer": DISCLAIMER}
+    info = {"as_of": asof, "source_url": src, "disclaimer": DISCLAIMER, "freshness_days": 45}
     dropped, fbcount = [], 0
     # 選考フロー
     v = d.get("senko_flow")
@@ -179,7 +185,7 @@ def gen_one(slug, name):
     # 表示価値ガード: 3項目すべてフォールバック → 採用リンク1本のみ(空カード禁止)
     status = "link_only" if fbcount == 3 else "ok"
     if status == "link_only":
-        info = {"as_of": asof, "source_url": src, "link_only": True, "disclaimer": DISCLAIMER}
+        info = {"as_of": asof, "source_url": src, "link_only": True, "disclaimer": DISCLAIMER, "freshness_days": 45}
     json.dump({"slug": slug, "name": name, "selection_info": info},
               open(os.path.join(OUT, slug, "selection_info.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     return {"slug": slug, "name": name, "status": status, "selection_info": info, "grounding_dropped": dropped}
@@ -187,7 +193,15 @@ def gen_one(slug, name):
 
 def main():
     slugs = [a for a in sys.argv[1:] if not a.startswith("--")]
-    q.line(f"🧭 選考情報パイロット: {len(slugs)}社 (公式採用ページのみ・推測禁止・grounding gate)")
+    force = "--force" in sys.argv
+    if "--all" in sys.argv:                          # ドメイン解決済み(corpus保有)全社
+        import glob
+        slugs = sorted({os.path.basename(os.path.dirname(f)) for f in
+                        glob.glob(OUT + "/*/rendered_corpus.json") + glob.glob(OUT + "/*/quiz_corpus_locked_v3.json")
+                        if not os.path.basename(os.path.dirname(f)).startswith("industry")})
+    if not force:                                     # resumable: 生成済はskip
+        slugs = [s for s in slugs if not os.path.exists(os.path.join(OUT, s, "selection_info.json"))]
+    q.line(f"🧭 選考情報 展開: {len(slugs)}社 (公式採用ページのみ・新卒限定・推測禁止・grounding gate)")
     names = json.load(open("/tmp/uncovered_names.json")) if os.path.exists("/tmp/uncovered_names.json") else {}
     # companies.jsonの名前も
     try:
