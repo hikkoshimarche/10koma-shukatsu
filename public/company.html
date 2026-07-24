@@ -172,6 +172,21 @@
       margin-top: 10px;
     }
 
+    /* === 会社サマリーカード (既存データのみ・無い行は非表示=Source-or-Silence) === */
+    .co-summary {
+      margin: 12px 14px 2px; padding: 12px 14px; background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14); border-radius: 14px;
+    }
+    .cs-t { font-size: 11px; font-weight: 800; color: var(--gold); letter-spacing: 0.06em; margin-bottom: 8px; }
+    .cs-row { display: flex; gap: 10px; padding: 6px 0; border-top: 1px solid rgba(255,255,255,0.08); font-size: 12.5px; line-height: 1.5; }
+    .cs-row:first-of-type { border-top: none; }
+    .cs-k { flex: 0 0 68px; color: var(--white-dim); font-weight: 700; }
+    .cs-v { flex: 1 1 auto; color: var(--white); font-weight: 600; min-width: 0; }
+    .cs-asof { display: inline-block; margin-left: 6px; font-size: 10px; font-weight: 700; color: var(--navy); background: var(--gold); border-radius: 999px; padding: 1px 7px; vertical-align: 1px; }
+    .cs-src { margin-left: 6px; font-size: 11px; color: var(--nana-blue); text-decoration: none; font-weight: 800; }
+    .cs-src:active { opacity: 0.6; }
+    .cs-note { margin-top: 8px; font-size: 10px; color: var(--white-dim); line-height: 1.5; opacity: 0.85; }
+
     /* === この会社でできること (コンパクト入口メニュー) === */
     .co-menu {
       display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch;
@@ -200,6 +215,12 @@
     .cn-tag.t-ma{background:#7d3c98}.cn-tag.t-hr{background:#2f6fb0}.cn-tag.t-info{background:#5a6675}
     .cn-date { font-size: 10px; color: var(--white-dim); margin-left: auto; flex-shrink: 0; }
     .cn-title { font-size: 13px; font-weight: 600; color: var(--white); line-height: 1.55; }
+    /* ニュース やさしい要約(3状態) + 💡ガイド */
+    .cn-summary { font-size: 12px; color: var(--white); line-height: 1.6; background: rgba(255,255,255,0.06); border-radius: 8px; padding: 8px 10px; margin-top: 8px; }
+    .cn-slabel { display: block; font-size: 10px; font-weight: 800; color: var(--gold); margin-bottom: 3px; letter-spacing: 0.03em; }
+    .cn-soon { color: var(--white-dim); }
+    .cn-guide { display: flex; gap: 6px; font-size: 11.5px; color: var(--white-dim); line-height: 1.55; margin-top: 7px; }
+    .cn-gi { flex-shrink: 0; }
     .cn-link-h { font-size: 10.5px; color: var(--nana-blue); margin-top: 6px; }
     .cn-more, .cn-empty2 { width: 100%; background: rgba(255,255,255,0.1); border: 1.5px solid var(--white-faint); border-radius: 10px; padding: 10px; color: var(--white); font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; -webkit-tap-highlight-color: transparent; }
     .cn-tools { margin: 10px 0 4px; }
@@ -602,13 +623,13 @@ function gyokaiSlugFor(industryId){ return IND2GYOKAI[industryId] || null; }
 
 // === この会社の最新ニュース (決定論タグ分類・mypageと同ルール) ===
 const CN_TAGS=[
-  {cls:'t-kessan',label:'決算',kw:['決算','配当','業績','通期','四半期']},
-  {cls:'t-hire',label:'採用',kw:['採用','インターン','新卒']},
-  {cls:'t-ma',label:'提携・M&A',kw:['提携','資本','買収','合弁','統合','合併','株式譲渡','売却','出資','子会社化','株式取得']},
-  {cls:'t-product',label:'新製品',kw:['新発売','開始','リリース','新型']},
-  {cls:'t-hr',label:'人事',kw:['人事','役員']},
+  {cls:'t-kessan',label:'決算',kw:['決算','配当','業績','通期','四半期'],guide:'面接で「最近の業績は？」と聞かれたら、ここが答えの種。'},
+  {cls:'t-hire',label:'採用',kw:['採用','インターン','新卒'],guide:'エントリー関連。締切を要チェック。'},
+  {cls:'t-ma',label:'提携・M&A',kw:['提携','資本','買収','合弁','統合','合併','株式譲渡','売却','出資','子会社化','株式取得'],guide:'会社の次の一手。逆質問のネタになる。'},
+  {cls:'t-product',label:'新製品',kw:['新発売','開始','リリース','新型'],guide:'志望動機の「最近気になったニュース」に使える。'},
+  {cls:'t-hr',label:'人事',kw:['人事','役員'],guide:'経営体制の動き。トップの交代は方針変化のサイン。'},
 ];
-function cnTag(t){ t=String(t||''); for(const g of CN_TAGS){ if(g.kw.some(k=>t.includes(k))) return g; } return {cls:'t-info',label:'お知らせ'}; }
+function cnTag(t){ t=String(t||''); for(const g of CN_TAGS){ if(g.kw.some(k=>t.includes(k))) return g; } return {cls:'t-info',label:'お知らせ',guide:'会社の公式発表。まず一次情報に触れておこう。'}; }
 let CN_ALL=[], cnFilter='', cnQuery='';
 function cnFiltered(){
   let l=CN_ALL;
@@ -617,12 +638,21 @@ function cnFiltered(){
   return l;
 }
 function cnItems(list){
-  return list.map(n=>`
+  return list.map(n=>{
+    // summary_easy 3状態: '__EXCLUDED__'=要約箱ごと非表示 / 実テキスト=表示 / NULL=準備中
+    const se=n.summary_easy;
+    const summaryBox = (se==='__EXCLUDED__') ? ''
+      : `<div class="cn-summary"><span class="cn-slabel">📝 やさしい要約</span>${se ? esc(se) : '<span class="cn-soon">やさしい要約は準備中です</span>'}</div>`;
+    const guide = n.tag.guide ? `<div class="cn-guide"><span class="cn-gi">💡</span>${esc(n.tag.guide)}</div>` : '';
+    return `
     <a class="cn-item" href="${esc(n.url)}" target="_blank" rel="noopener">
       <div class="cn-top"><span class="cn-tag ${n.tag.cls}">${esc(n.tag.label)}</span><span class="cn-date">${esc(n.date||'')}</span></div>
       <div class="cn-title">${esc(n.title)}</div>
+      ${summaryBox}
+      ${guide}
       <div class="cn-link-h">公式ページ ↗</div>
-    </a>`).join('') || `<p class="cn-none">該当するニュースがありません</p>`;
+    </a>`;
+  }).join('') || `<p class="cn-none">該当するニュースがありません</p>`;
 }
 // === 選考情報 (company_selection・空カード禁止・全項目出典・免責必須・45日超は古い注記) ===
 const SEL_DISCLAIMER='※取得日時点の情報です。応募前に必ず公式採用ページで最新情報をご確認ください。';
@@ -954,6 +984,30 @@ async function renderIndustry(slug, name) {
   };
 }
 
+// 会社サマリーカードHTML。実データのある行だけ描画（Source-or-Silence＝空欄・捏造なし）。
+// name/業界が最低限。売上高・平均年収は出典付き社のみ。本社/設立/従業員/理念は既存データに無いため出さない。
+function buildCompanySummaryHtml(s) {
+  if (!s) return '';
+  const rows = [];
+  if (s.name)     rows.push(`<div class="cs-row"><span class="cs-k">正式名称</span><span class="cs-v">${esc(s.name)}</span></div>`);
+  if (s.industry) rows.push(`<div class="cs-row"><span class="cs-k">業界</span><span class="cs-v">${esc(s.industry)}</span></div>`);
+  if (s.revenue && s.revenue.clause) {
+    const r = s.revenue;   // 原文verbatim（数字は無加工）。出典リンクのみ付す。
+    const src = r.source ? `<a class="cs-src" href="${esc(r.source)}" target="_blank" rel="noopener">出典</a>` : '';
+    rows.push(`<div class="cs-row"><span class="cs-k">売上高</span><span class="cs-v">${esc(r.clause)}${src}</span></div>`);
+  }
+  if (s.avg_salary && s.avg_salary.man) {
+    const a = s.avg_salary;   // 有報値のみ。約X万円 + 対象期 + 有報バッジ（EDINET書類=公開リンク不可のためテキスト表示）。
+    const yen = `約${Number(a.man).toLocaleString()}万円`;
+    const asof = a.as_of ? `<span class="cs-asof">${esc(a.as_of)}</span>` : '';
+    const badge = a.source ? `<span class="cs-src" style="color:var(--white-dim)">${esc(a.source)}</span>` : '';
+    rows.push(`<div class="cs-row"><span class="cs-k">平均年収</span><span class="cs-v">${yen}${asof}${badge}</span></div>`);
+  }
+  if (rows.length <= 1) return '';   // 名前だけなら見出し直下と重複＝カードを出さない
+  return `<div class="co-summary"><p class="cs-t">会社サマリー</p>${rows.join('')}
+    <p class="cs-note">公式公開情報（有価証券報告書・決算短信・公式サイト等）に基づく参考情報。掲載が無い項目は非公開・未取得。</p></div>`;
+}
+
 async function main() {
   const app = document.getElementById('app');
   const params = new URLSearchParams(location.search);
@@ -984,6 +1038,10 @@ async function main() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ line_user_id: currentUserId, content_type: 'company', content_id: companyId })
     }).catch(() => {});
+
+    // 会社サマリーカード用データ（既存datasheet＋EDINET由来のみ・graceful）。app描画をブロックしないよう先行fire。
+    const summaryP = fetch(`${API_BASE}/api/company-summary?id=${encodeURIComponent(companyId)}`)
+      .then(r => r.ok ? r.json() : null).catch(() => null);
 
     currentCompanyName = company.name || '';
     document.getElementById('header-title').textContent = company.name;
@@ -1123,11 +1181,14 @@ async function main() {
       <div class="co-menu">${menuItems.map((m, i) => `
         <div class="co-chip" data-i="${i}"><span class="cm-ic">${m.ic}</span><span>${esc(m.l)}</span></div>`).join('')}</div>`;
 
+    const summaryHtml = buildCompanySummaryHtml(await summaryP);  // 「この会社でできること」の直上に会社基本情報カード
+
     app.innerHTML = `
       <div class="company-detail">
         <p class="company-detail-name">${esc(company.name)}</p>
         ${company.description ? `<p class="company-detail-desc">${esc(company.description)}</p>` : ''}
       </div>
+      ${summaryHtml}
       ${menuHtml}
       <div class="sel-sec" id="company-selection" style="display:none"></div>
       <div class="cn-sec" id="company-news" style="display:none"></div>

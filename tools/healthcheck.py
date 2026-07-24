@@ -10,7 +10,7 @@
 レポートは public repo に push しない(内部レポート=commit禁止ルール)。reports/ は .gitignore 済。
 """
 from __future__ import annotations
-import argparse, json, os, subprocess, sys, time, urllib.parse
+import argparse, json, os, re, subprocess, sys, time, urllib.parse
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
@@ -102,6 +102,44 @@ def hit(url, kind, label, expect="ok", want_panels=False):
 
 def _ret(issues, want_panels):
     return (issues, []) if want_panels else issues
+
+
+# ---------------- 禁止語チェック(本番HTMLに既知NG語が出ていないか) ----------------
+# 社名は「株式会社OSD」のみ・英字社名 One Spirit Diamond 禁止 / 「デンソ」(デンソー以外)等の既知誤記を検知。
+# メール/URLドメイン one-spirit-diamond.com は社名表記でないので除外してから走査する。
+LP_URLS = [f"{PAGES}/lp/"] + [f"{PAGES}/lp/{p}.html" for p in
+           ("index", "features", "about", "companies", "contact", "terms", "privacy")]
+BANNED_PATTERNS = [
+    ("英字社名(One Spirit Diamond)", re.compile(r"one[\s­\-]*spirit[\s­\-]*diamond", re.I), True),
+    ("社名誤記(デンソ→デンソー)", re.compile(r"デンソ(?!ー)"), False),
+]
+
+def banned_words_check(extra_urls=None):
+    """本番の主要HTML(LP7 + 主要アプリページ) + companies.json を走査し、既知NG語を検知。"""
+    issues = []
+    urls = [(u, u) for u in LP_URLS]
+    for p in ("index", "home", "howto", "mypage", f"company?id={SAMPLE_COMPANY}"):
+        urls.append((f"page:{p}", f"{PAGES}/{p}"))
+    urls.append(("companies.json", f"{PAGES}/companies.json"))
+    for u in (extra_urls or []):
+        urls.append((u, u))
+    for label, url in urls:
+        throttle()
+        try:
+            r = requests.get(url, timeout=TIMEOUT, headers={"User-Agent": "tokyari-healthcheck/1"})
+            if r.status_code != 200:
+                continue
+            text = r.text
+        except Exception:
+            continue
+        # ドメイン/メール(one-spirit-diamond.com)は正当なので除去してから社名走査
+        scan = re.sub(r"one-spirit-diamond\.com", "", text, flags=re.I)
+        for name, rx, use_scrubbed in BANNED_PATTERNS:
+            hay = scan if use_scrubbed else text
+            if rx.search(hay):
+                issues.append({"kind": "banned_word", "type": f"禁止語: {name}",
+                               "label": f"{label}", "url": url, "target_kind": "content"})
+    return issues
 
 
 def check_image(url, label):
@@ -322,6 +360,12 @@ def main():
             if n_targets % 25 == 0:
                 save(); print(f"  ...{n_targets} targets ({cid}), issues={len(issues)}", flush=True)
 
+    # E0) 禁止語チェック(本番HTMLの既知NG語・One Spirit Diamond / デンソ 等)
+    print("=== 禁止語チェック ===", flush=True)
+    for it in banned_words_check():
+        issues.append(it)
+    save()
+
     # E) console error (best-effort・テンプレページ + 業界 + 社サンプル)
     console_note = ""
     if not args.no_console:
@@ -365,7 +409,7 @@ def write_report(issues, n_targets, state, console_note):
             by_kind.setdefault(it["kind"], []).append(it)
         lines.append(f"## ⚠ 異常 {len(issues)}件（{len(by_kind)}種別）")
         lines.append("")
-        order = ["status", "broken_image", "panels", "empty", "api_error", "timeout", "slow", "console_error", "error"]
+        order = ["banned_word", "status", "broken_image", "panels", "empty", "api_error", "timeout", "slow", "console_error", "error"]
         for k in order + [x for x in by_kind if x not in order]:
             if k not in by_kind: continue
             arr = by_kind[k]

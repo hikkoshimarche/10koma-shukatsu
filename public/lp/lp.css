@@ -161,3 +161,10 @@ h1,h2,h3{line-height:1.35;letter-spacing:.01em}
   border-radius:12px;padding:13px 16px;margin-bottom:22px;line-height:1.7}
 .lp-foot .fcopy{font-size:11.5px;color:rgba(255,255,255,0.5);border-top:1px solid rgba(255,255,255,0.12);padding-top:18px}
 @media(min-width:720px){ .lp-foot .fcols{grid-template-columns:1.4fr 1fr} .lp-foot .fnav{grid-template-columns:1fr 1fr} }
+
+/* ===== 日本語の折り返しを「文節境界」で（実機FB: 「はじめて」「しません」等が単語途中で割れる問題の根治） =====
+   word-break/text-wrap は継承プロパティなので body に置けば全ページ・全コピーに波及（＝全数対応）。
+   対応ブラウザ(Chrome119+/Safari17.4+)は auto-phrase で文節単位に折り返し、見出しは balance で行長を均す。
+   未対応ブラウザは従来の折り返しに自動フォールバック（副作用なし）。 */
+body{ word-break:auto-phrase; text-wrap:pretty; line-break:strict; }
+h1,h2,h3,summary,.hero-badge,.fi-num,.stat .n,.doc-sub{ text-wrap:balance; }

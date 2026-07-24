@@ -166,9 +166,9 @@ async function main(){
         kana:readingOf(c.id, c.name, al, readings), key:normJ([c.name,c.id,c.id.replace(/-/g,' '),...al].join(' ')) });
     }
   }
-  // ?ind= で業界フィルタを事前適用(業界研究からの相互導線)
-  const p=new URLSearchParams(location.search).get('ind');
-  if(p && INDS.includes(p)) sel.add(p);
+  // ?ind= で業界フィルタを事前適用(業界研究からの相互導線)。カンマ区切りで複数業界も可(メーカー等の広域カテゴリ)。
+  const pRaw=new URLSearchParams(location.search).get('ind');
+  if(pRaw){ for(const v of pRaw.split(',').map(s=>s.trim()).filter(Boolean)){ if(INDS.includes(v)) sel.add(v); } }
   drawChips();
   const input=document.getElementById('q'), cl=document.getElementById('cl');
   input.addEventListener('input',()=>{ cl.style.display=input.value?'block':'none'; apply(); });

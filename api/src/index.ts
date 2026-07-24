@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { recommend } from './shindan_match'
 import { bundleCompany, COMPARE_DISCLAIMER } from './compare'
+import { EDINET_SALARY } from './salary_edinet'
 
 type Bindings = {
   DB: D1Database
@@ -898,6 +899,54 @@ app.get('/api/datasheet', async (c) => {
     if (!row) return c.json({ error: 'not found', id }, 404)
     return c.json({ id: row.company_id, ...safeJson(row.data) })
   } catch (e) { return c.json({ error: 'unavailable', id }, 404) }
+})
+
+// === 会社サマリーカード（既存datasheet＋EDINET(有報)由来値を束ねるだけ・新規取得なし・Source-or-Silence） ===
+// 返すのは実在ソース裏付けのある値のみ。無い項目は null（フロントで行ごと非表示）。捏造・推定・数字加工は一切しない。
+// 売上高: 財務セクションの売上系1文を「原文のまま」返す（数字を切り出さない＝3兆4,005億円等の複合値の破壊を防ぐ）。
+function extractRevenueFromDatasheet(ds: any) {
+  if (!ds || !Array.isArray(ds.sections)) return null
+  const fin = ds.sections.find((s: any) => s && s.title === '財務')
+  if (!fin || !Array.isArray(fin.items)) return null
+  const revKw = /(売上収益|営業収益|経常収益|売上高|収益|売上)/          // 業態別の売上系指標（先勝ち＝財務トップ行）
+  const numUnit = /[0-9０-９][0-9０-９,，]*\s*(兆|億|百万円|千円|億円|兆円|円)/
+  for (const it of fin.items) {
+    const v = String(it && it.value || '').trim()
+    if (revKw.test(v) && numUnit.test(v)) {
+      // 先頭の売上系1文だけ・原文verbatim。句点/読点で切り、末尾の接続助詞のみ除去（数値は無加工）。
+      let clause = v.split('。')[0].split('、')[0].trim().replace(/(で|は|である|です|だ)$/,'')
+      if (!clause) clause = v
+      return { clause, source: (it && it.source_url) || '' }
+    }
+  }
+  return null
+}
+app.get('/api/company-summary', async (c) => {
+  const id = c.req.query('id')
+  if (!id) return c.json({ error: 'id required' }, 400)
+  let ds: any = null
+  try {
+    const row = await c.env.DB.prepare('SELECT data FROM datasheets WHERE company_id = ?').bind(id).first<{ data: string }>()
+    if (row) ds = safeJson(row.data)
+  } catch (e) { /* graceful: datasheet無しでも name/業界/年収は出しうる */ }
+  const b: any = bundleCompany(id, ds)   // name/industry のみ利用（av=二次情報nikkei由来のため年収には使わない）
+  let officialName: string | null = (b && b.found) ? b.name : null
+  if (!officialName) {
+    try {
+      const cr = await c.env.DB.prepare('SELECT name FROM companies WHERE id = ?').bind(id).first<{ name: string }>()
+      officialName = (cr && cr.name) || (ds && ds.name) || null
+    } catch (e) { officialName = (ds && ds.name) || null }
+  }
+  // 平均年収は EDINET(有価証券報告書)由来のみ（[[salary-source-or-silence]]＝二次推定は出さない）。
+  const es = EDINET_SALARY[id]
+  const avg_salary = es ? { man: es.man, as_of: es.as_of, source: '有価証券報告書（EDINET）' } : null
+  return c.json({
+    id,
+    name: officialName,
+    industry: (b && b.found) ? b.industry : null,
+    revenue: extractRevenueFromDatasheet(ds),   // {clause,source}|null（原文verbatim）
+    avg_salary,                                  // {man,as_of,source}|null（有報値のみ）
+  })
 })
 
 // === ES・面接対策キット（会社別・タブD生成。datasheetと同型のgraceful。未投入時404→フロントは案内表示） ===

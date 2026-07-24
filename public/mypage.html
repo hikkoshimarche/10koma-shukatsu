@@ -423,7 +423,10 @@ function secFeed(d){
   if(off.length){
     inner+=`<div class="fd-sub">お気に入り企業の公式ニュース（タップで要約）</div>`+off.map(o=>{
       const g=classifyNews(o.title);
-      const summary=o.summary_easy ? esc(o.summary_easy) : '<span class="nw-soon">やさしい要約は準備中です</span>';
+      // summary_easy 3状態: '__EXCLUDED__'=要約箱ごと非表示 / 実テキスト=表示 / NULL=準備中
+      const se=o.summary_easy;
+      const summaryBox = (se==='__EXCLUDED__') ? ''
+        : `<div class="nw-summary"><span class="nw-slabel">📝 やさしい要約</span>${se ? esc(se) : '<span class="nw-soon">やさしい要約は準備中です</span>'}</div>`;
       const isNew=nwIsNew(o.fetched_at);
       return `<div class="nw-item" data-new="${isNew?'1':'0'}">
         <div class="nw-head">
@@ -431,7 +434,7 @@ function secFeed(d){
           <div class="nw-title">${annotateGlossary(o.title)}</div>
         </div>
         <div class="nw-exp">
-          <div class="nw-summary"><span class="nw-slabel">📝 やさしい要約</span>${summary}</div>
+          ${summaryBox}
           <div class="nw-guide"><span class="gi">💡</span>${esc(g.guide)}</div>
           <div class="nw-foot"><span class="nw-name">${esc(o.name)}</span><a class="nw-link" href="${esc(o.url)}" target="_blank" rel="noopener">公式ページ</a></div>
         </div>

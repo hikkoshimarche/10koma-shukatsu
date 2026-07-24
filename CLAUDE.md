@@ -96,3 +96,8 @@ class LintError(RuntimeError):
 - plist は `~/Library/LaunchAgents/` に配置しつつ**repoの `tools/` にも必ずコミット**（版管理）。
 - 検証: `env -i HOME="$HOME" PATH="/usr/bin:/bin:/usr/sbin:/sbin" /bin/bash -lc '<PATH前置>; command -v npx'` で npx が解決すればOK。
 - 既存で `deploy_salary.py` を使うジョブ(phasec/sheetsync等)は、同モジュールの `_npx()` が npx を解決するため追加対応不要。
+
+## 【恒久ルール】社名表記・アプリ画面素材（対外物すべて）
+- **社名は「株式会社OSD」のみ**。英字社名「One Spirit Diamond」はLP/HP/アプリ/受け渡し物など**いかなる場所にも記載しない**（コピーライトも `© {年} 株式会社OSD. All rights reserved.`）。新規ページ作成時も必ずOSD単独表記。反映後は `grep -rn "One Spirit Diamond" public/` が0であることを確認。
+- **LP・HPに載せるアプリ画面は必ず本番の実機スクリーンショット（実データ）を使う**。手作りモック・合成画面・手描きの画面風画像は**禁止**（実物なら社名や数字の誤記が構造的に混入し得ないため）。画像内テキストの社名はD1 `companies` の正式名と一致すること。
+- 会社登記情報（設立2020年6月/代表 ドッズ オスカー昴/所在地 東京都港区六本木3丁目4番33号 マルマン六本木ビル7階/資本金1,600万円）は https://one-spirit-diamond.com/company が正（JS描画のためヘッドレスで取得）。Pマーク登録番号=第10825463号(有効2026-04-08〜2028-04-07)。
