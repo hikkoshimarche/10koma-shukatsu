@@ -87,7 +87,7 @@ function render(){
     const s=encodeURIComponent(ind.slug), n=encodeURIComponent(ind.name);
     const find=`/industry.html?from=gyokai${ind.find?('&ind='+encodeURIComponent(ind.find)):''}`;
     return `
-    <div class="gk-card" style="--acc:${ind.acc}">
+    <div class="gk-card" data-slug="${esc(ind.slug)}" style="--acc:${ind.acc}">
       <button class="gk-main" aria-expanded="false">
         <span class="gk-ic">${ind.icon}</span>
         <span class="gk-body"><span class="gk-label">${esc(ind.name)}</span>
@@ -115,6 +115,15 @@ function render(){
 async function main(){
   try{ localStorage.setItem('tk_gyokai_seen','1'); }catch(e){}
   render();
+  // ?open=<slug>: 企業ページ等から「この業界を知る」で来たとき、その業界ハブを自動展開
+  try{
+    const openSlug=new URLSearchParams(location.search).get('open');
+    if(openSlug){
+      const card=document.querySelector(`.gk-card[data-slug="${CSS.escape(openSlug)}"]`);
+      if(card){ card.classList.add('open'); const m=card.querySelector('.gk-main'); if(m)m.setAttribute('aria-expanded','true');
+        setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'center'}),120); }
+    }
+  }catch(e){}
   try{ await liff.init({liffId:LIFF_ID}); if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;} }catch(e){}
 }
 main();

@@ -542,6 +542,19 @@
 const LIFF_ID = '2010075487-89AJxZnA';
 const API_BASE = 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
 
+// D1のindustry_id → 業界ハブ(gyokai)の16分類slug。該当なし(others等)は null=チップ非表示。
+const IND2GYOKAI = {
+  sogo_shosha:'sogo-shosha', specialty_trading:'senmon-shosha', banking_insurance:'finance',
+  it_ai_saas:'it-ai-saas-game', it_ai_saas_game:'it-ai-saas-game', game_entertainment:'it-ai-saas-game',
+  consulting:'consulting', manufacturer:'manufacturer', manufacturer_maker:'manufacturer',
+  electronics_precision:'manufacturer', materials_chemical:'manufacturer', consumer_goods:'manufacturer',
+  advertising_media:'ad-media', infra_energy:'infra-energy', real_estate:'realestate-construction',
+  retail:'retail', food_beverage:'food-beverage', pharma_healthcare:'medical-healthcare',
+  transport_logistics:'transport-logistics', education_hr:'education-hr', startup:'startup',
+  deeptech_space_ai:'deeptech-space-ai',
+};
+function gyokaiSlugFor(industryId){ return IND2GYOKAI[industryId] || null; }
+
 function goBack() {
   // ?from= を正とする(nav.js)。無ければモード別の親: 業界mode→業界研究 / 企業mode→企業一覧
   const params = new URLSearchParams(location.search);
@@ -959,6 +972,9 @@ async function main() {
     // 「この会社でできること」= 既存の遷移先を整理したコンパクト入口（複製CTAでなく導線集約・追加fetchなし）
     const menuItems = [];
     if (panels.length) menuItems.push({ ic: '📱', l: '10コマ', act: 'scroll' });
+    // この業界を知る → 業界ハブ(該当slugを自動展開)。industry_id が16分類に対応する社のみ表示。
+    const gyokaiSlug = gyokaiSlugFor(company.industry_id);
+    if (gyokaiSlug) menuItems.push({ ic: '🌐', l: '業界を知る', href: `/gyokai.html?open=${encodeURIComponent(gyokaiSlug)}&from=company&fromId=${encodeURIComponent(companyId)}` });
     if (company.video_url) menuItems.push({ ic: '🎬', l: '企業動画', act: 'video' });
     if (company.kessan_url) menuItems.push({ ic: '💹', l: '決算書動画', act: 'kessan' });
     menuItems.push({ ic: '📊', l: 'データシート', href: `datasheet.html?id=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}` });
