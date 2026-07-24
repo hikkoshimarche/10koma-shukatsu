@@ -97,7 +97,7 @@ def stage_industry(dry):
     b = _run([PY, "tools/build_gyokai_d1_insert.py", ts])
     if b.returncode != 0:
         _log(f"(1b)D1 SQL構築失敗: {b.stderr[-160:]}"); return False
-    ins = next((l.split("->", 1)[1].strip().split(" ")[0] for l in b.stdout.splitlines() if "insert ->" in l), "")
+    ins = next((l.split("->", 1)[1].strip().split(" ")[0] for l in b.stdout.splitlines() if "upsert ->" in l), "")
     if ins and os.path.exists(ins):
         a = _run(["npx", "wrangler", "d1", "execute", "10koma-shukatsu-db", "--remote",
                   "--config", "api/wrangler.toml", "--file", ins])
@@ -113,7 +113,7 @@ def stage_industry(dry):
 
 def stage_selection(dry):
     """(1d)選考情報の再取得(腐りやすい・月次plistとは別に四半期でも実施)→D1反映。"""
-    for f in ("tools/gen_selection_info.py", "tools/build_selection_d1.py"):
+    for f in ("tools/gen_selection_info.py", "tools/build_company_selection.py"):
         if not os.path.exists(os.path.join(ROOT, f)):
             _log(f"(1d)選考情報: ✗{f}欠落"); return False
     if dry:
@@ -123,8 +123,8 @@ def stage_selection(dry):
     g = _run([PY, "tools/gen_selection_info.py", "--all", "--force"], timeout=5400)
     _log(f"(1d)取得 rc={g.returncode}: " + "\n".join(g.stdout.strip().splitlines()[-2:]))
     ts = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-    b = _run([PY, "tools/build_selection_d1.py", ts])
-    ins = next((l.split("->", 1)[1].strip().split(" ")[0] for l in b.stdout.splitlines() if "insert ->" in l), "")
+    b = _run([PY, "tools/build_company_selection.py", ts])
+    ins = next((l.split("->", 1)[1].strip().split(" ")[0] for l in b.stdout.splitlines() if "upsert ->" in l), "")
     if ins and os.path.exists(ins):
         a = _run(["npx", "wrangler", "d1", "execute", "10koma-shukatsu-db", "--remote",
                   "--config", "api/wrangler.toml", "--file", ins])
