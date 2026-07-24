@@ -178,7 +178,7 @@
   <header class="e-header">
     <div class="mp-hero">
       <span class="circ"><img src="/images/brand/tokyari_logo_mark.jpg" alt="トーキャリ"></span>
-      <div><h1>マイページ</h1><p id="mp-greet">あなたの足あと・お気に入り・成績</p></div>
+      <div><h1>マイページ</h1><p id="mp-greet">📓 あなたの就活記録 — 足あと・お気に入り・成績・診断・ニュース</p></div>
     </div>
   </header>
   <div id="mp"><div class="mp-load">読み込み中…</div></div>
@@ -514,7 +514,7 @@ async function main(){
   try{
     await liff.init({liffId:LIFF_ID});
     if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;}
-    if(liff.isLoggedIn()){ try{ const p=await liff.getProfile(); if(!new URLSearchParams(location.search).get('u')) userId=p.userId; if(p.displayName) document.getElementById('mp-greet').textContent=`${p.displayName}さんの足あと・お気に入り・成績`; }catch(e){} }
+    if(liff.isLoggedIn()){ try{ const p=await liff.getProfile(); if(!new URLSearchParams(location.search).get('u')) userId=p.userId; if(p.displayName) document.getElementById('mp-greet').textContent=`📓 ${p.displayName}さんの就活記録 — 足あと・お気に入り・成績・診断`; }catch(e){} }
   }catch(e){ console.warn('LIFF skipped (preview):', e&&e.message); }
   // LIFF外/ゲスト(userId取れない)はモーダルを出さず従来ゲスト表示
   const isReal = userId && userId!=='guest-preview';
