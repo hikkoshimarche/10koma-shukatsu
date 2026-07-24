@@ -52,3 +52,7 @@ REPORT.md
 
 # clasp local (scriptId/spreadsheetId — 非公開)
 tools/gas_userprofiles/.clasp.json
+
+# health-check reports (内部レポート=public repoへ出さない)
+tools/health/reports/
+tools/health/_state.json
