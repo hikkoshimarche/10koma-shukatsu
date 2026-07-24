@@ -41,6 +41,12 @@
       padding: 2px 9px; white-space: nowrap; box-shadow: 1px 1px 0 var(--ink);
     }
     .menu-desc { font-size: 12.5px; color: var(--ink-soft); line-height: 1.65; margin-top: 8px; }
+    /* 機能名リンク: 説明を読む→その場で試せる */
+    a.ht-link { color: var(--accent-red); text-decoration: none; border-bottom: 2px solid var(--accent-red); }
+    a.ht-link::after { content: " ↗"; font-size: 11px; border: none; }
+    a.flow-step { text-decoration: none; color: inherit; display: block; }
+    a.flow-step .fs-ic { transition: transform .1s; }
+    a.flow-step:active .fs-ic { transform: scale(0.92); }
     .flow-list { margin: 9px 0 0; padding: 0; list-style: none; counter-reset: st; }
     .flow-list li {
       position: relative; padding: 5px 0 5px 30px; font-size: 12.5px; color: var(--ink);
@@ -125,7 +131,7 @@
     <p class="section-title">メニューの使い方</p>
 
     <div class="menu-card">
-      <div class="menu-head"><span class="menu-ic">🏢</span><span class="menu-title">企業研究</span><span class="menu-cell">メニュー左上</span></div>
+      <div class="menu-head"><span class="menu-ic">🏢</span><span class="menu-title"><a class="ht-link" href="/industry.html?from=howto">企業研究</a></span><span class="menu-cell">メニュー左上</span></div>
       <p class="menu-desc">業界から会社を選び、1社をとことん深掘り。</p>
       <ol class="flow-list">
         <li><b>10コマ</b>で会社の全体像をつかむ</li>
@@ -138,7 +144,7 @@
     </div>
 
     <div class="menu-card">
-      <div class="menu-head"><span class="menu-ic">🌐</span><span class="menu-title">業界研究</span><span class="menu-cell">メニュー中上</span></div>
+      <div class="menu-head"><span class="menu-ic">🌐</span><span class="menu-title"><a class="ht-link" href="/gyokai.html?from=howto">業界研究</a></span><span class="menu-cell">メニュー中上</span></div>
       <p class="menu-desc">業界を選んで、まるごと理解。</p>
       <ol class="flow-list">
         <li><b>業界10コマ</b>で業界の全体像をつかむ</li>
@@ -148,17 +154,17 @@
     </div>
 
     <div class="menu-card">
-      <div class="menu-head"><span class="menu-ic">🧭</span><span class="menu-title">相性診断</span><span class="menu-cell">メニュー右上</span></div>
+      <div class="menu-head"><span class="menu-ic">🧭</span><span class="menu-title"><a class="ht-link" href="/shindan.html?from=howto">相性診断</a></span><span class="menu-cell">メニュー右上</span></div>
       <p class="menu-desc">かんたんな質問に答えると、公式公開情報と業界傾向から、あなたに合いそうな業界・企業を提案します。<b>優劣づけはしません</b>——あなたが判断するための材料です。</p>
     </div>
 
     <div class="menu-card">
-      <div class="menu-head"><span class="menu-ic">⭐</span><span class="menu-title">お気に入り</span><span class="menu-cell">メニュー左下</span></div>
+      <div class="menu-head"><span class="menu-ic">⭐</span><span class="menu-title"><a class="ht-link" href="/mypage.html?from=howto">お気に入り</a></span><span class="menu-cell">メニュー左下</span></div>
       <p class="menu-desc">気になる企業を保存。一覧から「選んで比較」もできます。</p>
     </div>
 
     <div class="menu-card">
-      <div class="menu-head"><span class="menu-ic">🛡️</span><span class="menu-title">お守り</span><span class="menu-cell">メニュー右下</span></div>
+      <div class="menu-head"><span class="menu-ic">🛡️</span><span class="menu-title"><a class="ht-link" href="/omamori.html?from=howto">お守り</a></span><span class="menu-cell">メニュー右下</span></div>
       <p class="menu-desc">面接前・GD前・結果待ち・眠れない夜など、不安なときに。そっと背中を押す言葉を、いまの気持ちに合わせてお届けします。</p>
     </div>
 
@@ -174,19 +180,19 @@
 
     <div class="mini-feat">
       <span class="mf-ic">🧰</span>
-      <div><p class="mf-t">ES・面接対策</p><p class="mf-d">「ES・面接の基本（型）」でガクチカ・自己PR・志望動機・面接の定番フレームを確認。企業ページの「対策キット」では、会社別の<b>志望動機の材料・想定質問</b>も見られます（合否や回答例は保証しません）。</p></div>
+      <div><p class="mf-t"><a class="ht-link" href="/es_guide.html?from=howto">ES・面接対策</a></p><p class="mf-d">「ES・面接の基本（型）」でガクチカ・自己PR・志望動機・面接の定番フレームを確認。企業ページの「対策キット」では、会社別の<b>志望動機の材料・想定質問</b>も見られます（合否や回答例は保証しません）。</p></div>
     </div>
     <div class="mini-feat">
       <span class="mf-ic">⚖️</span>
-      <div><p class="mf-t">企業比較</p><p class="mf-d">2〜3社を横並びで比較。年収・事業・決算などを一次情報＋出典付きで確認できます（順位づけはしません）。</p></div>
+      <div><p class="mf-t"><a class="ht-link" href="/compare.html?from=howto">企業比較</a></p><p class="mf-d">2〜3社を横並びで比較。年収・事業・決算などを一次情報＋出典付きで確認できます（順位づけはしません）。</p></div>
     </div>
     <div class="mini-feat">
       <span class="mf-ic">🔍</span>
-      <div><p class="mf-t">検索</p><p class="mf-d">ホームの検索窓から、会社名・業界名ですぐに探せます。</p></div>
+      <div><p class="mf-t"><a class="ht-link" href="/home.html?from=howto">検索</a></p><p class="mf-d">ホームの検索窓から、会社名・業界名ですぐに探せます。</p></div>
     </div>
     <div class="mini-feat">
       <span class="mf-ic">🎯</span>
-      <div><p class="mf-t">復習</p><p class="mf-d">クイズで間違えた問題を、あとからまとめておさらいできます。</p></div>
+      <div><p class="mf-t"><a class="ht-link" href="/quiz.html?from=howto">復習</a></p><p class="mf-d">クイズで間違えた問題を、あとからまとめておさらいできます。</p></div>
     </div>
   </div>
 
@@ -194,15 +200,15 @@
   <div class="content howto-section">
     <p class="section-title">就活の流れ</p>
     <div class="flow-strip">
-      <div class="flow-step"><span class="fs-ic">🧭</span><span class="fs-l">自己分析<br>(相性診断)</span></div>
+      <a class="flow-step" href="/shindan.html?from=howto"><span class="fs-ic">🧭</span><span class="fs-l">自己分析<br>(相性診断)</span></a>
       <span class="flow-sep">›</span>
-      <div class="flow-step"><span class="fs-ic">🌐</span><span class="fs-l">業界研究</span></div>
+      <a class="flow-step" href="/gyokai.html?from=howto"><span class="fs-ic">🌐</span><span class="fs-l">業界研究</span></a>
       <span class="flow-sep">›</span>
-      <div class="flow-step"><span class="fs-ic">🏢</span><span class="fs-l">企業研究</span></div>
+      <a class="flow-step" href="/industry.html?from=howto"><span class="fs-ic">🏢</span><span class="fs-l">企業研究</span></a>
       <span class="flow-sep">›</span>
-      <div class="flow-step"><span class="fs-ic">🧠</span><span class="fs-l">理解度<br>チェック</span></div>
+      <a class="flow-step" href="/quiz.html?from=howto"><span class="fs-ic">🧠</span><span class="fs-l">理解度<br>チェック</span></a>
       <span class="flow-sep">›</span>
-      <div class="flow-step"><span class="fs-ic">📝</span><span class="fs-l">選考対策<br>(ES・面接)</span></div>
+      <a class="flow-step" href="/es_guide.html?from=howto"><span class="fs-ic">📝</span><span class="fs-l">選考対策<br>(ES・面接)</span></a>
     </div>
   </div>
 
