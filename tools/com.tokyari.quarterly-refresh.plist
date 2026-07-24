@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>QUIZ_LINE_SEND</key>
+		<string>0</string>
+		<key>QUIZ_MAX_USD</key>
+		<string>30</string>
+	</dict>
+	<key>Label</key>
+	<string>com.tokyari.quarterly-refresh</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/bash</string>
+		<string>-lc</string>
+		<string>export PATH="$(/bin/ls -d "$HOME"/.nvm/versions/node/*/bin 2&gt;/dev/null|sort -V|tail -1):/usr/local/bin:/opt/homebrew/bin:$PATH"; exec /opt/homebrew/bin/python3 /Users/oscardodds/projects/10koma-shukatsu/tools/quarterly_refresh.py</string>
+	</array>
+	<key>StandardErrorPath</key>
+	<string>/Users/oscardodds/projects/10koma-shukatsu/logs/quarterly_refresh.err.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/oscardodds/projects/10koma-shukatsu/logs/quarterly_refresh.out.log</string>
+	<key>StartCalendarInterval</key>
+	<array>
+		<dict>
+			<key>Day</key>
+			<integer>1</integer>
+			<key>Hour</key>
+			<integer>6</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+			<key>Month</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>Day</key>
+			<integer>1</integer>
+			<key>Hour</key>
+			<integer>6</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+			<key>Month</key>
+			<integer>6</integer>
+		</dict>
+		<dict>
+			<key>Day</key>
+			<integer>1</integer>
+			<key>Hour</key>
+			<integer>6</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+			<key>Month</key>
+			<integer>9</integer>
+		</dict>
+		<dict>
+			<key>Day</key>
+			<integer>1</integer>
+			<key>Hour</key>
+			<integer>6</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+			<key>Month</key>
+			<integer>12</integer>
+		</dict>
+	</array>
+	<key>WorkingDirectory</key>
+	<string>/Users/oscardodds/projects/10koma-shukatsu</string>
+</dict>
+</plist>

@@ -78,3 +78,12 @@ class LintError(RuntimeError):
 オスカーがChatGPT・KDP等に添付するファイル（レビュー素材zip・epub・図版・原稿等）は、必ず **`~/Desktop/kindle_受け渡し/`** に置く。全社（全編）・全スレ共通、ここ1箇所のみ。
 - **フォルダ直下＝「いま渡すもの」だけ**にする。過去の受け渡し物は `~/Desktop/kindle_受け渡し/_old/` へ退避してから新規を置く。
 - 配置後は必ず `open ~/Desktop/kindle_受け渡し/` を実行し、Finderで開いた状態にして終える。
+
+## 【恒久ルール】launchd ジョブの作り方（npx PATH地雷の根治・2026-07-24確立）
+新規の `com.tokyari.*` launchd ジョブは、必ず **`tools/launchd_template.plist`** を土台にする。
+- **npx/wrangler/node/clasp を(直接 or subprocess経由で)呼ぶジョブは、テンプレの bash -lc PATH前置を必ず使う**。launchdの最小PATH(`/usr/bin:/bin:/usr/sbin:/sbin`)＋`bash -l`は zsh/nvm のPATHを読まず、そのままだと `FileNotFoundError: 'npx'`(exit1) で**静かに更新が止まる**（2026-07-24のプロフィール同期障害の真因）。
+- **plistの top-level `PATH` キーは launchd に無視される（効かない）**。`EnvironmentVariables`内PATH、もしくはテンプレの動的PATH前置(`export PATH="$(ls -d "$HOME"/.nvm/versions/node/*/bin|sort -V|tail -1):/usr/local/bin:/opt/homebrew/bin:$PATH"`)を使う。nvm版数はglobで最新自動選択（版上げ追随）。
+- **RunAtLoad方針**: 毎日ジョブ=`RunAtLoad=true`（電源OFF/再起動/ログインで取りこぼしを取り戻す。睡眠時はStartCalendarIntervalが起床時に実行=launchd標準）。毎時/週次/月次/四半期=付けない（ログイン毎再実行は過剰）。
+- plist は `~/Library/LaunchAgents/` に配置しつつ**repoの `tools/` にも必ずコミット**（版管理）。
+- 検証: `env -i HOME="$HOME" PATH="/usr/bin:/bin:/usr/sbin:/sbin" /bin/bash -lc '<PATH前置>; command -v npx'` で npx が解決すればOK。
+- 既存で `deploy_salary.py` を使うジョブ(phasec/sheetsync等)は、同モジュールの `_npx()` が npx を解決するため追加対応不要。

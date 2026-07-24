@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  トーキャリ launchd ジョブ 共通テンプレート（新規ジョブは必ずこれを土台にする）
+  ================================================================
+  【必須】npx/wrangler/node/clasp を(直接 or subprocess経由で)呼ぶジョブは、下の PATH 前置を必ず使う。
+    理由: launchdの最小PATH(/usr/bin:/bin:/usr/sbin:/sbin)＋`bash -l`は zsh/nvm のPATHを読まない
+          → そのままだと `FileNotFoundError: 'npx'`(exit1)で落ち、静かに更新が止まる(2026-07-24の同期障害の真因)。
+    注意: plistの「top-level PATH キー」は launchd に無視される(効かない)。EnvironmentVariables内PATH、
+          もしくは下記 bash -lc の動的PATH前置を使うこと。nvm版数は glob で最新を自動選択(版上げに追随)。
+    確認: `env -i HOME="$HOME" PATH="/usr/bin:/bin:/usr/sbin:/sbin" /bin/bash -lc '<PATH前置>; command -v npx'`
+
+  【RunAtLoad 方針】
+    - 毎日ジョブ … <key>RunAtLoad</key><true/> を付ける(電源OFF/再起動/ログインで実行=取りこぼしを取り戻す。
+                   睡眠時はStartCalendarIntervalがlaunchd標準で起床時に実行)。
+    - 毎時/週次/月次/四半期ジョブ … RunAtLoad は付けない(ログイン毎の再実行は過剰・重い)。wake catch-upに委ねる。
+
+  使い方: __LABEL__ / スケジュール / __CMD__(実行コマンド絶対パス) を置換 →
+          ~/Library/LaunchAgents/ に配置 → `launchctl bootstrap gui/$(id -u) <plist>`。plistはrepoのtools/にも置く。
+-->
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.tokyari.__LABEL__</string>
+  <key>ProgramArguments</key><array>
+    <string>/bin/bash</string><string>-lc</string>
+    <!-- ↓ PATH前置は原則そのまま。__CMD__ を実コマンド(例: /opt/homebrew/bin/python3 /abs/script.py)に置換 -->
+    <string>export PATH="$(/bin/ls -d "$HOME"/.nvm/versions/node/*/bin 2&gt;/dev/null|sort -V|tail -1):/usr/local/bin:/opt/homebrew/bin:$PATH"; exec __CMD__</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Users/oscardodds/projects/10koma-shukatsu</string>
+  <!-- スケジュール例(毎日7:05)。週次={Weekday,Hour,Minute} / 月次={Day,Hour,Minute} / 毎時=<key>StartInterval</key><integer>3600</integer> -->
+  <key>StartCalendarInterval</key><dict><key>Hour</key><integer>7</integer><key>Minute</key><integer>5</integer></dict>
+  <!-- 毎日ジョブのみ true。週次以降はこの2行を削除。 -->
+  <key>RunAtLoad</key><true/>
+  <!-- 課金/送信フラグ等が要る場合のみ(例: 四半期/月次) -->
+  <!-- <key>EnvironmentVariables</key><dict><key>QUIZ_LINE_SEND</key><string>0</string></dict> -->
+  <key>StandardOutPath</key><string>/Users/oscardodds/projects/10koma-shukatsu/logs/__LABEL__.out.log</string>
+  <key>StandardErrorPath</key><string>/Users/oscardodds/projects/10koma-shukatsu/logs/__LABEL__.err.log</string>
+</dict></plist>
