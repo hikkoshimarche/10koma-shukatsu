@@ -5,42 +5,100 @@
 grounding gate: 抽出した日付/数値/職種が元ページ本文に実在しないと不採用(フォールバックへ降格)。
 成果物: output/<slug>/selection_info.json + 受け渡し md(sha8)。本番D1反映はレビュー承認後(別途)。
 """
-import sys, os, json, re, hashlib, datetime
+import sys, os, json, re, hashlib, datetime, subprocess
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import quiz_fanout as q
 
 OUT = q.OUT
 HANDOFF = os.path.expanduser("~/Desktop/kindle_受け渡し")
 DISCLAIMER = "※取得日時点の情報です。応募前に必ず公式採用ページで最新情報をご確認ください。"
+TODAY = datetime.date(2026, 7, 24)
+FRESH_FLOOR = TODAY - datetime.timedelta(days=60)     # 直近有効(取得日から過去60日)
+# 新卒採用ページ優先 / 中途・アルバイト等は除外(新卒スコープ限定)
+_NEWGRAD_URL = re.compile(r"graduate|shinsotsu|shinsotu|newgrad|new-?grad|fresh|新卒|recruit/?$|saiyo/?$", re.I)
+_NONGRAD_URL = re.compile(r"midcareer|mid-career|career(?!s)|carrier|chuto|中途|part|arbeit|baito|アルバイト|"
+                          r"kikan|handicap|challenged|障が|高校|highschool", re.I)
+_NONGRAD_WORD = re.compile(r"中途|キャリア採用|経験者|アルバイト|パート|高校生|障がい|障害者|第二新卒(?!.*新卒)")
+# 採用カテゴリ(職種でない)=誤認防止
+_CATEGORY = re.compile(r"^(新卒採用|キャリア採用|中途採用|通年採用|障がい者採用|アルバイト|インターン(シップ)?|"
+                       r"採用情報|エントリー|マイページ)$")
 
-SYS = ("あなたは公式採用ページから選考情報を『そのまま』抽出する担当です。厳守:"
+SYS = ("あなたは公式採用ページから『新卒採用』の選考情報のみを抽出する担当です。厳守:"
        "(1)提供テキストに明記された事実のみ。書いていない項目は必ず null(推測・前年度流用は禁止=締切の誤りは重大)。"
-       "(2)選考フロー(ES・適性検査・面接回数等の順序)、スケジュール(エントリー開始/締切/説明会等の日付)、募集職種 を抽出。"
-       "(3)日付・数値・職種名は本文の表記のまま。")
-USER = ("会社名: {name}\n公式採用ページ本文(抜粋):\n{body}\n\n"
-        "JSON: {{\"senko_flow\":[\"..\"]|null, \"schedule\":[{{\"label\":\"..\",\"date\":\"..\"}}]|null, "
-        "\"shokushu\":[\"..\"]|null}}  (本文に無いキーは null)")
+       "(2)対象は新卒採用のみ。中途/キャリア/アルバイト/高校生/障がい者採用の情報は抽出しない(混在時は除外)。"
+       "(3)選考フロー(ES→適性検査→面接回数等の順序)、スケジュール(エントリー開始/締切/説明会等の日付。対象卒年度27卒/28卒が分かれば付与)、"
+       "募集職種・コース(技術系/事務系/研究職等。『新卒採用/キャリア採用』などの採用カテゴリ名は職種でないので除外)。"
+       "(4)日付・数値・職種名は本文の表記のまま。")
+USER = ("会社名: {name}\n公式新卒採用ページ本文(抜粋):\n{body}\n\n"
+        "JSON: {{\"senko_flow\":[\"..\"]|null, \"schedule\":[{{\"label\":\"..\",\"date\":\"..\",\"grad_year\":\"27卒|28卒|\"}}]|null, "
+        "\"shokushu\":[\"..\"]|null}}  (新卒に該当しない/本文に無いキーは null)")
 
 _DATEISH = re.compile(r"\d{1,4}[年/月.\-]\d{1,2}|\d{1,2}月\d{1,2}日|上旬|中旬|下旬|締切|エントリー|\d+回|\d+次")
 
 
+def _curl(url):
+    try:
+        r = subprocess.run(["curl", "-sL", "--max-time", "12", "-A", "Mozilla/5.0", url], capture_output=True, timeout=15)
+        return r.stdout.decode("utf-8", "ignore")
+    except Exception:
+        return ""
+
+
+def _html_text(html):
+    html = re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", html, flags=re.S | re.I)
+    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html))
+
+
+def _deep_dive(seed_urls):
+    """採用トップHTMLから 募集要項/選考フロー/新卒 の下層リンクを1-2層辿り本文を追加(新卒優先・中途除外)。"""
+    add_text, add_urls = [], []
+    for seed in seed_urls[:2]:
+        html = _curl(seed)
+        if not html:
+            continue
+        base = re.match(r"(https?://[^/]+)", seed).group(1)
+        for m in re.findall(r'href="([^"#]+)"', html):
+            lu = m if m.startswith("http") else (base + m if m.startswith("/") else None)
+            if not lu or base not in lu:
+                continue
+            if _NONGRAD_URL.search(lu):
+                continue
+            if re.search(r"boshu|募集要項|youkou|entry|flow|選考|senko|graduate|shinsotsu|newgrad|guideline|schedule", lu, re.I):
+                if lu not in add_urls and len(add_urls) < 3:
+                    t = _html_text(_curl(lu))
+                    if len(t) > 300:
+                        add_text.append(t[:4000]); add_urls.append(lu)
+    return add_text, add_urls
+
+
 def _recruit_text(slug):
-    """rendered_corpus/quiz_corpusから採用・選考ページ本文＋そのURL群。"""
+    """新卒採用ページ本文(優先)＋深掘り下層。中途/アルバイト等は除外。返: (text, urls, asof, is_newgrad)."""
+    seed, asof = [], ""
     for fn in ("rendered_corpus.json", "quiz_corpus_locked_v3.json"):
         f = os.path.join(OUT, slug, fn)
         if not os.path.exists(f):
             continue
         rc = json.load(open(f))
-        urls = [u for u in rc if re.search(r"recruit|saiyo|採用|shinsotsu|newgrad|careers?|entry|senko|選考|fresh", u, re.I)]
-        if urls:
-            parts, asof = [], ""
-            for u in urls:
+        for u in rc:
+            if _NONGRAD_URL.search(u):
+                continue
+            if re.search(r"recruit|saiyo|採用|shinsotsu|newgrad|entry|senko|選考|fresh|graduate", u, re.I):
                 v = rc[u]
-                t = v.get("text", "") if isinstance(v, dict) else v
+                seed.append((u, v.get("text", "") if isinstance(v, dict) else v))
                 asof = (v.get("as_of", "") if isinstance(v, dict) else "") or asof
-                parts.append(t)
-            return " ".join(parts)[:6000], urls, (asof or str(datetime.date(2026, 7, 24)))
-    return "", [], ""
+        if seed:
+            break
+    if not seed:
+        return "", [], str(TODAY), False
+    # 新卒URLを優先順に
+    seed.sort(key=lambda x: 0 if _NEWGRAD_URL.search(x[0]) else 1)
+    urls = [u for u, _ in seed]
+    parts = [t for _, t in seed]
+    # 深掘り(募集要項/選考フロー下層)
+    dtext, durls = _deep_dive(urls)
+    parts += dtext; urls += durls
+    is_newgrad = any(_NEWGRAD_URL.search(u) for u in urls) or bool(re.search(r"新卒|graduate|shinsotsu", " ".join(parts)))
+    return " ".join(parts)[:7000], urls, (asof or str(TODAY)), is_newgrad
 
 
 def _grounded(val, body):
@@ -53,30 +111,78 @@ def _grounded(val, body):
     return True
 
 
+def _schedule_fresh(v, body):
+    """未来日付 or 直近有効(過去60日以内)のみ採用。過去年度の告知ログは除外。"""
+    out = []
+    for it in (v or []):
+        if not isinstance(it, dict):
+            continue
+        dt = str(it.get("date", ""))
+        ym = re.search(r"(20\d\d)\D+(\d{1,2})(?:\D+(\d{1,2}))?", dt)
+        keep = True
+        if ym:
+            y, mo, da = int(ym.group(1)), int(ym.group(2)), int(ym.group(3) or 1)
+            try:
+                d0 = datetime.date(y, mo, da)
+                keep = d0 >= FRESH_FLOOR          # 未来 or 直近60日
+            except ValueError:
+                keep = y >= TODAY.year
+        elif re.search(r"20(19|2[0-4])", dt):     # 明示的に過去年(2024以前)
+            keep = False
+        if _NONGRAD_WORD.search(str(it.get("label", ""))):
+            keep = False
+        if keep:
+            out.append(it)
+    return out
+
+
+def _clean_shokushu(v):
+    return [x for x in (v or []) if isinstance(x, str) and not _CATEGORY.match(x.strip()) and not _NONGRAD_WORD.search(x)]
+
+
 def gen_one(slug, name):
-    body, urls, asof = _recruit_text(slug)
-    src = urls[0] if urls else ""
-    if len(body) < 200:
-        return {"slug": slug, "name": name, "status": "no_recruit_page",
-                "selection_info": {"fallback": f"公式採用ページで確認: {src}", "disclaimer": DISCLAIMER}}
+    body, urls, asof, is_newgrad = _recruit_text(slug)
+    src = next((u for u in urls if _NEWGRAD_URL.search(u)), urls[0] if urls else "")
+    fb = {"fallback": f"公式採用ページで確認: {src}"} if src else {"fallback": "公式採用ページで確認"}
+    # 新卒ページに到達できない(中途のみ)/本文薄い → 表示は採用リンク1本のみ(空カード禁止)
+    if len(body) < 200 or not is_newgrad:
+        return {"slug": slug, "name": name, "status": "link_only",
+                "selection_info": {"as_of": asof, "source_url": src, "link_only": True, "disclaimer": DISCLAIMER},
+                "reason": "新卒ページ未到達/本文薄" }
     txt = q.openai_chat([{"role": "system", "content": SYS},
-                         {"role": "user", "content": USER.format(name=name, body=body[:5000])}],
-                        max_tokens=700, temperature=0.1)
+                         {"role": "user", "content": USER.format(name=name, body=body[:5500])}],
+                        max_tokens=800, temperature=0.1)
     d = q._parse_json(txt) or {}
     info = {"as_of": asof, "source_url": src, "disclaimer": DISCLAIMER}
-    dropped = []
-    for key, label in (("senko_flow", "選考フロー"), ("schedule", "スケジュール"), ("shokushu", "募集職種")):
-        v = d.get(key)
-        if not v:
-            info[key] = {"fallback": f"公式採用ページで確認: {src}"}      # 公式に記載なし
-        elif not _grounded(v, body):
-            info[key] = {"fallback": f"公式採用ページで確認: {src}"}      # grounding落ち=誤情報回避
-            dropped.append(label)
-        else:
-            info[key] = v
+    dropped, fbcount = [], 0
+    # 選考フロー
+    v = d.get("senko_flow")
+    if v and _grounded(v, body):
+        info["senko_flow"] = v
+    else:
+        info["senko_flow"] = fb; fbcount += 1
+        if v: dropped.append("選考フロー")
+    # スケジュール(鮮度フィルタ)
+    sv = _schedule_fresh(d.get("schedule"), body)
+    if sv and _grounded(sv, body):
+        info["schedule"] = sv
+    else:
+        info["schedule"] = fb; fbcount += 1
+        if d.get("schedule"): dropped.append("スケジュール(古い/非新卒)")
+    # 募集職種(カテゴリ誤認除去)
+    kv = _clean_shokushu(d.get("shokushu"))
+    if kv and _grounded(kv, body):
+        info["shokushu"] = kv
+    else:
+        info["shokushu"] = fb; fbcount += 1
+        if d.get("shokushu"): dropped.append("職種(カテゴリ誤認)")
+    # 表示価値ガード: 3項目すべてフォールバック → 採用リンク1本のみ(空カード禁止)
+    status = "link_only" if fbcount == 3 else "ok"
+    if status == "link_only":
+        info = {"as_of": asof, "source_url": src, "link_only": True, "disclaimer": DISCLAIMER}
     json.dump({"slug": slug, "name": name, "selection_info": info},
               open(os.path.join(OUT, slug, "selection_info.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    return {"slug": slug, "name": name, "status": "ok", "selection_info": info, "grounding_dropped": dropped}
+    return {"slug": slug, "name": name, "status": status, "selection_info": info, "grounding_dropped": dropped}
 
 
 def main():
@@ -104,10 +210,12 @@ def main():
          "**出典=公式採用ページのみ**（口コミ/就活サイト禁止）。全項目 as_of+出典URL。公式に記載無しは『公式で確認→リンク』にフォールバック（**推測・昨年度流用は禁止**）。", "",
          f"**{DISCLAIMER}**", ""]
     for r in out:
-        if r.get("status") in ("ok", "no_recruit_page"):
-            info = r["selection_info"]
-            L.append(f"## {r['name']}（{r['slug']}）")
-            L.append(f"- 取得日: {info.get('as_of','')} / 出典: {info.get('source_url','')}")
+        info = r.get("selection_info", {})
+        L.append(f"## {r['name']}（{r['slug']}）")
+        L.append(f"- 取得日: {info.get('as_of','')} / 出典: {info.get('source_url','')}")
+        if r.get("status") == "link_only" or info.get("link_only"):
+            L.append(f"- 選考情報ブロック: **非表示（空カード禁止）** → 「採用情報→公式リンク」1本のみ表示。理由: {r.get('reason','3項目すべて公式確認へフォールバック')}")
+        else:
             for key, lab in (("senko_flow", "選考フロー"), ("schedule", "スケジュール"), ("shokushu", "募集職種")):
                 v = info.get(key)
                 if isinstance(v, dict) and "fallback" in v:
@@ -115,8 +223,8 @@ def main():
                 elif v:
                     L.append(f"- {lab}: {json.dumps(v, ensure_ascii=False)}")
             if r.get("grounding_dropped"):
-                L.append(f"  （grounding落ちでフォールバック: {r['grounding_dropped']}）")
-            L.append("")
+                L.append(f"  （フォールバック降格: {r['grounding_dropped']}）")
+        L.append("")
     body_md = "\n".join(L)
     sha8 = hashlib.sha256(body_md.encode()).hexdigest()[:8]
     os.makedirs(HANDOFF, exist_ok=True)
