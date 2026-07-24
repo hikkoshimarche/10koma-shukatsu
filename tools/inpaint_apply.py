@@ -117,12 +117,21 @@ def gemini_edit(orig, prompt):
 
 
 def color_match(edited, orig, bbox):
-    """編集画像(全体)の色分布を、元画像の該当bbox領域の per-channel 平均/標準偏差へ線形整合。
-    gpt-image-1 の暖色カースト等を元のトーンへ寄せる(合成前に適用)。"""
-    from PIL import ImageStat
+    """編集画像(全体)の色分布を、元画像の bbox「周囲リング」の per-channel 平均/標準偏差へ線形整合。
+    除去系では bbox 内=アーチファクト(元の色が不正)なので、正しいシーン色である周囲リングを参照する。
+    gpt-image-1 の暖色カースト/不整合トーンを正しい背景色へ寄せる(合成前に適用)。"""
+    from PIL import ImageStat, ImageDraw
     er = edited.resize(orig.size, Image.LANCZOS)
-    eb = er.crop(tuple(bbox)); ob = orig.crop(tuple(bbox))
-    se = ImageStat.Stat(eb); so = ImageStat.Stat(ob)
+    w, h = orig.size
+    # 周囲リング(bbox を pad 拡張した枠 − bbox) を参照領域に
+    pad = max(24, (bbox[2] - bbox[0]) // 4, (bbox[3] - bbox[1]) // 4)
+    ring = Image.new("L", (w, h), 0)
+    d = ImageDraw.Draw(ring)
+    d.rectangle((max(0, bbox[0]-pad), max(0, bbox[1]-pad), min(w, bbox[2]+pad), min(h, bbox[3]+pad)), fill=255)
+    d.rectangle(tuple(bbox), fill=0)
+    eb = er.crop(tuple(bbox))
+    se = ImageStat.Stat(eb)
+    so = ImageStat.Stat(orig, ring)          # 参照=元画像のリング
     bands = []
     for ci, ch in enumerate("RGB"):
         me, sde = se.mean[ci], (se.stddev[ci] or 1.0)
@@ -224,6 +233,16 @@ def main():
     results = []
     for j in jobs:
         key = f"{j['slug']}#{j['koma']}"
+        # --apply: 承認済みの RESULT png をそのまま反映(再生成しない=承認された画そのものを本番へ)
+        result_png = rdir / f"{j['slug']}_{j['koma']:02d}_RESULT.png"
+        if args.apply and not args.candidate and result_png.exists():
+            from PIL import Image as _I
+            result = _I.open(result_png).convert("RGB")
+            print(f"[{key}] 承認済みRESULT反映 …", flush=True)
+            ap_rec = apply_one(j, result)
+            ok = ap_rec["api_ok"] and not ap_rec["canary_drift"]
+            print(f"   {'✓反映' if ok else '⚠要確認'} sha={ap_rec['sha']} canary_drift={ap_rec['canary_drift']} api={ap_rec['api_ok']}", flush=True)
+            results.append({"key": key, **ap_rec}); continue
         print(f"[{key}] {j.get('label','')} …", flush=True)
         orig, _ = live_image(j["slug"], j["koma"])
         mask = build_mask(orig.size, j["bbox"])
