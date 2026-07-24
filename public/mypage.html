@@ -130,6 +130,15 @@
     .nw-tag.t-ma{background:#7d3c98}.nw-tag.t-hr{background:#2f6fb0}.nw-tag.t-info{background:#64748b}
     .nw-date{font-size:10.5px;color:#94a0ac;margin-left:auto;flex-shrink:0}
     .nw-title{font-size:13.5px;font-weight:700;line-height:1.55;color:var(--ink)}
+    /* v1.6強化: タップでアコーディオン展開 */
+    .nw-head{cursor:pointer;-webkit-tap-highlight-color:transparent}
+    .nw-chev{font-size:10px;color:#b3bdc8;flex-shrink:0;transition:transform .2s}
+    .nw-item.open .nw-chev{transform:rotate(180deg)}
+    .nw-exp{display:none;margin-top:9px}
+    .nw-item.open .nw-exp{display:block}
+    .nw-summary{font-size:12.5px;color:var(--ink);line-height:1.6;background:#eef4fb;border-radius:8px;padding:9px 11px}
+    .nw-slabel{display:block;font-size:10.5px;font-weight:800;color:#2f6fb0;margin-bottom:3px}
+    .nw-soon{color:#8a94a0;font-style:italic}
     .nw-guide{font-size:11.5px;color:#5a6675;line-height:1.55;margin-top:6px;background:#f4f7fb;border-radius:8px;padding:6px 9px}
     .nw-guide .gi{margin-right:3px}
     .nw-foot{display:flex;align-items:center;justify-content:space-between;margin-top:9px}
@@ -372,8 +381,11 @@ function showGlossaryPop(el, item){
 function hideGlossaryPop(){ const p=document.getElementById('gl-pop'); if(p) p.style.display='none'; }
 document.addEventListener('click', e=>{
   const g=e.target.closest && e.target.closest('.gl');
-  if(g){ e.preventDefault(); e.stopPropagation(); const i=+g.dataset.i; if(GALL[i]) showGlossaryPop(g, GALL[i]); }
-  else if(!(e.target.closest && e.target.closest('#gl-pop'))) hideGlossaryPop();
+  if(g){ e.preventDefault(); e.stopPropagation(); const i=+g.dataset.i; if(GALL[i]) showGlossaryPop(g, GALL[i]); return; }
+  // ニュースカードのアコーディオン開閉（用語タップは上で return 済み・公式リンクは nw-exp 内で別要素）
+  const head=e.target.closest && e.target.closest('.nw-head');
+  if(head){ const it=head.closest('.nw-item'); if(it) it.classList.toggle('open'); hideGlossaryPop(); return; }
+  if(!(e.target.closest && e.target.closest('#gl-pop'))) hideGlossaryPop();
 });
 window.addEventListener('scroll', hideGlossaryPop, true);
 
@@ -383,13 +395,19 @@ function secFeed(d){
   const kic={quiz:'🧠',datasheet:'📊',eskit:'🧰'};
   let inner='';
   if(off.length){
-    inner+=`<div class="fd-sub">お気に入り企業の公式ニュース</div>`+off.map(o=>{
+    inner+=`<div class="fd-sub">お気に入り企業の公式ニュース（タップで要約）</div>`+off.map(o=>{
       const g=classifyNews(o.title);
+      const summary=o.summary_easy ? esc(o.summary_easy) : '<span class="nw-soon">やさしい要約は準備中です</span>';
       return `<div class="nw-item">
-        <div class="nw-top"><span class="nw-tag ${g.cls}">${esc(g.label)}</span><span class="nw-date">${esc(o.date||'')}</span></div>
-        <div class="nw-title">${annotateGlossary(o.title)}</div>
-        <div class="nw-guide"><span class="gi">💡</span>${esc(g.guide)}</div>
-        <div class="nw-foot"><span class="nw-name">${esc(o.name)}</span><a class="nw-link" href="${esc(o.url)}" target="_blank" rel="noopener">公式ページ</a></div>
+        <div class="nw-head">
+          <div class="nw-top"><span class="nw-tag ${g.cls}">${esc(g.label)}</span><span class="nw-date">${esc(o.date||'')}</span><span class="nw-chev">▼</span></div>
+          <div class="nw-title">${annotateGlossary(o.title)}</div>
+        </div>
+        <div class="nw-exp">
+          <div class="nw-summary"><span class="nw-slabel">📝 やさしい要約</span>${summary}</div>
+          <div class="nw-guide"><span class="gi">💡</span>${esc(g.guide)}</div>
+          <div class="nw-foot"><span class="nw-name">${esc(o.name)}</span><a class="nw-link" href="${esc(o.url)}" target="_blank" rel="noopener">公式ページ</a></div>
+        </div>
       </div>`;
     }).join('');
   }

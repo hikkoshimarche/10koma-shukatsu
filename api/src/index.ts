@@ -770,6 +770,23 @@ app.get('/api/quiz/review', async (c) => {
   } catch (e) { return c.json([]) }
 })
 
+// === 企業ニュース: 当該社の最新ニュース（company.html「この会社の最新ニュース」用） ===
+// データが無い社は空配列（フロントは非表示にする）。summary_easy はタブD生成待ち=NULL可(gracefulに要約準備中表示)。
+app.get('/api/company-news', async (c) => {
+  const id = c.req.query('id') || c.req.query('company_id')
+  const limit = Math.min(parseInt(c.req.query('limit') || '50', 10) || 50, 100)
+  if (!id) return c.json([])
+  try {
+    const { results } = await c.env.DB.prepare(
+      `SELECT title, url, published_at, summary_easy
+       FROM company_news WHERE company_id = ? ORDER BY published_at DESC, fetched_at DESC LIMIT ?`
+    ).bind(id, limit).all()
+    return c.json((results || []).map((r: any) => ({
+      title: r.title, url: r.url, date: String(r.published_at || '').slice(0, 10), summary_easy: r.summary_easy || null,
+    })))
+  } catch (e) { return c.json([]) }
+})
+
 // === ホーム: 続きから（最近見た企業・view_logsから） ===
 app.get('/api/recent-companies', async (c) => {
   const userId = c.req.query('user_id')
@@ -1160,12 +1177,13 @@ app.get('/api/mypage', async (c) => {
     if (favIds.length) {
       const ph = favIds.map(() => '?').join(',')
       const { results } = await c.env.DB.prepare(
-        `SELECT n.company_id, c.name, n.title, n.url, n.published_at
+        `SELECT n.company_id, c.name, n.title, n.url, n.published_at, n.summary_easy
          FROM company_news n JOIN companies c ON c.id = n.company_id
          WHERE n.company_id IN (${ph}) ORDER BY n.published_at DESC LIMIT 8`
       ).bind(...favIds).all()
       out.feed.official = (results || []).map((r: any) => ({
-        company_id: r.company_id, name: r.name, title: r.title, url: r.url, date: String(r.published_at || '').slice(0, 10),
+        company_id: r.company_id, name: r.name, title: r.title, url: r.url,
+        date: String(r.published_at || '').slice(0, 10), summary_easy: r.summary_easy || null,
       }))
     }
   } catch (e) { /* company_news 未作成なら graceful に空 */ }

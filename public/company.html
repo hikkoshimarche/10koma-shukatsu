@@ -189,6 +189,27 @@
     .co-chip .cm-ic { font-size: 20px; line-height: 1; }
     .co-menu-t { padding: 14px 16px 2px; font-size: 12px; font-weight: 800; color: var(--white-dim); letter-spacing: 0.04em; }
 
+    /* === この会社の最新ニュース (company_news・データ無し社は非表示) === */
+    .cn-sec { padding: 16px 16px 6px; }
+    .cn-t { font-size: 13px; font-weight: 800; color: var(--white); margin-bottom: 10px; letter-spacing: 0.03em; }
+    .cn-item { display: block; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14); border-radius: 12px; padding: 11px 13px; margin-bottom: 8px; text-decoration: none; }
+    .cn-item:active { background: rgba(255,255,255,0.16); }
+    .cn-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .cn-tag { font-size: 10px; font-weight: 800; color: #fff; padding: 2px 8px; border-radius: 999px; flex-shrink: 0; }
+    .cn-tag.t-kessan{background:#c0392b}.cn-tag.t-product{background:#1f8a4c}.cn-tag.t-hire{background:#d17d00}
+    .cn-tag.t-ma{background:#7d3c98}.cn-tag.t-hr{background:#2f6fb0}.cn-tag.t-info{background:#5a6675}
+    .cn-date { font-size: 10px; color: var(--white-dim); margin-left: auto; flex-shrink: 0; }
+    .cn-title { font-size: 13px; font-weight: 600; color: var(--white); line-height: 1.55; }
+    .cn-link-h { font-size: 10.5px; color: var(--nana-blue); margin-top: 6px; }
+    .cn-more, .cn-empty2 { width: 100%; background: rgba(255,255,255,0.1); border: 1.5px solid var(--white-faint); border-radius: 10px; padding: 10px; color: var(--white); font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; -webkit-tap-highlight-color: transparent; }
+    .cn-tools { margin: 10px 0 4px; }
+    .cn-q { width: 100%; background: rgba(255,255,255,0.1); border: 1.5px solid var(--white-faint); border-radius: 10px; padding: 10px 12px; color: #fff; font-size: 14px; font-family: inherit; outline: none; }
+    .cn-q::placeholder { color: rgba(255,255,255,0.5); }
+    .cn-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+    .cn-fchip { font-size: 11px; font-weight: 700; color: var(--white-dim); background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 999px; padding: 4px 11px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .cn-fchip.on { background: var(--white); color: var(--navy); border-color: var(--white); }
+    .cn-none { font-size: 12px; color: var(--white-dim); padding: 8px 2px; }
+
     /* === Panels === */
     .panels-section {
       padding: 20px 16px 28px;
@@ -554,6 +575,65 @@ const IND2GYOKAI = {
   deeptech_space_ai:'deeptech-space-ai',
 };
 function gyokaiSlugFor(industryId){ return IND2GYOKAI[industryId] || null; }
+
+// === この会社の最新ニュース (決定論タグ分類・mypageと同ルール) ===
+const CN_TAGS=[
+  {cls:'t-kessan',label:'決算',kw:['決算','配当','業績','通期','四半期']},
+  {cls:'t-hire',label:'採用',kw:['採用','インターン','新卒']},
+  {cls:'t-ma',label:'提携・M&A',kw:['提携','資本','買収','合弁','統合','合併','株式譲渡','売却','出資','子会社化','株式取得']},
+  {cls:'t-product',label:'新製品',kw:['新発売','開始','リリース','新型']},
+  {cls:'t-hr',label:'人事',kw:['人事','役員']},
+];
+function cnTag(t){ t=String(t||''); for(const g of CN_TAGS){ if(g.kw.some(k=>t.includes(k))) return g; } return {cls:'t-info',label:'お知らせ'}; }
+let CN_ALL=[], cnFilter='', cnQuery='';
+function cnFiltered(){
+  let l=CN_ALL;
+  if(cnFilter) l=l.filter(n=>n.tag.label===cnFilter);
+  const q=cnQuery.trim(); if(q) l=l.filter(n=>n.title.includes(q));
+  return l;
+}
+function cnItems(list){
+  return list.map(n=>`
+    <a class="cn-item" href="${esc(n.url)}" target="_blank" rel="noopener">
+      <div class="cn-top"><span class="cn-tag ${n.tag.cls}">${esc(n.tag.label)}</span><span class="cn-date">${esc(n.date||'')}</span></div>
+      <div class="cn-title">${esc(n.title)}</div>
+      <div class="cn-link-h">公式ページ ↗</div>
+    </a>`).join('') || `<p class="cn-none">該当するニュースがありません</p>`;
+}
+async function renderCompanyNews(companyId){
+  const host=document.getElementById('company-news'); if(!host) return;
+  let news=[];
+  try{ const r=await fetch(`${API_BASE}/api/company-news?id=${encodeURIComponent(companyId)}`); if(r.ok) news=await r.json(); }catch(e){}
+  if(!Array.isArray(news)||!news.length){ host.style.display='none'; return; }  // データ無し社=非表示(空枠禁止)
+  CN_ALL=news.map(n=>({...n, tag:cnTag(n.title)})); cnFilter=''; cnQuery='';
+  host.style.display=''; cnCollapsed();
+}
+function cnCollapsed(){
+  const host=document.getElementById('company-news');
+  const more=CN_ALL.length>3 ? `<button class="cn-more" id="cn-more">もっと見る（過去のニュース ${CN_ALL.length}件）</button>` : '';
+  host.innerHTML=`<p class="cn-t">📰 この会社の最新ニュース</p><div class="cn-list">${cnItems(CN_ALL.slice(0,3))}</div>${more}`;
+  const mb=document.getElementById('cn-more'); if(mb) mb.onclick=cnExpanded;
+}
+function cnExpanded(){
+  const host=document.getElementById('company-news');
+  const tags=[...new Set(CN_ALL.map(n=>n.tag.label))];
+  host.innerHTML=`<p class="cn-t">📰 この会社のニュース（${CN_ALL.length}件・時系列）</p>
+    <div class="cn-tools">
+      <input class="cn-q" id="cn-q" type="search" placeholder="キーワードで絞り込み">
+      <div class="cn-filters" id="cn-filters">
+        <span class="cn-fchip on" data-f="">すべて</span>
+        ${tags.map(t=>`<span class="cn-fchip" data-f="${esc(t)}">${esc(t)}</span>`).join('')}
+      </div>
+    </div>
+    <div class="cn-list" id="cn-list">${cnItems(cnFiltered())}</div>`;
+  const q=document.getElementById('cn-q');
+  if(q){ q.value=cnQuery; q.oninput=()=>{ cnQuery=q.value; document.getElementById('cn-list').innerHTML=cnItems(cnFiltered()); }; }
+  host.querySelectorAll('.cn-fchip').forEach(c=>c.onclick=()=>{
+    cnFilter=c.dataset.f;
+    host.querySelectorAll('.cn-fchip').forEach(x=>x.classList.toggle('on', x===c));
+    document.getElementById('cn-list').innerHTML=cnItems(cnFiltered());
+  });
+}
 
 function goBack() {
   // ?from= を正とする(nav.js)。無ければモード別の親: 業界mode→業界研究 / 企業mode→企業一覧
@@ -993,6 +1073,7 @@ async function main() {
         ${company.description ? `<p class="company-detail-desc">${esc(company.description)}</p>` : ''}
       </div>
       ${menuHtml}
+      <div class="cn-sec" id="company-news" style="display:none"></div>
       <div class="panels-section" id="panels">${panelsHtml}</div>
       ${quizCtaHtml}
       ${videoHtml}
@@ -1009,6 +1090,8 @@ async function main() {
         else if (m.href) { location.href = m.href; }
       });
     });
+
+    renderCompanyNews(companyId);  // この会社の最新ニュース（データ無し社は自動で非表示）
 
     const cq = document.getElementById('company-quiz');
     const F = `&from=company&fromId=${encodeURIComponent(companyId)}`;  // 各機能から企業ページへ戻す
