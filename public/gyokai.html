@@ -28,7 +28,21 @@
     .gk-label{font-size:17px;font-weight:800;display:block}
     .gk-sub{font-size:11.5px;color:var(--mute);margin-top:3px;display:block}
     .gk-go{margin-left:auto;flex-shrink:0;font-size:12px;font-weight:800;color:#fff;background:var(--acc,#c8912a);border-radius:999px;padding:5px 12px}
-    .gk-find{display:flex;align-items:center;gap:6px;border-top:1px dashed #eadfc6;padding:10px 15px;text-decoration:none;color:var(--gold-d);font-size:12.5px;font-weight:700;background:#fdf9ef}
+    .gk-go{transition:transform .2s}
+    .gk-card.open .gk-go{transform:rotate(90deg)}
+    /* 業界ハブ(展開式): タップ→即10コマをやめ、コンテンツを選ばせる */
+    .gk-hub{display:none;padding:4px 13px 13px;border-top:1px dashed #eadfc6;background:#fdfaf1}
+    .gk-card.open .gk-hub{display:block}
+    .gk-tiles{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:11px 0 4px}
+    .gk-tile{display:flex;flex-direction:column;gap:3px;padding:12px 12px;border-radius:12px;text-decoration:none;
+      background:#fff;border:1.5px solid #efe4c9;color:var(--ink);-webkit-tap-highlight-color:transparent}
+    .gk-tile:active{background:#fbf3df}
+    .gk-tile .tic{font-size:20px;line-height:1}
+    .gk-tile .tl{font-size:13.5px;font-weight:800}
+    .gk-tile .ts{font-size:10.5px;color:var(--mute);line-height:1.4}
+    .gk-tile.soon{opacity:0.62;pointer-events:none;background:#f6f1e4;border-style:dashed}
+    .gk-tile .soon-b{align-self:flex-start;font-size:9px;font-weight:800;color:#8a6d00;background:#ffe9a8;border-radius:999px;padding:1px 7px;margin-top:2px}
+    .gk-find{display:flex;align-items:center;gap:6px;border-top:1px dashed #eadfc6;padding:11px 4px 3px;text-decoration:none;color:var(--gold-d);font-size:13px;font-weight:800;background:transparent}
     .gk-find .fa{margin-left:auto;font-weight:800}
     .foot{text-align:center;padding:18px 0 8px}.foot img{height:30px}
     .loading{text-align:center;color:var(--mute);padding:40px}
@@ -36,7 +50,7 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="backbar"><a href="#" onclick="tkBack('/home.html');return false">‹ 戻る</a></div>
+  <div class="backbar"><a href="#" data-tkback="/home.html">‹ 戻る</a></div>
   <div class="hd">
     <span class="role">📚 業界研究</span>
     <h1>業界のしくみを学ぶ</h1>
@@ -69,18 +83,33 @@ const INDUSTRIES=[
   {slug:'deeptech-space-ai',name:'ディープテック・宇宙・AI',icon:'🛰️',acc:'#3a9d6b',find:''},
 ];
 function render(){
-  document.getElementById('list').innerHTML=INDUSTRIES.map(ind=>`
+  document.getElementById('list').innerHTML=INDUSTRIES.map(ind=>{
+    const s=encodeURIComponent(ind.slug), n=encodeURIComponent(ind.name);
+    const find=`/industry.html?from=gyokai${ind.find?('&ind='+encodeURIComponent(ind.find)):''}`;
+    return `
     <div class="gk-card" style="--acc:${ind.acc}">
-      <button class="gk-main" data-slug="${esc(ind.slug)}" data-name="${esc(ind.name)}">
+      <button class="gk-main" aria-expanded="false">
         <span class="gk-ic">${ind.icon}</span>
         <span class="gk-body"><span class="gk-label">${esc(ind.name)}</span>
-          <span class="gk-sub">📖 業界10コマ ・ 🎬 業界動画 ・ 🧠 業界クイズ で学ぶ</span></span>
-        <span class="gk-go">学ぶ ›</span>
+          <span class="gk-sub">コンテンツを選ぶ：10コマ / クイズ / 動画 / ニュース</span></span>
+        <span class="gk-go">›</span>
       </button>
-      <a class="gk-find" href="/industry.html?from=gyokai${ind.find?('&ind='+encodeURIComponent(ind.find)):''}">🔎 この業界の企業を探す<span class="fa">›</span></a>
-    </div>`).join('');
-  document.querySelectorAll('.gk-main').forEach(b=>b.onclick=()=>{
-    location.href=`/company.html?industry=${encodeURIComponent(b.dataset.slug)}&name=${encodeURIComponent(b.dataset.name)}&from=gyokai`;
+      <div class="gk-hub">
+        <div class="gk-tiles">
+          <a class="gk-tile" href="/company.html?industry=${s}&name=${n}&from=gyokai"><span class="tic">📖</span><span class="tl">業界10コマ</span><span class="ts">しくみを学ぶ</span></a>
+          <a class="gk-tile" href="/quiz.html?industry=${s}&name=${n}&from=gyokai"><span class="tic">🧠</span><span class="tl">業界クイズ</span><span class="ts">理解度チェック</span></a>
+          <div class="gk-tile soon"><span class="tic">🎬</span><span class="tl">業界動画</span><span class="soon-b">準備中</span></div>
+          <div class="gk-tile soon"><span class="tic">📰</span><span class="tl">業界ニュース</span><span class="soon-b">準備中</span></div>
+        </div>
+        <a class="gk-find" href="${find}">🔎 この業界の企業を探す（企業一覧）<span class="fa">›</span></a>
+      </div>
+    </div>`;
+  }).join('');
+  // アコーディオン: タップで開閉(1つずつ)。タップ→即10コマは廃止し、コンテンツを選ばせる。
+  document.querySelectorAll('.gk-card .gk-main').forEach(b=>b.onclick=()=>{
+    const card=b.closest('.gk-card'); const isOpen=card.classList.contains('open');
+    document.querySelectorAll('.gk-card.open').forEach(c=>{ c.classList.remove('open'); const m=c.querySelector('.gk-main'); if(m)m.setAttribute('aria-expanded','false'); });
+    if(!isOpen){ card.classList.add('open'); b.setAttribute('aria-expanded','true'); card.scrollIntoView({behavior:'smooth',block:'nearest'}); }
   });
 }
 async function main(){
