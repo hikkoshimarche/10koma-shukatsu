@@ -15,8 +15,19 @@ import edinet_salary_sweep as ES2   # EDINET index/PDF基盤を流用(財務corp
 OUT = q.OUT
 
 
+_FIN_METRICS = [("売上高", "売上高|売上収益|営業収益|経常収益"), ("営業利益", "営業利益|事業利益"),
+                ("当期純利益", "親会社株主に帰属する当期純利益|親会社の所有者に帰属する\\s*当期利益|当期純利益"),
+                ("純資産", "純資産(?:額)?|資本合計"), ("総資産", "総資産(?:額)?|資産合計")]
+
+
+def _fy_label(period_end):
+    m = re.match(r"(\d{4})-(\d{2})", period_end or "")
+    return f"{m.group(1)}年{int(m.group(2))}月期" if m else "最新期"
+
+
 def _edinet_financial_corpus(slug, name):
-    """EDINET有報の『主要な経営指標等の推移』(売上/利益/資産の複数年系列)を財務corpusとして返す。Lv4財務問の素材。"""
+    """EDINET有報『主要な経営指標等の推移』から最新年度の財務値を抽出し『2026年3月期の売上高は…』と明示。
+    ①Lv4財務問を最新期(2026年3月期)に固定するため、複数年系列でなく最新列を取り出して素材化。"""
     if not os.environ.get("EDINET_API_KEY"):
         return {}
     try:
@@ -24,14 +35,31 @@ def _edinet_financial_corpus(slug, name):
         e = ES2.match(slug, idx)
         if not e:
             return {}
-        text = ES2.fetch_text(e["docid"])         # 従業員状況まで=主要経営指標(1-2頁)を含む
-        # 主要な経営指標等の推移(先頭付近) + 財務語を含む区間を抽出
+        text = ES2.fetch_text(e["docid"])
         i = text.find("主要な経営指標")
-        seg = text[i:i + 2500] if i >= 0 else ""
+        seg = text[i:i + 2600] if i >= 0 else ""
         if not seg or not re.search(r"売上|営業利益|経常|純利益", seg):
             return {}
+        fy = _fy_label(e.get("periodEnd"))
+        unit = 1000 if re.search(r"主要な経営指標[^百]{0,60}千円", seg) else 1_000_000  # 表の単位(百万円が既定)
+        facts = []
+        for label, pat in _FIN_METRICS:
+            m = re.search(f"(?:{pat})[^\\d]{{0,12}}((?:[△▲-]?[\\d,]+\\s*){{2,7}})", seg)
+            if not m:
+                continue
+            nums = [x for x in re.findall(r"[△▲-]?[\d,]+", m.group(1)) if len(re.sub(r"\D", "", x)) >= 2]
+            if not nums:
+                continue
+            latest = nums[-1]                              # 最新年度=系列の最後
+            v = int(re.sub(r"\D", "", latest))
+            sign = "-" if re.match(r"[△▲-]", latest) else ""
+            yen = v * (unit)
+            oku = f"{sign}{yen/100_000_000:,.0f}億円"
+            facts.append(f"{fy}の{name}の{label}は{oku}。")
+        if not facts:
+            return {}
         url = f"https://disclosure2dl.edinet-fsa.go.jp/searchdocument/pdf/{e['docid']}.pdf"
-        return {url + "#経営指標": f"{name} {e.get('periodEnd','')} 有報 主要な経営指標等の推移: " + re.sub(r"\s+", " ", seg)}
+        return {url + "#最新期財務": f"{name} {fy} 有報(最新年度・一次): " + " ".join(facts)}
     except Exception:
         return {}
 
@@ -42,6 +70,22 @@ def _corpus_from_rendered(slug):
         return {}
     rc = json.load(open(f))
     return {u: (v.get("text", "") if isinstance(v, dict) else str(v)) for u, v in rc.items() if (v.get("text") if isinstance(v, dict) else v)}
+
+
+_TRIVIA = re.compile(r"ブログ|SNS|Twitter|X\(旧|Instagram|Facebook|ロゴ(の|は|マーク|カラー|色)|"
+                     r"何色|色は|キャラクター(の名前|は誰)|マスコット|ゆるキャラ|"
+                     r"社章|シンボルマーク|コーポレートカラー|創業者の(出身|趣味|好物)|"
+                     r"本社ビルの(高さ|階数)|電話番号|郵便番号|住所は|Cookie|プライバシー")
+
+
+def _is_trivia(x):
+    """Lv2の些末事実(就活で価値の低いトリビア)を除外。事業/理念/社風/人物像/製品の理解は残す。"""
+    qt = x.get("q_text", "")
+    if _TRIVIA.search(qt):
+        return True
+    ci = x.get("correct", 0); opts = x.get("options", [])
+    ans = str(opts[ci]) if ci < len(opts) else ""
+    return bool(re.search(r"^(赤|青|緑|黄|白|黒|金|銀|橙|紫)色?$", ans.strip()))   # 色だけの答え
 
 
 def _name(slug):
@@ -86,12 +130,25 @@ def gen_one(slug):
     used, sused = set(), set()
     for x in quiz2:
         used |= set(QL._fact_keys(x)); sused.add(D._sem_sig(x))
+    # ② Lv1(王道=主力製品/何する会社)を4問以上確保: 不足なら追試(最大2回)
     g1 = D.gen_lv(slug, name, 1, 10, exclude=used, sem_used=sused, pool=pool)
+    existing_lv1 = sum(1 for x in quiz2 if x.get("difficulty") == 1)
+    for _ in range(2):
+        if existing_lv1 + len(g1) >= 4:
+            break
+        for x in g1:
+            used |= set(QL._fact_keys(x)); sused.add(D._sem_sig(x))
+        more = D.gen_lv(slug, name, 1, 6, exclude=used, sem_used=sused, pool=pool)
+        if not more:
+            break
+        g1 += more
     for x in g1:
         used |= set(QL._fact_keys(x)); sused.add(D._sem_sig(x))
-    g2 = D.gen_lv(slug, name, 2, 10, exclude=used, sem_used=sused, pool=pool)
+    # ③ Lv2 トリビアガード: 些末事実(ブログ名/ロゴ色/細かい年号等)を除外
+    g2 = [x for x in D.gen_lv(slug, name, 2, 12, exclude=used, sem_used=sused, pool=pool) if not _is_trivia(x)]
     for x in g2:
         used |= set(QL._fact_keys(x)); sused.add(D._sem_sig(x))
+    # ② Lv3 文章択(「正しい説明はどれ」)を確保
     g3 = D.gen_lv3(slug, name, 3, exclude=used, sem_used=sused, pool=pool)
     allq = quiz2 + g1 + g2 + g3
     json.dump({"existing": quiz2, "gen_lv1": g1, "gen_lv2": g2, "gen_lv3": g3},
@@ -134,6 +191,28 @@ def main():
             print(f"  {r['slug']:16} DS項目{r['datasheet_items']} / クイズ{r['quiz_total']}({r['lv']}) / ES材料{r['es_materials']}({r['es_status']})")
         else:
             print(f"  {r['slug']:16} {r['status']} {r.get('err','')}")
+    # 検分用md(sha8)
+    import hashlib
+    L = ["# 新規社パイロット 再生成（差し戻し3点反映）検分用", "",
+         "①Lv4財務問=2026年3月期に固定(EDINET有報の最新年度値を明示) ②Lv1王道≥4＋Lv3文章択を確保 ③Lv2トリビアガード。", ""]
+    for r in out:
+        if r.get("status") != "ok":
+            L.append(f"## {r['slug']}: {r['status']}"); continue
+        dq = json.load(open(os.path.join(OUT, r["slug"], "quiz_difficulty_full.json")))
+        allq = dq["existing"] + dq.get("gen_lv1", []) + dq.get("gen_lv2", []) + dq.get("gen_lv3", [])
+        L.append(f"## {r['slug']} — DS{r['datasheet_items']} / クイズ{r['quiz_total']} {r['lv']} / ES{r['es_materials']}")
+        for lv, lab in ((4, "Lv4財務(2026)"), (1, "Lv1王道"), (3, "Lv3文章択"), (2, "Lv2")):
+            cs = [x for x in allq if x.get("difficulty") == lv]
+            if cs:
+                x = cs[0]; ci = x.get("correct", 0); op = x.get("options", [])
+                L.append(f"- **{lab}**({len(cs)}問): {x['q_text'][:46]} → 「{op[ci] if ci < len(op) else '?'}」")
+        L.append("")
+    body = "\n".join(L); sha8 = hashlib.sha256(body.encode()).hexdigest()[:8]
+    hd = os.path.expanduser("~/Desktop/kindle_受け渡し")
+    os.makedirs(hd, exist_ok=True)
+    fn = f"新規社パイロット再生成_検分用__{sha8}.md"
+    open(os.path.join(hd, fn), "w", encoding="utf-8").write(body)
+    print(f"\nmd: {fn}")
 
 
 if __name__ == "__main__":
