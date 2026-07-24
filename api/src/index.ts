@@ -788,6 +788,71 @@ app.get('/api/company-news', async (c) => {
   } catch (e) { return c.json([]) }
 })
 
+// === 選考情報（タブD反映のcompany_selection・スキーマ合意版） ===
+// D1 industry_id → 業界ハブ16分類slug（company.html の IND2GYOKAI と一致）
+const IND2GYOKAI_MAP: Record<string, string> = {
+  sogo_shosha: 'sogo-shosha', specialty_trading: 'senmon-shosha', banking_insurance: 'finance',
+  it_ai_saas: 'it-ai-saas-game', it_ai_saas_game: 'it-ai-saas-game', game_entertainment: 'it-ai-saas-game',
+  consulting: 'consulting', manufacturer: 'manufacturer', manufacturer_maker: 'manufacturer',
+  electronics_precision: 'manufacturer', materials_chemical: 'manufacturer', consumer_goods: 'manufacturer',
+  advertising_media: 'ad-media', infra_energy: 'infra-energy', real_estate: 'realestate-construction',
+  retail: 'retail', food_beverage: 'food-beverage', pharma_healthcare: 'medical-healthcare',
+  transport_logistics: 'transport-logistics', education_hr: 'education-hr', startup: 'startup',
+  deeptech_space_ai: 'deeptech-space-ai',
+}
+const SEL_STALE_DAYS = 45
+// 当該社の選考情報。無ければ null（フロントは非表示）。stale=取得日45日超。
+app.get('/api/company-selection', async (c) => {
+  const id = c.req.query('id') || c.req.query('company_id')
+  if (!id) return c.json(null)
+  try {
+    const r = await c.env.DB.prepare(
+      `SELECT company_id, as_of, source_url, link_only, flow_json, schedule_json, jobs_json
+       FROM company_selection WHERE company_id = ?`
+    ).bind(id).first<any>()
+    if (!r) return c.json(null)
+    const asOf = r.as_of ? String(r.as_of) : null
+    let stale = false
+    if (asOf) { const t = Date.parse(asOf + 'T00:00:00Z'); if (!isNaN(t)) stale = (Date.now() - t) > SEL_STALE_DAYS * 86400000 }
+    return c.json({
+      company_id: r.company_id, as_of: asOf, source_url: r.source_url,
+      link_only: r.link_only === 1,
+      flow: safeJson(r.flow_json) || null,
+      schedule: safeJson(r.schedule_json) || null,
+      jobs: safeJson(r.jobs_json) || null,
+      stale,
+    })
+  } catch (e) { return c.json(null) }
+})
+// 業界ハブ「この業界の選考スケジュール」: 所属社の未来日付スケジュールを日付順集約。項目ゼロは空配列。
+app.get('/api/industry-selection-schedule', async (c) => {
+  const gyokai = c.req.query('gyokai')
+  if (!gyokai) return c.json([])
+  const inds = Object.keys(IND2GYOKAI_MAP).filter(k => IND2GYOKAI_MAP[k] === gyokai)
+  if (!inds.length) return c.json([])
+  try {
+    const ph = inds.map(() => '?').join(',')
+    const { results } = await c.env.DB.prepare(
+      `SELECT s.company_id, c.name, s.schedule_json, s.source_url
+       FROM company_selection s JOIN companies c ON c.id = s.company_id
+       WHERE c.industry_id IN (${ph}) AND s.schedule_json IS NOT NULL`
+    ).bind(...inds).all()
+    const today = new Date().toISOString().slice(0, 10)
+    const items: any[] = []
+    for (const r of (results || []) as any[]) {
+      const sch = safeJson(r.schedule_json)
+      if (!Array.isArray(sch)) continue
+      for (const it of sch) {
+        if (!it || !it.date) continue           // 未来日付のみ（date有り かつ >=今日）
+        const d = String(it.date).slice(0, 10)
+        if (d >= today) items.push({ company_id: r.company_id, name: r.name, label: it.label || '', date: d, grad_year: it.grad_year || '', source_url: r.source_url })
+      }
+    }
+    items.sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0)
+    return c.json(items)
+  } catch (e) { return c.json([]) }
+})
+
 // === ホーム: 続きから（最近見た企業・view_logsから） ===
 app.get('/api/recent-companies', async (c) => {
   const userId = c.req.query('user_id')

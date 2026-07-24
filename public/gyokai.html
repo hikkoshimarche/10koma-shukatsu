@@ -44,6 +44,16 @@
     .gk-tile .soon-b{align-self:flex-start;font-size:9px;font-weight:800;color:#8a6d00;background:#ffe9a8;border-radius:999px;padding:1px 7px;margin-top:2px}
     .gk-find{display:flex;align-items:center;gap:6px;border-top:1px dashed #eadfc6;padding:11px 4px 3px;text-decoration:none;color:var(--gold-d);font-size:13px;font-weight:800;background:transparent}
     .gk-find .fa{margin-left:auto;font-weight:800}
+    /* この業界の選考スケジュール(未来日付集約・項目ゼロは非表示) */
+    .gk-sched{margin:6px 0 2px}
+    .gk-sched-t{font-size:12px;font-weight:800;color:var(--gold-d);margin:8px 0 7px}
+    .gk-sched-i{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid #efe4c9;border-radius:11px;padding:9px 11px;margin-bottom:7px;text-decoration:none;color:var(--ink)}
+    .gk-sched-i:active{background:#fbf3df}
+    .gk-grad{flex-shrink:0;font-size:10px;font-weight:800;color:#3a2c05;background:var(--gold);border-radius:999px;padding:2px 8px}
+    .gk-sched-b{flex:1;min-width:0}
+    .gk-sched-l{display:block;font-size:12.5px;font-weight:700;line-height:1.45}
+    .gk-sched-m{display:block;font-size:11px;color:var(--mute);margin-top:2px}
+    .gk-sched-a{flex-shrink:0;color:#c9b78a;font-weight:800}
     .foot{text-align:center;padding:18px 0 8px}.foot img{height:30px}
     .loading{text-align:center;color:var(--mute);padding:40px}
   </style>
@@ -62,6 +72,21 @@
 <script>
 const CFG=window.TOKYARI||{};
 const LIFF_ID=CFG.LIFF_HUB||'2010075487-89AJxZnA';
+const API_BASE=CFG.API_BASE||'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+// この業界の選考スケジュール(未来日付集約)。項目ゼロは非表示。カード展開時に遅延ロード。
+async function loadSchedule(card){
+  const el=card.querySelector('.gk-sched'); if(!el||el.dataset.loaded==='1') return;
+  el.dataset.loaded='1';
+  let items=[];
+  try{ const r=await fetch(`${API_BASE}/api/industry-selection-schedule?gyokai=${encodeURIComponent(el.dataset.slug)}`); if(r.ok) items=await r.json(); }catch(e){}
+  if(!Array.isArray(items)||!items.length){ el.style.display='none'; return; }  // 項目ゼロ=非表示
+  el.innerHTML=`<div class="gk-sched-t">📅 この業界の選考スケジュール</div>`+items.map(it=>`
+    <a class="gk-sched-i" href="/company.html?id=${encodeURIComponent(it.company_id)}&from=gyokai">
+      ${it.grad_year?`<span class="gk-grad">${esc(it.grad_year)}</span>`:''}
+      <span class="gk-sched-b"><span class="gk-sched-l">${esc(it.label)}</span><span class="gk-sched-m">${esc(it.name)}${it.date?' ・ 📅 '+esc(it.date):''}</span></span>
+      <span class="gk-sched-a">›</span></a>`).join('');
+  el.style.display='block';
+}
 function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 // 業界10コマの16業界。学ぶ導線=業界モードへ。「企業を探す」=企業一覧(?ind=)へ相互接続(名称一致する業界のみフィルタ、他は一覧トップ)。
 const INDUSTRIES=[
@@ -101,6 +126,7 @@ function render(){
           <div class="gk-tile soon"><span class="tic">🎬</span><span class="tl">業界動画</span><span class="soon-b">準備中</span></div>
           <div class="gk-tile soon"><span class="tic">📰</span><span class="tl">業界ニュース</span><span class="soon-b">準備中</span></div>
         </div>
+        <div class="gk-sched" data-slug="${esc(ind.slug)}" data-loaded="0" style="display:none"></div>
         <a class="gk-find" href="${find}">🔎 この業界の企業を探す（企業一覧）<span class="fa">›</span></a>
       </div>
     </div>`;
@@ -109,7 +135,7 @@ function render(){
   document.querySelectorAll('.gk-card .gk-main').forEach(b=>b.onclick=()=>{
     const card=b.closest('.gk-card'); const isOpen=card.classList.contains('open');
     document.querySelectorAll('.gk-card.open').forEach(c=>{ c.classList.remove('open'); const m=c.querySelector('.gk-main'); if(m)m.setAttribute('aria-expanded','false'); });
-    if(!isOpen){ card.classList.add('open'); b.setAttribute('aria-expanded','true'); card.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+    if(!isOpen){ card.classList.add('open'); b.setAttribute('aria-expanded','true'); loadSchedule(card); card.scrollIntoView({behavior:'smooth',block:'nearest'}); }
   });
 }
 async function main(){
@@ -121,7 +147,7 @@ async function main(){
     if(openSlug){
       const card=document.querySelector(`.gk-card[data-slug="${CSS.escape(openSlug)}"]`);
       if(card){ card.classList.add('open'); const m=card.querySelector('.gk-main'); if(m)m.setAttribute('aria-expanded','true');
-        setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'center'}),120); }
+        loadSchedule(card); setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'center'}),120); }
     }
   }catch(e){}
   try{ await liff.init({liffId:LIFF_ID}); if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;} }catch(e){}

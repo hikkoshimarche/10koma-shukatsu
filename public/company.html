@@ -210,6 +210,30 @@
     .cn-fchip.on { background: var(--white); color: var(--navy); border-color: var(--white); }
     .cn-none { font-size: 12px; color: var(--white-dim); padding: 8px 2px; }
 
+    /* === 選考情報 (company_selection・空カード禁止) === */
+    .sel-sec { padding: 16px 16px 6px; }
+    .sel-t { font-size: 13px; font-weight: 800; color: var(--white); letter-spacing: 0.03em; }
+    .sel-asof { font-size: 10.5px; color: var(--white-dim); margin-left: 8px; font-weight: 600; }
+    .sel-linkonly { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.16); border-radius: 12px; padding: 14px 15px; text-decoration: none; color: var(--white); margin-top: 10px; }
+    .sel-linkonly .slo-ic { font-size: 20px; flex-shrink: 0; }
+    .sel-linkonly .slo-t { font-size: 13.5px; font-weight: 700; } .sel-linkonly .slo-s { font-size: 11px; color: var(--white-dim); margin-top: 2px; }
+    .sel-linkonly .slo-a { margin-left: auto; color: var(--nana-blue); font-weight: 800; }
+    .sel-block { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.13); border-radius: 12px; padding: 12px 13px; margin-top: 9px; }
+    .sel-h { font-size: 12px; font-weight: 800; color: var(--gold); margin-bottom: 8px; }
+    .sel-fallback { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; font-weight: 700; color: var(--nana-blue); text-decoration: none; }
+    .sel-sched-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-top: 1px dashed rgba(255,255,255,0.12); }
+    .sel-sched-item:first-of-type { border-top: none; }
+    .sel-grad { flex-shrink: 0; font-size: 10px; font-weight: 800; color: #2a1c00; background: var(--gold); border-radius: 999px; padding: 2px 8px; }
+    .sel-sched-b { flex: 1; min-width: 0; }
+    .sel-sched-l { font-size: 12.5px; color: var(--white); line-height: 1.5; }
+    .sel-sched-d { font-size: 11px; color: var(--white-dim); margin-top: 2px; }
+    .sel-jobs { display: flex; flex-wrap: wrap; gap: 6px; }
+    .sel-job { font-size: 11.5px; color: var(--white); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); border-radius: 999px; padding: 4px 10px; }
+    .sel-src { display: inline-block; font-size: 10.5px; font-weight: 700; color: var(--nana-blue); text-decoration: none; margin-top: 8px; }
+    .sel-src::after { content: " ↗"; }
+    .sel-note { font-size: 10.5px; color: var(--white-dim); line-height: 1.6; margin-top: 11px; background: rgba(0,0,0,0.18); border-radius: 8px; padding: 9px 11px; }
+    .sel-stale { color: #ffcf6b; font-weight: 700; display: block; margin-bottom: 4px; }
+
     /* === Panels === */
     .panels-section {
       padding: 20px 16px 28px;
@@ -599,6 +623,38 @@ function cnItems(list){
       <div class="cn-title">${esc(n.title)}</div>
       <div class="cn-link-h">公式ページ ↗</div>
     </a>`).join('') || `<p class="cn-none">該当するニュースがありません</p>`;
+}
+// === 選考情報 (company_selection・空カード禁止・全項目出典・免責必須・45日超は古い注記) ===
+const SEL_DISCLAIMER='※取得日時点の情報です。応募前に必ず公式採用ページで最新情報をご確認ください。';
+async function renderCompanySelection(companyId){
+  const host=document.getElementById('company-selection'); if(!host) return;
+  let sel=null;
+  try{ const r=await fetch(`${API_BASE}/api/company-selection?id=${encodeURIComponent(companyId)}`); if(r.ok) sel=await r.json(); }catch(e){}
+  if(!sel){ host.style.display='none'; return; }  // 選考情報なし=非表示(空カード禁止)
+  const src=esc(sel.source_url||'#');
+  const stale = sel.stale ? `<span class="sel-stale">⚠️ 取得から45日以上経過。情報が古い可能性があります。</span>` : '';
+  const note=`<div class="sel-note">${stale}${SEL_DISCLAIMER}</div>`;
+  if(sel.link_only){
+    host.style.display='';
+    host.innerHTML=`<p class="sel-t">📅 選考情報</p>
+      <a class="sel-linkonly" href="${src}" target="_blank" rel="noopener">
+        <span class="slo-ic">🔗</span><span><span class="slo-t">採用情報</span><span class="slo-s">公式採用ページで最新情報を確認</span></span><span class="slo-a">›</span>
+      </a>${note}`;
+    return;
+  }
+  const fb=`<a class="sel-fallback" href="${src}" target="_blank" rel="noopener">→ 公式採用ページで確認 ↗</a>`;
+  const srcLink=`<a class="sel-src" href="${src}" target="_blank" rel="noopener">出典</a>`;
+  const flowBlock=`<div class="sel-block"><div class="sel-h">選考フロー</div>${
+    (Array.isArray(sel.flow)&&sel.flow.length) ? sel.flow.map((s,i)=>`<div class="sel-sched-item"><span class="sel-grad">${i+1}</span><div class="sel-sched-b"><div class="sel-sched-l">${esc(typeof s==='string'?s:(s&&s.step||''))}</div></div></div>`).join('')+srcLink : fb
+  }</div>`;
+  const schedBlock=`<div class="sel-block"><div class="sel-h">スケジュール</div>${
+    (Array.isArray(sel.schedule)&&sel.schedule.length) ? sel.schedule.map(it=>`<div class="sel-sched-item">${it.grad_year?`<span class="sel-grad">${esc(it.grad_year)}</span>`:''}<div class="sel-sched-b"><div class="sel-sched-l">${esc(it.label||'')}</div>${it.date?`<div class="sel-sched-d">📅 ${esc(it.date)}</div>`:''}</div></div>`).join('')+srcLink : fb
+  }</div>`;
+  const jobsBlock=`<div class="sel-block"><div class="sel-h">募集職種</div>${
+    (Array.isArray(sel.jobs)&&sel.jobs.length) ? `<div class="sel-jobs">${sel.jobs.map(j=>`<span class="sel-job">${esc(j)}</span>`).join('')}</div>`+srcLink : fb
+  }</div>`;
+  host.style.display='';
+  host.innerHTML=`<p class="sel-t">📅 選考情報<span class="sel-asof">取得日: ${esc(sel.as_of||'—')}</span></p>${flowBlock}${schedBlock}${jobsBlock}${note}`;
 }
 async function renderCompanyNews(companyId){
   const host=document.getElementById('company-news'); if(!host) return;
@@ -1073,6 +1129,7 @@ async function main() {
         ${company.description ? `<p class="company-detail-desc">${esc(company.description)}</p>` : ''}
       </div>
       ${menuHtml}
+      <div class="sel-sec" id="company-selection" style="display:none"></div>
       <div class="cn-sec" id="company-news" style="display:none"></div>
       <div class="panels-section" id="panels">${panelsHtml}</div>
       ${quizCtaHtml}
@@ -1091,6 +1148,7 @@ async function main() {
       });
     });
 
+    renderCompanySelection(companyId);  // 選考情報（無し社は非表示・link_onlyは公式リンク1本）
     renderCompanyNews(companyId);  // この会社の最新ニュース（データ無し社は自動で非表示）
 
     const cq = document.getElementById('company-quiz');
