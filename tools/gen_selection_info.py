@@ -223,6 +223,8 @@ def gen_one(slug, name):
 def main():
     slugs = [a for a in sys.argv[1:] if not a.startswith("--")]
     force = "--force" in sys.argv
+    if "--from" in sys.argv:                          # スラグlist(JSON)から
+        slugs = json.load(open(sys.argv[sys.argv.index("--from") + 1]))
     if "--all" in sys.argv:                          # ドメイン解決済み(corpus保有)全社
         import glob
         slugs = sorted({os.path.basename(os.path.dirname(f)) for f in
