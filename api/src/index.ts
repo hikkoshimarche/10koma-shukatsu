@@ -778,11 +778,12 @@ app.get('/api/company-news', async (c) => {
   if (!id) return c.json([])
   try {
     const { results } = await c.env.DB.prepare(
-      `SELECT title, url, published_at, summary_easy
+      `SELECT title, url, published_at, summary_easy, fetched_at
        FROM company_news WHERE company_id = ? ORDER BY published_at DESC, fetched_at DESC LIMIT ?`
     ).bind(id, limit).all()
     return c.json((results || []).map((r: any) => ({
-      title: r.title, url: r.url, date: String(r.published_at || '').slice(0, 10), summary_easy: r.summary_easy || null,
+      title: r.title, url: r.url, date: String(r.published_at || '').slice(0, 10),
+      summary_easy: r.summary_easy || null, fetched_at: r.fetched_at || null,
     })))
   } catch (e) { return c.json([]) }
 })
@@ -1177,13 +1178,14 @@ app.get('/api/mypage', async (c) => {
     if (favIds.length) {
       const ph = favIds.map(() => '?').join(',')
       const { results } = await c.env.DB.prepare(
-        `SELECT n.company_id, c.name, n.title, n.url, n.published_at, n.summary_easy
+        `SELECT n.company_id, c.name, n.title, n.url, n.published_at, n.summary_easy, n.fetched_at
          FROM company_news n JOIN companies c ON c.id = n.company_id
          WHERE n.company_id IN (${ph}) ORDER BY n.published_at DESC LIMIT 8`
       ).bind(...favIds).all()
       out.feed.official = (results || []).map((r: any) => ({
         company_id: r.company_id, name: r.name, title: r.title, url: r.url,
         date: String(r.published_at || '').slice(0, 10), summary_easy: r.summary_easy || null,
+        fetched_at: r.fetched_at || null,
       }))
     }
   } catch (e) { /* company_news 未作成なら graceful に空 */ }

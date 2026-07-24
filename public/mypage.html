@@ -129,6 +129,11 @@
     .nw-tag.t-kessan{background:#c0392b}.nw-tag.t-product{background:#1f8a4c}.nw-tag.t-hire{background:#d17d00}
     .nw-tag.t-ma{background:#7d3c98}.nw-tag.t-hr{background:#2f6fb0}.nw-tag.t-info{background:#64748b}
     .nw-date{font-size:10.5px;color:#94a0ac;margin-left:auto;flex-shrink:0}
+    .nw-new{font-size:9px;font-weight:900;color:#fff;background:#e6394f;padding:2px 7px;border-radius:999px;flex-shrink:0;letter-spacing:0.05em;box-shadow:0 1px 5px rgba(230,57,79,0.55)}
+    /* 新着ジャンプカード(最上部・通知で来た人をニュースへ誘導) */
+    .mp-newsjump{display:flex;align-items:center;gap:9px;margin:10px 16px 2px;padding:14px 16px;background:linear-gradient(135deg,#e6394f,#b8283c);border-radius:14px;color:#fff;text-decoration:none;font-size:14px;font-weight:800;box-shadow:0 6px 18px rgba(230,57,79,0.42)}
+    .mp-newsjump .nj-ic{font-size:20px;flex-shrink:0}
+    .mp-newsjump b{margin-left:auto;font-size:13px;white-space:nowrap}
     .nw-title{font-size:13.5px;font-weight:700;line-height:1.55;color:var(--ink)}
     /* v1.6強化: タップでアコーディオン展開 */
     .nw-head{cursor:pointer;-webkit-tap-highlight-color:transparent}
@@ -390,6 +395,27 @@ document.addEventListener('click', e=>{
 window.addEventListener('scroll', hideGlossaryPop, true);
 
 // v1.5: 更新フィード
+// 取得(fetched_at)から7日以内=新着。fetched_atはUTC "YYYY-MM-DD HH:MM:SS"。
+function nwIsNew(fetched){
+  if(!fetched) return false;
+  const t=Date.parse(String(fetched).replace(' ','T')+'Z');
+  if(isNaN(t)) return false;
+  return (Date.now()-t) <= 7*86400000 && (Date.now()-t) >= -86400000;
+}
+function newsNewCompanies(d){
+  const off=(d.feed&&d.feed.official)||[]; const s=new Set();
+  off.forEach(o=>{ if(nwIsNew(o.fetched_at)) s.add(o.company_id); });
+  return s.size;
+}
+function secNewsJump(d){
+  const n=newsNewCompanies(d); if(!n) return '';
+  return `<a class="mp-newsjump" id="mp-newsjump" href="#news"><span class="nj-ic">📰</span>お気に入り${n}社に新着ニュース<b>→見る</b></a>`;
+}
+function goToNews(){
+  const el=document.getElementById('news'); if(!el) return;
+  el.scrollIntoView({behavior:'smooth',block:'start'});
+  el.querySelectorAll('.nw-item[data-new="1"]').forEach(it=>it.classList.add('open')); // NEWを自動展開
+}
 function secFeed(d){
   const f=d.feed||{}; const intl=f.internal||[], off=f.official||[];
   const kic={quiz:'🧠',datasheet:'📊',eskit:'🧰'};
@@ -398,9 +424,10 @@ function secFeed(d){
     inner+=`<div class="fd-sub">お気に入り企業の公式ニュース（タップで要約）</div>`+off.map(o=>{
       const g=classifyNews(o.title);
       const summary=o.summary_easy ? esc(o.summary_easy) : '<span class="nw-soon">やさしい要約は準備中です</span>';
-      return `<div class="nw-item">
+      const isNew=nwIsNew(o.fetched_at);
+      return `<div class="nw-item" data-new="${isNew?'1':'0'}">
         <div class="nw-head">
-          <div class="nw-top"><span class="nw-tag ${g.cls}">${esc(g.label)}</span><span class="nw-date">${esc(o.date||'')}</span><span class="nw-chev">▼</span></div>
+          <div class="nw-top"><span class="nw-tag ${g.cls}">${esc(g.label)}</span>${isNew?'<span class="nw-new">NEW</span>':''}<span class="nw-date">${esc(o.date||'')}</span><span class="nw-chev">▼</span></div>
           <div class="nw-title">${annotateGlossary(o.title)}</div>
         </div>
         <div class="nw-exp">
@@ -416,7 +443,7 @@ function secFeed(d){
       <span class="fd-ic">${kic[i.kind]||'✨'}</span><span class="fd-b"><span class="fd-t">${esc(i.title)}</span><span class="fd-d">${esc(i.detail||'')}</span></span><span class="fd-date">${esc(i.date||'')}</span></a>`).join('');
   }
   if(!inner) return '';
-  return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">更新<span class="em">フィード</span></span></div>${inner}</div>`;
+  return `<div class="mp-sec" id="news"><div class="mp-h"><span class="mp-t">更新<span class="em">フィード</span></span></div>${inner}</div>`;
 }
 
 function render(d){
@@ -437,9 +464,13 @@ function render(d){
   }
   // プロフィール編集導線(登録済みユーザーのみ・変更/削除可)
   if(CAN_EDIT) html = `<div style="text-align:right;padding:2px 16px 0"><button class="pm-edit" id="pm-edit-btn">⚙️ プロフィール編集</button></div>` + html;
+  // 新着ニュース ジャンプカード(最上部・通知で来た人がすぐ気づける)
+  html = secNewsJump(d) + html;
   mp().innerHTML = html;
   const eb=document.getElementById('pm-edit-btn'); if(eb) eb.onclick=()=>openProfileModal('edit', PROFILE||{});
+  const jc=document.getElementById('mp-newsjump'); if(jc) jc.onclick=(e)=>{ e.preventDefault(); try{history.replaceState(null,'','#news');}catch(_){} goToNews(); };
   if(location.hash==='#favorites'){ const el=document.getElementById('favorites'); if(el) setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),200); }
+  if(location.hash==='#news'){ setTimeout(goToNews, 300); }  // 通知(週1ダイジェスト)から直行
 }
 
 // ===== 初回プロフィール登録 =====
