@@ -89,16 +89,18 @@ def _recruit_text(slug):
         if seed:
             break
     if not seed:
-        return "", [], str(TODAY), False
+        return "", [], str(TODAY), False, []
     # 新卒URLを優先順に
     seed.sort(key=lambda x: 0 if _NEWGRAD_URL.search(x[0]) else 1)
     urls = [u for u, _ in seed]
     parts = [t for _, t in seed]
+    url_texts = [(u, t) for u, t in seed]
     # 深掘り(募集要項/選考フロー下層)
     dtext, durls = _deep_dive(urls)
     parts += dtext; urls += durls
+    url_texts += list(zip(durls, dtext))
     is_newgrad = any(_NEWGRAD_URL.search(u) for u in urls) or bool(re.search(r"新卒|graduate|shinsotsu", " ".join(parts)))
-    return " ".join(parts)[:7000], urls, (asof or str(TODAY)), is_newgrad
+    return " ".join(parts)[:7000], urls, (asof or str(TODAY)), is_newgrad, url_texts
 
 
 def _grounded(val, body):
@@ -138,6 +140,29 @@ def _schedule_fresh(v, body):
     return out
 
 
+def _evidence(values, url_texts):
+    """抽出値の識別トークンが『どのURLの本文のどこ』にあるかを特定し、前後数行(verbatim)＋その具体URLを返す。監査用恒久証拠。"""
+    pieces = []
+    for v in (values or []):
+        toks = [str(v.get("label", "")), str(v.get("date", ""))] if isinstance(v, dict) else [str(v)]
+        for tok in toks:
+            for pc in re.split(r"[（）()・/、\s]", tok):
+                pc = pc.strip()
+                if len(pc) >= 2:
+                    pieces.append(pc)
+    pieces = list(dict.fromkeys(pieces))
+    best_cov, best_seg, best_url = 0, "", ""
+    for url, text in (url_texts or []):
+        # 各トークン位置を集め、±180字窓で最多トークンを覆う箇所を採用(被覆度重視=関係箇所を掴む)
+        positions = sorted(text.find(pc) for pc in pieces if text.find(pc) >= 0)
+        for anchor in positions:
+            win = text[anchor:anchor + 260]
+            cov = sum(1 for pc in pieces if pc in win)
+            if cov > best_cov:
+                best_cov, best_seg, best_url = cov, text[max(0, anchor - 40):anchor + 260], url
+    return {"excerpt": re.sub(r"\s+", " ", best_seg).strip()[:320], "source_url": best_url, "token_coverage": best_cov}
+
+
 def _norm_job(x):
     return re.sub(r"([^（）\s]+)＝([^（）\s]+)", r"\1（\2）", x.strip())   # 編集＝記者→編集（記者）
 
@@ -147,7 +172,7 @@ def _clean_shokushu(v):
 
 
 def gen_one(slug, name):
-    body, urls, asof, is_newgrad = _recruit_text(slug)
+    body, urls, asof, is_newgrad, url_texts = _recruit_text(slug)
     src = next((u for u in urls if _NEWGRAD_URL.search(u)), urls[0] if urls else "")
     fb = {"fallback": f"公式採用ページで確認: {src}"} if src else {"fallback": "公式採用ページで確認"}
     # 新卒ページに到達できない(中途のみ)/本文薄い → 表示は採用リンク1本のみ(空カード禁止)
@@ -161,17 +186,21 @@ def gen_one(slug, name):
     d = q._parse_json(txt) or {}
     info = {"as_of": asof, "source_url": src, "disclaimer": DISCLAIMER, "freshness_days": 45}
     dropped, fbcount = [], 0
-    # 選考フロー
+    # 選考フロー(evidence必須=本文抜粋+具体URLを保存・監査用)
     v = d.get("senko_flow")
-    if v and _grounded(v, body):
+    ev = _evidence(v, url_texts) if v else {"excerpt": "", "source_url": ""}
+    if v and _grounded(v, body) and ev.get("token_coverage",0) >= 2:       # 抜粋が取れないもの=証拠なし→フォールバック
         info["senko_flow"] = v
+        info["senko_flow_evidence"] = ev
     else:
         info["senko_flow"] = fb; fbcount += 1
         if v: dropped.append("選考フロー")
-    # スケジュール(鮮度フィルタ)
+    # スケジュール(鮮度フィルタ + evidence必須)
     sv = _schedule_fresh(d.get("schedule"), body)
-    if sv and _grounded(sv, body):
+    ev2 = _evidence(sv, url_texts) if sv else {"excerpt": "", "source_url": ""}
+    if sv and _grounded(sv, body) and ev2.get("token_coverage",0) >= 1:
         info["schedule"] = sv
+        info["schedule_evidence"] = ev2
     else:
         info["schedule"] = fb; fbcount += 1
         if d.get("schedule"): dropped.append("スケジュール(古い/非新卒)")
@@ -225,7 +254,7 @@ def main():
          f"**{DISCLAIMER}**", ""]
     for r in out:
         info = r.get("selection_info", {})
-        L.append(f"## {r['name']}（{r['slug']}）")
+        L.append(f"## {r.get('name',r['slug'])}（{r['slug']}）")
         L.append(f"- 取得日: {info.get('as_of','')} / 出典: {info.get('source_url','')}")
         if r.get("status") == "link_only" or info.get("link_only"):
             L.append(f"- 選考情報ブロック: **非表示（空カード禁止）** → 「採用情報→公式リンク」1本のみ表示。理由: {r.get('reason','3項目すべて公式確認へフォールバック')}")
