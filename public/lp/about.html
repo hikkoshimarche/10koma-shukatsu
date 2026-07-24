@@ -30,6 +30,15 @@
   .books{width:100%;max-width:660px;height:auto;display:block;margin:16px auto 4px}
   .pmark-about{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:#003F7D;border-radius:12px;padding:14px 16px;margin-top:16px}
   .pmark-about .pm-meta{color:#fff;font-size:12.5px;line-height:1.7}
+  /* VISION / MISSION / STRATEGY — 余白を贅沢に・タイポグラフィで魅せる */
+  .vms{margin:34px 0 10px}
+  .vms-item{padding:32px 0;border-top:1px solid rgba(0,0,0,.09)}
+  .vms-item:first-child{border-top:none;padding-top:6px}
+  .vms-no{display:block;font-size:11px;letter-spacing:.34em;color:#a67c00;font-weight:800;margin-bottom:12px}
+  .vms-en{font-size:30px;font-weight:800;letter-spacing:.06em;color:var(--navy);line-height:1;margin:0}
+  .vms-en::after{content:"";display:block;width:42px;height:3px;background:var(--gold);border-radius:2px;margin-top:16px}
+  .vms-ja{font-size:15px;line-height:2.05;color:#243449;margin-top:18px;font-weight:500;max-width:640px}
+  @media(min-width:720px){ .vms-en{font-size:38px} }
 </style>
 </head>
 <body>
@@ -40,7 +49,7 @@
       <span class="nav-links">
         <a href="/lp/features.html">機能</a>
         <a href="/lp/about.html">運営</a>
-        <a href="/lp/index.html#faq">よくある質問</a>
+        <a href="/lp/index.html#faq">よく<wbr>ある<wbr>質問</a>
       </span>
       <a class="btn-line" href="https://lin.ee/YK2Wdfda">友だち追加</a>
     </nav>
@@ -49,47 +58,66 @@
 
 <section class="sec"><div class="wrap"><div class="doc">
   <h1>運営会社・理念</h1>
-  <p class="doc-sub">トーキャリを運営する、株式会社OSDについて。</p>
+  <p class="doc-sub">トーキャリを<wbr>運営する、<wbr>株式会社OSDに<wbr>ついて。</p>
 
   <div class="callout" style="font-size:16px;line-height:1.9;border-left-color:var(--gold);font-weight:700;color:var(--navy)">
-    「難しいことを、いかに簡単に捉えられるか。<br>それが、若者の“前向きさ”に繋がる。」
+    <wbr>「難しい<wbr>ことを、<wbr>いかに<wbr>簡単に<wbr>捉えられるか。<br>それが、<wbr>若者の<wbr>“前<wbr>向きさ”に<wbr>繋がる。」
   </div>
 
   <!-- ① 代表の想い（なぜ作ったか） -->
-  <h2>代表の想い</h2>
+  <h2>代表の<wbr>想い</h2>
   <div class="rep">
     <img class="rep-photo" src="/lp/img/rep.webp" alt="株式会社OSD 代表取締役社長 ドッズ オスカー昴" width="640" height="779" loading="lazy">
     <div class="rep-body">
-      <p class="rep-msg">これまで、延べ2,000名以上の就活相談を受けてきました。学生の悩みを直接聞くなかで、一番必要だと感じたもの——それがトーキャリです。</p>
-      <p class="rep-msg">難しい企業情報を、誰もが分かる形で、誰もが無料で。学生一人ひとりが「自分で判断できる材料」を手にしてほしい。その思いで作りました。主役は、いつも学生のみなさんです。</p>
+      <p class="rep-msg">これまで、<wbr>延べ2,000名以上の<wbr>就活相談を<wbr>受けてきました。<wbr>学生の<wbr>悩みを<wbr>直接聞くなかで、<wbr>一番<wbr>必要だと<wbr>感じた<wbr>もの<wbr>——それが<wbr>トーキャリです。</p>
+      <p class="rep-msg">難しい<wbr>企業情報を、<wbr>誰もが<wbr>分かる<wbr>形で、<wbr>誰もが<wbr>無料で。<wbr>学生一人<wbr>ひとりが<wbr>「自分で<wbr>判断できる<wbr>材料」を<wbr>手に<wbr>して<wbr>ほしい。<wbr>その<wbr>思いで<wbr>作りました。<wbr>主役は、<wbr>いつも<wbr>学生のみなさんです。</p>
       <p class="rep-sign">代表取締役社長　ドッズ　オスカー昴<span class="rep-note">（三菱商事出身）</span></p>
     </div>
   </div>
 
-  <h2>2つの約束</h2>
-  <h3>① 一次情報を土台にする</h3>
-  <p>数字や事実は、有価証券報告書・決算短信・公式サイトなどの一次情報にもとづき、出典を明示します。分からないことは「データなし」と正直に書きます。</p>
-  <h3>② AIは“翻訳”に使い、検証を通す</h3>
-  <p>読みやすい要約やクイズの作成にはAIを活用しますが、必ず元の一次情報と照合する検証プロセスを通します。速さのために正直さを犠牲にしません。</p>
+  <!-- VISION / MISSION / STRATEGY -->
+  <section class="vms">
+    <div class="vms-item">
+      <span class="vms-no">01</span>
+      <p class="vms-en">VISION</p>
+      <p class="vms-ja">我々が<wbr>日本の<wbr>就職活動と<wbr>企業研究の<wbr>あり方に<wbr>変革を<wbr>もたらし、<wbr>学生から<wbr>最も<wbr>信頼される<wbr>キャリア選択の<wbr>パートナーと<wbr>なる<wbr>こと。<wbr>そして、<wbr>難しい<wbr>ことを<wbr>やさしく<wbr>届ける<wbr>ことで、<wbr>一人でも<wbr>多くの<wbr>若者が<wbr>前向きに<wbr>未来へ<wbr>踏み出せる<wbr>社会を<wbr>つくります。</p>
+    </div>
+    <div class="vms-item">
+      <span class="vms-no">02</span>
+      <p class="vms-en">MISSION</p>
+      <p class="vms-ja">学生の<wbr>一人<wbr>一人が、<wbr>企業や<wbr>業界を<wbr>正しく<wbr>・やさしく<wbr>理解し、<wbr>自分<wbr>自身の<wbr>判断で<wbr>納得の<wbr>いく<wbr>キャリアを<wbr>選べる<wbr>よう、<wbr>難しい<wbr>情報を<wbr>誰に<wbr>でも<wbr>わかる<wbr>形で<wbr>届ける<wbr>ことを<wbr>使命とします。</p>
+    </div>
+    <div class="vms-item">
+      <span class="vms-no">03</span>
+      <p class="vms-en">STRATEGY</p>
+      <p class="vms-ja">信頼できる<wbr>一次情報だけを、<wbr>AIに<wbr>よる<wbr>検証を<wbr>通して、<wbr>10コマ漫画や<wbr>クイズ・<wbr>診断など<wbr>誰もが<wbr>楽しみながら<wbr>学べる<wbr>形に<wbr>翻訳する<wbr>こと。<wbr>広告や<wbr>順位付けに<wbr>頼らず、<wbr>あくまで<wbr>学生自身が<wbr>判断する<wbr>ための<wbr>材料に<wbr>徹する<wbr>こと。<wbr>そして、<wbr>企業研究から<wbr>選考、<wbr>社会に<wbr>出た<wbr>後までも、<wbr>一人<wbr>一人の<wbr>歩みに<wbr>寄り添い<wbr>続けます。</p>
+    </div>
+  </section>
+
+  <h2>2つの<wbr>約束</h2>
+  <h3>① 一次情報を<wbr>土台に<wbr>する</h3>
+  <p>数字や<wbr>事実は、<wbr>有価証券報告書・決算短信・<wbr>公式サイトなどの<wbr>一次情報にもと<wbr>づき、<wbr>出典を<wbr>明示します。<wbr>分からない<wbr>ことは<wbr>「データなし」と<wbr>正直に<wbr>書きます。</p>
+  <h3>② AIは<wbr>“翻訳”に<wbr>使い、<wbr>検証を<wbr>通す</h3>
+  <p>読みやすい<wbr>要約や<wbr>クイズの<wbr>作成には<wbr>AIを<wbr>活用しますが、<wbr>必ず元の<wbr>一次情報と<wbr>照合する<wbr>検証プロセスを<wbr>通します。<wbr>速さの<wbr>ために<wbr>正直さを<wbr>犠牲にしません。</p>
 
   <!-- ② 学生を伴走してきた実績（だから作れた） -->
-  <h2>学生と、二人三脚で。</h2>
-  <p>トーキャリは、机上のアイデアではありません。私たちは長期インターンを通じて、学生の就職活動を現場で伴走してきました。学生が本当につまずくポイントを知っているからこそ、「わかる」を形にできます。</p>
+  <h2>学生と、<wbr>二人三脚で。</h2>
+  <p>トーキャリは、<wbr>机上の<wbr>アイデアでは<wbr>ありません。<wbr>私たちは<wbr>長期インターンを<wbr>通じて、<wbr>学生の<wbr>就職活動を<wbr>現場で<wbr>伴走してきました。<wbr>学生が<wbr>本当に<wbr>つまずく<wbr>ポイントを<wbr>知っているから<wbr>こそ、<wbr>「わかる」を<wbr>形に<wbr>できます。</p>
   <ul class="ach">
-    <li>これまで<b>累計100名以上</b>のインターン生（卒業生を含む）を採用し、就職活動の成功を二人三脚でサポート。<b>現在も約40名</b>が在籍しています。</li>
-    <li><b>3年連続</b>で、五大商社の内定者を輩出。</li>
-    <li>卒業生は<b>11業界・33社</b>へ（総合商社・金融・コンサル・IT・人材・メーカー・通信インフラ 等）。</li>
-    <li><b>三菱商事出身の代表</b>と、商社・大手金融出身の役員陣による直接指導。</li>
+    <li>これまで<b>累計100名以上</b>の<wbr>インターン生<wbr>（卒業生を<wbr>含む）を<wbr>採用し、<wbr>就職活動の<wbr>成功を<wbr>二人三脚で<wbr>サポート。<b>現在も<wbr>約40名</b>が<wbr>在籍しています。</li>
+    <li><b>3年連続</b>で、<wbr>五大商社の<wbr>内定者を<wbr>輩出。</li>
+    <li>卒業生は<b>11業界・33社</b>へ<wbr>（総合商社・金融・コンサル・IT・人材・<wbr>メーカー・通信インフラ 等）。</li>
+    <li><b>三菱商事出身の<wbr>代表</b>と、<wbr>商社・<wbr>大手金融出身の<wbr>役員陣に<wbr>よる<wbr>直接指導。</li>
   </ul>
-  <p class="src-note">出典: 累計採用数（100名以上）は株式会社OSDの確定値、現在の在籍数（約40名）・進路実績は当社長期インターンプログラムの公表値です。内定先は卒業生の進路実績の一例です。</p>
+  <p class="src-note">出典: 累計採用数<wbr>（100名以上）は<wbr>株式会社OSDの<wbr>確定値、<wbr>現在の<wbr>在籍数<wbr>（約40名）<wbr>・進路実績は<wbr>当社長期インターンプログラムの<wbr>公表値です。<wbr>内定先は<wbr>卒業生の<wbr>進路実績の<wbr>一例です。</p>
 
-  <h3>学生の声</h3>
-  <blockquote class="voice">「面接で一番自信を持って話せたのが、OSDの話でした。」<cite>総合商社 内定（S.S・慶應義塾大学）</cite></blockquote>
-  <blockquote class="voice">「業界構造も選考のポイントも、腹落ちしました。」<cite>大手金融 内定（T.H・明治大学）</cite></blockquote>
+  <h3>学生の<wbr>声</h3>
+  <blockquote class="voice">「面接で<wbr>一番<wbr>自信を<wbr>持って話せたのが、<wbr>OSDの<wbr>話でした。」<cite>総合商社 内定<wbr>（S.S・慶應義塾大学）</cite></blockquote>
+  <blockquote class="voice">「業界構造も<wbr>選考の<wbr>ポイントも、<wbr>腹落ちしました。」<cite>大手金融 内定<wbr>（T.H・明治大学）</cite></blockquote>
 
   <!-- ③ 書籍という同じ思想の実践 -->
-  <h2>“同じ思想”を、本でも。</h2>
-  <p>私たちは『就活生のための企業解剖』シリーズを自社出版しています（Kindle・2026年7月時点で7冊）。企画から執筆まですべて自社で、一次情報だけで一社を丸裸に——トーキャリとまったく同じ思想で作っています。</p>
+  <h2>“同じ<wbr>思想”を、本でも。</h2>
+  <p>私たちは<wbr>『就活生の<wbr>ための<wbr>企業解剖』シリーズを<wbr>自社出版しています<wbr>（Kindle・2026年7月時点で<wbr>7冊）。<wbr>企画から<wbr>執筆まですべて<wbr>自社で、<wbr>一次情報だけで<wbr>一社を<wbr>丸裸に<wbr>——トーキャリと<wbr>まったく<wbr>同じ<wbr>思想で<wbr>作っています。</p>
   <img class="books" src="/lp/img/books_shokai_series.webp" alt="『就活生のための企業解剖』総合商社シリーズ（Kindle・7冊）の書影" width="1200" height="458" loading="lazy">
 
   <!-- ④ 会社概要 -->
@@ -99,15 +127,15 @@
     <tr><th>所在地</th><td>〒106-0032　東京都港区六本木3丁目4番33号　マルマン六本木ビル7階</td></tr>
     <tr><th>設立</th><td>2020年6月</td></tr>
     <tr><th>代表者</th><td>代表取締役社長　ドッズ　オスカー昴</td></tr>
-    <tr><th>サービス</th><td>トーキャリ（就活生のための企業・業界研究アプリ）</td></tr>
-    <tr><th>事業内容</th><td>就職活動支援サービスの企画・開発・運営</td></tr>
-    <tr><th>お問い合わせ</th><td><a href="/lp/contact.html" style="color:var(--navy);font-weight:700">お問い合わせページ</a>より</td></tr>
+    <tr><th>サービス</th><td>トーキャリ<wbr>（就活生の<wbr>ための<wbr>企業・業界研究アプリ）</td></tr>
+    <tr><th>事業内容</th><td>就職活動支援サービスの<wbr>企画・開発・運営</td></tr>
+    <tr><th>お問い<wbr>合わせ</th><td><a href="/lp/contact.html" style="color:var(--navy);font-weight:700">お問い<wbr>合わせページ</a>より</td></tr>
   </table>
   <div class="pmark-about">
     <a href="https://privacymark.jp/" target="_blank" rel="noopener" aria-label="プライバシーマーク制度サイトへ（別ウィンドウ）">
       <img src="/images/brand/privacy_mark_10825463.png" alt="プライバシーマーク 登録番号 第10825463号" width="76" height="76" style="display:block">
     </a>
-    <div class="pm-meta">当社はプライバシーマークの付与認定を受けています。<br>登録番号　第10825463号（有効期間 2026年4月8日〜2028年4月7日）</div>
+    <div class="pm-meta">当社は<wbr>プライバシーマークの<wbr>付与認定を<wbr>受けています。<br>登録番号　第10825463号<wbr>（有効期間 2026年4月8日〜2028年4月7日）</div>
   </div>
 </div></div></section>
 
@@ -116,18 +144,18 @@
     <div class="fcols">
       <div class="fbrand">
         <img src="/images/brand/tokyari_logo_wide.png" alt="トーキャリ" width="130" height="30">
-        <p>企業のリアルを、一次情報で。就活生のための企業・業界研究アプリ。</p>
+        <p>企業の<wbr>リアルを、<wbr>一次情報で。<wbr>就活生の<wbr>ための<wbr>企業・業界研究アプリ。</p>
       </div>
       <nav class="fnav">
         <a href="/lp/features.html">機能</a>
         <a href="/lp/about.html">運営会社</a>
-        <a href="/lp/companies.html">企業の方へ</a>
-        <a href="/lp/contact.html">お問い合わせ</a>
+        <a href="/lp/companies.html">企業の<wbr>方<wbr>へ</a>
+        <a href="/lp/contact.html">お問い<wbr>合わせ</a>
         <a href="/lp/terms.html">利用規約</a>
         <a href="/lp/privacy.html">プライバシーポリシー</a>
       </nav>
     </div>
-    <div class="fmade">本サービスのコンテンツは、AIと一次情報の検証プロセスで制作されています。</div>
+    <div class="fmade">本サービスの<wbr>コンテンツは、<wbr>AIと<wbr>一次情報の<wbr>検証プロセスで<wbr>制作されています。</div>
     <div class="fcopy">© 2026 株式会社OSD. All rights reserved.</div>
   </div>
 </footer>
