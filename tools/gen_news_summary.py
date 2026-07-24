@@ -35,7 +35,15 @@ _GENERAL = set(("会社 事業 日本 今年 昨年 今回 発表 予定 イベ�
                 "実施 開始 詳細 確認 内容 世界 地域 市場 業界 技術 企業 会見 記者 社員 従業員 グループ "
                 "ニュース リリース プレス 記事 本文 公式 経営 戦略 未来 社会 環境 価値 品質 安全 挑戦 成長 "
                 "投資家 株主 株式 資本 決算 売上 利益 資産 今週 来週 一部 複数 各社 当社 同社 新型 新規 "
-                "セミナー ウェビナー フォーラム カンファレンス キャンペーン プロジェクト ソリューション").split())
+                "セミナー ウェビナー フォーラム カンファレンス キャンペーン プロジェクト ソリューション "
+                # 一般名詞(言い換え頻出・固有名詞でない)を拡充=ゲート偽陽性(社名/人名/地名/製品名以外の誤弾き)を抑制
+                "リスク チャンス ツール コース プラン カルテ アルバイト キャラクター アイデア アバター "
+                "コンテンツ プラットフォーム データ メディア デジタル デジタル技術 創造力 想像力 世界中 "
+                "今年度 昨年度 来年度 公式サイト ウェブサイト ホームページ 高校生 中学生 小学生 大学生 "
+                "地方 地元 火災 山火事 被害 支援金 寄付 募金 受賞 表彰 大会 部門 役員 取締役 社外 監査役 "
+                "機能 音声 採用 給料 給与 料金 時間 午前 午後 記念 周年 連続 無料 有料 個人 法人 会員 "
+                "請求書 口座 振替 決済 支払 集客 通信 接続 研究 開発 実験 講座 資料 発電 電力 "
+                "コンソーシアム ドライバー クリエイター ネットワーク コミュニティ プログラム イベント").split())
 # 国名の同義正規化(どちらか一方が本文にあればOK)
 _COUNTRY = {"米国": "アメリカ", "アメリカ": "米国", "英国": "イギリス", "イギリス": "英国",
             "豪州": "オーストラリア", "オーストラリア": "豪州", "独": "ドイツ, ", "仏": "フランス",
@@ -43,6 +51,9 @@ _COUNTRY = {"米国": "アメリカ", "アメリカ": "米国", "英国": "イ�
 # 要約対象外: 金融商品用語(平易化で不正確)・実質本文なしの定型告知
 _SKIP_SUMMARY = re.compile(r"新株予約権|ストックオプション|ストック・?オプション|SO付与|自己株式の取得|"
                            r"譲渡制限付株式|転換社債|新株式発行|第三者割当")
+# 対象外センチネル: summary_easy にこの値が入る記事は UI(タブC)で要約箱ごと非表示
+# (タグ+💡ガイドのみ)。NULL=未処理(準備中/再試行対象)と区別する。
+EXCLUDED = "__EXCLUDED__"
 
 
 def fetch_body(url):
@@ -68,6 +79,10 @@ def gate(summary, body):
             continue
         alt = _COUNTRY.get(p)                        # 国名同義(米国↔アメリカ 等)
         if alt and any(a.strip() in body for a in alt.split(",")):
+            continue
+        # 複合語の断片救済: 長い複合語(会社向←会社向け/美容クリニック向 等)は_PROPERが途中で切れ逐語不一致に
+        # なる。4文字以上の連続部分が本文に逐語存在すれば接地とみなす(数値は上で厳格・短い人名/社名は不救済)。
+        if len(p) >= 4 and any(p[i:i + 4] in body for i in range(len(p) - 3)):
             continue
         errs.append(f"固有名詞『{p}』が本文に無い")
     return errs
@@ -95,13 +110,13 @@ def main():
     for r in rows:
         # (b) 金融商品用語(SO/新株予約権等)=平易化で不正確→要約対象外(見出し+リンクのみ)
         if _SKIP_SUMMARY.search(r["title"]):
-            skipped.append({"url": r["url"], "title": r["title"][:30], "reason": "金融商品用語(要約なし)"}); continue
+            skipped.append({"company_id": r["company_id"], "url": r["url"], "title": r["title"][:30], "reason": "金融商品用語(要約なし)"}); continue
         body = fetch_body(r["url"])
         # (a) 本文が実質取得できない告知(PDF直リンクのみ等)=要約対象外(見出し+タグで十分)
         if len(body) < 200 or r["url"].lower().endswith(".pdf"):
-            skipped.append({"url": r["url"], "title": r["title"][:30], "reason": "本文実質なし(告知/PDF直)"}); continue
+            skipped.append({"company_id": r["company_id"], "url": r["url"], "title": r["title"][:30], "reason": "本文実質なし(告知/PDF直)"}); continue
         if _SKIP_SUMMARY.search(body[:500]):
-            skipped.append({"url": r["url"], "title": r["title"][:30], "reason": "金融商品用語(本文)"}); continue
+            skipped.append({"company_id": r["company_id"], "url": r["url"], "title": r["title"][:30], "reason": "金融商品用語(本文)"}); continue
         txt = q.openai_chat([{"role": "system", "content": SYS},
                              {"role": "user", "content": USER.format(name=r["company_id"], title=r["title"],
                               body=body[:3000], glossary=json.dumps(GLOSSARY, ensure_ascii=False))}],
@@ -137,11 +152,22 @@ def main():
     os.makedirs(HANDOFF, exist_ok=True)
     fn = f"news_やさしい要約_初回__{sha8}.md"
     open(os.path.join(HANDOFF, fn), "w", encoding="utf-8").write(body_md)
-    if apply and updates:
+    applied_ok = applied_excl = 0
+    if apply:
         def qq(s): return "'" + str(s).replace("'", "''") + "'"
-        sql = "\n".join(f"UPDATE company_news SET summary_easy={qq(s)} WHERE company_id={qq(c)} AND url={qq(u)};" for c, u, s in updates)
-        open("/tmp/news_summary_update.sql", "w").write(sql)
+        stmts = [f"UPDATE company_news SET summary_easy={qq(s)} WHERE company_id={qq(c)} AND url={qq(u)};" for c, u, s in updates]
+        # skipped=対象外フラグ(EXCLUDED)を保存。NULL(未処理)と区別=UIが「準備中」箱を出さない
+        stmts += [f"UPDATE company_news SET summary_easy={qq(EXCLUDED)} WHERE company_id={qq(x['company_id'])} AND url={qq(x['url'])};" for x in skipped]
+        if stmts:
+            sqlf = "/tmp/news_summary_update.sql"
+            open(sqlf, "w").write("\n".join(stmts))
+            p = subprocess.run(["npx", "wrangler", "d1", "execute", "10koma-shukatsu-db", "--remote",
+                                "--config", "api/wrangler.toml", "--file", sqlf], cwd=ROOT, capture_output=True, text=True)
+            if p.returncode != 0:
+                sys.stderr.write(p.stderr[-1500:] + "\n"); print(json.dumps({"error": "D1 apply failed"})); return 1
+            applied_ok, applied_excl = len(updates), len(skipped)
     print(json.dumps({"target": len(rows), "ok": ok, "rejected": len(rejected), "skipped_rule": len(skipped),
+                      "applied_summary": applied_ok, "applied_excluded": applied_excl,
                       "cost_usd": round(q._cost["usd"], 3), "md": fn, "applied": apply}, ensure_ascii=False, indent=1))
 
 

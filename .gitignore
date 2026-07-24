@@ -56,3 +56,6 @@ tools/gas_userprofiles/.clasp.json
 # health-check reports (内部レポート=public repoへ出さない)
 tools/health/reports/
 tools/health/_state.json
+
+# D1バックアップ(ニュースデータ等)はpublic repoに含めない
+backups/
