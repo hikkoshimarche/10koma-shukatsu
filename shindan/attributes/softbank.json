@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8713000,
   "starting_salary": null,
   "industry": {
    "value": "IT・通信・SaaS",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YE76"
  },
  "trend_note": "大手通信インフラ企業としての安定性と、PayPay・LINEヤフー等新事業による成長性を両立。スマートビル導入やリモート",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

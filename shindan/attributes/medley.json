@@ -57,22 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 569,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://hitocareer.com/about-medley/",
-    "quote": "**平均年収**: 569万円（2024年度・有価証券報告書）[出典](https://hitocareer.com/about-medley/)"
-   },
-   "as_of": "",
-   "confidence": "medium",
-   "estimated": false
-  },
+  "avg_salary": 5629000,
   "starting_salary": null,
   "industry": {
    "value": "その他（外資・新興等）",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2025年12月期",
+  "avg_salary_source": "EDINET:S100XUX3"
  },
  "trend_note": "上場ヘルステック企業で成長率25%超。米国・フィリピン拠点あり海外志向強。中途99%採用で即戦力重視。医療×DXの最高タ",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

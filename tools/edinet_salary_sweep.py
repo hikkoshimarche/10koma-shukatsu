@@ -149,20 +149,27 @@ def _employee_table(text):
 
 
 def _trend_table(text):
-    """主要な経営指標等の推移: 平均年間給与ラベル直後の数列の最新(最後)値。"""
+    """主要な経営指標等の推移: 平均年間給与『行』の数列の最新(最後)値。
+    誤取得源を除外(教訓反映): 1人当たり営業利益行/セグメント行/臨時従業員の外書き()/EDINET書類コード(E+数字)/年号(20XX)。"""
     for m in re.finditer("平均年間給与", text):
         i = m.start()
-        ctx = text[max(0, i - 40):i + 30]
-        if "平均年齢" in text[i:i + 120]:        # 従業員表はスキップ(推移表のみ)
+        head = text[i:i + 40]
+        if re.search(r"1人当たり|一人当たり|当たり営業利益|セグメント", head):   # 別指標行=除外
             continue
-        unit = 1000 if "千円" in text[i:i + 20] else 1
+        unit = 1000 if "千円" in text[i:i + 24] else 1
+        # ラベル(単位表記込)直後〜次の指標ラベル(長い漢字語)までの区間に限定=行を跨がない
+        seg = text[i + 6:i + 140]
+        seg = re.split(r"従業員|セグメント|営業利益|[一-龥]{4,}", seg[seg.find(")") + 1:] if ")" in seg[:16] else seg)[0]
         series = []
-        for x in re.findall(r"[\d,]{4,}", text[i + 6:i + 90]):
-            yen = int(x.replace(",", "")) * unit
+        for x in re.findall(r"[\d,]{4,}", seg):
+            v = x.replace(",", "")
+            if re.fullmatch(r"20\d\d", v):        # 年号(2024/2025等)=除外
+                continue
+            yen = int(v) * unit
             if 2_000_000 <= yen <= 80_000_000:
                 series.append(yen)
         if series:
-            return series[-1]
+            return series[-1]                     # 最新年度(行内の最後)
     return None
 
 

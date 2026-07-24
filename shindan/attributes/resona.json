@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7413000,
   "starting_salary": null,
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YDPD"
  },
  "trend_note": "創業1918年の老舗都市銀行で信託機能併備。全国340超店舗網と公金取扱で安定性高い。純利益増加傾向も保守的採用姿勢。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

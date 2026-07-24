@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8382000,
   "starting_salary": null,
   "industry": {
    "value": "電機・精密・重工",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YHPY"
  },
  "trend_note": "海外売上92.3%、世界シェア40%のMLCC首位。安定性と国際配置が高く、材料から一貫生産の技術深度が成長牽引。若手は",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8331000,
   "starting_salary": null,
   "industry": {
    "value": "航空・運輸・物流",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2025年12月期",
+  "avg_salary_source": "EDINET:S100XTG8"
  },
  "trend_note": "創業150年超の老舗インフラ企業で安定性高い。世界37ヵ国展開で国際配置機会豊富、全国拠点ネットワークで転勤も多い傾向。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

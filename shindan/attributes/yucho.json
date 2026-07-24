@@ -57,22 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": {
-   "value": 716,
-   "unit": "万円",
-   "evidence": {
-    "source_url": "https://migi-nanameue.co.jp/column/japan-post-bank-salary-guide/",
-    "quote": "**平均年収**: 716万円（2025年3月期有価証券報告書） [出典](https://migi-nanameue.co.jp/column/japan-post-bank-salary-guide/)"
-   },
-   "as_of": "",
-   "confidence": "medium",
-   "estimated": false
-  },
+  "avg_salary": 7295000,
   "starting_salary": null,
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100Y9G1"
  },
  "trend_note": "全国24,000郵便局ネットワークと高い公共性で転勤多い。民営化後も経営安定、利益2期連続最高益で堅牢。デジタル化・新規",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

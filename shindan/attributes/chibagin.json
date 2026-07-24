@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 8370000,
   "starting_salary": null,
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YDSE"
  },
  "trend_note": "地方銀行として千葉県内に約200拠点で転勤基調。NY・ロンドン・香港・シンガポール海外支店あり。直近経常利益19%増で安",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

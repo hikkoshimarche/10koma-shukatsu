@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7713000,
   "starting_salary": null,
   "industry": {
    "value": "電機・精密・重工",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2025年12月期",
+  "avg_salary_source": "EDINET:S100XRPR"
  },
  "trend_note": "世界3大タイヤメーカー・売上4兆超の大手重工メーカー。1931年創業93年の歴史で安定性極高。全国・海外拠点多く転勤海外",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

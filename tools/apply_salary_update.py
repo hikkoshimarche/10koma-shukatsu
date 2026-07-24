@@ -52,12 +52,25 @@ def apply_one(rec, dry):
     else:
         chg_scenario = raw.count(old_str)
     new_str = _fmt_man(new_man)
-    # (1) 10コマ scenario: 旧年収文字列 → 新(全出現=dialogue/script_json同期)。出典有報年度も更新。
+    as_of = rec.get("as_of", "2026年3月期")         # 決算月が3月でない社は実期(例2025年12月期/2026年2月期)
+    # (1) 10コマ scenario: 旧年収文字列 → 新(全出現=dialogue/script_json同期)。出典有報年度もas_ofへ。
     if not dry and chg_scenario:
         raw = raw.replace(old_str, new_str)
-        raw = re.sub(r"(2025年3月期)(有報|有価証券報告書)", r"2026年3月期\2", raw)
-        json.loads(raw)                            # 妥当性
-        open(sc, "w", encoding="utf-8").write(raw)
+        # 有報を含むsource文字列内の 20XX年X月期 → as_of (JSON walk・財務決算タグは非改変)
+        dd0 = json.loads(raw)
+
+        def _fix(v):
+            if isinstance(v, str) and ("有報" in v or "有価証券報告書" in v):
+                return re.sub(r"20\d\d年\d{1,2}月期", as_of, v)
+            return v
+
+        def _walk(o):
+            if isinstance(o, dict):
+                return {k: _walk(_fix(x)) for k, x in o.items()}
+            if isinstance(o, list):
+                return [_walk(_fix(x)) for x in o]
+            return _fix(o)
+        json.dump(_walk(dd0), open(sc, "w", encoding="utf-8"), ensure_ascii=False)
     # (2) shindan avg_salary(円)
     sh = os.path.join(ROOT, "shindan", "attributes", f"{slug}.json")
     shchg = None
@@ -66,7 +79,7 @@ def apply_one(rec, dry):
         old = sd.get("facts", {}).get("avg_salary")
         if not dry:
             sd.setdefault("facts", {})["avg_salary"] = yen
-            sd["facts"]["avg_salary_as_of"] = "2026年3月期"
+            sd["facts"]["avg_salary_as_of"] = as_of
             sd["facts"]["avg_salary_source"] = f"EDINET:{rec['docid']}"
             json.dump(sd, open(sh, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         shchg = f"{old}→{yen}"
@@ -77,10 +90,10 @@ def apply_one(rec, dry):
         dd = json.load(open(dp))
         secs = dd.setdefault("sections", {})
         arr = secs.setdefault("社風・求める人物像", [])
-        fact = f"2026年3月期(有報)の平均年間給与は{new_str}({yen:,}円)。"
+        fact = f"{as_of}(有報)の平均年間給与は{new_str}({yen:,}円)。"
         arr[:] = [it for it in arr if not (isinstance(it, dict) and "平均年間給与" in it.get("fact", ""))]
         arr.append({"fact": fact, "source_url": f"https://disclosure2dl.edinet-fsa.go.jp/searchdocument/pdf/{rec['docid']}.pdf",
-                    "as_of": "2026年3月期"})
+                    "as_of": as_of})
         if not dry:
             json.dump(dd, open(dp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         dschg = new_str
@@ -90,7 +103,10 @@ def apply_one(rec, dry):
 
 def main():
     dry = "--dry" in sys.argv
-    res = json.load(open(RESULT))
+    src = RESULT
+    if "--from" in sys.argv:
+        src = sys.argv[sys.argv.index("--from") + 1]
+    res = json.load(open(src))
     adopt = res["adopt_list"]
     print(f"採用{len(adopt)}社を反映 {'[DRY]' if dry else '[実行]'}", flush=True)
     applied, skipped = [], []

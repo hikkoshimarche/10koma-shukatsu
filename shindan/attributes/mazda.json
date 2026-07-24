@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7112000,
   "starting_salary": null,
   "industry": {
    "value": "自動車・モビリティ",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YDZ1"
  },
  "trend_note": "老舗自動車メーカーの安定基盤に加え、SKYACTIV・魂動デザイン等の革新技術により成長機を並行。広島本社中心で全国拠点",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

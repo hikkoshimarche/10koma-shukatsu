@@ -57,12 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 7920000,
   "starting_salary": null,
   "industry": {
    "value": "小売・流通",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年2月期",
+  "avg_salary_source": "EDINET:S100Y4X5"
  },
  "trend_note": "創業1831年の老舗百貨店で安定性が極めて高い。平均勤続年数25.5年で転勤多。新規事業・成長機会は限定的で若手抜擢も慎",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",

@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 20589000,
   "starting_salary": null,
   "industry": {
    "value": "総合商社",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YAVT"
  },
  "trend_note": "140年超の老舗安定性と5大商社2位の収益基盤を持ちつつ、データセンター・AI・エネルギー転換での新規事業成長加速。海外",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
