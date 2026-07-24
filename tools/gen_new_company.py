@@ -56,10 +56,13 @@ def _edinet_financial_corpus(slug, name):
             yen = v * (unit)
             oku = f"{sign}{yen/100_000_000:,.0f}億円"
             facts.append(f"{fy}の{name}の{label}は{oku}。")
-        if not facts:
-            return {}
         url = f"https://disclosure2dl.edinet-fsa.go.jp/searchdocument/pdf/{e['docid']}.pdf"
-        return {url + "#最新期財務": f"{name} {fy} 有報(最新年度・一次): " + " ".join(facts)}
+        out = {}
+        if facts:                                     # ①2026年3月期を明示した最新値(Lv4を最新期に固定)
+            out[url + "#最新期財務"] = f"{name} {fy} 有報(最新年度・一次): " + " ".join(facts)
+        # 生ブロブも併載(材料量確保=converge問数を維持。ただし年度は最新値factが主)
+        out[url + "#経営指標推移"] = f"{name} 有報 主要な経営指標等の推移(最新は{fy}): " + re.sub(r"\s+", " ", seg[:2000])
+        return out
     except Exception:
         return {}
 
@@ -86,6 +89,38 @@ def _is_trivia(x):
     ci = x.get("correct", 0); opts = x.get("options", [])
     ans = str(opts[ci]) if ci < len(opts) else ""
     return bool(re.search(r"^(赤|青|緑|黄|白|黒|金|銀|橙|紫)色?$", ans.strip()))   # 色だけの答え
+
+
+ARCHIVE = os.path.join(OUT, "_generation_archive")
+
+
+def _archive_qualified(slug, name, allq, dist):
+    """ship基準(≥15かつLv1≥3)達成の生成物をrun毎に保存し、best(=最多問数)を追跡。上書き消失を防止。
+    保存: _generation_archive/<slug>/<content-sha8>/ に quiz/datasheet/es + meta。best.json は最良版へのポインタ。"""
+    import shutil, hashlib
+    adir = os.path.join(ARCHIVE, slug)
+    os.makedirs(adir, exist_ok=True)
+    sha8 = hashlib.sha256(json.dumps(allq, ensure_ascii=False, sort_keys=True).encode()).hexdigest()[:8]
+    dest = os.path.join(adir, sha8)
+    if os.path.exists(dest):
+        return                                          # 同一内容は既保存(重複しない)
+    os.makedirs(dest, exist_ok=True)
+    for fn in ("quiz_difficulty_full.json", "quiz_30q_locked_v3.json", "quiz_corpus_locked_v3.json",
+               "datasheet.json", "es_kit.json"):
+        src = os.path.join(OUT, slug, fn)
+        if os.path.exists(src):
+            shutil.copy2(src, os.path.join(dest, fn))
+    meta = {"slug": slug, "name": name, "quiz_total": len(allq),
+            "lv": {f"Lv{k}": v for k, v in sorted(dist.items()) if k}, "sha8": sha8}
+    json.dump(meta, open(os.path.join(dest, "_meta.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    # best.json = 全アーカイブ中の最多問数版を指す
+    best = {"sha8": sha8, "quiz_total": len(allq)}
+    bp = os.path.join(adir, "best.json")
+    if os.path.exists(bp):
+        cur = json.load(open(bp))
+        if cur.get("quiz_total", 0) >= len(allq):
+            best = cur
+    json.dump({**best, "meta": meta}, open(bp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
 
 def _name(slug):
@@ -160,6 +195,10 @@ def gen_one(slug):
     es_n = len(kit["motivation_sheet"]["materials"]) if kit else 0
     if kit:
         json.dump(kit, open(os.path.join(OUT, slug, "es_kit.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    # (5) ship基準達成分は run毎アーカイブ保存(良版が再生成で上書き消失するのを防止・best追跡)
+    lv1 = dist.get(1, 0)
+    if len(allq) >= 15 and lv1 >= 3:
+        _archive_qualified(slug, name, allq, dist)
     # サマリ
     dsec = ds.get("sections", {})
     res.update({"status": "ok", "quiz_total": len(allq),
@@ -171,7 +210,42 @@ def gen_one(slug):
     return res
 
 
+def restore_best(slug):
+    """アーカイブの best版を output/<slug>/ に復元(上書き消失した良版の復旧)。"""
+    import shutil
+    bp = os.path.join(ARCHIVE, slug, "best.json")
+    if not os.path.exists(bp):
+        return f"{slug}: アーカイブなし"
+    sha8 = json.load(open(bp)).get("sha8")
+    src = os.path.join(ARCHIVE, slug, sha8)
+    n = 0
+    for fn in os.listdir(src):
+        if fn.startswith("_"):
+            continue
+        shutil.copy2(os.path.join(src, fn), os.path.join(OUT, slug, fn))
+        n += 1
+    return f"{slug}: best版({sha8})復元 {n}ファイル"
+
+
 def main():
+    if "--restore-best" in sys.argv:
+        for s in [a for a in sys.argv[sys.argv.index("--restore-best") + 1:] if not a.startswith("--")]:
+            print(restore_best(s))
+        return
+    if "--archive" in sys.argv:                       # 現在のoutput/<slug>を遡及アーカイブ(基準達成時)
+        for s in [a for a in sys.argv[sys.argv.index("--archive") + 1:] if not a.startswith("--")]:
+            f = os.path.join(OUT, s, "quiz_difficulty_full.json")
+            if not os.path.exists(f):
+                print(f"{s}: 生成物なし"); continue
+            d = json.load(open(f))
+            allq = d["existing"] + d.get("gen_lv1", []) + d.get("gen_lv2", []) + d.get("gen_lv3", [])
+            from collections import Counter
+            dist = Counter(x.get("difficulty") for x in allq)
+            if len(allq) >= 15 and dist.get(1, 0) >= 3:
+                _archive_qualified(s, s, allq, dist); print(f"{s}: アーカイブ({len(allq)}問)")
+            else:
+                print(f"{s}: 基準未達({len(allq)}問)—アーカイブせず")
+        return
     slugs = [a for a in sys.argv[1:] if not a.startswith("--")]
     q.line(f"🆕 新規社 一気通貫生成: {len(slugs)}社 / ${q.MAX_USD}ガード")
     out = []
