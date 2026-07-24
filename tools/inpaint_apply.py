@@ -62,11 +62,23 @@ def live_image(slug, koma):
     return img, url
 
 
+def _boxes(bbox):
+    """bbox は単一 [x0,y0,x1,y1] または複数 [[..],[..]] を受ける。常にリスト化して返す。"""
+    return list(bbox) if (bbox and isinstance(bbox[0], (list, tuple))) else [bbox]
+
+
+def _envelope(boxes):
+    return [min(b[0] for b in boxes), min(b[1] for b in boxes),
+            max(b[2] for b in boxes), max(b[3] for b in boxes)]
+
+
 def build_mask(size, bbox):
-    """OpenAI edits用: 透明(alpha0)=編集領域 / 不透明=保持。"""
+    """OpenAI edits用: 透明(alpha0)=編集領域 / 不透明=保持。複数bbox対応。"""
     w, h = size
     m = Image.new("RGBA", (w, h), (0, 0, 0, 255))
-    ImageDraw.Draw(m).rectangle(tuple(bbox), fill=(0, 0, 0, 0))
+    d = ImageDraw.Draw(m)
+    for b in _boxes(bbox):
+        d.rectangle(tuple(b), fill=(0, 0, 0, 0))
     return m
 
 
@@ -123,13 +135,15 @@ def color_match(edited, orig, bbox):
     from PIL import ImageStat, ImageDraw
     er = edited.resize(orig.size, Image.LANCZOS)
     w, h = orig.size
-    # 周囲リング(bbox を pad 拡張した枠 − bbox) を参照領域に
-    pad = max(24, (bbox[2] - bbox[0]) // 4, (bbox[3] - bbox[1]) // 4)
+    env = _envelope(_boxes(bbox))
+    # 周囲リング(envelope を pad 拡張した枠 − 各box) を参照領域に
+    pad = max(24, (env[2] - env[0]) // 4, (env[3] - env[1]) // 4)
     ring = Image.new("L", (w, h), 0)
     d = ImageDraw.Draw(ring)
-    d.rectangle((max(0, bbox[0]-pad), max(0, bbox[1]-pad), min(w, bbox[2]+pad), min(h, bbox[3]+pad)), fill=255)
-    d.rectangle(tuple(bbox), fill=0)
-    eb = er.crop(tuple(bbox))
+    d.rectangle((max(0, env[0]-pad), max(0, env[1]-pad), min(w, env[2]+pad), min(h, env[3]+pad)), fill=255)
+    for b in _boxes(bbox):
+        d.rectangle(tuple(b), fill=0)
+    eb = er.crop(tuple(env))
     se = ImageStat.Stat(eb)
     so = ImageStat.Stat(orig, ring)          # 参照=元画像のリング
     bands = []
@@ -145,19 +159,24 @@ def composite(orig, edited, bbox, feather=6):
     w, h = orig.size
     edited = edited.resize((w, h), Image.LANCZOS)
     em = Image.new("L", (w, h), 0)
-    ImageDraw.Draw(em).rectangle(tuple(bbox), fill=255)
+    d = ImageDraw.Draw(em)
+    for b in _boxes(bbox):
+        d.rectangle(tuple(b), fill=255)
     em = em.filter(ImageFilter.GaussianBlur(feather))
     result = Image.composite(edited, orig, em)
-    # マスク外保持の検証(feather余白 +2*feather を外した領域の最大差分)
+    # マスク外保持の検証(各box を feather 余白ぶん外した領域の最大差分)
     pad = feather * 2 + 4
     outside = Image.new("L", (w, h), 255)
-    ImageDraw.Draw(outside).rectangle((bbox[0]-pad, bbox[1]-pad, bbox[2]+pad, bbox[3]+pad), fill=0)
+    od = ImageDraw.Draw(outside)
+    for b in _boxes(bbox):
+        od.rectangle((b[0]-pad, b[1]-pad, b[2]+pad, b[3]+pad), fill=0)
     diff = ImageChops.multiply(ImageChops.difference(orig, result).convert("L"), outside)
     return result, diff.getextrema()[1]
 
 
 def render_review(rdir, job, orig, result):
-    slug, koma, bbox = job["slug"], job["koma"], job["bbox"]
+    slug, koma = job["slug"], job["koma"]
+    bbox = _envelope(_boxes(job["bbox"]))
     w, h = orig.size
     key = f"{slug}_{koma:02d}"
     orig.save(rdir / f"{key}_BEFORE.png")
