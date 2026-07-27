@@ -344,6 +344,8 @@ async function main(){
     if(liff.isLoggedIn()){ const p=await liff.getProfile(); lineUserId=params.get('u')||p.userId; displayName=p.displayName||''; }
     else if(liff.isInClient()){ liff.login(); return; }
   }catch(e){ console.warn('LIFF skipped (preview):', e && e.message); }
+  window.__tkUser = lineUserId;                       // ファネル計測用の識別子
+  if(window.tkEvent) tkEvent('liff_start','home');    // ①LIFF起動を計測
 
   mountGuide(displayName ? `こんにちは、${esc(displayName)}さん！<br>今日はどこから見る？` : 'ようこそ！<br>今日はどこから見る？');
 

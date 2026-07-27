@@ -219,6 +219,7 @@ async function main(){
   cl.addEventListener('click',()=>{ input.value=''; cl.style.display='none'; apply(); input.focus(); });
   document.querySelectorAll('.sortb').forEach(b=>b.onclick=()=>{ sort=b.dataset.s; document.querySelectorAll('.sortb').forEach(x=>x.classList.toggle('on',x===b)); apply(); });
   restoreState();   // 検索語・ソート・フィルタ・スクロール位置を復元(戻り時に一覧位置まで戻す)。無ければ通常表示。
+  if(window.tkEvent) tkEvent('reach','industry');   // ②「企業を探す」到達を計測
 }
 main();
 </script>

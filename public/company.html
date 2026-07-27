@@ -1027,6 +1027,7 @@ async function main() {
     const profile = await initLiff();
     if (!profile) return;
     currentUserId = profile.userId;
+    window.__tkUser = profile.userId;   // ファネル計測用の識別子(既存log-view/view_logsと同一)
 
     const res = await fetch(`${API_BASE}/api/companies/${encodeURIComponent(companyId)}?user_id=${encodeURIComponent(currentUserId)}`);
     if (res.status === 404) { app.innerHTML = '<p class="error-text">企業が見つかりません</p>'; return; }
@@ -1202,12 +1203,26 @@ async function main() {
       chip.addEventListener('click', () => {
         const m = menuItems[parseInt(chip.dataset.i, 10)];
         if (!m) return;
+        if (window.tkEvent) tkEvent('tap', 'chip:' + (m.l || chip.dataset.i));   // ⑤主要ボタンのタップ計測
         if (m.act === 'scroll') { const el = document.getElementById('panels'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
         else if (m.act === 'video') { openYoutube(company.video_url); }
         else if (m.act === 'kessan') { openYoutube(company.kessan_url); }
         else if (m.href) { location.href = m.href; }
       });
     });
+
+    // ④ 10コマ読了計測: 最後のコマ(10コマ目)が画面に入ったら1回だけ記録。
+    try {
+      const panelEls = document.querySelectorAll('#panels .panel');
+      const lastPanel = panelEls[panelEls.length - 1];
+      if (lastPanel && panelEls.length >= 10 && 'IntersectionObserver' in window) {
+        let logged = false;
+        const io = new IntersectionObserver((ents) => {
+          ents.forEach(e => { if (e.isIntersecting && !logged) { logged = true; if (window.tkEvent) tkEvent('koma_read', companyId); io.disconnect(); } });
+        }, { threshold: 0.6 });
+        io.observe(lastPanel);
+      }
+    } catch (e) {}
 
     renderCompanySelection(companyId);  // 選考情報（無し社は非表示・link_onlyは公式リンク1本）
     renderCompanyNews(companyId);  // この会社の最新ニュース（データ無し社は自動で非表示）
