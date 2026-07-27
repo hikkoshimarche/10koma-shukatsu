@@ -1212,16 +1212,19 @@ async function main() {
       });
     });
 
-    // ④ 10コマ読了計測: 最後のコマ(10コマ目)が画面に入ったら1回だけ記録。
+    // ④ 10コマ読了計測: コマは画面より縦長なので「最後のコマの末尾」に置いたセンチネルが見えたら=読了として1回記録。
     try {
-      const panelEls = document.querySelectorAll('#panels .panel');
-      const lastPanel = panelEls[panelEls.length - 1];
-      if (lastPanel && panelEls.length >= 10 && 'IntersectionObserver' in window) {
+      const panelsEl = document.getElementById('panels');
+      const panelEls = panelsEl ? panelsEl.querySelectorAll('.panel') : [];
+      if (panelsEl && panelEls.length >= 10 && 'IntersectionObserver' in window) {
+        const sentinel = document.createElement('div');
+        sentinel.style.cssText = 'height:1px;width:100%';
+        panelsEl.appendChild(sentinel);
         let logged = false;
         const io = new IntersectionObserver((ents) => {
           ents.forEach(e => { if (e.isIntersecting && !logged) { logged = true; if (window.tkEvent) tkEvent('koma_read', companyId); io.disconnect(); } });
-        }, { threshold: 0.6 });
-        io.observe(lastPanel);
+        }, { threshold: 0 });
+        io.observe(sentinel);
       }
     } catch (e) {}
 
