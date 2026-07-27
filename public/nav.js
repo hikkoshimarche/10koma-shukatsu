@@ -92,7 +92,10 @@
       + '#tk-mininav a .mi{font-size:19px;line-height:1;filter:grayscale(0.35) opacity(0.85)}'
       + '#tk-mininav a.on{color:#e7b84b}#tk-mininav a.on .mi{filter:none}'
       + '#tk-mininav a:active{background:rgba(255,255,255,0.06)}'
-      + 'body{padding-bottom:62px!important}';
+      // コンテンツ末尾がナビに隠れないよう、ナビ実高(=約56px)＋iPhoneホームバー(safe-area)分を確保。
+      // 一部ページは独自の固定下部バーを持つため、それらは env 分を別途上げられるよう CSS変数も公開。
+      + ':root{--tk-navh:62px;--tk-safe:env(safe-area-inset-bottom,0px)}'
+      + 'body{padding-bottom:calc(62px + env(safe-area-inset-bottom,0px))!important}';
     var st = document.createElement('style'); st.id = 'tk-mininav-css'; st.textContent = css;
     document.head.appendChild(st);
     var nav = document.createElement('nav'); nav.id = 'tk-mininav'; nav.setAttribute('aria-label', '主要ナビ');

@@ -42,7 +42,9 @@
     /* リスト */
     .list{padding:0 16px}
     .row{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:12px 13px;margin-bottom:9px;box-shadow:0 2px 7px rgba(0,0,0,0.10);cursor:pointer;
+      touch-action:manipulation;
       content-visibility:auto;contain-intrinsic-size:auto 66px}
+    .empty-retry{margin-top:14px;background:var(--navy);color:#fff;border:none;padding:10px 20px;border-radius:999px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
     .row:active{background:#f6f9fd}
     .row .badge{width:40px;height:40px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:19px;color:#fff}
     .row .info{flex:1;min-width:0}
@@ -134,28 +136,70 @@ function apply(){
       <span class="info"><span class="nm">${esc(r.name)}</span>
         <span class="meta"><span class="tag" style="background:${m.c}">${esc(r.industry)}</span>${r.hook?`<span class="hook">${esc(r.hook)}</span>`:''}</span></span>
       <span class="arrow">›</span></div>`;}).join('');
-  // 行タップ = pointerdown方式(compareで直したのと同系。確実に発火)。戻る先=企業一覧(フィルタ保持)
+  // 行タップ: スクロール誤爆防止。pointerdown起点をやめ、移動量>10px かスクロール発生でタップ取消（純粋なタップ時のみ遷移）。
   const fromInd = (sel.size===1)?[...sel][0]:'';
   const backQS = `&from=list${fromInd?('&fromInd='+encodeURIComponent(fromInd)):''}`;
   list.querySelectorAll('.row').forEach(row=>{
-    const go=e=>{ e.preventDefault(); location.href=`/company.html?id=${encodeURIComponent(row.dataset.id)}${backQS}`; };
-    row.addEventListener('pointerdown',go); row.addEventListener('click',go);
+    const nav=()=>{ saveState(); location.href=`/company.html?id=${encodeURIComponent(row.dataset.id)}${backQS}`; };
+    let sx=0, sy=0, moved=false, active=false;
+    row.addEventListener('pointerdown', e=>{ active=true; moved=false; sx=e.clientX; sy=e.clientY; }, {passive:true});
+    row.addEventListener('pointermove', e=>{ if(active && (Math.abs(e.clientX-sx)>10 || Math.abs(e.clientY-sy)>10)) moved=true; }, {passive:true});
+    row.addEventListener('pointercancel', ()=>{ active=false; }, {passive:true});   // 慣性スクロール等でブラウザがタッチを奪った=タップ無効
+    row.addEventListener('pointerup', ()=>{ if(active && !moved) nav(); active=false; }, {passive:true});
   });
 }
 
+// LIFF初期化は多重実行を防ぐ(初期化Promise再利用)＋タイムアウトで固まらせない。一覧は認証不要なので待ちすぎない。
+let liffInitP=null;
+function liffReady(){
+  if(!liffInitP){
+    liffInitP = (typeof liff!=='undefined' && liff.init)
+      ? Promise.race([ liff.init({liffId:LIFF_ID}).catch(()=>{}), new Promise(res=>setTimeout(res,5000)) ])
+      : Promise.resolve();
+  }
+  return liffInitP;
+}
+// fetch にタイムアウト(既定8秒)。失敗時は fallback があれば返し、無ければ throw。無限ローディング禁止。
+function fetchJSON(url, ms, fallback){
+  const ctl = ('AbortController' in window) ? new AbortController() : null;
+  const t = setTimeout(()=>{ try{ ctl && ctl.abort(); }catch(e){} }, ms||8000);
+  return fetch(url, ctl?{signal:ctl.signal}:{})
+    .then(r=>{ if(!r.ok) throw new Error('http '+r.status); return r.json(); })
+    .catch(e=>{ if(fallback!==undefined) return fallback; throw e; })
+    .finally(()=>clearTimeout(t));
+}
+function showListError(){
+  const el=document.getElementById('list');
+  el.innerHTML='<div class="empty">読み込みに失敗しました。<br><button id="tk-reload" class="empty-retry">再読み込み</button></div>';
+  const rb=document.getElementById('tk-reload');
+  if(rb) rb.onclick=()=>{ el.innerHTML='<div class="loading">読み込み中…</div>'; main(); };
+}
+// 一覧state(検索語・ソート・スクロール位置)を保存/復元＝戻り時に再取得せず位置まで戻す。
+function stateKey(){ return 'ind_state:'+((new URLSearchParams(location.search).get('ind'))||''); }
+function saveState(){ try{ sessionStorage.setItem(stateKey(), JSON.stringify({ q:((document.getElementById('q')||{}).value)||'', sort:sort, sel:[...sel], y:(window.scrollY||window.pageYOffset||0) })); }catch(e){} }
+function restoreState(){
+  let s=null; try{ s=JSON.parse(sessionStorage.getItem(stateKey())||'null'); }catch(e){}
+  if(s){
+    if(Array.isArray(s.sel)){ sel=new Set(s.sel.filter(v=>INDS.includes(v))); drawChips(); }
+    if(s.q){ const inp=document.getElementById('q'); if(inp){ inp.value=s.q; const cl=document.getElementById('cl'); if(cl) cl.style.display='block'; } }
+    if(s.sort){ sort=s.sort; document.querySelectorAll('.sortb').forEach(x=>x.classList.toggle('on',x.dataset.s===sort)); }
+  }
+  apply();
+  if(s && typeof s.y==='number' && s.y>0){ requestAnimationFrame(()=>window.scrollTo(0,s.y)); }
+}
 async function main(){
-  try{ await liff.init({liffId:LIFF_ID}); if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;} }catch(e){}
-  let comp={}, aliases={}, api={views:{},hooks:{}}, readings={};
+  await liffReady();  // 認証はベストエフォート(最大5秒)。一覧表示をブロックしない＝戻り時の無限スピナー根絶。
+  let comp, aliases, api, rd, readings={};
   try{
-    let rd={};
     [comp,aliases,api,rd]=await Promise.all([
-      fetch('/companies.json').then(r=>r.json()),
-      fetch('/search_aliases.json').then(r=>r.ok?r.json():({})).catch(()=>({})),
-      fetch(`${API_BASE}/api/company-list`).then(r=>r.ok?r.json():({views:{},hooks:{}})).catch(()=>({views:{},hooks:{}})),
-      fetch('/company_readings.json').then(r=>r.ok?r.json():({})).catch(()=>({})),
+      fetchJSON('/companies.json',8000),                                   // 必須データ: 失敗/timeoutでretry UI
+      fetchJSON('/search_aliases.json',8000,{}),
+      fetchJSON(`${API_BASE}/api/company-list`,8000,{views:{},hooks:{}}),
+      fetchJSON('/company_readings.json',8000,{}),
     ]);
     readings=(rd&&rd.readings)||{};
-  }catch(e){ document.getElementById('list').innerHTML='<div class="empty">読み込みに失敗しました</div>'; return; }
+  }catch(e){ showListError(); return; }
+  ALL=[];  // retry時の二重蓄積を防ぐ
   INDS=Object.keys(comp);
   const ord={}; INDS.forEach((n,i)=>ord[n]=i);
   for(const [ind,arr] of Object.entries(comp)){
@@ -174,7 +218,7 @@ async function main(){
   input.addEventListener('input',()=>{ cl.style.display=input.value?'block':'none'; apply(); });
   cl.addEventListener('click',()=>{ input.value=''; cl.style.display='none'; apply(); input.focus(); });
   document.querySelectorAll('.sortb').forEach(b=>b.onclick=()=>{ sort=b.dataset.s; document.querySelectorAll('.sortb').forEach(x=>x.classList.toggle('on',x===b)); apply(); });
-  apply();
+  restoreState();   // 検索語・ソート・フィルタ・スクロール位置を復元(戻り時に一覧位置まで戻す)。無ければ通常表示。
 }
 main();
 </script>
