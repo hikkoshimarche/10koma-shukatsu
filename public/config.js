@@ -21,10 +21,12 @@ window.tkEvent = function (type, id) {
   try {
     var url = (window.TOKYARI && window.TOKYARI.API_BASE) + '/api/log-view';
     var payload = JSON.stringify({ line_user_id: (window.__tkUser || 'anon'), content_type: String(type || 'event'), content_id: String(id || '') });
+    // text/plain = CORSシンプルリクエスト → プリフライト不要(sendBeaconはプリフライト不可)＝CORSエラーを出さない。
+    // 受け側 Hono c.req.json() は Content-Type に関係なく本文をJSONとして解釈するため text/plain でも記録される。
     if (navigator.sendBeacon) {
-      navigator.sendBeacon(url, new Blob([payload], { type: 'application/json' }));
+      navigator.sendBeacon(url, new Blob([payload], { type: 'text/plain' }));
     } else {
-      fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload, keepalive: true }).catch(function () {});
+      fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: payload, keepalive: true, mode: 'no-cors' }).catch(function () {});
     }
   } catch (e) { /* 計測失敗はUXに影響させない */ }
 };
