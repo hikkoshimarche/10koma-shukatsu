@@ -6,7 +6,10 @@
     "enabled": true
   },
   "assets": {
-    "directory": "public"
+    "directory": "public",
+    // 存在しないパスは 404.html を 404 で返す(既定のSPAフォールバック=index.htmlを200で返すソフト404を是正)。
+    // 実在ファイルの完全一致 + html_handling(クリーンURL /company→/company.html)は従来どおり有効。
+    "not_found_handling": "404-page"
   },
   "compatibility_flags": [
     "nodejs_compat"

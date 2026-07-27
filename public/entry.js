@@ -2,6 +2,21 @@
    トーキャリ 入口フロー 共通スクリプト
    ナナ(青)・ハルキ(緑) の案内役アバター＋フキダシ（2人が主役／第三者は登場させない）
    ========================================================= */
+/* 第2層(保険): ルート/ を通常ブラウザで開いたら即LPへ。liff.init を待たずに判定(過去の無限ローディング回避)。
+   エッジ(functions/index.js)で弾く前提の二重化。LINE内WebView/liff/既存アプリクエリ/判定不能はLIFFのまま。 */
+(function () {
+  try {
+    var path = location.pathname;
+    if (path !== '/' && path !== '' && path !== '/index.html') return;   // ルートのみ対象
+    var ua = navigator.userAgent || '';
+    var isLine = /\bLine\//i.test(ua) || ua.indexOf('LIFF') >= 0;
+    var hasLiff = /liff/i.test(location.search);
+    var p = new URLSearchParams(location.search);
+    var appQuery = ['company', 'industry', 'id', 'u', 'from'].some(function (k) { return p.has(k); });
+    if (ua && !isLine && !hasLiff && !appQuery) { location.replace('https://talkcareer.jp/lp/'); }
+  } catch (e) { /* 判定不能は安全側=LIFFのまま */ }
+})();
+
 const NANA_SVG = `
 <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-label="ナナ">
   <circle cx="32" cy="32" r="31" fill="#eaf3fc"/>

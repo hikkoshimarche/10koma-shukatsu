@@ -29,8 +29,13 @@ git reset --hard 8a45b99e && git push --force-with-lease origin main
 - **API Worker**: `cd api && npx wrangler rollback`（直前バージョンへ）。または該当commitを checkout して `npx wrangler deploy`。
 
 ### C. ドメイン系（talkcareer.jp）が不調のとき
-- 直近の事例＝`functions/_middleware.js` がリライトループを誘発。**該当があれば削除して push**（現在は無し）。
-- ゾーンの Redirect Rule（`/`→`/lp/`）は Cloudflare ダッシュボード → talkcareer.jp → Rules で ON/OFF 可能。
+- 直近の事例＝`functions/_middleware.js` がリライトループを誘発。**該当があれば削除して push**（現在は無し。全ルート対象の `_middleware` は使わない方針）。
+- ゾーンの Redirect Rule（`/`→`/lp/`）は Cloudflare ダッシュボード → talkcareer.jp → Rules で ON/OFF 可能（現在は無効）。
+
+### C-2. ルート導線（案A: `functions/index.js`）の切り戻し
+- ルート `/` は `functions/index.js`（**/ のみ対象**・_middlewareではない）で、非LINEブラウザを `/lp/` へ302。LINE内WebView/liff/`?company=`等/UA空 は LIFF を返す（安全側）。
+- **LIFFが起動しない/ルートが誤って全部LPに飛ぶ等の異常時**: `git rm functions/index.js && git commit && git push`（ルートは即 index.html=LIFF 直返しに戻る）。第2層の entry.js ガードも無効化するなら該当IIFEを削除。
+- **ソフト404対応 (`wrangler.jsonc: not_found_handling:"404-page"` + `public/404.html`)** でクリーンURL(/company 等)や既存導線が壊れた場合: `not_found_handling` を `"single-page-application"` に戻して push（従来のindex.html直返しに復帰）。
 
 ---
 
