@@ -15,7 +15,7 @@ body{
   color:var(--ink); background:var(--paper); line-height:1.75; -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
 }
-img{max-width:100%;height:auto;display:block}  /* height:auto で幅制約時もアスペクト比を厳守(iPhone12の縦伸び根治) */
+img{max-width:100%;height:auto;object-fit:contain;display:block}  /* height:auto+object-fit:contain で幅制約時もアスペクト比を厳守(iPhone12の縦伸び根治) */
 a{color:inherit}
 .wrap{max-width:var(--wrap);margin:0 auto;padding:0 20px}
 .center{text-align:center}

@@ -13,6 +13,10 @@ echo "=== 導線チェック (link_audit.js) $(date) ===" >> "$LOG"
 if command -v node >/dev/null 2>&1; then
   /usr/bin/caffeinate -dimsu node "$HOME/projects/10koma-shukatsu/tools/link_audit.js" >> "$LOG" 2>&1
   echo "link_audit exit=$?" >> "$LOG"
+  # ③ 画像アスペクト比チェック(全ページ×多端末幅・歪み検出)。NGがあれば exit1。
+  echo "=== 画像アスペクト比チェック (img_aspect_check.js) $(date) ===" >> "$LOG"
+  /usr/bin/caffeinate -dimsu node "$HOME/projects/10koma-shukatsu/tools/img_aspect_check.js" >> "$LOG" 2>&1
+  echo "img_aspect_check exit=$?" >> "$LOG"
 else
-  echo "⚠ node 未解決のため導線チェックskip" >> "$LOG"
+  echo "⚠ node 未解決のため導線/画像チェックskip" >> "$LOG"
 fi
