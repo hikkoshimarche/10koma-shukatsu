@@ -30,6 +30,10 @@
   .books{width:100%;max-width:660px;height:auto;display:block;margin:16px auto 4px}
   .pmark-about{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:#003F7D;border-radius:12px;padding:14px 16px;margin-top:16px}
   .pmark-about .pm-meta{color:#fff;font-size:12.5px;line-height:1.7}
+  /* 会社概要テーブル: 320pxでも横はみ出しさせない(固定レイアウト+セル内CJKは通常折返し) */
+  .doc table{width:100%;table-layout:fixed}
+  .doc th{white-space:nowrap;width:6.2em;vertical-align:top}
+  .doc td{word-break:normal;overflow-wrap:anywhere}
   /* VISION / MISSION / STRATEGY — 余白を贅沢に・タイポグラフィで魅せる */
   .vms{margin:34px 0 10px}
   .vms-item{padding:32px 0;border-top:1px solid rgba(0,0,0,.09)}
@@ -124,7 +128,7 @@
   <h2>会社概要</h2>
   <table>
     <tr><th>社名</th><td>株式会社OSD</td></tr>
-    <tr><th>所在地</th><td>〒106-0032　東京都港区六本木3丁目4番33号　マルマン六本木ビル7階</td></tr>
+    <tr><th>所在地</th><td><span class="nb">〒106-0032</span>　東京都港区六本木<span class="nb">3丁目4番33号</span>　マルマン六本木ビル<span class="nb">7階</span></td></tr>
     <tr><th>設立</th><td>2020年6月</td></tr>
     <tr><th>代表者</th><td>代表取締役　ドッズ　オスカー昴</td></tr>
     <tr><th>サービス</th><td>トーキャリ<wbr>（就活生の<wbr>ための<wbr>企業・業界研究アプリ）</td></tr>

@@ -167,8 +167,14 @@ h1,h2,h3{line-height:1.35;letter-spacing:.01em}
    ②ここで word-break:keep-all を全体に適用＝CJKは <wbr> の位置でしか折り返さない。
    → auto-phrase 非対応の古いブラウザでも「見てみましょう」「はじめて」「しません」等が絶対に途中で割れない。
    （keep-all は継承プロパティなので body 指定で全コピーに波及。text-wrap:pretty/balance は対応ブラウザの追加最適化。） */
-body{ word-break:keep-all; overflow-wrap:break-word; text-wrap:pretty; line-break:strict; }
+body{ word-break:keep-all; text-wrap:pretty; line-break:strict; }
 h1,h2,h3,summary,.hero-badge,.fi-num,.stat .n,.doc-sub{ text-wrap:balance; }
-/* keep-all で min-content 幅が詰まり横はみ出しする短い数値/ラベル(統計カード等)は通常折返しに戻す */
+/* 不可分ユニット(数字+単位/日付/メール/URL/住所/固有名詞): 途中改行を物理的に禁止。
+   ※ overflow-wrap:break-word は使わない(数字が「6,80/0」と割れる原因だったため撤去)。はみ出しはレイアウト/フォントで吸収。 */
+.nb{ white-space:nowrap }
+/* 統計カード: 数字は絶対に折り返さず、狭幅では font を縮めて収める(横スクロールを出さない) */
 .stat{ min-width:0 }
-.stat .n,.stat .l{ word-break:normal }
+.stat .l{ word-break:normal }
+.stat .n{ white-space:nowrap; word-break:keep-all; font-size:clamp(20px,6.2vw,34px) }
+.stat .n .u{ font-size:0.5em }
+@media(min-width:720px){ .stat .n{ font-size:46px } }
