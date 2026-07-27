@@ -15,7 +15,7 @@ body{
   color:var(--ink); background:var(--paper); line-height:1.75; -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
 }
-img{max-width:100%;display:block}
+img{max-width:100%;height:auto;display:block}  /* height:auto で幅制約時もアスペクト比を厳守(iPhone12の縦伸び根治) */
 a{color:inherit}
 .wrap{max-width:var(--wrap);margin:0 auto;padding:0 20px}
 .center{text-align:center}
@@ -152,7 +152,7 @@ h1,h2,h3{line-height:1.35;letter-spacing:.01em}
 /* ==== フッター ==== */
 .lp-foot{background:var(--navy-dd);color:rgba(255,255,255,0.8);padding:48px 0 32px}
 .lp-foot .fcols{display:grid;gap:26px;margin-bottom:30px}
-.lp-foot .fbrand img{height:30px;margin-bottom:12px}
+.lp-foot .fbrand img{height:30px;width:auto;margin-bottom:12px}
 .lp-foot .fbrand p{font-size:12.5px;color:rgba(255,255,255,0.6);max-width:320px}
 .lp-foot .fnav{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px}
 .lp-foot .fnav a{font-size:13px;color:rgba(255,255,255,0.8);text-decoration:none;padding:3px 0}
