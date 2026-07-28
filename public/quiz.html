@@ -312,10 +312,27 @@ async function fetchUnlock(){
 }
 
 // レベルはしご: Lv1→Lv4 の解放状況を表示
-function renderLevelLadder(){
+async function renderLevelLadder(){
   document.getElementById('quiz-title').textContent = curLabel;
   const bl = (curUnlock && curUnlock.by_level) || {};
   const hasData = Object.keys(bl).length > 0;
+  // quiz未整備の社(全Lv 0問=IHI等): はしごを出さず「準備中」+代替導線。
+  // 煽って何もさせない状態を回避。導線=データシートがあればそこへ、無ければ10コマへ(graceful)。
+  if (hasData && curSetType==='company' && curSetId && [1,2,3,4].every(lv=>((bl[String(lv)]||{}).available)===0)) {
+    let hasDs = false;
+    try { const r = await fetch(`${API_BASE}/api/datasheet?id=${encodeURIComponent(curSetId)}`); hasDs = r.ok; } catch(e){ hasDs = false; }
+    const cta = hasDs
+      ? `<a class="quiz-btn ghost" style="text-decoration:none;text-align:center;display:block" href="datasheet.html?id=${encodeURIComponent(curSetId)}&name=${encodeURIComponent(curLabel||'')}">📖 データシートで企業を知る</a>`
+      : `<a class="quiz-btn ghost" style="text-decoration:none;text-align:center;display:block" href="/company.html?id=${encodeURIComponent(curSetId)}">📚 10コマのマンガで企業を知る</a>`;
+    app().innerHTML = `
+      <div style="text-align:center;padding:36px 18px">
+        <div style="font-size:34px;margin-bottom:6px">🛠️</div>
+        <p style="font-size:16px;font-weight:800;margin-bottom:6px">この企業のクイズは準備中です</p>
+        <p style="color:#64748b;font-size:13px;margin-bottom:22px">クイズは順次追加しています。<br>いまはこちらから企業を知れます。</p>
+        ${cta}</div>`;
+    setBack(()=>quizBack(), qbLabel());
+    return;
+  }
   const cards = LEVELS.map(m=>{
     const st = bl[String(m.lv)] || { available:undefined, answered:0, correct:0, passed:false, unlocked:m.lv===1 };
     const available = st.available;         // undefined=不明(APIフォールバック時)
@@ -328,13 +345,19 @@ function renderLevelLadder(){
     if (empty) { cls+=' empty'; meta = `<span class="lv-rate">問題準備中</span>`; }
     else if (!unlocked) {
       cls+=' locked';
-      meta = `<span class="lv-lockic">🔒</span><span class="lv-rate">Lv${m.lv-1}を80%クリアで解放</span>`;
+      meta = `<span class="lv-lockic">🔒</span><span class="lv-rate">Lv${m.lv-1}をクリアで解放</span>`;
     } else {
       tap=true;
       const chip = passed ? `<span class="lv-chip pass">✓ 合格</span>`
                           : (st.answered>0 ? `<span class="lv-chip try">再挑戦</span>` : `<span class="lv-chip go">挑戦</span>`);
-      const rate = pct!=null ? `<span class="lv-rate">正答率 ${pct}%（合格80%）</span>`
-                             : (available!=null ? `<span class="lv-rate">${available}問｜正答率80%で解放</span>` : '');
+      // 解放条件は実在問数で変わる: 1問=自動 / 2-4問=1問までミスOK / 5問以上=正答率80%
+      const cond = available==null ? '正答率80%で解放'
+                 : available<=1 ? '1問のみ・自動で解放'
+                 : available<=4 ? `全${available}問｜1問までミスOK`
+                 : '正答率80%で解放';
+      const rate = (pct!=null && available!=null && available>1)
+        ? `<span class="lv-rate">正答率 ${pct}%（${available<=4?'1問までミスOK':'合格80%'}）</span>`
+        : `<span class="lv-rate">${cond}</span>`;
       meta = chip + rate;
     }
     const arrow = tap ? `<span class="lv-arrow">›</span>` : '';
@@ -347,7 +370,7 @@ function renderLevelLadder(){
       : `<div class="${cls}">${inner}</div>`;
   }).join('');
   app().innerHTML = `
-    <p class="lv-intro">Lv1から挑戦！ そのレベルの<b>正答率80%</b>で次のレベルが解放されます。</p>
+    <p class="lv-intro">Lv1から挑戦！ 各レベルを<b>クリア</b>で次が解放（問題が少ないレベルは1問までミスOK）。</p>
     <div class="lv-ladder">${cards}</div>`;
   app().querySelectorAll('.lv-card[data-lv]').forEach(b=> b.onclick = ()=> startLevel(parseInt(b.dataset.lv,10)) );
   setBack(()=>quizBack(), qbLabel());
@@ -511,7 +534,7 @@ async function renderResult(){
   if (newlyPassed) { earned += 100; if (curLevel===4) earned += 300; }
 
   const emoji = pct>=80?'🏆':pct>=50?'👍':'📚';
-  const msg = nowPassed ? `Lv${m.lv} 合格！` : (pct>=50?'もう一歩で合格（80%）！':'復習して再挑戦しよう！');
+  const msg = nowPassed ? `Lv${m.lv} 合格！` : (pct>=50?'もう一歩で合格！':'復習して再挑戦しよう！');
   const burst = newlyPassed
     ? (curLevel===4 ? `<div class="unlock-burst">🎉 実践マスター達成！ この企業は完全制覇です</div>`
                     : `<div class="unlock-burst">🎊 Lv${nextLv} ${esc(LV(nextLv).name)} 解放！</div>`)

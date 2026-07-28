@@ -682,9 +682,15 @@ async function computeUnlock(env: any, userId: string, setType: string, setId: s
   for (let lv = 1; lv <= 4; lv++) {
     const available = avail[lv], { answered, correct } = ans[lv]
     const rate = answered ? correct / answered : 0
+    const wrong = answered - correct
     const need = Math.min(QUIZ_PASS_MIN, available || QUIZ_PASS_MIN)
-    // 実在0問のLvは透過pass（次の実在Lvへ）。実在ありは 回答≥need かつ 正答率≥80% でpass。
-    const passed = available === 0 ? true : (answered >= need && rate >= QUIZ_PASS_RATE)
+    // 実在0/1問は透過pass（1問では正答率判定が成立せず gate の意味がない）。
+    // 実在2問以上: 回答≥need かつ (正答率≥80% または 誤答≤1問かつ正答≥1問)。
+    //   後者は実在4問以下でのみ発火する（5問以上では誤答1問=正答率80%以上が自動成立するため、
+    //   既存の Lv1≥8 の社を含め実在5問以上のレベルの厳しさは一切変わらない）。
+    const passed = available <= 1
+      ? true
+      : (answered >= need && (rate >= QUIZ_PASS_RATE || (wrong <= 1 && correct >= 1)))
     const unlocked: boolean = lv === 1 ? true : prevPassed
     if (unlocked) unlocked_max = lv
     by_level[String(lv)] = { level: lv, available, answered, correct, rate: Math.round(rate * 100) / 100, passed, unlocked }
