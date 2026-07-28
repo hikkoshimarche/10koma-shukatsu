@@ -556,6 +556,18 @@ async function openProfileModal(mode, prefill){
 
 async function startMypage(){
   const gp=loadGlossary();   // 用語辞書を並行ロード(フィード注釈に必要)
+  // ゲスト(LINE外・未ログイン=userId未確定/guest-preview)は共有レコードを絶対に出さない。
+  // 個人記録(XP・足あと・続きから・お気に入り・成績・診断)を一切fetch/表示せず、ログイン案内の空状態にする。
+  // ?u= によるQAオーバーライドは userId が実値になるので下の実ユーザー経路を通る(従来どおり)。
+  const isReal = userId && userId!=='guest-preview';
+  if(!isReal){
+    try{ await gp; }catch(e){}
+    mp().innerHTML = `<div class="mp-sec"><div class="mp-empty-all" style="padding:28px 22px">
+      <div class="ei">🔒</div><div class="et">ログインすると記録が残ります</div>
+      <div class="es">LINEでログインすると、就活レベル・足あと・続きから・お気に入り・成績・診断が<br>ここに保存されます。</div>
+      <a href="/home">ホームへ戻る →</a></div></div>`;
+    return;
+  }
   let d=null;
   try{ const r=await fetch(`${API_BASE}/api/mypage?userId=${encodeURIComponent(userId)}`); if(r.ok) d=await r.json(); }catch(e){}
   if(!d) d={continue:{recent:[],quiz_resume:null},bookmarks:[],quiz_stats:{companies:0,accuracy:null,answered:0,recent_scores:[]},shindan:null};
