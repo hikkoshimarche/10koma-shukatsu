@@ -1,0 +1,8 @@
+# 綺麗URL: /features 等で /lp/*.html をその場配信(200=リライト・URLは変わらない)。
+# ルート / は functions/index.js が担当(非LINE=LP配信 / LINE=LIFF)。ここには / の行は置かない。
+/features    /lp/features.html    200
+/about       /lp/about.html       200
+/companies   /lp/companies.html   200
+/contact     /lp/contact.html     200
+/terms       /lp/terms.html       200
+/privacy     /lp/privacy.html     200
