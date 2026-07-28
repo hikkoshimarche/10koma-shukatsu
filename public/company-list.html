@@ -54,7 +54,33 @@ async function main() {
   });
 
   if (!industry) {
-    cardsEl.innerHTML = '<p class="error-text">業界が指定されていません</p>';
+    // 業界未指定は行き止まりにせず、業界(companies.jsonのカテゴリ)を選べるようにして前へ進める。
+    document.getElementById('page-title').innerHTML = '業界をえらぶ';
+    document.title = '業界をえらぶ | トーキャリ';
+    try {
+      const res = await fetch('/companies.json');
+      if (!res.ok) throw new Error(`fetch error ${res.status}`);
+      const data = await res.json();
+      const cats = Object.keys(data).filter(k => Array.isArray(data[k]) && data[k].length);
+      cardsEl.innerHTML = cats.map(cat => `
+        <button class="e-card" data-cat="${esc(encodeURIComponent(cat))}" style="--acc:${hue(cat)}">
+          <span class="e-badge">${esc(String(cat).trim().charAt(0))}</span>
+          <span class="e-card-body">
+            <span class="e-card-label">${esc(cat)}</span>
+            <span class="e-card-sub">${data[cat].length}社</span>
+          </span>
+          <span class="e-card-arrow">›</span>
+        </button>`).join('');
+      cardsEl.addEventListener('click', e => {
+        const card = e.target.closest('.e-card');
+        if (!card) return;
+        const cat = decodeURIComponent(card.dataset.cat);
+        location.href = `/company-list.html?industry=${encodeURIComponent(cat)}&from=${encodeURIComponent(from)}`;
+      });
+    } catch (err) {
+      cardsEl.innerHTML = '<p class="error-text">業界一覧を読み込めませんでした</p>';
+      console.error(err);
+    }
     return;
   }
 
