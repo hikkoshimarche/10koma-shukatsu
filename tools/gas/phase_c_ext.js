@@ -336,6 +336,27 @@ function handleExt(mode, e, token){
     sh.getRange(1,1,out.length,head.length).setValues(out);
     return _json({ok:true, tab:tab, written:rows.length});
   }
+  if(mode === 'write_matrix_tab'){
+    // 任意タブ+任意カラムの汎用書込(冪等)。POST: tab=タブ名 / header=JSON配列 / rows=JSON2次元配列。
+    // 既存タブはクリアして書き直し・無ければ新規作成。青ヘッダ(=Claude/オスカー記入)+行固定。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const tab = String(e.parameter.tab||'').trim();
+    if(!tab) return _json({error:'no tab'});
+    let header=[], rows=[];
+    try{ header=JSON.parse(e.parameter.header||'[]'); rows=JSON.parse(e.parameter.rows||'[]'); }
+    catch(err){ return _json({error:'header/rows parse失敗'}); }
+    if(!header.length) return _json({error:'header空'});
+    const w = header.length;
+    const norm = function(r){ const a=(r||[]).slice(0,w); while(a.length<w) a.push(''); return a; };
+    const out = [header].concat(rows.map(norm));
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sh = ss.getSheetByName(tab);
+    if(sh){ sh.clear(); sh.clearFormats(); } else { sh = ss.insertSheet(tab); }
+    sh.getRange(1,1,out.length,w).setValues(out);
+    sh.getRange(1,1,1,w).setFontWeight('bold').setBackground('#cfe2f3');
+    sh.setFrozenRows(1);
+    return _json({ok:true, tab:tab, cols:w, rows:rows.length, total_rows:out.length});
+  }
   if(mode === 'judgmentdryrun'){
     // 送信せず、修正後ロジックの判断ダイジェスト実文面(全文)を返す(検証用)。
     if(!_authed(e, token)) return _json({error:'unauthorized'});
