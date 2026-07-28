@@ -155,7 +155,9 @@ const LEVELS = [
 const LV = lv => LEVELS[(lv||1)-1] || LEVELS[1];
 const PASS_RATE = 0.8, PASS_MIN = 8; // API側 QUIZ_PASS_RATE / QUIZ_PASS_MIN と一致
 
-// プレビュー用サンプル(本番はAPIから取得)
+// プレビュー用サンプル（SAP社の問題）。※本番の出題経路からは一切参照しない。
+// 実在企業のクイズをこれで穴埋めすると「IHIのクイズなのにSAPの問題が出る」事故になるため
+// startLevel/startReview では使わず「準備中」表示にする（[[no-sample-for-real-company]]）。
 const SAMPLE = [
   {"category":"会社概要","q_text":"MSCI ESGのレーティングでSAPはどの評価を受けていますか？","options":["AAA","AA","A","BBB"],"correct":0,"explanation":"SAPはMSCI ESGのレーティングでAAAを受けています。","source_url":"https://www.sap.com/japan/about/company.html"},
   {"category":"会社概要","q_text":"SAPはS&P ESGスコアでどの位置にランクされていますか？","options":["上位5%","上位10%","上位15%","上位20%"],"correct":0,"explanation":"SAPはS&P ESGスコアで上位5%にランクされています。","source_url":"https://www.sap.com/japan/about/company.html"},
@@ -355,16 +357,32 @@ async function startLevel(level){
   curLevel = level;
   document.getElementById('guide').innerHTML = '';
   app().innerHTML = `<div class="e-list"><div class="e-skel"></div><div class="e-skel"></div></div>`;
-  let qs = null, isSample = false;
+  let qs = null;
   try {
     const r = await fetch(`${API_BASE}/api/quiz?set_type=${encodeURIComponent(curSetType)}&set_id=${encodeURIComponent(curApiSetId)}&level=${level}`);
     if (r.ok) { const d = await r.json(); qs = Array.isArray(d) ? d : (d.questions || []); }
-  } catch(e){ /* API未実装 → サンプル */ }
-  if (!qs || !qs.length) { qs = SAMPLE.map(s=>({...s, difficulty:level})); isSample = true; }
+  } catch(e){ /* 取得失敗 → 準備中表示（他社のサンプル問題に差し替えない） */ }
+  // 実在企業のクイズとして別会社(SAP)のサンプル問題を出さない（[[no-sample-for-real-company]]）
+  if (!qs || !qs.length) { renderQuizEmpty(level); return; }
   QSET = qs.slice(0, N_PER_SET).map(shuffled);
   qi = 0; score = 0; pendingWrites = [];
   setBack(()=>renderLevelLadder(), 'レベル一覧');
-  renderQuestion(isSample);
+  renderQuestion();
+}
+
+// 問題未投入・取得失敗時。サンプル問題で穴埋めせず「準備中」を明示する。
+function renderQuizEmpty(level){
+  const m = LV(level);
+  setBack(()=>renderLevelLadder(), 'レベル一覧');
+  app().innerHTML = `<div class="quiz-result" style="padding-top:30px">
+    <div class="quiz-result-emoji">🧩</div>
+    <p class="quiz-result-msg" style="margin-top:8px"><b>Lv${m.lv} ${esc(m.name)}</b>の問題は準備中です。<br>公開でき次第ここに追加します。</p>
+    <div class="quiz-actions">
+      ${datasheetHref()?`<a class="quiz-btn ghost" href="${datasheetHref()}" style="text-decoration:none;text-align:center;display:block">📖 データシートで企業を知る</a>`:''}
+      <button class="quiz-btn primary" id="q-empty-back">レベル一覧へ戻る</button>
+    </div>
+  </div>`;
+  const b=document.getElementById('q-empty-back'); if(b) b.onclick=()=>renderLevelLadder();
 }
 
 // 復習: user_quiz_progress をルールで集計するAPIから出題
@@ -382,8 +400,8 @@ async function startReview(rmode){
     if (r.ok) { apiOk = true; const d = await r.json(); qs = Array.isArray(d) ? d : (d.questions || []); }
   } catch(e){ /* API未実装 */ }
 
-  // APIが応答して記録ゼロ → 空状態。API未実装(404/err) → プレビュー用サンプル。
-  if (apiOk && (!qs || !qs.length)) {
+  // 記録ゼロも取得失敗も同じ空状態にする（サンプル問題での穴埋めはしない）。
+  if (!qs || !qs.length) {
     app().innerHTML = `<div class="quiz-result" style="padding-top:30px">
       <div class="quiz-result-emoji">🗒️</div>
       <p class="quiz-result-msg" style="margin-top:8px">まだ復習できる問題がありません。<br>クイズに挑戦すると、間違えた問題がここに集まります。</p>
@@ -392,10 +410,8 @@ async function startReview(rmode){
     document.getElementById('go-quiz').onclick = ()=>{ mode='company'; renderSelect(); };
     return;
   }
-  let isSample = false;
-  if (!qs || !qs.length) { qs = SAMPLE; isSample = true; }
   QSET = qs.slice(0, N_PER_SET).map(shuffled); qi = 0; score = 0;
-  renderQuestion(isSample);
+  renderQuestion();
 }
 
 function renderQuestion(isSample){

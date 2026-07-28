@@ -35,6 +35,10 @@
     .cta{margin:18px 16px 28px}
     .cta a{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--gold);color:#2a1c00;font-weight:800;font-size:16px;padding:15px;border-radius:14px;text-decoration:none;box-shadow:0 4px 12px rgba(231,184,75,0.4)}
     .empty{padding:40px 20px;text-align:center;color:var(--mute)}
+    .nodata{margin:12px 16px;background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,0.08);padding:30px 22px;text-align:center}
+    .nodata .ei{font-size:34px;line-height:1;margin-bottom:10px}
+    .nodata .et{font-size:16px;font-weight:800;color:var(--ink);margin-bottom:6px}
+    .nodata .es{font-size:13px;line-height:1.7;color:var(--mute)}
     .skel{height:90px;margin:12px 16px;border-radius:16px;background:linear-gradient(100deg,#e3e8ee 30%,#f3f6f9 50%,#e3e8ee 70%);background-size:200% 100%;animation:sk 1.3s infinite}
     @keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
   </style>
@@ -93,12 +97,33 @@ function render(d, id){
     <div class="cta" style="margin-top:-6px"><a href="/quiz.html?company=${encodeURIComponent(id)}&name=${encodeURIComponent(d.name||'')}" style="background:#fff;color:var(--navy);box-shadow:0 2px 10px rgba(0,0,0,0.08)">🧠 このままクイズに挑戦する</a></div>`;
 }
 
+// データ未投入・取得失敗時の表示。実在企業に「サンプル企業」を出さない（[[no-sample-for-real-company]]）。
+function renderEmpty(id, name){
+  const nm = name || 'この企業';
+  document.getElementById('hd-title').textContent = (name||'企業')+' データシート';
+  document.getElementById('app').innerHTML = `
+    <div class="lead"><span class="kb">データシート</span>
+      <p class="nm">${esc(nm)}</p></div>
+    <div class="nodata">
+      <div class="ei">📄</div>
+      <div class="et">データシートは準備中です</div>
+      <div class="es">事業・財務・社風・沿革を<b>出典付き</b>でまとめています。公開でき次第ここに掲載します。<br>いまは10コマとクイズで企業をつかめます。</div>
+    </div>
+    ${id?`<div class="cta"><a href="/company.html?id=${encodeURIComponent(id)}">📖 10コマで企業を見る</a></div>`:''}
+    ${id?`<div class="cta" style="margin-top:-6px"><a href="/quiz.html?company=${encodeURIComponent(id)}&name=${encodeURIComponent(name||'')}" style="background:#fff;color:var(--navy);box-shadow:0 2px 10px rgba(0,0,0,0.08)">🧠 クイズに挑戦する</a></div>`:''}`;
+}
+
 async function main(){
-  const id=new URLSearchParams(location.search).get('id')||'';
+  const params=new URLSearchParams(location.search);
+  const id=params.get('id')||'';
+  const name=params.get('name')||'';
   try{ await liff.init({liffId:LIFF_ID}); if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;} }catch(e){}
+  // サンプルは ?sample=1 のプレビュー時のみ。実在企業IDには絶対に出さない。
+  if(params.get('sample')==='1'){ render(SAMPLE,'sap-japan'); return; }
   let d=null;
   if(id){ try{ const r=await fetch(`${API_BASE}/api/datasheet?id=${encodeURIComponent(id)}`); if(r.ok) d=await r.json(); }catch(e){} }
-  render(d && d.sections ? d : SAMPLE, id||'sap-japan');
+  if(d && Array.isArray(d.sections) && d.sections.length){ render(d, id); }
+  else { renderEmpty(id, name || (d&&d.name) || ''); }
 }
 main();
 </script>
