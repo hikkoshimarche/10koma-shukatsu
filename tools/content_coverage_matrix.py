@@ -7,7 +7,8 @@ import csv, json, os, subprocess, sys
 REPO = os.path.expanduser("~/projects/10koma-shukatsu")
 OUT = os.path.expanduser("~/oscar-ai/tokyari-pipeline/output")
 CSV_PATH = os.path.join(OUT, "content_coverage.csv")
-QUIZ_F = ("quiz_30q.json", "quiz.json", "quiz_questions.json")
+QUIZ_F = ("quiz_30q_locked_v3.json",)
+QUIZ_LEGACY_F = ("quiz_30q.json", "quiz.json", "quiz_questions.json")
 DS_F = ("datasheet.json",)
 EK_F = ("es_kit.json", "eskit.json")
 
@@ -60,7 +61,8 @@ for slug, name, ind in cs:
                  "datasheet": st(ld, slug in ds1), "quiz": st(lq, bool(lv)),
                  "es_kit": st(le, slug in ek1), "quiz_q_total": sum(lv.values()),
                  "lv1": lv.get(1, 0), "lv2": lv.get(2, 0), "lv3": lv.get(3, 0), "lv4": lv.get(4, 0),
-                 "local_ds": ld, "local_quiz": lq, "local_ek": le})
+                 "local_ds": ld, "local_quiz": lq, "local_ek": le,
+                 "local_quiz_legacy": local(slug, QUIZ_LEGACY_F)})
 
 os.makedirs(OUT, exist_ok=True)
 with open(CSV_PATH, "w", encoding="utf-8", newline="") as f:
