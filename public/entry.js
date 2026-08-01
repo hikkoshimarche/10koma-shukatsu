@@ -13,7 +13,7 @@
     var hasLiff = /liff/i.test(location.search);
     var p = new URLSearchParams(location.search);
     var appQuery = ['company', 'industry', 'id', 'u', 'from'].some(function (k) { return p.has(k); });
-    if (ua && !isLine && !hasLiff && !appQuery) { location.replace('https://talkcareer.jp/lp/'); }
+    if (ua && !isLine && !hasLiff && !appQuery) { location.replace('https://talkcareer.jp/'); }
   } catch (e) { /* 判定不能は安全側=LIFFのまま */ }
 })();
 
