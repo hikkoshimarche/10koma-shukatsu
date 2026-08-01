@@ -820,7 +820,12 @@ async function initLiff() {
     return { userId: 'localhost-preview', displayName: 'Preview', pictureUrl: '' };
   }
   await liff.init({ liffId: LIFF_ID });
-  if (!liff.isLoggedIn()) { liff.login(); return null; }
+  if (!liff.isLoggedIn()) {
+    // 在LINE(LIFF)時のみログイン強制。LINE外(共有リンクを外部ブラウザで開いた等)はゲストとして10コマを表示。
+    // 他ページ(quiz/datasheet/room/mypage)と同じ isInClient() ガードに揃える。
+    if (liff.isInClient()) { liff.login(); return null; }
+    return { userId: null, displayName: '', pictureUrl: '', guest: true };
+  }
   const profile = await liff.getProfile();
   fetch(`${API_BASE}/api/users/upsert`, {
     method: 'POST',
@@ -844,7 +849,7 @@ function updateBookmarkUI() {
 }
 
 async function toggleBookmark() {
-  if (!currentUserId) return;
+  if (!currentUserId) { showToast('LINEでログインすると、お気に入りに保存できます'); return; }
   const btn = document.getElementById('btn-header-bookmark');
   btn.disabled = true;
   try {
@@ -866,7 +871,8 @@ async function toggleBookmark() {
 }
 
 async function togglePanelLike(btn, panelNum) {
-  if (!currentUserId || btn.disabled) return;
+  if (!currentUserId) { showToast('LINEでログインすると、いいねできます'); return; }
+  if (btn.disabled) return;
   btn.disabled = true;
   try {
     const res = await fetch(`${API_BASE}/api/like`, {
@@ -1031,12 +1037,14 @@ async function main() {
     currentUserId = profile.userId;
     window.__tkUser = profile.userId;   // ファネル計測用の識別子(既存log-view/view_logsと同一)
 
-    const res = await fetch(`${API_BASE}/api/companies/${encodeURIComponent(companyId)}?user_id=${encodeURIComponent(currentUserId)}`);
+    const uq = currentUserId ? `?user_id=${encodeURIComponent(currentUserId)}` : '';
+    const res = await fetch(`${API_BASE}/api/companies/${encodeURIComponent(companyId)}${uq}`);
     if (res.status === 404) { app.innerHTML = '<p class="error-text">企業が見つかりません</p>'; return; }
     if (!res.ok) throw new Error(`API error ${res.status}`);
     const company = await res.json();
 
-    fetch(`${API_BASE}/api/log-view`, {
+    // ゲスト(LINE外・未ログイン)は閲覧ログを取らない(view_logs.line_user_id は NOT NULL・分析汚染防止)
+    if (currentUserId) fetch(`${API_BASE}/api/log-view`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ line_user_id: currentUserId, content_type: 'company', content_id: companyId })
