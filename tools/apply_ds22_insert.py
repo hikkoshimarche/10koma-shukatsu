@@ -10,9 +10,8 @@ import json, os, sys, subprocess, hashlib, time
 ROOT = os.path.expanduser("~/projects/10koma-shukatsu")
 OUT = os.path.expanduser("~/oscar-ai/tokyari-pipeline/output")
 SEC_MAP = {"事業内容・セグメント": "事業", "主要財務": "財務", "社風・求める人物像": "社風", "沿革・基本情報": "沿革"}
-# 第2便: EDINET有報/IR PDF由来(bot-wall社の代替一次情報)。fact<5は自動SKIP。
-TARGETS = ["tdk", "daiwa-house", "jal", "takashimaya", "isetan-mitsukoshi", "pola-orbis-hd",
-           "suntory", "biccamera", "adl", "mckinsey", "nestle-japan"]
+# 第3便: 追加IR資料(統合レポート/事業会社)でisetan/pola救済。fact<5は自動SKIP。
+TARGETS = ["isetan-mitsukoshi", "pola-orbis-hd"]
 TS = time.strftime("%Y%m%d_%H%M%S")
 BACKUP = os.path.join(ROOT, ".backups", f"pre_ds22insert_{TS}.sql")
 SQLF = "/tmp/ds22_insert.sql"
