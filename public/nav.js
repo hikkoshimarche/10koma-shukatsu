@@ -17,7 +17,11 @@
     switch (from) {
       case 'home':    return { href: '/home.html', label: 'ホーム' };
       case 'mypage':  return { href: '/mypage.html', label: 'マイページ' };
-      case 'gyokai':  return { href: '/gyokai.html', label: '業界研究TOP' };
+      case 'gyokai': {
+        // fromOpen があれば、戻り時にその業界カードを再展開(どの業界を見ていたか失わない)。
+        var op = q('fromOpen');
+        return { href: op ? ('/gyokai.html?open=' + encodeURIComponent(op)) : '/gyokai.html', label: '業界研究TOP' };
+      }
       case 'howto':   return { href: '/howto.html', label: '使い方' };
       case 'compare': return { href: '/compare.html', label: '企業比較' };
       case 'shindan': return { href: '/shindan.html?view=result', label: '診断結果' };

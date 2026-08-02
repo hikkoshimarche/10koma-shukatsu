@@ -97,7 +97,7 @@ async function loadSchedule(card){
   try{ const r=await fetch(`${API_BASE}/api/industry-selection-schedule?gyokai=${encodeURIComponent(el.dataset.slug)}`); if(r.ok) items=await r.json(); }catch(e){}
   if(!Array.isArray(items)||!items.length){ el.style.display='none'; return; }  // 項目ゼロ=非表示
   el.innerHTML=`<div class="gk-sched-t">📅 この業界の選考スケジュール</div>`+items.map(it=>`
-    <a class="gk-sched-i" href="/company.html?id=${encodeURIComponent(it.company_id)}&from=gyokai">
+    <a class="gk-sched-i" href="/company.html?id=${encodeURIComponent(it.company_id)}&from=gyokai&fromOpen=${encodeURIComponent(el.dataset.slug||'')}">
       ${it.grad_year?`<span class="gk-grad">${esc(it.grad_year)}</span>`:''}
       <span class="gk-sched-b"><span class="gk-sched-l">${esc(it.label)}</span><span class="gk-sched-m">${esc(it.name)}${it.date?' ・ 📅 '+esc(it.date):''}</span></span>
       <span class="gk-sched-a">›</span></a>`).join('');
@@ -145,8 +145,8 @@ function render(){
       </button>
       <div class="gk-hub">
         <div class="gk-tiles">
-          <a class="gk-tile" href="/company.html?industry=${s}&name=${n}&from=gyokai"><span class="tic">📖</span><span class="tl">業界10コマ</span><span class="ts">しくみを学ぶ</span></a>
-          <a class="gk-tile" href="/quiz.html?industry=${s}&name=${n}&from=gyokai"><span class="tic">🧠</span><span class="tl">業界クイズ</span><span class="ts">理解度チェック</span></a>
+          <a class="gk-tile" href="/company.html?industry=${s}&name=${n}&from=gyokai&fromOpen=${s}"><span class="tic">📖</span><span class="tl">業界10コマ</span><span class="ts">しくみを学ぶ</span></a>
+          <a class="gk-tile" href="/quiz.html?industry=${s}&name=${n}&from=gyokai&fromOpen=${s}"><span class="tic">🧠</span><span class="tl">業界クイズ</span><span class="ts">理解度チェック</span></a>
           <div class="gk-tile soon"><span class="tic">🎬</span><span class="tl">業界動画</span><span class="soon-b">準備中</span></div>
           <div class="gk-tile soon"><span class="tic">📰</span><span class="tl">業界ニュース</span><span class="soon-b">準備中</span></div>
         </div>
