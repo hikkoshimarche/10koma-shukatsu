@@ -1118,8 +1118,10 @@ app.get('/api/mypage', async (c) => {
   // b. お気に入り
   try {
     const { results } = await c.env.DB.prepare(
-      `SELECT c.id, c.name, c.description, c.industry_id, c.thumbnail_url, b.created_at
+      `SELECT c.id, c.name, c.description, c.industry_id, i.name AS industry, c.thumbnail_url, b.created_at,
+              (SELECT MAX(v.viewed_at) FROM view_logs v WHERE v.content_type='company' AND v.content_id=c.id) AS last_viewed
        FROM bookmarks b JOIN companies c ON c.id = b.company_id
+       LEFT JOIN industries i ON i.id = c.industry_id
        WHERE b.line_user_id = ? ORDER BY b.created_at DESC`
     ).bind(userId).all()
     out.bookmarks = results || []

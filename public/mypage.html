@@ -160,6 +160,20 @@
     .gl-pop.below::after{top:-6px;left:var(--ax,20px)}
     .gl-pop.above::after{bottom:-6px;left:var(--ax,20px)}
 
+    /* v1.7: お気に入り/ニュースの 検索・絞り込み・並び替え・追加読み込み */
+    .fav-ctrl,.nw-ctrl{margin-bottom:10px}
+    .fav-search{width:100%;border:none;border-radius:10px;padding:10px 12px;font-size:14px;font-family:inherit;color:var(--ink);background:rgba(255,255,255,0.94);box-shadow:0 2px 8px rgba(0,0,0,0.12);margin-bottom:8px}
+    .fav-sorts,.nw-sorts{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+    .fav-sortb,.nw-sortb{flex:0 0 auto;font-size:12px;font-weight:700;color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.22);border-radius:999px;padding:6px 13px;cursor:pointer;font-family:inherit}
+    .fav-sortb.on,.nw-sortb.on{background:var(--gold);color:#3a2c05;border-color:var(--gold)}
+    .fav-chips,.nw-chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:3px;-webkit-overflow-scrolling:touch}
+    .fav-chip,.nw-chip{flex:0 0 auto;font-size:11.5px;font-weight:700;color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:999px;padding:5px 11px;cursor:pointer;font-family:inherit;white-space:nowrap}
+    .fav-chip.on,.nw-chip.on{background:rgba(231,184,75,0.2);border-color:var(--gold);color:#fff}
+    .mp-fav-empty,.nw-empty{background:rgba(255,255,255,0.06);border:1px dashed rgba(255,255,255,0.22);border-radius:12px;padding:16px;text-align:center;color:rgba(255,255,255,0.8);font-size:13px}
+    /* ニュース: 企業バッジ(タップ前に一目で分かる=学生FBの核) */
+    .nw-co{font-size:10.5px;font-weight:800;color:#fff;padding:2px 9px;border-radius:999px;background-color:var(--acc);max-width:46%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
+    .nw-more{display:block;width:100%;margin-top:2px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.25);border-radius:10px;padding:11px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
+
     /* 初回プロフィール登録モーダル */
     .pm-overlay{position:fixed;inset:0;background:rgba(6,20,40,0.74);z-index:200;display:flex;align-items:flex-end;justify-content:center}
     .pm-card{background:#fff;color:var(--ink);width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom,0px));max-height:94vh;overflow-y:auto}
@@ -224,16 +238,47 @@ function secContinue(d){
     ${rec.length?`<div class="mp-row">${cards}</div>`:''}${resume}</div>`;
 }
 
+// ===== お気に入り: 検索・業界絞り込み・並び替え(追加順/閲覧順/社名) =====
+let FAV=[];                                   // お気に入りデータ(絞り込み/並び替えのソース)
+let favState={q:'',ind:'',sort:'added'};
+function favCard(c){
+  const sub=c.industry||c.description||'';
+  return `<a class="mp-fav-card" href="/company.html?id=${encodeURIComponent(c.id)}&from=mypage">
+    <span class="star">★</span><span class="fi"><span class="fn">${esc(c.name)}</span>${sub?`<span class="fd">${esc(sub)}</span>`:''}</span><span class="fa">›</span></a>`;
+}
+function applyFav(){
+  const q=favState.q.trim().toLowerCase();
+  let list=FAV.filter(c=>{
+    if(favState.ind && c.industry!==favState.ind) return false;
+    if(q && !String(c.name||'').toLowerCase().includes(q) && !String(c.id||'').toLowerCase().includes(q)) return false;
+    return true;
+  });
+  list.sort((a,b)=>{
+    if(favState.sort==='name') return String(a.name||'').localeCompare(String(b.name||''),'ja');
+    if(favState.sort==='viewed') return String(b.last_viewed||'').localeCompare(String(a.last_viewed||''));
+    return String(b.created_at||'').localeCompare(String(a.created_at||''));   // 追加順(新しい順)
+  });
+  const el=document.getElementById('fav-list'); if(el) el.innerHTML = list.length? list.map(favCard).join('') : `<div class="mp-fav-empty">条件に合うお気に入りがありません</div>`;
+  const cnt=document.getElementById('fav-count'); if(cnt) cnt.textContent=`${list.length}/${FAV.length}社`;
+}
 function secFavorites(d){
-  const b=d.bookmarks||[];
-  let body;
+  const b=d.bookmarks||[]; FAV=b; favState={q:'',ind:'',sort:'added'};
   if(!b.length){
-    body=`<div class="mp-empty"><p>まだ保存した企業はありません。<br>企業ページの「保存」で、あとで見返せます。</p><a href="/industry">企業をさがす →</a></div>`;
-  }else{
-    body=`<div class="mp-fav">${b.map(c=>`<a class="mp-fav-card" href="/company.html?id=${encodeURIComponent(c.id)}&from=mypage">
-      <span class="star">★</span><span class="fi"><span class="fn">${esc(c.name)}</span>${c.description?`<span class="fd">${esc(c.description)}</span>`:''}</span><span class="fa">›</span></a>`).join('')}</div>`;
+    return `<div class="mp-sec" id="favorites"><div class="mp-h"><span class="mp-t">お気に<span class="em">入り</span></span></div>
+      <div class="mp-empty"><p>まだ保存した企業はありません。<br>企業ページの「保存」で、あとで見返せます。</p><a href="/industry">企業をさがす →</a></div></div>`;
   }
-  return `<div class="mp-sec" id="favorites"><div class="mp-h"><span class="mp-t">お気に<span class="em">入り</span></span>${b.length?`<span class="mp-more">${b.length}社</span>`:''}</div>${body}</div>`;
+  const inds=[...new Set(b.map(c=>c.industry).filter(Boolean))].sort((x,y)=>String(x).localeCompare(String(y),'ja'));
+  const controls = b.length>=2 ? `<div class="fav-ctrl">
+      <input class="fav-search" id="fav-search" type="search" placeholder="お気に入りを検索（社名）" autocomplete="off" enterkeyhint="search">
+      <div class="fav-sorts">
+        <button class="fav-sortb on" data-s="added">追加順</button>
+        <button class="fav-sortb" data-s="viewed">閲覧順</button>
+        <button class="fav-sortb" data-s="name">社名</button>
+      </div>
+      ${inds.length>1?`<div class="fav-chips"><button class="fav-chip on" data-ind="">すべて</button>${inds.map(i=>`<button class="fav-chip" data-ind="${esc(i)}">${esc(i)}</button>`).join('')}</div>`:''}
+    </div>` : '';
+  return `<div class="mp-sec" id="favorites"><div class="mp-h"><span class="mp-t">お気に<span class="em">入り</span></span><span class="mp-more" id="fav-count">${b.length}社</span></div>
+    ${controls}<div class="mp-fav" id="fav-list">${b.map(favCard).join('')}</div></div>`;
 }
 
 function secStats(d){
@@ -437,30 +482,55 @@ function goToNews(){
   el.scrollIntoView({behavior:'smooth',block:'start'});
   el.querySelectorAll('.nw-item[data-new="1"]').forEach(it=>it.classList.add('open')); // NEWを自動展開
 }
+// ===== ニュース: 企業バッジ(タップ前に判別)・企業絞り込み・並び替え・5件+さらに見る =====
+let NEWS=[];                                  // お気に入り企業の公式ニュース(絞り込み/並び替えのソース)
+let newsState={co:'',sort:'new',limit:5};
+function newsItemHTML(o){
+  const g=classifyNews(o.title);
+  // summary_easy 3状態: '__EXCLUDED__'=要約箱ごと非表示 / 実テキスト=表示 / NULL=準備中
+  const se=o.summary_easy;
+  const summaryBox = (se==='__EXCLUDED__') ? ''
+    : `<div class="nw-summary"><span class="nw-slabel">📝 やさしい要約</span>${se ? esc(se) : '<span class="nw-soon">やさしい要約は準備中です</span>'}</div>`;
+  const isNew=nwIsNew(o.fetched_at);
+  // 企業バッジを nw-top(常時表示)に出す＝タップ前にどの会社の記事か一目で分かる(学生FBの核)
+  return `<div class="nw-item" data-new="${isNew?'1':'0'}">
+    <div class="nw-head">
+      <div class="nw-top"><span class="nw-co" style="--acc:${hue(o.company_id||o.name)}">${esc(o.name||'')}</span><span class="nw-tag ${g.cls}">${esc(g.label)}</span>${isNew?'<span class="nw-new">NEW</span>':''}<span class="nw-date">${esc(o.date||'')}</span><span class="nw-chev">▼</span></div>
+      <div class="nw-title">${annotateGlossary(o.title)}</div>
+    </div>
+    <div class="nw-exp">
+      ${summaryBox}
+      <div class="nw-guide"><span class="gi">💡</span>${esc(g.guide)}</div>
+      <div class="nw-foot"><span class="nw-name">${esc(o.name)}</span><a class="nw-link" href="${esc(o.url)}" target="_blank" rel="noopener">公式ページ</a></div>
+    </div>
+  </div>`;
+}
+function applyNews(){
+  let list=NEWS.slice();
+  if(newsState.co) list=list.filter(o=>String(o.company_id||o.name)===newsState.co);
+  list.sort((a,b)=> newsState.sort==='old' ? String(a.date||'').localeCompare(String(b.date||'')) : String(b.date||'').localeCompare(String(a.date||'')));
+  const total=list.length, shown=list.slice(0,newsState.limit);
+  const el=document.getElementById('news-list');
+  if(el) el.innerHTML = shown.length? shown.map(newsItemHTML).join('') : `<div class="nw-empty">この条件のニュースはありません</div>`;
+  const more=document.getElementById('news-more');
+  if(more){ if(total>newsState.limit){ more.style.display='block'; more.textContent=`さらに見る（残り${total-newsState.limit}件）`; } else more.style.display='none'; }
+}
 function secFeed(d){
   const f=d.feed||{}; const intl=f.internal||[], off=f.official||[];
+  NEWS=off.slice(); newsState={co:'',sort:'new',limit:5};
   const kic={quiz:'🧠',datasheet:'📊',eskit:'🧰'};
   let inner='';
   if(off.length){
-    inner+=`<div class="fd-sub">お気に入り企業の公式ニュース（タップで要約）</div>`+off.map(o=>{
-      const g=classifyNews(o.title);
-      // summary_easy 3状態: '__EXCLUDED__'=要約箱ごと非表示 / 実テキスト=表示 / NULL=準備中
-      const se=o.summary_easy;
-      const summaryBox = (se==='__EXCLUDED__') ? ''
-        : `<div class="nw-summary"><span class="nw-slabel">📝 やさしい要約</span>${se ? esc(se) : '<span class="nw-soon">やさしい要約は準備中です</span>'}</div>`;
-      const isNew=nwIsNew(o.fetched_at);
-      return `<div class="nw-item" data-new="${isNew?'1':'0'}">
-        <div class="nw-head">
-          <div class="nw-top"><span class="nw-tag ${g.cls}">${esc(g.label)}</span>${isNew?'<span class="nw-new">NEW</span>':''}<span class="nw-date">${esc(o.date||'')}</span><span class="nw-chev">▼</span></div>
-          <div class="nw-title">${annotateGlossary(o.title)}</div>
-        </div>
-        <div class="nw-exp">
-          ${summaryBox}
-          <div class="nw-guide"><span class="gi">💡</span>${esc(g.guide)}</div>
-          <div class="nw-foot"><span class="nw-name">${esc(o.name)}</span><a class="nw-link" href="${esc(o.url)}" target="_blank" rel="noopener">公式ページ</a></div>
-        </div>
-      </div>`;
-    }).join('');
+    // 企業フィルタ選択肢(ニュースが実在する企業のみ・重複除去)
+    const seen={}; const cos=[];
+    off.forEach(o=>{ const k=String(o.company_id||o.name); if(!seen[k]){ seen[k]=1; cos.push({k,name:o.name||k}); } });
+    const coChips = cos.length>1 ? `<div class="nw-chips"><button class="nw-chip on" data-co="">すべて</button>${cos.map(c=>`<button class="nw-chip" data-co="${esc(c.k)}">${esc(c.name)}</button>`).join('')}</div>` : '';
+    const ctrl = off.length>1 ? `<div class="nw-ctrl">
+        <div class="nw-sorts"><button class="nw-sortb on" data-s="new">新しい順</button><button class="nw-sortb" data-s="old">古い順</button></div>
+        ${coChips}</div>` : '';
+    inner+=`<div class="fd-sub">お気に入り企業の公式ニュース（タップで要約）</div>${ctrl}
+      <div id="news-list">${off.slice(0,newsState.limit).map(newsItemHTML).join('')}</div>
+      <button class="nw-more" id="news-more" style="display:${off.length>newsState.limit?'block':'none'}">さらに見る（残り${Math.max(0,off.length-newsState.limit)}件）</button>`;
   }
   if(intl.length){
     // href が無い項目はリンクにせず div で描画＝'#'遷移(先頭スクロール/無反応)を防ぐ。
@@ -498,6 +568,14 @@ function render(d){
   const jc=document.getElementById('mp-newsjump'); if(jc) jc.onclick=(e)=>{ e.preventDefault(); try{history.replaceState(null,'','#news');}catch(_){} goToNews(); };
   if(location.hash==='#favorites'){ const el=document.getElementById('favorites'); if(el) setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),200); }
   if(location.hash==='#news'){ setTimeout(goToNews, 300); }  // 通知(週1ダイジェスト)から直行
+  // お気に入り: 検索/並び替え/業界フィルタの操作を配線
+  const fsE=document.getElementById('fav-search'); if(fsE) fsE.addEventListener('input',()=>{ favState.q=fsE.value; applyFav(); });
+  document.querySelectorAll('.fav-sortb').forEach(btn=>btn.onclick=()=>{ favState.sort=btn.dataset.s; document.querySelectorAll('.fav-sortb').forEach(x=>x.classList.toggle('on',x===btn)); applyFav(); });
+  document.querySelectorAll('.fav-chip').forEach(btn=>btn.onclick=()=>{ favState.ind=btn.dataset.ind; document.querySelectorAll('.fav-chip').forEach(x=>x.classList.toggle('on',x===btn)); applyFav(); });
+  // ニュース: 並び替え/企業フィルタ/さらに見る の操作を配線
+  document.querySelectorAll('.nw-sortb').forEach(btn=>btn.onclick=()=>{ newsState.sort=btn.dataset.s; newsState.limit=5; document.querySelectorAll('.nw-sortb').forEach(x=>x.classList.toggle('on',x===btn)); applyNews(); });
+  document.querySelectorAll('.nw-chip').forEach(btn=>btn.onclick=()=>{ newsState.co=btn.dataset.co; newsState.limit=5; document.querySelectorAll('.nw-chip').forEach(x=>x.classList.toggle('on',x===btn)); applyNews(); });
+  const nmBtn=document.getElementById('news-more'); if(nmBtn) nmBtn.onclick=()=>{ newsState.limit+=5; applyNews(); };
   // ニュース(更新フィード)が実際に画面へ入ったら「ニュース閲覧」を1回計測(company.htmlのkoma_read同様IO方式)。
   const nv=document.getElementById('news');
   if(nv && 'IntersectionObserver' in window){
