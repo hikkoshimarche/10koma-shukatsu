@@ -162,7 +162,7 @@ function drawTable(data){
     ['社風・<br>人物像', c=>listCell(c.culture)],
     ['直近決算の<br>主要数字', c=>listCell(c.financials)],
   ];
-  const head=`<tr><th class="rowlabel"></th>${cs.map(c=>`<th class="cell"><div class="cname"><a href="/company.html?id=${esc(c.id)}">${esc(c.name)}</a></div><div class="cind">${esc(c.industry||'')}</div></th>`).join('')}</tr>`;
+  const head=`<tr><th class="rowlabel"></th>${cs.map(c=>`<th class="cell"><div class="cname"><a href="/company.html?id=${esc(c.id)}&from=compare">${esc(c.name)}</a></div><div class="cind">${esc(c.industry||'')}</div></th>`).join('')}</tr>`;
   const body=rows.map(([label,fn])=>`<tr><td class="rowlabel">${label}</td>${cs.map(c=>`<td class="cell">${fn(c)}</td>`).join('')}</tr>`).join('');
   wrap().innerHTML=`
     <div class="top"><button class="back" id="bk" style="width:auto;border-radius:999px;padding:6px 12px 6px 10px;font-size:13px;white-space:nowrap">‹ 選択に戻る</button><h1>企業<span class="gold">比較</span></h1></div>

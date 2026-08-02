@@ -463,8 +463,11 @@ function secFeed(d){
     }).join('');
   }
   if(intl.length){
-    inner+=`<div class="fd-sub">トーキャリの新着</div>`+intl.map(i=>`<a class="fd-item" href="${esc(i.href||'#')}">
-      <span class="fd-ic">${kic[i.kind]||'✨'}</span><span class="fd-b"><span class="fd-t">${esc(i.title)}</span><span class="fd-d">${esc(i.detail||'')}</span></span><span class="fd-date">${esc(i.date||'')}</span></a>`).join('');
+    // href が無い項目はリンクにせず div で描画＝'#'遷移(先頭スクロール/無反応)を防ぐ。
+    inner+=`<div class="fd-sub">トーキャリの新着</div>`+intl.map(i=>{
+      const body=`<span class="fd-ic">${kic[i.kind]||'✨'}</span><span class="fd-b"><span class="fd-t">${esc(i.title)}</span><span class="fd-d">${esc(i.detail||'')}</span></span><span class="fd-date">${esc(i.date||'')}</span>`;
+      return i.href ? `<a class="fd-item" href="${esc(i.href)}">${body}</a>` : `<div class="fd-item" style="cursor:default">${body}</div>`;
+    }).join('');
   }
   if(!inner) return '';
   return `<div class="mp-sec" id="news"><div class="mp-h"><span class="mp-t">更新<span class="em">フィード</span></span></div>${inner}</div>`;

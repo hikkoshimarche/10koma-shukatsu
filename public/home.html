@@ -313,7 +313,7 @@ function renderSearchResults(q){
     return;
   }
   box.innerHTML = top.map(it => it.type==='industry'
-    ? `<a class="sr-item" style="--acc:#2f6fb0" href="/company.html?industry=${encodeURIComponent(it.id)}&name=${encodeURIComponent(it.name)}">
+    ? `<a class="sr-item" style="--acc:#2f6fb0" href="/company.html?industry=${encodeURIComponent(it.id)}&name=${encodeURIComponent(it.name)}&from=home">
          <span class="sr-icon">${it.icon}</span>
          <span class="sr-body"><span class="sr-name">${esc(it.name)}</span><span class="sr-sub">業界研究</span></span>
          <span class="sr-arrow">›</span></a>`

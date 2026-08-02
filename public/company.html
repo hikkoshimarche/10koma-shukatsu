@@ -1182,10 +1182,13 @@ async function main() {
     if (gyokaiSlug) menuItems.push({ ic: '🌐', l: '業界を知る', href: `/gyokai.html?open=${encodeURIComponent(gyokaiSlug)}&from=company&fromId=${encodeURIComponent(companyId)}` });
     if (company.video_url) menuItems.push({ ic: '🎬', l: '企業動画', act: 'video' });
     if (company.kessan_url) menuItems.push({ ic: '💹', l: '決算書動画', act: 'kessan' });
-    menuItems.push({ ic: '📊', l: 'データシート', href: `datasheet.html?id=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}` });
-    menuItems.push({ ic: '🧠', l: 'クイズ', href: `quiz.html?company=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}` });
-    menuItems.push({ ic: '🧰', l: 'ESキット', href: `es_kit.html?id=${encodeURIComponent(companyId)}` });
-    menuItems.push({ ic: '⚖️', l: '比較に追加', href: `compare.html?add=${encodeURIComponent(companyId)}` });
+    // 大CTAと同じく from=company&fromId= を付与＝各機能から「この企業ページ」へ確実に戻す。
+    // 従来チップは from 欠落で戻ると /home.html に落ちていた(大CTA版と挙動不一致・押した文脈が消える)。
+    const chipF = `&from=company&fromId=${encodeURIComponent(companyId)}`;
+    menuItems.push({ ic: '📊', l: 'データシート', href: `datasheet.html?id=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}${chipF}` });
+    menuItems.push({ ic: '🧠', l: 'クイズ', href: `quiz.html?company=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}${chipF}` });
+    menuItems.push({ ic: '🧰', l: 'ESキット', href: `es_kit.html?id=${encodeURIComponent(companyId)}${chipF}` });
+    menuItems.push({ ic: '⚖️', l: '比較に追加', href: `compare.html?add=${encodeURIComponent(companyId)}${chipF}` });
     menuItems.push({ ic: '🚪', l: 'AI OB訪問', href: `room.html?company=${encodeURIComponent(companyId)}&name=${encodeURIComponent(company.name)}&from=company&fromId=${encodeURIComponent(companyId)}` });
     const menuHtml = `
       <p class="co-menu-t">この会社でできること</p>

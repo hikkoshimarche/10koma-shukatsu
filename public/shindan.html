@@ -171,7 +171,8 @@ function renderResult(data){
   const disc=(data&&data.disclaimer)||'この診断は公式公開情報と業界傾向に基づく参考提案です。断定・優劣付けではありません。';
   const indCards=inds.map((it,idx)=>{
     const slug=IND2SLUG[it.industry];
-    const href=slug?`/company.html?industry=${encodeURIComponent(slug)}&name=${encodeURIComponent(it.industry)}`:'/gyokai.html';
+    // from=shindan で、業界10コマ/業界研究から「診断結果」へ確実に戻す(従来は from 欠落で /gyokai へ着地=結果に戻れなかった)。
+    const href=slug?`/company.html?industry=${encodeURIComponent(slug)}&name=${encodeURIComponent(it.industry)}&from=shindan`:'/gyokai.html?from=shindan';
     return `<a class="sh-rc" style="--acc:${hue(it.industry)}" href="${href}">
       <div class="sh-rc-h"><span class="sh-rc-ic">🏢</span>
         <span><span class="sh-rc-nm">${esc(it.industry)}</span><span class="sh-rc-sub">${slug?'業界研究へ':'業界一覧へ'}</span></span>
