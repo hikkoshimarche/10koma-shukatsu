@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link rel="stylesheet" href="/base.css">
+  <title>今日は何をする？ | トーキャリ</title>
+  <link rel="stylesheet" href="entry.css">
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="config.js"></script>
+  <script src="nav.js"></script>
+  <script src="purpose_map.js"></script>
+  <style>
+    .t-hero { text-align:center; padding:22px 18px 8px; }
+    .t-hero h1 { color:#fff; font-size:20px; font-weight:800; line-height:1.3; }
+    .t-hero p  { color:rgba(255,255,255,0.82); font-size:12.5px; margin-top:5px; }
+
+    /* 目的グリッド（8カード・2列・機能名は書かない=labelのみ） */
+    .t-grid { display:grid; grid-template-columns:1fr 1fr; gap:11px; padding:8px 16px 14px; }
+    .t-card { background:#fff; border:none; border-radius:16px; padding:15px 13px; text-align:left;
+      cursor:pointer; font-family:inherit; box-shadow:0 3px 12px rgba(0,0,0,0.16);
+      display:flex; flex-direction:column; gap:9px; min-height:98px; text-decoration:none;
+      -webkit-tap-highlight-color:transparent; transition:transform .08s ease; }
+    .t-card:active { transform:scale(0.97); }
+    .t-card .ic { font-size:27px; line-height:1; }
+    .t-card .lb { font-size:14px; font-weight:700; color:var(--ink); line-height:1.35; }
+
+    /* 共通: 画面内 戻る */
+    .t-back { display:inline-flex; align-items:center; gap:4px; margin:12px 16px 0;
+      background:rgba(255,255,255,0.14); color:#fff; border:none; border-radius:999px;
+      padding:7px 14px 7px 11px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; }
+
+    /* 企業選択 */
+    .t-sec { padding:8px 16px 2px; }
+    .t-sec-title { color:#fff; font-size:14px; font-weight:700; margin-bottom:9px; }
+    .t-sec-title .em { color:var(--gold); }
+    .t-chips { display:flex; gap:9px; overflow-x:auto; padding-bottom:5px; -webkit-overflow-scrolling:touch; }
+    .t-chip { flex:0 0 auto; background:#fff; border-radius:13px; padding:10px 13px; display:flex;
+      align-items:center; gap:9px; box-shadow:0 2px 9px rgba(0,0,0,0.15); border:none; cursor:pointer;
+      font-family:inherit; text-decoration:none; }
+    .t-chip .b { width:31px; height:31px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+      color:#fff; font-weight:700; font-size:15px;
+      background-color:var(--acc); background-image:linear-gradient(135deg,rgba(255,255,255,0.3),rgba(255,255,255,0) 62%); }
+    .t-chip .n { font-size:13px; font-weight:700; color:var(--ink); white-space:nowrap; max-width:120px; overflow:hidden; text-overflow:ellipsis; }
+    .t-search-box { display:flex; align-items:center; gap:8px; background:#fff; border-radius:14px; padding:11px 14px;
+      box-shadow:0 3px 12px rgba(0,0,0,0.18); margin:2px 16px 6px; }
+    .t-search-box .ic { font-size:16px; opacity:0.6; flex-shrink:0; }
+    #t-search { flex:1; border:none; outline:none; font-size:16px; font-family:inherit; color:var(--ink); background:transparent; min-width:0; }
+    #t-search::placeholder { color:#9aa5b1; }
+    .t-results { display:flex; flex-direction:column; gap:8px; padding:0 16px; }
+    .t-ritem { display:flex; align-items:center; gap:12px; background:#fff; color:var(--ink); border-radius:12px;
+      padding:11px 13px; box-shadow:0 2px 8px rgba(0,0,0,0.14); border:none; cursor:pointer; font-family:inherit; text-align:left; width:100%; }
+    .t-ritem .b { width:36px; height:36px; border-radius:11px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+      color:#fff; font-weight:700; font-size:16px;
+      background-color:var(--acc); background-image:linear-gradient(135deg,rgba(255,255,255,0.3),rgba(255,255,255,0) 62%); }
+    .t-ritem .bd { flex:1; min-width:0; }
+    .t-ritem .nm { font-size:15px; font-weight:700; line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .t-ritem .sb { font-size:11px; color:#7a8794; margin-top:1px; }
+    .t-ritem .ar { color:#c3ccd6; font-size:18px; font-weight:700; flex-shrink:0; }
+    .t-empty { background:#fff; border-radius:12px; padding:16px; text-align:center; color:#556; font-size:13.5px; margin:0 16px; box-shadow:0 2px 8px rgba(0,0,0,0.14); }
+
+    /* プラン（手順 + 次の目的） */
+    .t-plan-head { text-align:center; padding:16px 18px 6px; }
+    .t-plan-head .ic { font-size:32px; line-height:1; }
+    .t-plan-head h2 { color:#fff; font-size:18px; font-weight:800; margin-top:5px; line-height:1.3; }
+    .t-plan-head .co { color:var(--gold); font-size:13px; font-weight:700; margin-top:3px; }
+    .t-plan-lead { color:rgba(255,255,255,0.8); font-size:12px; text-align:center; margin:2px 16px 4px; }
+    .t-steps { display:flex; flex-direction:column; gap:10px; padding:8px 16px 4px; }
+    .t-step { display:flex; align-items:center; gap:13px; background:#fff; border-radius:15px; padding:14px 15px;
+      text-decoration:none; box-shadow:0 3px 12px rgba(0,0,0,0.16); }
+    .t-step.first { border:1.6px solid var(--gold); box-shadow:0 4px 15px rgba(231,184,75,0.22); }
+    .t-step .no { width:26px; height:26px; border-radius:50%; background:var(--navy); color:#fff; font-weight:800;
+      font-size:13px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .t-step.first .no { background:linear-gradient(135deg,var(--gold),var(--gold-deep)); color:#3a2c05; }
+    .t-step .tx { flex:1; min-width:0; }
+    .t-step .tx b { font-size:15px; color:var(--ink); font-weight:700; }
+    .t-step .tx span { display:block; font-size:11.5px; color:#6a7686; margin-top:1px; }
+    .t-step .ar { margin-left:auto; color:#c3ccd6; font-weight:700; font-size:19px; flex-shrink:0; }
+    .t-next { padding:12px 16px 4px; }
+    .t-next-title { color:rgba(255,255,255,0.82); font-size:12.5px; font-weight:700; margin-bottom:9px; }
+    .t-next-chips { display:flex; flex-wrap:wrap; gap:8px; }
+    .t-nchip { display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg,#12457f,#0a2f5c);
+      border:1px solid rgba(231,184,75,0.42); border-radius:999px; padding:8px 14px; color:#fff;
+      font-size:12.5px; font-weight:700; cursor:pointer; font-family:inherit; }
+    [hidden] { display:none !important; }
+  </style>
+</head>
+<body>
+<div class="e-wrap">
+  <header class="e-header">
+    <div class="t-hero">
+      <h1 id="t-title">今日は何をする？</h1>
+      <p id="t-sub">やりたいことから選ぼう。会社選びはあとでOK。</p>
+    </div>
+  </header>
+
+  <!-- View 1: 目的グリッド -->
+  <section id="view-purpose">
+    <div class="t-grid" id="t-grid"></div>
+  </section>
+
+  <!-- View 2: 企業選択（needsCompany のみ） -->
+  <section id="view-company" hidden>
+    <button class="t-back" id="back-company">‹ 目的にもどる</button>
+    <div class="t-sec" id="recent-sec" hidden>
+      <div class="t-sec-title">直近に<span class="em">見た会社</span></div>
+      <div class="t-chips" id="recent-chips"></div>
+    </div>
+    <div class="t-sec" id="fav-sec" hidden>
+      <div class="t-sec-title">お気に入り<span class="em">の会社</span></div>
+      <div class="t-chips" id="fav-chips"></div>
+    </div>
+    <div class="t-sec"><div class="t-sec-title">会社を<span class="em">さがす</span></div></div>
+    <div class="t-search-box">
+      <span class="ic">🔍</span>
+      <input id="t-search" type="text" inputmode="search" autocomplete="off" placeholder="会社名でさがす">
+    </div>
+    <div class="t-results" id="t-results"></div>
+  </section>
+
+  <!-- View 3: プラン（手順 + 次） -->
+  <section id="view-plan" hidden>
+    <button class="t-back" id="back-plan">‹ もどる</button>
+    <div class="t-plan-head">
+      <div class="ic" id="plan-ic"></div>
+      <h2 id="plan-title"></h2>
+      <div class="co" id="plan-company"></div>
+    </div>
+    <p class="t-plan-lead">この順で進めるのがおすすめ</p>
+    <div class="t-steps" id="plan-steps"></div>
+    <div class="t-next" id="plan-next" hidden>
+      <div class="t-next-title">やり切ったら、次は</div>
+      <div class="t-next-chips" id="plan-next-chips"></div>
+    </div>
+  </section>
+
+  <footer class="e-footer">
+    <span class="brand-panel"><img class="brand-logo" src="/images/brand/tokyari_logo_wide.png" alt="トーキャリ"></span>
+  </footer>
+</div>
+
+<script>
+const CFG      = window.TOKYARI || {};
+const LIFF_ID  = CFG.LIFF_HUB || '2010075487-89AJxZnA';
+const API_BASE = CFG.API_BASE  || 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+const MAP = window.PURPOSE_MAP || [];
+const BY = window.PURPOSE_BY_ID || {};
+let lineUserId = 'guest-preview';
+let pendingPurpose = null;            // 企業選択中の目的id
+let curCompany = null;                // {slug,name} 直近に確定した企業（next継続で再利用）
+let COMPANIES = null;                 // 検索/名称解決用（遅延ロード）
+
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+const PAL=['#2f6fb0','#c0392b','#7d3c98','#16a085','#d17d00','#2d8659','#c0448a','#3b5bdb','#b8823a','#2f8fbf'];
+function hue(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return PAL[h%PAL.length];}
+
+/* ---- ビュー切替（画面内・追加リクエスト無し＝速い） ---- */
+function showView(name){
+  ['purpose','company','plan'].forEach(v=>{ document.getElementById('view-'+v).hidden = (v!==name); });
+  if(name==='purpose'){ document.getElementById('t-title').textContent='今日は何をする？'; document.getElementById('t-sub').textContent='やりたいことから選ぼう。会社選びはあとでOK。'; }
+  window.scrollTo(0,0);
+}
+
+/* ---- View1: 目的グリッド（PURPOSE_MAP から生成・ハードコードしない） ---- */
+function renderPurposes(){
+  document.getElementById('t-grid').innerHTML = MAP.map(p=>`
+    <button class="t-card" data-p="${esc(p.id)}">
+      <span class="ic">${esc(p.icon)}</span>
+      <span class="lb">${esc(p.label)}</span>
+    </button>`).join('');
+  document.querySelectorAll('.t-card').forEach(b=>{
+    b.addEventListener('click',()=>selectPurpose(b.getAttribute('data-p')));
+  });
+}
+function selectPurpose(id){
+  const p = BY[id]; if(!p) return;
+  if(window.tkEvent) tkEvent('tap','purpose:'+id);
+  if(p.needsCompany){
+    if(curCompany){ showPlan(id, curCompany); }   // 直前の企業を引き継いで継続
+    else { pendingPurpose = id; openCompanyView(); }
+  } else {
+    showPlan(id, null);
+  }
+}
+
+/* ---- View2: 企業選択（直近/お気に入り を上に・毎回検索させない） ---- */
+function openCompanyView(){
+  document.getElementById('t-title').textContent='どの会社で？';
+  document.getElementById('t-sub').textContent='選ぶと、やることが順番に出ます。';
+  showView('company');
+  loadPicks();          // recent / favorites（非同期・失敗しても検索は使える）
+  ensureCompanies();    // 検索インデックス（遅延）
+}
+async function loadPicks(){
+  try{
+    const r = await fetch(`${API_BASE}/api/recent-companies?user_id=${encodeURIComponent(lineUserId)}&limit=8`);
+    const list = r.ok ? await r.json() : [];
+    const host = document.getElementById('recent-chips');
+    if(Array.isArray(list) && list.length){
+      host.innerHTML = list.map(c=>chip(c)).join('');
+      document.getElementById('recent-sec').hidden = false;
+      bindChips(host);
+    }
+  }catch(e){}
+  try{
+    const r = await fetch(`${API_BASE}/api/bookmarks?user_id=${encodeURIComponent(lineUserId)}`);
+    const list = r.ok ? await r.json() : [];
+    const host = document.getElementById('fav-chips');
+    if(Array.isArray(list) && list.length){
+      host.innerHTML = list.slice(0,8).map(c=>chip(c)).join('');
+      document.getElementById('fav-sec').hidden = false;
+      bindChips(host);
+    }
+  }catch(e){}
+}
+function chip(c){
+  return `<button class="t-chip" data-slug="${esc(c.id)}" data-name="${esc(c.name||'')}">
+    <span class="b" style="--acc:${hue(c.id)}">${esc(String(c.name||'？').charAt(0))}</span>
+    <span class="n">${esc(c.name||c.id)}</span></button>`;
+}
+function bindChips(host){
+  host.querySelectorAll('.t-chip').forEach(b=>{
+    b.addEventListener('click',()=>selectCompany(b.getAttribute('data-slug'), b.getAttribute('data-name')));
+  });
+}
+async function ensureCompanies(){
+  if(COMPANIES) return COMPANIES;
+  try{
+    const comp = await fetch('/companies.json').then(r=>r.json());
+    const items = [];
+    for(const ind of Object.keys(comp)){
+      for(const c of comp[ind]){
+        if(String(c.id).startsWith('industry_10koma__')) continue;
+        items.push({id:c.id, name:c.name, industry:ind, key:normJ([c.name, c.id, c.id.replace(/-/g,' ')].join(' '))});
+      }
+    }
+    COMPANIES = items;
+  }catch(e){ COMPANIES = []; }
+  return COMPANIES;
+}
+function normJ(s){
+  return String(s||'').toLowerCase()
+    .replace(/[ァ-ヶ]/g, c=>String.fromCharCode(c.charCodeAt(0)-0x60))
+    .replace(/[Ａ-Ｚａ-ｚ０-９]/g, c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0))
+    .replace(/[\s・･。、，,.／/（）()\[\]「」【】\-‐－—~〜'`"&＆]/g,'');
+}
+function renderResults(q){
+  const box = document.getElementById('t-results');
+  const nq = normJ(q);
+  if(!nq){ box.innerHTML=''; return; }
+  const hits = (COMPANIES||[]).filter(it=>it.key.includes(nq)).slice(0,14);
+  if(!hits.length){ box.innerHTML = `<div class="t-empty">「${esc(q)}」は見つかりませんでした</div>`; return; }
+  box.innerHTML = hits.map(it=>`
+    <button class="t-ritem" data-slug="${esc(it.id)}" data-name="${esc(it.name)}">
+      <span class="b" style="--acc:${hue(it.id)}">${esc(String(it.name||'？').charAt(0))}</span>
+      <span class="bd"><span class="nm">${esc(it.name)}</span><span class="sb">${esc(it.industry)}</span></span>
+      <span class="ar">›</span></button>`).join('');
+  box.querySelectorAll('.t-ritem').forEach(b=>{
+    b.addEventListener('click',()=>selectCompany(b.getAttribute('data-slug'), b.getAttribute('data-name')));
+  });
+}
+function selectCompany(slug, name){
+  if(!slug) return;
+  curCompany = {slug:slug, name:name||slug};
+  if(window.tkEvent) tkEvent('tap','purpose_company:'+slug);
+  showPlan(pendingPurpose, curCompany);
+}
+
+/* ---- View3: プラン（手順 + 次の目的） ---- */
+function buildStepHref(step, company){
+  const parts = String(step.href).split('#');
+  let path = window.tkPurposeHref ? window.tkPurposeHref(parts[0], company?company.slug:'') : parts[0].replace('{slug}', encodeURIComponent(company?company.slug:''));
+  const hash = parts[1] ? ('#'+parts[1]) : '';
+  if(company && /[?&](id|company)=/.test(path)) path += '&name=' + encodeURIComponent(company.name||'');
+  path += (path.indexOf('?')>=0 ? '&' : '?') + 'from=home';   // 戻り先=ホーム（迷子防止・mininavも常時表示）
+  return path + hash;
+}
+function showPlan(purposeId, company){
+  const p = BY[purposeId]; if(!p) return;
+  document.getElementById('plan-ic').textContent = p.icon;
+  document.getElementById('plan-title').textContent = p.label;
+  const co = document.getElementById('plan-company');
+  if(company){ co.textContent = '🏢 '+ company.name; co.hidden=false; } else { co.textContent=''; co.hidden=true; }
+  document.getElementById('plan-steps').innerHTML = p.steps.map((s,i)=>`
+    <a class="t-step${i===0?' first':''}" href="${buildStepHref(s, company)}">
+      <span class="no">${i+1}</span>
+      <span class="tx"><b>${esc(s.feature)}</b><span>${esc(s.note||'')}</span></span>
+      <span class="ar">›</span></a>`).join('');
+  // 次の目的
+  const nextHost = document.getElementById('plan-next');
+  const chipsHost = document.getElementById('plan-next-chips');
+  const nexts = (p.next||[]).map(id=>BY[id]).filter(Boolean);
+  if(nexts.length){
+    chipsHost.innerHTML = nexts.map(n=>`<button class="t-nchip" data-p="${esc(n.id)}"><span>${esc(n.icon)}</span>${esc(n.label)}</button>`).join('');
+    chipsHost.querySelectorAll('.t-nchip').forEach(b=>{
+      b.addEventListener('click',()=>selectPurpose(b.getAttribute('data-p')));   // curCompany を引き継ぐ
+    });
+    nextHost.hidden = false;
+  } else { nextHost.hidden = true; }
+  document.getElementById('t-title').textContent='やることリスト';
+  document.getElementById('t-sub').textContent='';
+  showView('plan');
+}
+
+/* ---- 戻る ---- */
+document.getElementById('back-company').addEventListener('click',()=>{ pendingPurpose=null; showView('purpose'); });
+document.getElementById('back-plan').addEventListener('click',()=>{
+  const p = pendingPurpose ? BY[pendingPurpose] : null;
+  // needsCompany の目的は企業選択へ、そうでなければ目的グリッドへ
+  if(p && p.needsCompany && curCompany) openCompanyView(); else showView('purpose');
+});
+
+/* ---- 起動 ---- */
+function initSearch(){
+  const input = document.getElementById('t-search');
+  input.addEventListener('input', ()=>renderResults(input.value.trim()));
+}
+async function main(){
+  renderPurposes();            // 即描画（同期・速い）
+  initSearch();
+  const params = new URLSearchParams(location.search);
+  lineUserId = params.get('u') || 'guest-preview';
+  // 深いリンク: ?p=<目的>&c=<slug>&name=<名前> でプラン直行（将来のリッチメニュー/アドバイザー用）
+  const dp = params.get('p'), dc = params.get('c');
+  if(dp && BY[dp]){
+    const pp = BY[dp];
+    if(pp.needsCompany && dc){ curCompany={slug:dc, name:params.get('name')||dc}; showPlan(dp, curCompany); }
+    else if(!pp.needsCompany){ showPlan(dp, null); }
+    else { pendingPurpose=dp; openCompanyView(); }
+  }
+  // LIFF（recent/favの本人特定用・グリッド描画はブロックしない）
+  try{
+    await liff.init({liffId:LIFF_ID});
+    if(liff.isLoggedIn()){ const pr=await liff.getProfile(); lineUserId=params.get('u')||pr.userId; }
+    else if(liff.isInClient()){ liff.login(); return; }
+  }catch(e){ console.warn('LIFF skipped (preview):', e && e.message); }
+  window.__tkUser = lineUserId;
+  if(window.tkEvent) tkEvent('liff_start','today');
+}
+main();
+</script>
+</body>
+</html>
