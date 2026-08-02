@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  com.tokyari.contenthealth — 毎日のコンテンツ健全性チェック(read-only)。
+  画像実在HEAD + 全社×機能URL健全性 + 充足数 + 前回差分。異常時のみ LINE(pushoscar)通知。
+  実行 5:00(既存: healthcheck 3:00 / userprofilesync 7:05 と非衝突)。tools/launchd_template.plist 準拠。
+  導入: cp tools/com.tokyari.contenthealth.plist ~/Library/LaunchAgents/ &&
+        launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.tokyari.contenthealth.plist
+-->
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.tokyari.contenthealth</string>
+  <key>ProgramArguments</key><array>
+    <string>/bin/bash</string><string>-lc</string>
+    <string>export PATH="$(/bin/ls -d "$HOME"/.nvm/versions/node/*/bin 2&gt;/dev/null|sort -V|tail -1):/usr/local/bin:/opt/homebrew/bin:$PATH"; exec /Users/oscardodds/oscar-ai/tokyari-pipeline/.venv/bin/python /Users/oscardodds/projects/10koma-shukatsu/tools/content_health_daily.py</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Users/oscardodds/projects/10koma-shukatsu</string>
+  <key>StartCalendarInterval</key><dict><key>Hour</key><integer>5</integer><key>Minute</key><integer>0</integer></dict>
+  <key>RunAtLoad</key><true/>
+  <key>ProcessType</key><string>Background</string>
+  <key>StandardOutPath</key><string>/Users/oscardodds/projects/10koma-shukatsu/logs/com.tokyari.contenthealth.out.log</string>
+  <key>StandardErrorPath</key><string>/Users/oscardodds/projects/10koma-shukatsu/logs/com.tokyari.contenthealth.err.log</string>
+</dict></plist>
