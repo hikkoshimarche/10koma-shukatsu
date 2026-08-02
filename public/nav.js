@@ -115,7 +115,68 @@
     var st = document.createElement('style'); st.id = 'tk-back-css'; st.textContent = css;
     document.head.appendChild(st);
   }
-  function tkInit() { injectBackCss(); injectMiniNav(); window.tkInitBack(); }
+  /* === 全ページ共通スクロール位置復元（一覧→詳細→戻る で元の位置に戻す） ===
+     industry.html の作法(sessionStorage に scrollY を保存→戻り時に復元)を全ページに一般化。
+     各ページ実装不要＝追加コストは pagehide 保存＋復帰時の数フレーム待ちのみ(速度非退行)。
+     - キーは pathname(.html正規化)+search 単位＝検索/フィルタ違いごとに別位置を保持。
+     - 非同期で伸びる一覧に対応: 本文が保存位置まで伸びるまで rAF で待って復元(最大~40フレーム)。
+     - アンカー(#…)付き遷移や data-tk-scroll-self(自前で位置管理: industry) は復元をスキップ。 */
+  // pathname のみでキー化(search は含めない)。理由: 戻る導線は from= からURLを再構成するため、
+  // 離脱時と復帰時で query がドリフトしやすい。search をキーに含めると save/restore が別キーになり復元が外れる。
+  // pathname 単位なら同一ページに確実に復元。フィルタ違いで別スクロールを持ちたいページ(industry)は
+  // data-tk-scroll-self で本汎用復元を無効化し、自前でstate込み復元する。
+  function tkScrollKey() {
+    return 'tk_scroll:' + location.pathname.replace(/\.html?$/, '');
+  }
+  function tkScrollSelfManaged() {
+    return !!(document.body && document.body.hasAttribute('data-tk-scroll-self'));
+  }
+  function tkSaveScroll() {
+    if (tkScrollSelfManaged()) return;
+    try {
+      var y = window.scrollY || window.pageYOffset || 0;
+      if (y > 0) sessionStorage.setItem(tkScrollKey(), String(y));
+      else sessionStorage.removeItem(tkScrollKey());
+    } catch (e) {}
+  }
+  function tkRestoreScroll() {
+    if (tkScrollSelfManaged()) return;
+    if (location.hash) return;               // アンカー遷移はブラウザ挙動を尊重
+    var raw = null;
+    try { raw = sessionStorage.getItem(tkScrollKey()); } catch (e) { return; }
+    if (!raw) return;
+    var y = parseInt(raw, 10);
+    if (!(y > 0)) return;
+    // 本文が保存位置まで伸びたら復元。非同期一覧(fetch後に描画)は伸びるまで待つ必要があるため
+    // フレーム数ではなく時間予算(最大~4s)で待つ＝遅い回線でも先頭に落ちない。伸び切ったら1回だけ復元。
+    var now = (window.performance && performance.now) ? function () { return performance.now(); } : function () { return 0; };
+    var start = now(), done = false;
+    function contentMax() {
+      return Math.max(document.body ? document.body.scrollHeight : 0,
+                      document.documentElement.scrollHeight) - window.innerHeight;
+    }
+    function tryScroll() {
+      if (done) return true;
+      if (contentMax() >= y - 2) { done = true; window.scrollTo(0, y); return true; }
+      if (now() - start > 4000) { done = true; window.scrollTo(0, y); return true; }  // 予算切れ: できる範囲で復元
+      return false;
+    }
+    (function raf() { if (!tryScroll()) requestAnimationFrame(raf); })();
+    // rAF が絞られる環境の保険として、本文増加も監視(伸びた瞬間に復元→即 disconnect)。
+    if (window.MutationObserver && document.body) {
+      var mo = new MutationObserver(function () { if (tryScroll()) mo.disconnect(); });
+      mo.observe(document.body, { childList: true, subtree: true });
+      setTimeout(function () { try { mo.disconnect(); } catch (e) {} }, 4200);
+    }
+  }
+  // 保存の取りこぼし防止: 離脱(pagehide)と、LINE/iOSで pagehide が飛ばない場合に備え可視性喪失でも保存。
+  window.addEventListener('pagehide', tkSaveScroll);
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') tkSaveScroll();
+  });
+  window.tkSaveScroll = tkSaveScroll;        // ページ側で任意に呼べるよう公開(遷移直前保存など)
+
+  function tkInit() { injectBackCss(); injectMiniNav(); window.tkInitBack(); tkRestoreScroll(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', tkInit);
   else tkInit();
 })();

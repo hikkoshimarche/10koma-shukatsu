@@ -306,14 +306,34 @@ function secNext3(d){
       <span class="n3-info"><span class="n3-nm">${esc(c.name)}</span><span class="n3-sub">${esc(c.industry||'')}</span></span>
       ${(c.score!=null)?`<span class="n3-match">相性${Math.round(c.score*100)}%</span>`:''}<span class="n3-arrow">›</span></a>`).join('')}</div>`;
 }
+// 業界名(D1 stamp_rally) → 業界研究(gyokai)slug の対応表。gyokai.html の INDUSTRIES と同一。
+// 正規化(空白/中黒/長音などを除去)して照合＝表記ゆれに強い。未対応名は open を付けず素通り(退行なし)。
+const RALLY_SLUGS=[
+  ['総合商社','sogo-shosha'],['専門商社','senmon-shosha'],['銀行・証券・保険','finance'],
+  ['IT・AI・SaaS・ゲーム','it-ai-saas-game'],['コンサル','consulting'],['メーカー','manufacturer'],
+  ['広告・メディア','ad-media'],['インフラ・エネルギー','infra-energy'],['不動産・建設','realestate-construction'],
+  ['小売・流通','retail'],['食品・飲料','food-beverage'],['医療・ヘルスケア','medical-healthcare'],
+  ['航空・運輸・物流','transport-logistics'],['教育・人材','education-hr'],['スタートアップ','startup'],
+  ['ディープテック・宇宙・AI','deeptech-space-ai'],
+];
+function rallyNorm(s){ return String(s||'').replace(/[\s・･・　]/g,'').replace(/[（(].*?[)）]/g,'').toLowerCase(); }
+const RALLY_NAME2SLUG=(()=>{ const m={}; RALLY_SLUGS.forEach(([n,s])=>{ m[rallyNorm(n)]=s; }); return m; })();
+function rallySlug(name){ return RALLY_NAME2SLUG[rallyNorm(name)]||''; }
+
 // v1.5: 業界制覇スタンプラリー
+// 押した対象の「業界」と「達成/未達成」を業界研究へ引き継ぐ(押した意味を着地点に残す):
+//   open=<slug>(その業界を自動展開) / focus=done|undone(その状態で絞り込み) / done=<達成slug csv>(gyokai側でバッジ表示・追加fetch不要=速度非退行)
 function secRally(d){
   const r=d.stamp_rally||{}; const inds=r.industries||[];
   if(!inds.length) return '';
+  const doneSlugs=inds.filter(x=>x.viewed>=x.total).map(x=>rallySlug(x.name)).filter(Boolean);
+  const doneQS=doneSlugs.length?('&done='+encodeURIComponent(doneSlugs.join(','))):'';
   const cells=inds.map(x=>{
     const done=x.viewed>=x.total, started=x.viewed>0;
-    // 業界研究(/gyokai)へ誘導。D1 industry_id と業界研究側slugの体系差を避け、確実に動くトップへ。
-    const href = '/gyokai.html';
+    const slug=rallySlug(x.name);
+    // 押した業界(slug)・その状態(focus)・達成一覧(done)を渡す。slug未対応なら focus/done のみで状態絞り込みは効く。
+    const href='/gyokai.html?from=mypage&focus='+(done?'done':'undone')
+      +(slug?('&open='+encodeURIComponent(slug)):'')+doneQS;
     const pct=x.total?Math.round(x.viewed/x.total*100):0;
     return `<a class="rl-cell ${done?'done':''} ${started?'':'unexp'}" href="${href}">
       <div class="rl-nm">${done?'<span class="st">🏅</span>':''}${esc(x.name)}</div>

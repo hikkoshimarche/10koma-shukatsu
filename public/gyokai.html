@@ -45,6 +45,9 @@
     .gk-tile .soon-b{align-self:flex-start;font-size:9px;font-weight:800;color:#8a6d00;background:#ffe9a8;border-radius:999px;padding:1px 7px;margin-top:2px}
     .gk-find{display:flex;align-items:center;gap:6px;border-top:1px dashed #eadfc6;padding:11px 4px 3px;text-decoration:none;color:var(--gold-d);font-size:13px;font-weight:800;background:transparent}
     .gk-find .fa{margin-left:auto;font-weight:800}
+    /* 企業一覧に対応業界が無い(find空)ときは、全社一覧へ誤誘導せず「準備中」を明示 */
+    .gk-find.soon{color:var(--mute);pointer-events:none}
+    .gk-find.soon .soon-b{margin-left:auto;font-size:9px;font-weight:800;color:#8a6d00;background:#ffe9a8;border-radius:999px;padding:1px 7px}
     /* この業界の選考スケジュール(未来日付集約・項目ゼロは非表示) */
     .gk-sched{margin:6px 0 2px}
     .gk-sched-t{font-size:12px;font-weight:800;color:var(--gold-d);margin:8px 0 7px}
@@ -57,6 +60,18 @@
     .gk-sched-a{flex-shrink:0;color:#c9b78a;font-weight:800}
     .foot{text-align:center;padding:18px 0 8px}.foot img{height:30px}
     .loading{text-align:center;color:var(--mute);padding:40px}
+    /* マイページ「業界制覇スタンプ」からの遷移: 押した状態(達成/未達成)で絞り込み＋達成バッジ */
+    .gk-filter{display:flex;align-items:center;gap:10px;margin:2px 0 10px;padding:10px 13px;background:#fff;
+      border-radius:13px;box-shadow:0 3px 12px rgba(120,90,20,0.12);border-left:5px solid var(--gold)}
+    .gk-filter .fl-t{font-size:13.5px;font-weight:800;color:var(--ink)}
+    .gk-filter .fl-t b{color:var(--gold-d)}
+    .gk-filter .fl-all{margin-left:auto;flex-shrink:0;font-size:12px;font-weight:800;color:#fff;background:var(--gold-d);
+      border:none;border-radius:999px;padding:6px 13px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
+    .gk-filter .fl-all:active{opacity:.85}
+    .gk-badge{display:inline-block;margin-top:4px;font-size:10.5px;font-weight:800;border-radius:999px;padding:2px 9px}
+    .gk-badge.done{color:#3a2c05;background:#ffe1a1}
+    .gk-badge.undone{color:#8a7a5a;background:#f0e8d4}
+    .gk-card.gk-hidden{display:none}
   </style>
 </head>
 <body>
@@ -108,16 +123,24 @@ const INDUSTRIES=[
   {slug:'startup',name:'スタートアップ',icon:'🚀',acc:'#c0392b',find:''},
   {slug:'deeptech-space-ai',name:'ディープテック・宇宙・AI',icon:'🛰️',acc:'#3a9d6b',find:''},
 ];
+// マイページ業界制覇スタンプからの引き継ぎ: focus=done|undone(絞り込み) / done=<達成slug csv>(バッジ表示・追加fetch不要)
+const GKP=new URLSearchParams(location.search);
+const GK_FOCUS=GKP.get('focus');                                  // 'done' | 'undone' | null
+const GK_DONE=new Set((GKP.get('done')||'').split(',').map(s=>s.trim()).filter(Boolean));
+const GK_ANNOTATE=(GK_FOCUS==='done'||GK_FOCUS==='undone');       // スタンプ由来のときだけ状態を可視化
+function gkStatus(slug){ return GK_DONE.has(slug)?'done':'undone'; }
 function render(){
   document.getElementById('list').innerHTML=INDUSTRIES.map(ind=>{
     const s=encodeURIComponent(ind.slug), n=encodeURIComponent(ind.name);
     const find=`/industry.html?from=gyokai${ind.find?('&ind='+encodeURIComponent(ind.find)):''}`;
+    const st=gkStatus(ind.slug);
+    const badge=GK_ANNOTATE?`<span class="gk-badge ${st}">${st==='done'?'🏅 達成':'未達成'}</span>`:'';
     return `
-    <div class="gk-card" data-slug="${esc(ind.slug)}" style="--acc:${ind.acc}">
+    <div class="gk-card" data-slug="${esc(ind.slug)}" data-status="${st}" style="--acc:${ind.acc}">
       <button class="gk-main" aria-expanded="false">
         <span class="gk-ic">${ind.icon}</span>
         <span class="gk-body"><span class="gk-label">${esc(ind.name)}</span>
-          <span class="gk-sub">コンテンツを選ぶ：10コマ / クイズ / 動画 / ニュース</span></span>
+          <span class="gk-sub">コンテンツを選ぶ：10コマ / クイズ / 動画 / ニュース</span>${badge}</span>
         <span class="gk-go">›</span>
       </button>
       <div class="gk-hub">
@@ -128,7 +151,9 @@ function render(){
           <div class="gk-tile soon"><span class="tic">📰</span><span class="tl">業界ニュース</span><span class="soon-b">準備中</span></div>
         </div>
         <div class="gk-sched" data-slug="${esc(ind.slug)}" data-loaded="0" style="display:none"></div>
-        <a class="gk-find" href="${find}">🔎 この業界の企業を探す（企業一覧）<span class="fa">›</span></a>
+        ${ind.find
+          ? `<a class="gk-find" href="${find}">🔎 この業界の企業を探す（企業一覧）<span class="fa">›</span></a>`
+          : `<div class="gk-find soon">🔎 この業界の企業一覧<span class="soon-b">準備中</span></div>`}
       </div>
     </div>`;
   }).join('');
@@ -139,9 +164,28 @@ function render(){
     if(!isOpen){ card.classList.add('open'); b.setAttribute('aria-expanded','true'); loadSchedule(card); card.scrollIntoView({behavior:'smooth',block:'nearest'}); }
   });
 }
+// focus=done|undone のとき、その状態の業界だけ表示＋見出し＋「すべての業界を見る」トグル。
+// 押した意味(達成/未達成)を着地点に残す。トグルで全表示に戻せる(達成バッジは残す)。
+function applyFocus(){
+  if(!GK_ANNOTATE) return;
+  const cards=[...document.querySelectorAll('.gk-card')];
+  const match=cards.filter(c=>c.dataset.status===GK_FOCUS);
+  cards.forEach(c=>{ if(c.dataset.status!==GK_FOCUS) c.classList.add('gk-hidden'); });
+  const isUndone=GK_FOCUS==='undone';
+  const bar=document.createElement('div'); bar.className='gk-filter';
+  bar.innerHTML=`<span class="fl-t">${isUndone?`まだ制覇していない業界　<b>あと${match.length}</b>`:`🏅 制覇した業界　<b>${match.length}</b>`}</span>`
+    +`<button class="fl-all" type="button">すべての業界を見る</button>`;
+  const list=document.getElementById('list');
+  list.parentNode.insertBefore(bar,list);
+  bar.querySelector('.fl-all').onclick=()=>{
+    document.querySelectorAll('.gk-card.gk-hidden').forEach(c=>c.classList.remove('gk-hidden'));
+    bar.remove();
+  };
+}
 async function main(){
   try{ localStorage.setItem('tk_gyokai_seen','1'); }catch(e){}
   render();
+  applyFocus();
   // ?open=<slug>: 企業ページ等から「この業界を知る」で来たとき、その業界ハブを自動展開
   try{
     const openSlug=new URLSearchParams(location.search).get('open');

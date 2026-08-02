@@ -61,7 +61,7 @@
     .backbar a{color:rgba(255,255,255,0.9);text-decoration:none;font-size:13px;font-weight:700}
   </style>
 </head>
-<body>
+<body data-tk-scroll-self><!-- スクロール/検索/フィルタ位置は本ページが自前で復元(nav.js の汎用復元は無効化) -->
 <div class="wrap">
   <div class="backbar"><a href="#" data-tkback="/home.html">‹ 戻る</a></div>
   <div class="hd">
@@ -115,10 +115,21 @@ function drawChips(){
     drawChips(); apply();
   });
 }
+// 企業一覧の業界名 → 業界研究(gyokai)slug の逆引き。gyokai.html INDUSTRIES の find 対応に一致。
+// これで「○○のしくみを学ぶ」が該当業界カードを ?open= で自動展開する(従来は fromInd=名前 のみ渡り、gyokaiは名前でカードを開けず=TOP素通りだった)。
+const LEARN_SLUG={
+  '総合商社':'sogo-shosha','専門商社':'senmon-shosha','銀行・証券・保険':'finance',
+  'IT・通信・SaaS':'it-ai-saas-game','コンサル':'consulting',
+  '自動車・モビリティ':'manufacturer','電機・精密・重工':'manufacturer','鉄鋼・素材・化学':'manufacturer','日用品・化粧品':'manufacturer',
+  '広告・メディア':'ad-media','インフラ・エネルギー':'infra-energy','不動産・建設':'realestate-construction',
+  '小売・流通':'retail','食品・飲料':'food-beverage','製薬・ヘルスケア':'medical-healthcare',
+  '航空・運輸・物流':'transport-logistics',
+};
 function drawLearn(){
   const el=document.getElementById('learn');
-  if(sel.size===1){ const n=[...sel][0];
-    el.innerHTML=`<a class="learn-link" href="/gyokai.html?from=list&fromInd=${encodeURIComponent(n)}"><span class="li">📚</span><span><span class="lt">${esc(n)}のしくみを学ぶ</span><span class="ls">業界研究（業界10コマ・クイズ）へ</span></span><span class="la">›</span></a>`;
+  if(sel.size===1){ const n=[...sel][0]; const slug=LEARN_SLUG[n]||'';
+    const href=`/gyokai.html?from=list&fromInd=${encodeURIComponent(n)}${slug?('&open='+encodeURIComponent(slug)):''}`;
+    el.innerHTML=`<a class="learn-link" href="${href}"><span class="li">📚</span><span><span class="lt">${esc(n)}のしくみを学ぶ</span><span class="ls">業界研究（業界10コマ・クイズ）へ</span></span><span class="la">›</span></a>`;
   } else el.innerHTML='';
 }
 function apply(){
@@ -175,10 +186,16 @@ function showListError(){
   const rb=document.getElementById('tk-reload');
   if(rb) rb.onclick=()=>{ el.innerHTML='<div class="loading">読み込み中…</div>'; main(); };
 }
-// 一覧state(検索語・ソート・スクロール位置)を保存/復元＝戻り時に再取得せず位置まで戻す。
-function stateKey(){ return 'ind_state:'+((new URLSearchParams(location.search).get('ind'))||''); }
+// 一覧state(検索語・ソート・フィルタ・スクロール位置)を保存/復元＝戻り時に再取得せず位置まで戻す。
+// キーは固定(ind param で分けない)。理由: 企業ページからの戻りは from=list&fromInd= でURLを再構成するため、
+// 離脱時(in-memory sel)と復帰時(?ind=)で ind がdrift→別キーになり復元が外れていた(戻ると先頭に戻る不具合の主因)。
+// 固定キーなら save/restore が必ず一致。保存stateに sel/q/sort も含むので、復元時に絞り込み文脈ごと再現される。
+function stateKey(){ return 'ind_state'; }
 function saveState(){ try{ sessionStorage.setItem(stateKey(), JSON.stringify({ q:((document.getElementById('q')||{}).value)||'', sort:sort, sel:[...sel], y:(window.scrollY||window.pageYOffset||0) })); }catch(e){} }
 function restoreState(){
+  // 業界研究(gyokai)からの新規遷移は ?ind= を尊重し、保存stateで上書きしない(固定キー化に伴う誤復元防止)。
+  // 企業ページからの戻り(from無しで ?ind= 再構成)や通常再訪のみ、保存state+スクロールを復元する。
+  if(new URLSearchParams(location.search).get('from')==='gyokai'){ apply(); return; }
   let s=null; try{ s=JSON.parse(sessionStorage.getItem(stateKey())||'null'); }catch(e){}
   if(s){
     if(Array.isArray(s.sel)){ sel=new Set(s.sel.filter(v=>INDS.includes(v))); drawChips(); }

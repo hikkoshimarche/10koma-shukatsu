@@ -61,3 +61,6 @@ tools/content_health/
 
 # D1バックアップ(ニュースデータ等)はpublic repoに含めない
 backups/
+
+# 内部監査ドキュメント(public repoに出さない)
+scratchpad_button_audit/
