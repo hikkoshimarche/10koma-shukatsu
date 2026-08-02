@@ -64,3 +64,6 @@ backups/
 
 # 内部監査ドキュメント(public repoに出さない)
 scratchpad_button_audit/
+
+# お気に入りニュース通知 初回ゲートの実行時状態(コミットしない)
+tools/.company_news_notify_armed

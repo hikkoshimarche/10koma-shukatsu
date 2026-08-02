@@ -437,6 +437,32 @@ function handleExt(mode, e, token){
     return _json({ok:true, pushed:text.length});
   }
 
+  if(mode === 'pushuser'){
+    // 【個別ユーザー宛 push】お気に入り企業ニュース通知など、bookmarks の line_user_id 個人宛に1通送る。
+    // SECURITY(送信規約 遵守): broadcast/multicast は使わない・宛先は呼び出しで渡す単一 userId のみ・認証必須。
+    //   宛先IDは呼び出し側(D1 bookmarks)が明示。ここでは webhook自動捕捉/グループへのフォールバックは一切しない。
+    // 実APIレスポンス(HTTPコード + X-Line-Request-Id + body)を返す = 「空応答を成功にしない」検証用。
+    if(!_authed(e, token)) return _json({error:'unauthorized'});
+    const uid = String(e.parameter.id||'').trim();
+    const text = e.parameter.text || '';
+    if(!uid) return _json({error:'no id'});
+    if(!text) return _json({error:'no text'});
+    if(uid.charAt(0) !== 'U' || uid.length < 10) return _json({error:'bad user id'}); // LINE userId は U+32hex 形式
+    const props = PropertiesService.getScriptProperties();
+    const tk = props.getProperty('LINE_CHANNEL_ACCESS_TOKEN');
+    if(!tk) return _json({error:'LINE未設定', has_token:false});
+    const resp = UrlFetchApp.fetch('https://api.line.me/v2/bot/message/push', {
+      method:'post', contentType:'application/json',
+      headers:{ Authorization:'Bearer '+tk },
+      payload: JSON.stringify({ to: uid, messages:[{ type:'text', text: text }] }),
+      muteHttpExceptions:true
+    });
+    const hdrs = resp.getAllHeaders();
+    return _json({ code: resp.getResponseCode(), to_tail: uid.slice(-6), chars: text.length,
+                   request_id: hdrs['x-line-request-id'] || hdrs['X-Line-Request-Id'] || '',
+                   body: resp.getContentText() });
+  }
+
   if(mode === 'pushlinefull'){
     // LINE push実行し、実APIレスポンス(HTTPコード + X-Line-Request-Id + sentMessages id + 送信先groupId)を返す。
     if(!_authed(e, token)) return _json({error:'unauthorized'});

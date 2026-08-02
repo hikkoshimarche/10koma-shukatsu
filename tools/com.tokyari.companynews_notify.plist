@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  com.tokyari.companynews_notify — お気に入り企業の新着ニュースを週次でユーザーごとにLINE通知。
+  crawl_company_news(com.tokyari.companynews 月曜7:30)の直後 月曜7:45 に走らせる(収集→即通知)。
+  tools/launchd_template.plist 準拠(bash -lc で nvm PATH 前置=npx/wrangler 解決)。GAS pushuser 経由で個別送信。
+  ※ SHEET_WEBAPP_URL / SHEET_API_TOKEN を .env から読むため set -a で source する。
+  ※ 週次ジョブなので RunAtLoad は付けない(ログイン毎再送は過剰・crawl 側と同方針)。
+
+  【重要】本番稼働=このジョブを bootstrap した瞬間から毎週自動送信が始まる。オスカーの承認後にのみ導入すること。
+  導入(承認後):
+    cp tools/com.tokyari.companynews_notify.plist ~/Library/LaunchAgents/ &&
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.tokyari.companynews_notify.plist
+  停止: launchctl bootout gui/$(id -u)/com.tokyari.companynews_notify
+-->
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.tokyari.companynews_notify</string>
+  <key>ProgramArguments</key><array>
+    <string>/bin/bash</string><string>-lc</string>
+    <string>export PATH="$(/bin/ls -d "$HOME"/.nvm/versions/node/*/bin 2&gt;/dev/null|sort -V|tail -1):/usr/local/bin:/opt/homebrew/bin:$PATH"; set -a; . "$HOME"/oscar-ai/tokyari-pipeline/.env 2&gt;/dev/null; . "$HOME"/projects/10koma-shukatsu/tools/.env.phase_c 2&gt;/dev/null; set +a; exec /Users/oscardodds/oscar-ai/tokyari-pipeline/.venv/bin/python /Users/oscardodds/projects/10koma-shukatsu/tools/notify_company_news.py --send --i-am-approved</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Users/oscardodds/projects/10koma-shukatsu</string>
+  <key>StartCalendarInterval</key><dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>7</integer><key>Minute</key><integer>45</integer></dict>
+  <key>ProcessType</key><string>Background</string>
+  <key>StandardOutPath</key><string>/Users/oscardodds/projects/10koma-shukatsu/logs/com.tokyari.companynews_notify.out.log</string>
+  <key>StandardErrorPath</key><string>/Users/oscardodds/projects/10koma-shukatsu/logs/com.tokyari.companynews_notify.err.log</string>
+</dict></plist>
