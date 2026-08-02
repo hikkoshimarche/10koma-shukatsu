@@ -48,6 +48,19 @@
     .sh-trend .tg{font-size:10px;font-weight:700;color:#8a5a00;background:#fdeecb;padding:1px 7px;border-radius:999px;margin-left:6px}
     .sh-nosal{font-size:12px;color:#94a0ac;margin-bottom:5px}
     .sh-go{display:inline-block;margin-top:6px;font-size:12px;font-weight:700;color:var(--acc)}
+    /* マッチ度の内訳(総合%＝各軸の重み付き平均)を可視化。「なぜこの数字か」を学生に見せる */
+    .sh-match{display:flex;align-items:center;gap:10px;margin:2px 0 8px}
+    .sh-match .mv{font-size:26px;font-weight:900;color:var(--navy);line-height:1}
+    .sh-match .mv small{font-size:14px;font-weight:800}
+    .sh-match .ml{font-size:11px;color:#7a8794;font-weight:700;line-height:1.4}
+    .sh-axes{border-top:1px dashed #e2e8f0;padding-top:9px;margin-top:8px}
+    .sh-axes-h{font-size:11px;font-weight:700;color:#6a7686;margin-bottom:7px}
+    .sh-axis{display:flex;align-items:center;gap:9px;font-size:12px;margin-bottom:6px}
+    .sh-axis .an{flex:0 0 82px;font-weight:700;color:#334;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .sh-axis .ab{flex:1;height:7px;border-radius:99px;background:#eef2f7;overflow:hidden;min-width:36px}
+    .sh-axis .ab i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--gold-deep))}
+    .sh-axis.lo .ab i{background:#cbd5e1}
+    .sh-axis .ap{flex:0 0 34px;text-align:right;font-weight:800;color:var(--navy)}
     .sh-actions{display:flex;flex-direction:column;gap:10px;margin-top:16px}
     .sh-btn{padding:14px;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;border:none;text-align:center;text-decoration:none}
     .sh-btn.p{background:var(--gold);color:#2a1c00}
@@ -150,9 +163,22 @@ function whyBlock(rat){
   (rat.notes||[]).forEach(n=>rows.push(`<div class="sh-nosal">・${esc(n)}</div>`));
   const tr=trimTrend(rat.trend);
   if(tr) rows.push(`<div class="sh-trend">・${esc(tr)}<span class="tg">傾向（推定）</span></div>`);
-  (rat.matched||[]).forEach(m=>rows.push(`<div class="sh-trend">・${esc(m)}<span class="tg">傾向</span></div>`));
+  // 合致軸(matched)は matchBlock のバーで可視化するため、ここでは重複表示しない(年収等の一次情報factは残す)。
   if(!rows.length) return '';   // 理由が無い社は「なぜおすすめ？」ブロック自体を出さない(空箱禁止)
   return `<div class="sh-why"><div class="sh-why-t">なぜおすすめ？</div>${rows.join('')}</div>`;
+}
+
+// マッチ度の内訳: 総合%(=各軸の重み付き平均) + 回答した各軸の一致度バー。「なぜこの数字か」を見せる。
+function matchBlock(c){
+  const rat=c.rationale||{}; const axes=rat.axes||[];
+  const pct=(c.score!=null)?Math.round(c.score*100):null;
+  const head=(pct!=null)?`<div class="sh-match"><span class="mv">${pct}<small>%</small></span><span class="ml">総合マッチ度<br>下の各軸の重み付き平均です</span></div>`:'';
+  if(!axes.length) return head;
+  const bars=axes.map(a=>{
+    const p=Math.max(0,Math.min(100,Math.round((a.score||0)*100)));
+    return `<div class="sh-axis ${p<40?'lo':''}"><span class="an">${esc(a.label)}</span><span class="ab"><i style="width:${Math.max(4,p)}%"></i></span><span class="ap">${p}%</span></div>`;
+  }).join('');
+  return head+`<div class="sh-axes"><div class="sh-axes-h">あなたの回答との一致度（高い順）</div>${bars}</div>`;
 }
 
 function renderResult(data){
@@ -184,7 +210,7 @@ function renderResult(data){
     <div class="sh-rc sh-rc-click" style="--acc:${hue(c.slug)};cursor:pointer" data-href="/company.html?id=${encodeURIComponent(c.slug)}&from=shindan" role="link" tabindex="0">
       <div class="sh-rc-h"><span class="sh-rc-badge">${esc(String(c.name||'？').charAt(0))}</span>
         <span><span class="sh-rc-nm">${esc(c.name)}</span><span class="sh-rc-sub">${esc(c.industry||'')}</span></span></div>
-      ${whyBlock(c.rationale)}<span class="sh-go">企業ページへ ›</span></div>`).join('');
+      ${matchBlock(c)}${whyBlock(c.rationale)}<span class="sh-go">企業ページへ ›</span></div>`).join('');
   app().innerHTML=`<div class="sh-res">
     ${isReal?'':'<div style="text-align:center;margin-bottom:8px"><span class="sh-sample">サンプル</span></div>'}
     <div class="sh-disc">※${esc(disc)}</div>
