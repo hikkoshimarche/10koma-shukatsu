@@ -3,6 +3,7 @@ import { cors } from 'hono/cors'
 import { recommend } from './shindan_match'
 import { bundleCompany, COMPARE_DISCLAIMER } from './compare'
 import { EDINET_SALARY } from './salary_edinet'
+import { handleAdvisor } from './advisor'
 
 type Bindings = {
   DB: D1Database
@@ -20,6 +21,9 @@ app.use('*', cors())
 app.get('/api/health', (c) => {
   return c.json({ ok: true })
 })
+
+// AIキャリアアドバイザー 対話エンジン（定型主・LLM従／Source-or-Silence・断定禁止ガード）
+app.post('/api/advisor', handleAdvisor)
 
 // ユーザーのupsert
 app.post('/api/users/upsert', async (c) => {

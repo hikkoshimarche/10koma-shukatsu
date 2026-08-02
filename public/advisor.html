@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link rel="stylesheet" href="/base.css">
+  <title>AIキャリアナビ（運営） | トーキャリ</title>
+  <style>
+    :root{ --acc:#2f6fb0; --bg:#f5f7fa; --card:#fff; --ink:#1f2a37; --sub:#6b7280; --line:#e5e8ee; }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;}
+    .wrap{max-width:640px;margin:0 auto;padding:16px 14px 120px;}
+    .head{display:flex;align-items:center;gap:10px;padding:6px 2px 12px;}
+    .head .ic{font-size:26px}
+    .head h1{font-size:17px;margin:0}
+    .head p{margin:2px 0 0;font-size:12px;color:var(--sub)}
+    .thread{display:flex;flex-direction:column;gap:12px}
+    .bubble{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:15px;line-height:1.6;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+    .bubble.intro{background:#eef4fb;border-color:#d4e3f5;color:#274b73;font-size:13px}
+    .you{align-self:flex-end;background:var(--acc);color:#fff;border:none;border-radius:14px;padding:9px 13px;font-size:14px;max-width:80%}
+    .facts{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+    .fact{background:#fbfcfe;border:1px solid var(--line);border-left:3px solid var(--acc);border-radius:8px;padding:9px 11px;font-size:13px;line-height:1.5}
+    .fact a{display:inline-block;margin-top:4px;font-size:11px;color:var(--acc);text-decoration:none;word-break:break-all}
+    .props{display:flex;flex-direction:column;gap:9px;margin-top:4px}
+    .prop{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 13px;text-decoration:none;color:inherit;transition:.12s}
+    .prop:active{background:#eef4fb}
+    .prop .pl{font-size:15px;font-weight:600}
+    .prop .pn{font-size:12px;color:var(--sub);margin-top:2px}
+    .prop .parr{margin-left:auto;color:var(--acc);font-size:20px}
+    .choices{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+    .choice{text-align:left;background:var(--card);border:1.5px solid #cdd8e8;border-radius:12px;padding:13px 14px;font-size:15px;color:var(--ink);cursor:pointer;transition:.12s}
+    .choice:active{background:#eef4fb;border-color:var(--acc)}
+    .choice.next{border-style:dashed}
+    .composer{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);border-top:1px solid var(--line);padding:10px 12px;backdrop-filter:blur(6px)}
+    .composer .inner{max-width:640px;margin:0 auto;display:flex;gap:8px}
+    .composer input{flex:1;border:1px solid #cdd8e8;border-radius:22px;padding:11px 15px;font-size:15px;outline:none}
+    .composer button{background:var(--acc);color:#fff;border:none;border-radius:22px;padding:0 18px;font-size:15px;font-weight:600;cursor:pointer}
+    .disc{font-size:11px;color:var(--sub);margin-top:14px;line-height:1.5;padding:0 2px}
+    .thinking{font-size:13px;color:var(--sub);padding:4px 2px}
+    .sec-label{font-size:11px;color:var(--sub);margin:8px 2px 0;font-weight:600;letter-spacing:.02em}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <span class="ic">🧭</span>
+    <div><h1>AIキャリアナビ（運営）</h1><p>やりたいことに合わせて機能へご案内します。会社で働くリアルは「🚪AI OB訪問ルーム」へ。</p></div>
+  </div>
+  <div class="thread" id="thread"></div>
+  <p class="disc" id="disc"></p>
+</div>
+
+<div class="composer">
+  <form class="inner" id="form">
+    <input id="text" autocomplete="off" placeholder="会社名 or やりたいこと（例：三井物産）">
+    <button type="submit">送信</button>
+  </form>
+</div>
+
+<script>
+const API_BASE = 'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+const thread = document.getElementById('thread');
+const disc = document.getElementById('disc');
+const input = document.getElementById('text');
+let state = { company: null, purpose: null };
+let sentIntro = false;
+
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function addYou(t){ const d=document.createElement('div'); d.className='you'; d.textContent=t; thread.appendChild(d); scroll(); }
+function scroll(){ window.scrollTo(0, document.body.scrollHeight); }
+
+function render(r){
+  // 進行状態を保持（選択で確定した company/purpose を引き継ぐ）
+  if (r.meta){ if(r.meta.company) state.company=r.meta.company; if(r.meta.purpose) state.purpose=r.meta.purpose; }
+
+  if (r.ai_intro){ const i=document.createElement('div'); i.className='bubble intro'; i.textContent=r.ai_intro; thread.appendChild(i); }
+  if (r.message){ const m=document.createElement('div'); m.className='bubble'; m.textContent=r.message; thread.appendChild(m); }
+
+  if (r.facts && r.facts.length){
+    const wrap=document.createElement('div'); wrap.className='facts';
+    r.facts.forEach(f=>{
+      const el=document.createElement('div'); el.className='fact';
+      el.innerHTML = esc(f.value) + (f.source_url ? `<br><a href="${esc(f.source_url)}" target="_blank" rel="noopener">出典を見る ›</a>` : '');
+      wrap.appendChild(el);
+    });
+    thread.appendChild(wrap);
+  }
+
+  if (r.proposals && r.proposals.length){
+    const lbl=document.createElement('div'); lbl.className='sec-label'; lbl.textContent='ここから直接ひらく'; thread.appendChild(lbl);
+    const wrap=document.createElement('div'); wrap.className='props';
+    r.proposals.forEach(p=>{
+      const a=document.createElement('a'); a.className='prop'; a.href=p.href; a.target='_blank'; a.rel='noopener';
+      a.innerHTML=`<span><span class="pl">${esc(p.label)}</span><br><span class="pn">${esc(p.note||'')}</span></span><span class="parr">›</span>`;
+      wrap.appendChild(a);
+    });
+    thread.appendChild(wrap);
+  }
+
+  if (r.choices && r.choices.length){
+    const wrap=document.createElement('div'); wrap.className='choices';
+    r.choices.forEach(ch=>{
+      const b=document.createElement('button'); b.className='choice'+(ch.kind==='next'?' next':'');
+      b.textContent=ch.label;
+      b.onclick=()=>{ addYou(ch.label); clearInteractive(); send({ ...ch.value }); };
+      wrap.appendChild(b);
+    });
+    thread.appendChild(wrap);
+  }
+
+  if (r.free_input_hint) input.placeholder = r.free_input_hint;
+  if (r.disclaimer) disc.textContent = r.disclaimer;
+  scroll();
+}
+
+// 送信のたび、前回の選択肢/提案は残しつつ操作可能なのは最新のみにする（迷子防止）
+function clearInteractive(){
+  thread.querySelectorAll('.choices, .props, .facts, .sec-label').forEach(e=>{
+    if (e.classList.contains('choices')) e.querySelectorAll('button').forEach(b=>b.disabled=true);
+  });
+}
+
+async function send(payload){
+  const think=document.createElement('div'); think.className='thinking'; think.textContent='考え中…'; thread.appendChild(think); scroll();
+  const body = Object.assign({ first: !sentIntro }, payload);
+  sentIntro = true;
+  // 状態の引き継ぎ（選択肢が company/purpose を明示しない場合は現状を保持）
+  if (body.company === undefined && state.company) body.company = state.company;
+  if (body.purpose === undefined && state.purpose && payload.text === undefined) body.purpose = state.purpose;
+  try{
+    const res = await fetch(API_BASE + '/api/advisor', {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)
+    });
+    const r = await res.json();
+    think.remove();
+    render(r);
+  }catch(e){
+    think.remove();
+    const m=document.createElement('div'); m.className='bubble'; m.textContent='通信に失敗しました。もう一度お試しください。'; thread.appendChild(m);
+  }
+}
+
+document.getElementById('form').addEventListener('submit', e=>{
+  e.preventDefault();
+  const t=input.value.trim(); if(!t) return;
+  addYou(t); input.value=''; clearInteractive();
+  // 自由入力（従）: テキストで会社/場面を取り直す。会社は文脈保持、purposeはテキスト優先。
+  send({ text: t, purpose: undefined });
+});
+
+// 初回ロード = AI宣言 + 入口
+send({});
+</script>
+</body>
+</html>
