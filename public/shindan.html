@@ -211,6 +211,9 @@ async function main(){
     if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;}
     if(liff.isLoggedIn()){ try{ const p=await liff.getProfile(); SH_USER=SH_USER||p.userId; }catch(e){} }
   }catch(e){}
+  // リッチメニュー枠=相性診断 への到達を計測(SH_USERが取れていれば__tkUserでUU化)。
+  if(SH_USER) window.__tkUser=SH_USER;
+  if(window.tkEvent) tkEvent('menu','相性診断');
   // 企業ページから戻ってきた(?view=result)ら、保存済み結果を復元して質問をやり直させない(3c)
   if(new URLSearchParams(location.search).get('view')==='result'){
     try{ const saved=sessionStorage.getItem('tk_shindan_result'); if(saved){ renderResult(JSON.parse(saved)); return; } }catch(e){}

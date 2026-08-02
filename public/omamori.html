@@ -160,6 +160,9 @@ function showSendoff(){
 
 async function main(){
   try{ await liff.init({liffId:LIFF_ID}); if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;} }catch(e){}
+  // リッチメニュー枠=お守り への到達を計測。profileが取れれば__tkUserに設定しUU化(取れなければanonで1行)。
+  try{ if(typeof liff!=='undefined'&&liff.isLoggedIn&&liff.isLoggedIn()){ const _p=await liff.getProfile(); if(_p&&_p.userId) window.__tkUser=_p.userId; } }catch(e){}
+  if(window.tkEvent) tkEvent('menu','お守り');
   try{
     const [m,q]=await Promise.all([
       fetch('/omamori_messages.json').then(r=>r.json()),

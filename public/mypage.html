@@ -498,6 +498,13 @@ function render(d){
   const jc=document.getElementById('mp-newsjump'); if(jc) jc.onclick=(e)=>{ e.preventDefault(); try{history.replaceState(null,'','#news');}catch(_){} goToNews(); };
   if(location.hash==='#favorites'){ const el=document.getElementById('favorites'); if(el) setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),200); }
   if(location.hash==='#news'){ setTimeout(goToNews, 300); }  // 通知(週1ダイジェスト)から直行
+  // ニュース(更新フィード)が実際に画面へ入ったら「ニュース閲覧」を1回計測(company.htmlのkoma_read同様IO方式)。
+  const nv=document.getElementById('news');
+  if(nv && 'IntersectionObserver' in window){
+    let nvLogged=false;
+    const nio=new IntersectionObserver(es=>{ es.forEach(en=>{ if(en.isIntersecting && !nvLogged){ nvLogged=true; if(window.tkEvent) tkEvent('feature','ニュース閲覧'); nio.disconnect(); } }); });
+    nio.observe(nv);
+  }
 }
 
 // ===== 初回プロフィール登録 =====
@@ -604,6 +611,9 @@ async function main(){
     if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;}
     if(liff.isLoggedIn()){ try{ const p=await liff.getProfile(); if(!new URLSearchParams(location.search).get('u')) userId=p.userId; if(p.displayName) document.getElementById('mp-greet').textContent=`📓 ${p.displayName}さんの就活記録 — 足あと・お気に入り・成績・診断`; }catch(e){} }
   }catch(e){ console.warn('LIFF skipped (preview):', e&&e.message); }
+  // リッチメニュー枠=マイページ 到達を計測。実ユーザーなら__tkUserでUU化(preview/ゲストはanonで1行)。
+  if(userId && userId!=='guest-preview') window.__tkUser=userId;
+  if(window.tkEvent) tkEvent('menu','マイページ');
   // LIFF外/ゲスト(userId取れない)はモーダルを出さず従来ゲスト表示
   const isReal = userId && userId!=='guest-preview';
   if(isReal){

@@ -6,6 +6,8 @@
 <link rel="stylesheet" href="/base.css">
   <title>使い方・お問い合わせ | トーキャリ</title>
   <link rel="stylesheet" href="shared.css">
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="config.js"></script>
   <script src="nav.js"></script>
   <style>
     .howto-section { padding: 0 16px 8px; }
@@ -258,6 +260,14 @@
   document.querySelectorAll('.faq-q').forEach(q => {
     q.addEventListener('click', () => { q.closest('.faq-item').classList.toggle('open'); });
   });
+  // リッチメニュー枠=使い方 への到達を計測。LIFF profileが取れれば__tkUserでUU化(取れなければanonで1行)。
+  (async function(){
+    try{
+      var LID=(window.TOKYARI&&window.TOKYARI.LIFF_HUB)||'2010075487-89AJxZnA';
+      if(typeof liff!=='undefined'&&liff.init){ await liff.init({liffId:LID}); if(liff.isLoggedIn&&liff.isLoggedIn()){ var p=await liff.getProfile(); if(p&&p.userId) window.__tkUser=p.userId; } }
+    }catch(e){}
+    if(window.tkEvent) tkEvent('menu','使い方');
+  })();
 </script>
 </body>
 </html>
