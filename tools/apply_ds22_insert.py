@@ -10,8 +10,9 @@ import json, os, sys, subprocess, hashlib, time
 ROOT = os.path.expanduser("~/projects/10koma-shukatsu")
 OUT = os.path.expanduser("~/oscar-ai/tokyari-pipeline/output")
 SEC_MAP = {"事業内容・セグメント": "事業", "主要財務": "財務", "社風・求める人物像": "社風", "沿革・基本情報": "沿革"}
-TARGETS = ["abeja", "rapidus", "takasago-thermal", "daito-kentaku", "mri", "fuji-oil-hd",
-           "turing", "adl", "ryohin-keikaku", "shinkokusyoji", "microsoft-japan", "jera"]
+# 第2便: EDINET有報/IR PDF由来(bot-wall社の代替一次情報)。fact<5は自動SKIP。
+TARGETS = ["tdk", "daiwa-house", "jal", "takashimaya", "isetan-mitsukoshi", "pola-orbis-hd",
+           "suntory", "biccamera", "adl", "mckinsey", "nestle-japan"]
 TS = time.strftime("%Y%m%d_%H%M%S")
 BACKUP = os.path.join(ROOT, ".backups", f"pre_ds22insert_{TS}.sql")
 SQLF = "/tmp/ds22_insert.sql"
@@ -72,7 +73,10 @@ def main():
     # 反映対象の datasheet.json → D1形状(fact数再確認: ≥5のみ)
     inserts = []
     for slug in TARGETS:
-        dj = json.load(open(os.path.join(OUT, slug, "datasheet.json")))
+        dp = os.path.join(OUT, slug, "datasheet.json")
+        if not os.path.exists(dp):
+            print(f"  SKIP {slug}: datasheet.json無(corpus取得不可)"); continue
+        dj = json.load(open(dp))
         shape, nf = to_d1_shape(dj)
         if nf < 5:
             print(f"  SKIP {slug}: fact{nf}<5"); continue

@@ -37,7 +37,8 @@ def my_gather(slug, name):
                and not re.search(r"短信|有価証券報告書", txt[:200]):
                 prose.setdefault(u, txt[:8000])
     items = list(prose.items())
-    qual = [x for x in items if any(k in x[0].lower() for k in E.QUAL_KW)]
+    # EDINET有報(一次情報)を最優先 → 質的ページ → その他
+    qual = [x for x in items if "searchdocument" in x[0].lower() or any(k in x[0].lower() for k in E.QUAL_KW)]
     rest = [x for x in items if x not in qual]
     return dict((qual + rest)[:10])
 
