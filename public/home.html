@@ -114,6 +114,18 @@
     .rm-cta { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:11px; background:var(--navy); color:#fff; text-decoration:none; border-radius:12px; padding:12px 15px; }
     .rm-cta span { font-size:12px; color:rgba(255,255,255,0.85); min-width:0; }
     .rm-cta b { font-size:14px; font-weight:800; white-space:nowrap; }
+
+    /* 2大入口（目的から入る / AIに相談）: 検索の直前に目立たせる。既存の企業研究等は下段に温存。 */
+    .home-start { display:grid; grid-template-columns:1fr 1fr; gap:11px; padding:8px 16px 6px; }
+    .home-start a { display:flex; flex-direction:column; gap:8px; padding:14px 13px; border-radius:16px;
+      text-decoration:none; color:#fff; box-shadow:0 6px 18px rgba(3,20,44,0.42);
+      background:linear-gradient(135deg,#12457f,#0a2f5c); border:1.5px solid rgba(231,184,75,0.5);
+      -webkit-tap-highlight-color:transparent; transition:transform .08s ease; }
+    .home-start a:active { transform:scale(0.98); }
+    .home-start .si { width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+      font-size:23px; background:linear-gradient(135deg,var(--gold),var(--gold-deep)); flex-shrink:0; }
+    .home-start .sb { font-size:14px; font-weight:800; line-height:1.3; }
+    .home-start .ss { font-size:11px; color:rgba(255,255,255,0.82); line-height:1.4; }
   </style>
 </head>
 <body>
@@ -125,6 +137,18 @@
       <p class="home-role">🧭 ホーム＝トーキャリで<b>できること</b>（発見・全体マップ）</p>
     </div>
   </header>
+
+  <!-- 2大入口: 目的から入る(/today) / AIに相談(/advisor)。計測=tkEvent('menu',…) -->
+  <div class="home-start">
+    <a href="/today" onclick="if(window.tkEvent)tkEvent('menu','今日は何をする？')">
+      <span class="si">🧭</span>
+      <span class="sb">今日は何をする？</span>
+      <span class="ss">やりたいことから選ぶ</span></a>
+    <a href="/advisor" onclick="if(window.tkEvent)tkEvent('menu','AIキャリアナビ')">
+      <span class="si">🤖</span>
+      <span class="sb">AIキャリアナビに聞く</span>
+      <span class="ss">迷ったら相談・道案内</span></a>
+  </div>
 
   <div class="home-search">
     <div class="home-search-box">
