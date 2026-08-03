@@ -116,7 +116,7 @@
     .rm-cta b { font-size:14px; font-weight:800; white-space:nowrap; }
 
     /* 2大入口（目的から入る / AIに相談）: 検索の直前に目立たせる。既存の企業研究等は下段に温存。 */
-    .home-start { display:grid; grid-template-columns:1fr 1fr; gap:11px; padding:8px 16px 6px; }
+    .home-start { display:grid; grid-template-columns:1fr; gap:11px; padding:8px 16px 6px; } /* TEMP(2026-08-03): /advisor停止中は1列。復帰時 1fr → 1fr 1fr に戻す */
     .home-start a { display:flex; flex-direction:column; gap:8px; padding:14px 13px; border-radius:16px;
       text-decoration:none; color:#fff; box-shadow:0 6px 18px rgba(3,20,44,0.42);
       background:linear-gradient(135deg,#12457f,#0a2f5c); border:1.5px solid rgba(231,184,75,0.5);
@@ -144,10 +144,13 @@
       <span class="si">🧭</span>
       <span class="sb">今日は何をする？</span>
       <span class="ss">やりたいことから選ぶ</span></a>
+    <!-- 一時停止(2026-08-03): /advisor が希死念慮の発話を「お守り」に誘導する不具合の修正まで非表示。
+         復帰時はこの comment を外し、.home-start の grid を 1fr → 1fr 1fr に戻すだけ。コードは削除していない。
     <a href="/advisor" onclick="if(window.tkEvent)tkEvent('menu','AIキャリアナビ')">
       <span class="si">🤖</span>
       <span class="sb">AIキャリアナビに聞く</span>
       <span class="ss">迷ったら相談・道案内</span></a>
+    -->
   </div>
 
   <div class="home-search">
