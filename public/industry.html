@@ -30,6 +30,16 @@
     .chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;background:#fff;border:1.5px solid var(--line);color:var(--ink);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap}
     .chip.on{background:var(--tool);border-color:var(--tool);color:#fff}
     .chip .ci{font-size:14px}
+    /* 中分類サブchip(2段目・大分類を1つ選ぶと展開) */
+    .subchips{display:flex;gap:6px;overflow-x:auto;padding:2px 16px 4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+    .subchips::-webkit-scrollbar{display:none}
+    .subchips:empty{display:none}
+    .subchip{flex:0 0 auto;display:inline-flex;align-items:center;background:#eef3f9;border:1.5px solid #d6e0ec;color:#2b3a4b;border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+    .subchip.on{background:#0a5aa8;border-color:#0a5aa8;color:#fff}
+    /* 横断タグ(外資/新興)バッジ */
+    .row .xtag{font-size:9.5px;font-weight:800;border-radius:999px;padding:1px 6px;white-space:nowrap;border:1px solid currentColor}
+    .row .xtag.foreign{color:#8a5a00;background:#fff3dc}
+    .row .xtag.startup{color:#1f7a4d;background:#e4f6ec}
     /* ソート */
     .bar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 6px}
     .bar .cnt{font-size:12px;color:var(--mute);font-weight:700}
@@ -73,6 +83,7 @@
     <input id="q" type="search" inputmode="search" autocomplete="off" placeholder="会社名でさがす（例：三菱商事、じゃる）">
     <button class="cl" id="cl" aria-label="クリア">×</button></div>
   <div class="chips" id="chips"></div>
+  <div class="subchips" id="subchips"></div>
   <div id="learn"></div>
   <div class="bar"><span class="cnt" id="cnt"></span>
     <div class="sorts">
@@ -90,10 +101,28 @@ function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function normJ(s){return String(s||'').toLowerCase().replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60)).replace(/[Ａ-Ｚａ-ｚ０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/[\s・･。、，,.／/（）()\[\]「」【】\-‐－—~〜'`"&＆]/g,'');}
 const PAL=['#2f6fb0','#c0392b','#7d3c98','#16a085','#d17d00','#2d8659','#c0448a','#3b5bdb','#b8823a','#2f8fbf'];
 function hue(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return PAL[h%PAL.length];}
-// 業界→アイコン/色（企業研究の視覚キー）
-const IND={'総合商社':{i:'🌐',c:'#2f6fb0'},'自動車・モビリティ':{i:'🚗',c:'#c0392b'},'電機・精密・重工':{i:'⚙️',c:'#4a6b8a'},'鉄鋼・素材・化学':{i:'🏭',c:'#8a6d3b'},'製薬・ヘルスケア':{i:'💊',c:'#16a085'},'銀行・証券・保険':{i:'🏦',c:'#1f6f54'},'IT・通信・SaaS':{i:'💻',c:'#3b5bdb'},'ゲーム・エンタメ':{i:'🎮',c:'#7d3c98'},'コンサル':{i:'📈',c:'#2c6fa8'},'専門商社':{i:'📦',c:'#b8823a'},'インフラ・エネルギー':{i:'⚡',c:'#d17d00'},'不動産・建設':{i:'🏗️',c:'#9a6a2f'},'小売・流通':{i:'🛍️',c:'#c0448a'},'食品・飲料':{i:'🍽️',c:'#d1495b'},'日用品・化粧品':{i:'🧴',c:'#c85a9c'},'航空・運輸・物流':{i:'✈️',c:'#2f8fbf'},'広告・メディア':{i:'📣',c:'#e0913a'},'その他（外資・新興等）':{i:'🌱',c:'#3a9d6b'}};
+// 大分類(dai_slug)→アイコン/色（企業研究の視覚キー・二層化後は大分類が視覚の主役）
+const DAI_META={
+  'shosha':{i:'🌐',c:'#2f6fb0'}, 'finance':{i:'🏦',c:'#1f6f54'}, 'automotive':{i:'🚗',c:'#c0392b'},
+  'electronics-machinery':{i:'⚙️',c:'#4a6b8a'}, 'materials-chemical':{i:'🏭',c:'#8a6d3b'},
+  'consumer-healthcare':{i:'🧴',c:'#16a085'}, 'it-telecom-internet':{i:'💻',c:'#3b5bdb'},
+  'consulting':{i:'📈',c:'#2c6fa8'}, 'infra-energy':{i:'⚡',c:'#d17d00'},
+  'construction-realestate':{i:'🏗️',c:'#9a6a2f'}, 'transport-logistics':{i:'✈️',c:'#2f8fbf'},
+  'retail':{i:'🛍️',c:'#c0448a'}, 'media-entertainment':{i:'📣',c:'#e0913a'},
+  'education-hr':{i:'🎓',c:'#6a4fb0'}, 'deeptech-space':{i:'🚀',c:'#3a9d6b'},
+};
+const dm=s=>DAI_META[s]||{i:'🏢',c:'#4a90d9'};
+const XTAG={foreign:{l:'外資',c:'foreign'}, startup:{l:'新興',c:'startup'}};
 
-let ALL=[], INDS=[], sel=new Set(), sort='kana';
+// taxonomy(正準構造)由来の索引。fetch後に構築。
+let TAX=null, DAI=[], daiOrder={}, chuOrder={}, chu2dai={}, chu2name={}, dai2name={}, dai2chus={}, chu2gyokai={};
+function buildTaxIndex(tax){
+  TAX=tax; DAI=tax.daibunrui||[];
+  DAI.forEach((d,di)=>{ daiOrder[d.slug]=di; dai2name[d.slug]=d.name; dai2chus[d.slug]=d.chubunrui.map(c=>c.slug);
+    d.chubunrui.forEach((c,ci)=>{ chuOrder[c.slug]=di*100+ci; chu2dai[c.slug]=d.slug; chu2name[c.slug]=c.name; chu2gyokai[c.slug]=c.gyokai16; }); });
+}
+
+let ALL=[], selDai=new Set(), selChu=new Set(), sort='kana';
 // 50音ソート用: カタカナ→ひらがな。並びは先頭が仮名で始まる読みを使う。
 const toHira=s=>String(s||'').replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60));
 const startsKana=s=>/^[ぁ-ゖ]/.test(String(s||''));
@@ -103,60 +132,73 @@ function readingOf(id, name, aliases, readings){
   const ka=(aliases||[]).map(toHira).find(startsKana); if(ka) return ka;
   return toHira((aliases&&aliases[0])||name||'');
 }
+// selChu のうち、現在選択中の大分類に属さないものを掃除(大分類を外したら子の中分類も外れる)。
+function pruneChu(){ for(const c of [...selChu]){ if(!selDai.has(chu2dai[c])) selChu.delete(c); } }
 
 function drawChips(){
   const box=document.getElementById('chips');
-  const all=sel.size===0;
-  box.innerHTML=`<button class="chip ${all?'on':''}" data-ind="__all__">すべて</button>`+
-    INDS.map(n=>{const m=IND[n]||{i:'🏢'};return `<button class="chip ${sel.has(n)?'on':''}" data-ind="${esc(n)}"><span class="ci">${m.i}</span>${esc(n)}</button>`;}).join('');
+  const all=selDai.size===0;
+  box.innerHTML=`<button class="chip ${all?'on':''}" data-dai="__all__">すべて</button>`+
+    DAI.map(d=>{const m=dm(d.slug);return `<button class="chip ${selDai.has(d.slug)?'on':''}" data-dai="${esc(d.slug)}"><span class="ci">${m.i}</span>${esc(d.name)}</button>`;}).join('');
   box.querySelectorAll('.chip').forEach(ch=>ch.onclick=()=>{
-    const v=ch.dataset.ind;
-    if(v==='__all__'){ sel.clear(); } else { sel.has(v)?sel.delete(v):sel.add(v); }
-    drawChips(); apply();
+    const v=ch.dataset.dai;
+    if(v==='__all__'){ selDai.clear(); selChu.clear(); }
+    else { selDai.has(v)?selDai.delete(v):selDai.add(v); pruneChu(); }
+    drawChips(); drawSubChips(); apply();
   });
 }
-// 企業一覧の業界名 → 業界研究(gyokai)slug の逆引き。gyokai.html INDUSTRIES の find 対応に一致。
-// これで「○○のしくみを学ぶ」が該当業界カードを ?open= で自動展開する(従来は fromInd=名前 のみ渡り、gyokaiは名前でカードを開けず=TOP素通りだった)。
-const LEARN_SLUG={
-  '総合商社':'sogo-shosha','専門商社':'senmon-shosha','銀行・証券・保険':'finance',
-  'IT・通信・SaaS':'it-ai-saas-game','コンサル':'consulting',
-  '自動車・モビリティ':'manufacturer','電機・精密・重工':'manufacturer','鉄鋼・素材・化学':'manufacturer','日用品・化粧品':'manufacturer',
-  '広告・メディア':'ad-media','インフラ・エネルギー':'infra-energy','不動産・建設':'realestate-construction',
-  '小売・流通':'retail','食品・飲料':'food-beverage','製薬・ヘルスケア':'medical-healthcare',
-  '航空・運輸・物流':'transport-logistics',
-};
+// 中分類サブchip: 大分類をちょうど1つ選んだ時だけ、その配下の中分類を出す(56個の氾濫を防ぐ)。
+function drawSubChips(){
+  const box=document.getElementById('subchips');
+  if(selDai.size!==1){ box.innerHTML=''; return; }
+  const d=[...selDai][0];
+  box.innerHTML=(dai2chus[d]||[]).map(cs=>`<button class="subchip ${selChu.has(cs)?'on':''}" data-chu="${esc(cs)}">${esc(chu2name[cs])}</button>`).join('');
+  box.querySelectorAll('.subchip').forEach(ch=>ch.onclick=()=>{
+    const v=ch.dataset.chu; selChu.has(v)?selChu.delete(v):selChu.add(v);
+    drawSubChips(); apply();
+  });
+}
 function drawLearn(){
   const el=document.getElementById('learn');
-  if(sel.size===1){ const n=[...sel][0]; const slug=LEARN_SLUG[n]||'';
-    const href=`/gyokai.html?from=list&fromInd=${encodeURIComponent(n)}${slug?('&open='+encodeURIComponent(slug)):''}`;
-    el.innerHTML=`<a class="learn-link" href="${href}"><span class="li">📚</span><span><span class="lt">${esc(n)}のしくみを学ぶ</span><span class="ls">業界研究（業界10コマ・クイズ）へ</span></span><span class="la">›</span></a>`;
+  // 中分類1つ選択→その中分類のgyokai16を開く(最も精密)。大分類1つ選択→配下中分類のgyokai16が単一なら開く。
+  let label='', slug='';
+  if(selChu.size===1){ const c=[...selChu][0]; label=chu2name[c]; slug=chu2gyokai[c]||''; }
+  else if(selDai.size===1){ const d=[...selDai][0]; label=dai2name[d];
+    const gs=[...new Set((dai2chus[d]||[]).map(cs=>chu2gyokai[cs]))]; slug=(gs.length===1)?gs[0]:''; }
+  if(label){
+    const href=`/gyokai.html?from=list&fromInd=${encodeURIComponent(label)}${slug?('&open='+encodeURIComponent(slug)):''}`;
+    el.innerHTML=`<a class="learn-link" href="${href}"><span class="li">📚</span><span><span class="lt">${esc(label)}のしくみを学ぶ</span><span class="ls">業界研究（業界10コマ・クイズ）へ</span></span><span class="la">›</span></a>`;
   } else el.innerHTML='';
 }
 function apply(){
   const q=normJ((document.getElementById('q')||{}).value||'');
-  let rows=ALL.filter(r=> (sel.size===0||sel.has(r.industry)) && (!q||r.key.includes(q)));
+  let rows=ALL.filter(r=>{
+    const catOk = selChu.size>0 ? selChu.has(r.chu) : (selDai.size>0 ? selDai.has(r.dai) : true);
+    return catOk && (!q||r.key.includes(q));
+  });
   if(sort==='kana') rows.sort((a,b)=>a.kana<b.kana?-1:a.kana>b.kana?1:0);
   else if(sort==='popular') rows.sort((a,b)=> b.views-a.views || (a.kana<b.kana?-1:1));
-  else rows.sort((a,b)=> (a.indOrd-b.indOrd) || (a.kana<b.kana?-1:1));
+  else rows.sort((a,b)=> (a.chuOrd-b.chuOrd) || (a.kana<b.kana?-1:1));   // 「業界」順=大分類→中分類→50音
   document.getElementById('cnt').textContent=`${rows.length}社`;
   drawLearn();
   const list=document.getElementById('list');
   if(!rows.length){ list.innerHTML=`<div class="empty">該当する企業がありません。<br><a href="/gyokai.html">業界研究からさがす →</a></div>`; return; }
-  list.innerHTML=rows.map(r=>{const m=IND[r.industry]||{i:'🏢',c:'#4a90d9'};
+  list.innerHTML=rows.map(r=>{const m=dm(r.dai);
+    const xt=(r.tags||[]).map(t=>XTAG[t]?`<span class="xtag ${XTAG[t].c}">${XTAG[t].l}</span>`:'').join('');
     return `<div class="row" data-id="${esc(r.id)}">
       <span class="badge" style="background:${m.c}">${m.i}</span>
       <span class="info"><span class="nm">${esc(r.name)}</span>
-        <span class="meta"><span class="tag" style="background:${m.c}">${esc(r.industry)}</span>${r.hook?`<span class="hook">${esc(r.hook)}</span>`:''}</span></span>
+        <span class="meta"><span class="tag" style="background:${m.c}">${esc(r.daiName)} › ${esc(r.chuName)}</span>${xt}${r.hook?`<span class="hook">${esc(r.hook)}</span>`:''}</span></span>
       <span class="arrow">›</span></div>`;}).join('');
-  // 行タップ: スクロール誤爆防止。pointerdown起点をやめ、移動量>10px かスクロール発生でタップ取消（純粋なタップ時のみ遷移）。
-  const fromInd = (sel.size===1)?[...sel][0]:'';
-  const backQS = `&from=list${fromInd?('&fromInd='+encodeURIComponent(fromInd)):''}`;
+  // 行タップ: スクロール誤爆防止。移動量>10px かスクロール発生でタップ取消（純粋なタップ時のみ遷移）。
+  const fromLabel = selChu.size===1?chu2name[[...selChu][0]] : (selDai.size===1?dai2name[[...selDai][0]]:'');
+  const backQS = `&from=list${fromLabel?('&fromInd='+encodeURIComponent(fromLabel)):''}`;
   list.querySelectorAll('.row').forEach(row=>{
     const nav=()=>{ saveState(); location.href=`/company.html?id=${encodeURIComponent(row.dataset.id)}${backQS}`; };
     let sx=0, sy=0, moved=false, active=false;
     row.addEventListener('pointerdown', e=>{ active=true; moved=false; sx=e.clientX; sy=e.clientY; }, {passive:true});
     row.addEventListener('pointermove', e=>{ if(active && (Math.abs(e.clientX-sx)>10 || Math.abs(e.clientY-sy)>10)) moved=true; }, {passive:true});
-    row.addEventListener('pointercancel', ()=>{ active=false; }, {passive:true});   // 慣性スクロール等でブラウザがタッチを奪った=タップ無効
+    row.addEventListener('pointercancel', ()=>{ active=false; }, {passive:true});
     row.addEventListener('pointerup', ()=>{ if(active && !moved) nav(); active=false; }, {passive:true});
   });
 }
@@ -191,47 +233,61 @@ function showListError(){
 // 離脱時(in-memory sel)と復帰時(?ind=)で ind がdrift→別キーになり復元が外れていた(戻ると先頭に戻る不具合の主因)。
 // 固定キーなら save/restore が必ず一致。保存stateに sel/q/sort も含むので、復元時に絞り込み文脈ごと再現される。
 function stateKey(){ return 'ind_state'; }
-function saveState(){ try{ sessionStorage.setItem(stateKey(), JSON.stringify({ q:((document.getElementById('q')||{}).value)||'', sort:sort, sel:[...sel], y:(window.scrollY||window.pageYOffset||0) })); }catch(e){} }
+function saveState(){ try{ sessionStorage.setItem(stateKey(), JSON.stringify({ q:((document.getElementById('q')||{}).value)||'', sort:sort, selDai:[...selDai], selChu:[...selChu], y:(window.scrollY||window.pageYOffset||0) })); }catch(e){} }
 function restoreState(){
-  // 業界研究(gyokai)からの新規遷移は ?ind= を尊重し、保存stateで上書きしない(固定キー化に伴う誤復元防止)。
-  // 企業ページからの戻り(from無しで ?ind= 再構成)や通常再訪のみ、保存state+スクロールを復元する。
+  // 業界研究(gyokai)からの新規遷移は ?dai=/?chu= を尊重し、保存stateで上書きしない(固定キー化に伴う誤復元防止)。
+  // 企業ページからの戻りや通常再訪のみ、保存state+スクロールを復元する。
   if(new URLSearchParams(location.search).get('from')==='gyokai'){ apply(); return; }
   let s=null; try{ s=JSON.parse(sessionStorage.getItem(stateKey())||'null'); }catch(e){}
   if(s){
-    if(Array.isArray(s.sel)){ sel=new Set(s.sel.filter(v=>INDS.includes(v))); drawChips(); }
+    if(Array.isArray(s.selDai)){ selDai=new Set(s.selDai.filter(v=>daiOrder.hasOwnProperty(v))); }
+    if(Array.isArray(s.selChu)){ selChu=new Set(s.selChu.filter(v=>chu2dai.hasOwnProperty(v))); }
+    pruneChu(); drawChips(); drawSubChips();
     if(s.q){ const inp=document.getElementById('q'); if(inp){ inp.value=s.q; const cl=document.getElementById('cl'); if(cl) cl.style.display='block'; } }
     if(s.sort){ sort=s.sort; document.querySelectorAll('.sortb').forEach(x=>x.classList.toggle('on',x.dataset.s===sort)); }
   }
   apply();
   if(s && typeof s.y==='number' && s.y>0){ requestAnimationFrame(()=>window.scrollTo(0,s.y)); }
 }
+// 旧18分類名(キャッシュ済リンク互換) → 新・大分類slug の最善マップ。分割カテゴリは主たる大分類へ。
+const LEGACY_IND2DAI={'総合商社':'shosha','専門商社':'shosha','銀行・証券・保険':'finance','IT・通信・SaaS':'it-telecom-internet',
+  'ゲーム・エンタメ':'media-entertainment','コンサル':'consulting','自動車・モビリティ':'automotive',
+  '電機・精密・重工':'electronics-machinery','鉄鋼・素材・化学':'materials-chemical','製薬・ヘルスケア':'consumer-healthcare',
+  '日用品・化粧品':'consumer-healthcare','食品・飲料':'consumer-healthcare','インフラ・エネルギー':'infra-energy',
+  '不動産・建設':'construction-realestate','小売・流通':'retail','航空・運輸・物流':'transport-logistics','広告・メディア':'media-entertainment'};
 async function main(){
   await liffReady();  // 認証はベストエフォート(最大5秒)。一覧表示をブロックしない＝戻り時の無限スピナー根絶。
-  let comp, aliases, api, rd, readings={};
+  let comp, aliases, api, rd, tax, readings={};
   try{
-    [comp,aliases,api,rd]=await Promise.all([
+    [comp,aliases,api,rd,tax]=await Promise.all([
       fetchJSON('/companies.json',8000),                                   // 必須データ: 失敗/timeoutでretry UI
       fetchJSON('/search_aliases.json',8000,{}),
       fetchJSON(`${API_BASE}/api/company-list`,8000,{views:{},hooks:{}}),
       fetchJSON('/company_readings.json',8000,{}),
+      fetchJSON('/taxonomy.json',8000),                                     // 必須: 二層構造(大→中/順序/gyokai16ブリッジ)
     ]);
     readings=(rd&&rd.readings)||{};
   }catch(e){ showListError(); return; }
+  buildTaxIndex(tax);
   ALL=[];  // retry時の二重蓄積を防ぐ
-  INDS=Object.keys(comp);
-  const ord={}; INDS.forEach((n,i)=>ord[n]=i);
-  for(const [ind,arr] of Object.entries(comp)){
+  for(const arr of Object.values(comp)){
     for(const c of (arr||[])){
       const al=aliases[c.id]||[];
-      ALL.push({ id:c.id, name:c.name, industry:ind, indOrd:ord[ind],
+      // 二層メタは companies.json の各社フィールド(Ph2加算)。欠落時はスキップせず「その他」相当に落とさず素通り防止。
+      const dai=c.dai_slug||'', chu=c.chu_slug||'';
+      ALL.push({ id:c.id, name:c.name, dai:dai, daiName:c.dai_name||dai2name[dai]||'', chu:chu, chuName:c.chu_name||chu2name[chu]||'',
+        tags:c.tags||[], chuOrd:(chuOrder[chu]!=null?chuOrder[chu]:9999),
         hook:(api.hooks||{})[c.id]||'', views:(api.views||{})[c.id]||0,
         kana:readingOf(c.id, c.name, al, readings), key:normJ([c.name,c.id,c.id.replace(/-/g,' '),...al].join(' ')) });
     }
   }
-  // ?ind= で業界フィルタを事前適用(業界研究からの相互導線)。カンマ区切りで複数業界も可(メーカー等の広域カテゴリ)。
-  const pRaw=new URLSearchParams(location.search).get('ind');
-  if(pRaw){ for(const v of pRaw.split(',').map(s=>s.trim()).filter(Boolean)){ if(INDS.includes(v)) sel.add(v); } }
-  drawChips();
+  // ?dai= / ?chu= で事前フィルタ(業界研究からの相互導線・カンマ区切り複数可)。旧 ?ind=(18JP名)も互換で受ける。
+  const P=new URLSearchParams(location.search);
+  const daiRaw=P.get('dai'), chuRaw=P.get('chu'), indRaw=P.get('ind');
+  if(daiRaw){ for(const v of daiRaw.split(',').map(s=>s.trim()).filter(Boolean)){ if(daiOrder.hasOwnProperty(v)) selDai.add(v); } }
+  if(chuRaw){ for(const v of chuRaw.split(',').map(s=>s.trim()).filter(Boolean)){ if(chu2dai[v]){ selChu.add(v); selDai.add(chu2dai[v]); } } }
+  if(!daiRaw && !chuRaw && indRaw){ for(const v of indRaw.split(',').map(s=>s.trim()).filter(Boolean)){ const d=LEGACY_IND2DAI[v]; if(d) selDai.add(d); } }
+  pruneChu(); drawChips(); drawSubChips();
   const input=document.getElementById('q'), cl=document.getElementById('cl');
   input.addEventListener('input',()=>{ cl.style.display=input.value?'block':'none'; apply(); });
   cl.addEventListener('click',()=>{ input.value=''; cl.style.display='none'; apply(); input.focus(); });

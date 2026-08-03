@@ -1,0 +1,459 @@
+{
+  "version": "1.0",
+  "generated": "2026-08-03",
+  "note": "唯一の正準タクソノミー(構造のみ)。個社割当は tools/taxonomy_companies.csv に分離。業界研究ハブ(業界10コマ160枚+業界クイズ)は現行16を維持し、中分類→gyokai16 で橋渡し。将来ディレクトリと業界研究を揃えたくなったら gyokai16 を差し替えるだけで揃う構造。",
+  "counts": {
+    "daibunrui": 15,
+    "chubunrui": 56
+  },
+  "tags": [
+    {
+      "id": "foreign",
+      "label": "外資系",
+      "desc": "日本法人・外資系企業。業界とは直交する属性(タグ)として保持し、業界からも属性からも到達可能にする。"
+    },
+    {
+      "id": "startup",
+      "label": "スタートアップ・新興",
+      "desc": "新興・成長企業。大分類ではなくタグで表現(大分類=事業領域 / タグ=企業属性 の役割分離)。"
+    }
+  ],
+  "gyokai16": [
+    {
+      "slug": "sogo-shosha",
+      "name": "総合商社"
+    },
+    {
+      "slug": "senmon-shosha",
+      "name": "専門商社"
+    },
+    {
+      "slug": "finance",
+      "name": "銀行・証券・保険"
+    },
+    {
+      "slug": "it-ai-saas-game",
+      "name": "IT・AI・SaaS・ゲーム"
+    },
+    {
+      "slug": "consulting",
+      "name": "コンサル"
+    },
+    {
+      "slug": "manufacturer",
+      "name": "メーカー"
+    },
+    {
+      "slug": "ad-media",
+      "name": "広告・メディア"
+    },
+    {
+      "slug": "infra-energy",
+      "name": "インフラ・エネルギー"
+    },
+    {
+      "slug": "realestate-construction",
+      "name": "不動産・建設"
+    },
+    {
+      "slug": "retail",
+      "name": "小売・流通"
+    },
+    {
+      "slug": "food-beverage",
+      "name": "食品・飲料"
+    },
+    {
+      "slug": "medical-healthcare",
+      "name": "医療・ヘルスケア"
+    },
+    {
+      "slug": "transport-logistics",
+      "name": "航空・運輸・物流"
+    },
+    {
+      "slug": "education-hr",
+      "name": "教育・人材"
+    },
+    {
+      "slug": "startup",
+      "name": "スタートアップ"
+    },
+    {
+      "slug": "deeptech-space-ai",
+      "name": "ディープテック・宇宙・AI"
+    }
+  ],
+  "daibunrui": [
+    {
+      "slug": "shosha",
+      "name": "商社",
+      "chubunrui": [
+        {
+          "slug": "sogo-shosha",
+          "name": "総合商社",
+          "gyokai16": "sogo-shosha"
+        },
+        {
+          "slug": "senmon-shosha-food-pharma",
+          "name": "専門商社（食品・医薬）",
+          "gyokai16": "senmon-shosha"
+        },
+        {
+          "slug": "senmon-shosha-industrial",
+          "name": "専門商社（エレキ・鉄鋼・化学・機械）",
+          "gyokai16": "senmon-shosha"
+        }
+      ]
+    },
+    {
+      "slug": "finance",
+      "name": "金融",
+      "chubunrui": [
+        {
+          "slug": "bank",
+          "name": "銀行",
+          "gyokai16": "finance"
+        },
+        {
+          "slug": "securities",
+          "name": "証券・投資",
+          "gyokai16": "finance"
+        },
+        {
+          "slug": "insurance",
+          "name": "生保・損保",
+          "gyokai16": "finance"
+        },
+        {
+          "slug": "lease-credit",
+          "name": "リース・クレジット・その他金融",
+          "gyokai16": "finance"
+        }
+      ]
+    },
+    {
+      "slug": "automotive",
+      "name": "自動車・輸送機器",
+      "chubunrui": [
+        {
+          "slug": "automaker",
+          "name": "自動車（完成車）",
+          "gyokai16": "manufacturer"
+        },
+        {
+          "slug": "auto-parts",
+          "name": "自動車部品",
+          "gyokai16": "manufacturer"
+        }
+      ]
+    },
+    {
+      "slug": "electronics-machinery",
+      "name": "電機・機械・重工",
+      "chubunrui": [
+        {
+          "slug": "electronics-general",
+          "name": "総合電機・重電",
+          "gyokai16": "manufacturer"
+        },
+        {
+          "slug": "electronic-components",
+          "name": "電子部品・デバイス",
+          "gyokai16": "manufacturer"
+        },
+        {
+          "slug": "semiconductor",
+          "name": "半導体・半導体製造装置",
+          "gyokai16": "manufacturer"
+        },
+        {
+          "slug": "precision-optics",
+          "name": "精密・光学・計測機器",
+          "gyokai16": "manufacturer"
+        },
+        {
+          "slug": "heavy-machinery",
+          "name": "重工・産業機械・プラント",
+          "gyokai16": "manufacturer"
+        }
+      ]
+    },
+    {
+      "slug": "materials-chemical",
+      "name": "素材・化学",
+      "chubunrui": [
+        {
+          "slug": "steel-metal",
+          "name": "鉄鋼・非鉄・金属",
+          "gyokai16": "manufacturer"
+        },
+        {
+          "slug": "chemical-materials",
+          "name": "化学・繊維・ゴム・ガラス",
+          "gyokai16": "manufacturer"
+        }
+      ]
+    },
+    {
+      "slug": "consumer-healthcare",
+      "name": "消費財・ヘルスケアメーカー",
+      "chubunrui": [
+        {
+          "slug": "food-beverage",
+          "name": "食品・飲料",
+          "gyokai16": "food-beverage"
+        },
+        {
+          "slug": "toiletry",
+          "name": "日用品・トイレタリー",
+          "gyokai16": "manufacturer"
+        },
+        {
+          "slug": "cosmetics",
+          "name": "化粧品・美容",
+          "gyokai16": "manufacturer"
+        },
+        {
+          "slug": "pharma",
+          "name": "医薬品・製薬",
+          "gyokai16": "medical-healthcare"
+        },
+        {
+          "slug": "medical-device-healthtech",
+          "name": "医療機器・ヘルステック",
+          "gyokai16": "medical-healthcare"
+        }
+      ]
+    },
+    {
+      "slug": "it-telecom-internet",
+      "name": "IT・通信・インターネット",
+      "chubunrui": [
+        {
+          "slug": "telecom-carrier",
+          "name": "通信キャリア",
+          "gyokai16": "it-ai-saas-game"
+        },
+        {
+          "slug": "sier-itservice",
+          "name": "SIer・ITサービス",
+          "gyokai16": "it-ai-saas-game"
+        },
+        {
+          "slug": "internet-web",
+          "name": "インターネット・Webサービス",
+          "gyokai16": "it-ai-saas-game"
+        },
+        {
+          "slug": "saas",
+          "name": "SaaS・業務ソフト",
+          "gyokai16": "it-ai-saas-game"
+        },
+        {
+          "slug": "ai-data",
+          "name": "AI・データ・先端テック",
+          "gyokai16": "it-ai-saas-game"
+        }
+      ]
+    },
+    {
+      "slug": "consulting",
+      "name": "コンサル・シンクタンク",
+      "chubunrui": [
+        {
+          "slug": "strategy-consulting",
+          "name": "戦略コンサル",
+          "gyokai16": "consulting"
+        },
+        {
+          "slug": "general-it-consulting",
+          "name": "総合・ITコンサル",
+          "gyokai16": "consulting"
+        },
+        {
+          "slug": "think-tank",
+          "name": "シンクタンク・リサーチ",
+          "gyokai16": "consulting"
+        }
+      ]
+    },
+    {
+      "slug": "infra-energy",
+      "name": "インフラ・エネルギー",
+      "chubunrui": [
+        {
+          "slug": "electric-power",
+          "name": "電力",
+          "gyokai16": "infra-energy"
+        },
+        {
+          "slug": "renewable-energy",
+          "name": "再生可能エネルギー",
+          "gyokai16": "infra-energy"
+        },
+        {
+          "slug": "gas",
+          "name": "ガス",
+          "gyokai16": "infra-energy"
+        },
+        {
+          "slug": "oil-resources",
+          "name": "石油・資源・鉱業",
+          "gyokai16": "infra-energy"
+        },
+        {
+          "slug": "plant-water",
+          "name": "プラントエンジ・水環境",
+          "gyokai16": "infra-energy"
+        }
+      ]
+    },
+    {
+      "slug": "construction-realestate",
+      "name": "建設・不動産",
+      "chubunrui": [
+        {
+          "slug": "real-estate-developer",
+          "name": "不動産・デベロッパー",
+          "gyokai16": "realestate-construction"
+        },
+        {
+          "slug": "housing",
+          "name": "ハウスメーカー",
+          "gyokai16": "realestate-construction"
+        },
+        {
+          "slug": "general-contractor",
+          "name": "ゼネコン・建設",
+          "gyokai16": "realestate-construction"
+        },
+        {
+          "slug": "facility-electrical",
+          "name": "設備・電気工事",
+          "gyokai16": "realestate-construction"
+        }
+      ]
+    },
+    {
+      "slug": "transport-logistics",
+      "name": "運輸・物流",
+      "chubunrui": [
+        {
+          "slug": "railway",
+          "name": "鉄道",
+          "gyokai16": "transport-logistics"
+        },
+        {
+          "slug": "airline",
+          "name": "航空",
+          "gyokai16": "transport-logistics"
+        },
+        {
+          "slug": "shipping",
+          "name": "海運",
+          "gyokai16": "transport-logistics"
+        },
+        {
+          "slug": "logistics",
+          "name": "陸運・物流",
+          "gyokai16": "transport-logistics"
+        }
+      ]
+    },
+    {
+      "slug": "retail",
+      "name": "小売・流通",
+      "chubunrui": [
+        {
+          "slug": "general-retail",
+          "name": "総合小売（GMS・スーパー・CVS）",
+          "gyokai16": "retail"
+        },
+        {
+          "slug": "department-store",
+          "name": "百貨店",
+          "gyokai16": "retail"
+        },
+        {
+          "slug": "specialty-apparel-ec",
+          "name": "専門店・アパレル・EC",
+          "gyokai16": "retail"
+        },
+        {
+          "slug": "electronics-retail-hc",
+          "name": "家電量販・ホームセンター",
+          "gyokai16": "retail"
+        },
+        {
+          "slug": "drugstore",
+          "name": "ドラッグストア",
+          "gyokai16": "retail"
+        }
+      ]
+    },
+    {
+      "slug": "media-entertainment",
+      "name": "マスコミ・広告・エンタメ",
+      "chubunrui": [
+        {
+          "slug": "advertising-agency",
+          "name": "広告代理店",
+          "gyokai16": "ad-media"
+        },
+        {
+          "slug": "broadcasting",
+          "name": "テレビ・放送",
+          "gyokai16": "ad-media"
+        },
+        {
+          "slug": "publishing",
+          "name": "新聞・出版",
+          "gyokai16": "ad-media"
+        },
+        {
+          "slug": "entertainment",
+          "name": "音楽・映画・エンタメ施設",
+          "gyokai16": "ad-media"
+        },
+        {
+          "slug": "game",
+          "name": "ゲーム",
+          "gyokai16": "it-ai-saas-game"
+        }
+      ]
+    },
+    {
+      "slug": "education-hr",
+      "name": "教育・人材",
+      "chubunrui": [
+        {
+          "slug": "hr-staffing",
+          "name": "人材サービス",
+          "gyokai16": "education-hr"
+        },
+        {
+          "slug": "education",
+          "name": "教育",
+          "gyokai16": "education-hr"
+        }
+      ]
+    },
+    {
+      "slug": "deeptech-space",
+      "name": "ディープテック・宇宙",
+      "chubunrui": [
+        {
+          "slug": "space-deeptech",
+          "name": "宇宙・ディープテック",
+          "gyokai16": "deeptech-space-ai"
+        },
+        {
+          "slug": "biotech-newmaterial",
+          "name": "バイオ・新素材",
+          "gyokai16": "startup"
+        }
+      ]
+    }
+  ]
+}

@@ -6,7 +6,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "sogo-shosha",
+      "chu_name": "総合商社",
+      "tags": []
     },
     {
       "id": "mitsui-bussan",
@@ -14,7 +19,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": "https://youtu.be/T2fLKNfnr0k",
-      "kessan_url": "https://youtu.be/pprtKnkqnos"
+      "kessan_url": "https://youtu.be/pprtKnkqnos",
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "sogo-shosha",
+      "chu_name": "総合商社",
+      "tags": []
     },
     {
       "id": "itochu",
@@ -22,7 +32,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "sogo-shosha",
+      "chu_name": "総合商社",
+      "tags": []
     },
     {
       "id": "sumitomo-corp",
@@ -30,7 +45,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "sogo-shosha",
+      "chu_name": "総合商社",
+      "tags": []
     },
     {
       "id": "marubeni",
@@ -38,7 +58,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "sogo-shosha",
+      "chu_name": "総合商社",
+      "tags": []
     },
     {
       "id": "toyota-tsusho",
@@ -46,7 +71,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "sogo-shosha",
+      "chu_name": "総合商社",
+      "tags": []
     },
     {
       "id": "sojitz",
@@ -54,7 +84,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "sogo-shosha",
+      "chu_name": "総合商社",
+      "tags": []
     },
     {
       "id": "kanematsu",
@@ -62,7 +97,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "sogo-shosha",
+      "chu_name": "総合商社",
+      "tags": []
     },
     {
       "id": "iwatani",
@@ -70,7 +110,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "sogo-shosha",
+      "chu_name": "総合商社",
+      "tags": []
     },
     {
       "id": "shinkokusyoji",
@@ -78,7 +123,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "sogo-shosha",
+      "chu_name": "総合商社",
+      "tags": []
     }
   ],
   "自動車・モビリティ": [
@@ -88,7 +138,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "automotive",
+      "dai_name": "自動車・輸送機器",
+      "chu_slug": "automaker",
+      "chu_name": "自動車（完成車）",
+      "tags": []
     },
     {
       "id": "honda",
@@ -96,7 +151,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "automotive",
+      "dai_name": "自動車・輸送機器",
+      "chu_slug": "automaker",
+      "chu_name": "自動車（完成車）",
+      "tags": []
     },
     {
       "id": "nissan",
@@ -104,7 +164,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "automotive",
+      "dai_name": "自動車・輸送機器",
+      "chu_slug": "automaker",
+      "chu_name": "自動車（完成車）",
+      "tags": []
     },
     {
       "id": "suzuki",
@@ -112,7 +177,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "automotive",
+      "dai_name": "自動車・輸送機器",
+      "chu_slug": "automaker",
+      "chu_name": "自動車（完成車）",
+      "tags": []
     },
     {
       "id": "subaru",
@@ -120,7 +190,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "automotive",
+      "dai_name": "自動車・輸送機器",
+      "chu_slug": "automaker",
+      "chu_name": "自動車（完成車）",
+      "tags": []
     },
     {
       "id": "mazda",
@@ -128,7 +203,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "automotive",
+      "dai_name": "自動車・輸送機器",
+      "chu_slug": "automaker",
+      "chu_name": "自動車（完成車）",
+      "tags": []
     },
     {
       "id": "mitsubishi-motors",
@@ -136,7 +216,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "automotive",
+      "dai_name": "自動車・輸送機器",
+      "chu_slug": "automaker",
+      "chu_name": "自動車（完成車）",
+      "tags": []
     },
     {
       "id": "isuzu",
@@ -144,7 +229,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "automotive",
+      "dai_name": "自動車・輸送機器",
+      "chu_slug": "automaker",
+      "chu_name": "自動車（完成車）",
+      "tags": []
     },
     {
       "id": "aisin",
@@ -152,7 +242,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "automotive",
+      "dai_name": "自動車・輸送機器",
+      "chu_slug": "auto-parts",
+      "chu_name": "自動車部品",
+      "tags": []
     },
     {
       "id": "denso",
@@ -160,7 +255,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "automotive",
+      "dai_name": "自動車・輸送機器",
+      "chu_slug": "auto-parts",
+      "chu_name": "自動車部品",
+      "tags": []
     },
     {
       "id": "toyota-shokki",
@@ -168,7 +268,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "automotive",
+      "dai_name": "自動車・輸送機器",
+      "chu_slug": "auto-parts",
+      "chu_name": "自動車部品",
+      "tags": []
     }
   ],
   "電機・精密・重工": [
@@ -178,7 +283,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "electronics-general",
+      "chu_name": "総合電機・重電",
+      "tags": []
     },
     {
       "id": "hitachi",
@@ -186,7 +296,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "electronics-general",
+      "chu_name": "総合電機・重電",
+      "tags": []
     },
     {
       "id": "panasonic-hd",
@@ -194,7 +309,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "electronics-general",
+      "chu_name": "総合電機・重電",
+      "tags": []
     },
     {
       "id": "mitsubishi-electric",
@@ -202,7 +322,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "electronics-general",
+      "chu_name": "総合電機・重電",
+      "tags": []
     },
     {
       "id": "keyence",
@@ -210,7 +335,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "precision-optics",
+      "chu_name": "精密・光学・計測機器",
+      "tags": []
     },
     {
       "id": "murata",
@@ -218,7 +348,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "electronic-components",
+      "chu_name": "電子部品・デバイス",
+      "tags": []
     },
     {
       "id": "shinetsu-chemical",
@@ -226,7 +361,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "materials-chemical",
+      "dai_name": "素材・化学",
+      "chu_slug": "chemical-materials",
+      "chu_name": "化学・繊維・ゴム・ガラス",
+      "tags": []
     },
     {
       "id": "tokyo-electron",
@@ -234,7 +374,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "semiconductor",
+      "chu_name": "半導体・半導体製造装置",
+      "tags": []
     },
     {
       "id": "canon",
@@ -242,7 +387,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "precision-optics",
+      "chu_name": "精密・光学・計測機器",
+      "tags": []
     },
     {
       "id": "fujifilm-hd",
@@ -250,7 +400,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "precision-optics",
+      "chu_name": "精密・光学・計測機器",
+      "tags": []
     },
     {
       "id": "kyocera",
@@ -258,7 +413,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "electronic-components",
+      "chu_name": "電子部品・デバイス",
+      "tags": []
     },
     {
       "id": "mitsubishi-heavy",
@@ -266,7 +426,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "heavy-machinery",
+      "chu_name": "重工・産業機械・プラント",
+      "tags": []
     },
     {
       "id": "daikin",
@@ -274,7 +439,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "heavy-machinery",
+      "chu_name": "重工・産業機械・プラント",
+      "tags": []
     },
     {
       "id": "komatsu",
@@ -282,7 +452,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "heavy-machinery",
+      "chu_name": "重工・産業機械・プラント",
+      "tags": []
     },
     {
       "id": "fanuc",
@@ -290,7 +465,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "heavy-machinery",
+      "chu_name": "重工・産業機械・プラント",
+      "tags": []
     },
     {
       "id": "nidec",
@@ -298,7 +478,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "electronic-components",
+      "chu_name": "電子部品・デバイス",
+      "tags": []
     },
     {
       "id": "tdk",
@@ -306,7 +491,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "electronic-components",
+      "chu_name": "電子部品・デバイス",
+      "tags": []
     },
     {
       "id": "omron",
@@ -314,7 +504,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "precision-optics",
+      "chu_name": "精密・光学・計測機器",
+      "tags": []
     },
     {
       "id": "advantest",
@@ -322,7 +517,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "semiconductor",
+      "chu_name": "半導体・半導体製造装置",
+      "tags": []
     },
     {
       "id": "renesas",
@@ -330,7 +530,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "electronic-components",
+      "chu_name": "電子部品・デバイス",
+      "tags": []
     },
     {
       "id": "bridgestone",
@@ -338,7 +543,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "materials-chemical",
+      "dai_name": "素材・化学",
+      "chu_slug": "chemical-materials",
+      "chu_name": "化学・繊維・ゴム・ガラス",
+      "tags": []
     },
     {
       "id": "kawasaki-heavy",
@@ -346,7 +556,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "heavy-machinery",
+      "chu_name": "重工・産業機械・プラント",
+      "tags": []
     },
     {
       "id": "ihi",
@@ -354,7 +569,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "heavy-machinery",
+      "chu_name": "重工・産業機械・プラント",
+      "tags": []
     },
     {
       "id": "kubota",
@@ -362,7 +582,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "heavy-machinery",
+      "chu_name": "重工・産業機械・プラント",
+      "tags": []
     },
     {
       "id": "yaskawa",
@@ -370,7 +595,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "heavy-machinery",
+      "chu_name": "重工・産業機械・プラント",
+      "tags": []
     },
     {
       "id": "shimadzu",
@@ -378,7 +608,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "precision-optics",
+      "chu_name": "精密・光学・計測機器",
+      "tags": []
     },
     {
       "id": "hoya",
@@ -386,7 +621,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "precision-optics",
+      "chu_name": "精密・光学・計測機器",
+      "tags": []
     },
     {
       "id": "nikon",
@@ -394,7 +634,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "precision-optics",
+      "chu_name": "精密・光学・計測機器",
+      "tags": []
     },
     {
       "id": "seiko-epson",
@@ -402,7 +647,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "precision-optics",
+      "chu_name": "精密・光学・計測機器",
+      "tags": []
     },
     {
       "id": "ricoh",
@@ -410,7 +660,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "precision-optics",
+      "chu_name": "精密・光学・計測機器",
+      "tags": []
     }
   ],
   "鉄鋼・素材・化学": [
@@ -420,7 +675,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "materials-chemical",
+      "dai_name": "素材・化学",
+      "chu_slug": "steel-metal",
+      "chu_name": "鉄鋼・非鉄・金属",
+      "tags": []
     },
     {
       "id": "jfe-hd",
@@ -428,7 +688,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "materials-chemical",
+      "dai_name": "素材・化学",
+      "chu_slug": "steel-metal",
+      "chu_name": "鉄鋼・非鉄・金属",
+      "tags": []
     },
     {
       "id": "kobe-steel",
@@ -436,7 +701,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "materials-chemical",
+      "dai_name": "素材・化学",
+      "chu_slug": "steel-metal",
+      "chu_name": "鉄鋼・非鉄・金属",
+      "tags": []
     },
     {
       "id": "sumitomo-electric",
@@ -444,7 +714,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "materials-chemical",
+      "dai_name": "素材・化学",
+      "chu_slug": "steel-metal",
+      "chu_name": "鉄鋼・非鉄・金属",
+      "tags": []
     },
     {
       "id": "sumitomo-metal-mining",
@@ -452,7 +727,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "materials-chemical",
+      "dai_name": "素材・化学",
+      "chu_slug": "steel-metal",
+      "chu_name": "鉄鋼・非鉄・金属",
+      "tags": []
     },
     {
       "id": "mitsubishi-materials",
@@ -460,7 +740,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "materials-chemical",
+      "dai_name": "素材・化学",
+      "chu_slug": "steel-metal",
+      "chu_name": "鉄鋼・非鉄・金属",
+      "tags": []
     },
     {
       "id": "mitsubishi-chemical",
@@ -468,7 +753,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "materials-chemical",
+      "dai_name": "素材・化学",
+      "chu_slug": "chemical-materials",
+      "chu_name": "化学・繊維・ゴム・ガラス",
+      "tags": []
     },
     {
       "id": "sumitomo-chemical",
@@ -476,7 +766,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "materials-chemical",
+      "dai_name": "素材・化学",
+      "chu_slug": "chemical-materials",
+      "chu_name": "化学・繊維・ゴム・ガラス",
+      "tags": []
     },
     {
       "id": "asahi-kasei",
@@ -484,7 +779,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "materials-chemical",
+      "dai_name": "素材・化学",
+      "chu_slug": "chemical-materials",
+      "chu_name": "化学・繊維・ゴム・ガラス",
+      "tags": []
     },
     {
       "id": "toray",
@@ -492,7 +792,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "materials-chemical",
+      "dai_name": "素材・化学",
+      "chu_slug": "chemical-materials",
+      "chu_name": "化学・繊維・ゴム・ガラス",
+      "tags": []
     },
     {
       "id": "mitsui-chemical",
@@ -500,7 +805,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "materials-chemical",
+      "dai_name": "素材・化学",
+      "chu_slug": "chemical-materials",
+      "chu_name": "化学・繊維・ゴム・ガラス",
+      "tags": []
     },
     {
       "id": "agc",
@@ -508,7 +818,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "materials-chemical",
+      "dai_name": "素材・化学",
+      "chu_slug": "chemical-materials",
+      "chu_name": "化学・繊維・ゴム・ガラス",
+      "tags": []
     }
   ],
   "製薬・ヘルスケア": [
@@ -518,7 +833,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "pharma",
+      "chu_name": "医薬品・製薬",
+      "tags": []
     },
     {
       "id": "astellas",
@@ -526,7 +846,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "pharma",
+      "chu_name": "医薬品・製薬",
+      "tags": []
     },
     {
       "id": "daiichi-sankyo",
@@ -534,7 +859,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "pharma",
+      "chu_name": "医薬品・製薬",
+      "tags": []
     },
     {
       "id": "chugai",
@@ -542,7 +872,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "pharma",
+      "chu_name": "医薬品・製薬",
+      "tags": []
     },
     {
       "id": "otsuka-hd",
@@ -550,7 +885,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "pharma",
+      "chu_name": "医薬品・製薬",
+      "tags": []
     },
     {
       "id": "eisai",
@@ -558,7 +898,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "pharma",
+      "chu_name": "医薬品・製薬",
+      "tags": []
     },
     {
       "id": "shionogi",
@@ -566,7 +911,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "pharma",
+      "chu_name": "医薬品・製薬",
+      "tags": []
     }
   ],
   "銀行・証券・保険": [
@@ -576,7 +926,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "bank",
+      "chu_name": "銀行",
+      "tags": []
     },
     {
       "id": "smbc-bank",
@@ -584,7 +939,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "bank",
+      "chu_name": "銀行",
+      "tags": []
     },
     {
       "id": "mizuho-fg",
@@ -592,7 +952,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "bank",
+      "chu_name": "銀行",
+      "tags": []
     },
     {
       "id": "nippon-life",
@@ -600,7 +965,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "insurance",
+      "chu_name": "生保・損保",
+      "tags": []
     },
     {
       "id": "daiichi-life",
@@ -608,7 +978,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "insurance",
+      "chu_name": "生保・損保",
+      "tags": []
     },
     {
       "id": "yucho",
@@ -616,7 +991,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "bank",
+      "chu_name": "銀行",
+      "tags": []
     },
     {
       "id": "tokio-marine",
@@ -624,7 +1004,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "insurance",
+      "chu_name": "生保・損保",
+      "tags": []
     },
     {
       "id": "smtb",
@@ -632,7 +1017,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "bank",
+      "chu_name": "銀行",
+      "tags": []
     },
     {
       "id": "resona",
@@ -640,7 +1030,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "bank",
+      "chu_name": "銀行",
+      "tags": []
     },
     {
       "id": "nomura",
@@ -648,7 +1043,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "securities",
+      "chu_name": "証券・投資",
+      "tags": []
     },
     {
       "id": "daiwa",
@@ -656,7 +1056,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "securities",
+      "chu_name": "証券・投資",
+      "tags": []
     },
     {
       "id": "mufg-ms",
@@ -664,7 +1069,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "securities",
+      "chu_name": "証券・投資",
+      "tags": []
     },
     {
       "id": "smbc-nikko",
@@ -672,7 +1082,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "securities",
+      "chu_name": "証券・投資",
+      "tags": []
     },
     {
       "id": "mizuho-sec",
@@ -680,7 +1095,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "securities",
+      "chu_name": "証券・投資",
+      "tags": []
     },
     {
       "id": "sbi-sec",
@@ -688,7 +1108,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "securities",
+      "chu_name": "証券・投資",
+      "tags": []
     },
     {
       "id": "meiji-yasuda",
@@ -696,7 +1121,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "insurance",
+      "chu_name": "生保・損保",
+      "tags": []
     },
     {
       "id": "sumitomo-life",
@@ -704,7 +1134,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "insurance",
+      "chu_name": "生保・損保",
+      "tags": []
     },
     {
       "id": "ms-ad",
@@ -712,7 +1147,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "insurance",
+      "chu_name": "生保・損保",
+      "tags": []
     },
     {
       "id": "sompo",
@@ -720,7 +1160,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "insurance",
+      "chu_name": "生保・損保",
+      "tags": []
     },
     {
       "id": "aioi-nissay",
@@ -728,7 +1173,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "insurance",
+      "chu_name": "生保・損保",
+      "tags": []
     },
     {
       "id": "kampo",
@@ -736,7 +1186,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "insurance",
+      "chu_name": "生保・損保",
+      "tags": []
     },
     {
       "id": "taiyo-life",
@@ -744,7 +1199,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "insurance",
+      "chu_name": "生保・損保",
+      "tags": []
     },
     {
       "id": "mufg-trust",
@@ -752,7 +1212,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "bank",
+      "chu_name": "銀行",
+      "tags": []
     },
     {
       "id": "orix",
@@ -760,7 +1225,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "lease-credit",
+      "chu_name": "リース・クレジット・その他金融",
+      "tags": []
     },
     {
       "id": "mitsubishi-hc",
@@ -768,7 +1238,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "lease-credit",
+      "chu_name": "リース・クレジット・その他金融",
+      "tags": []
     },
     {
       "id": "tokyo-century",
@@ -776,7 +1251,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "lease-credit",
+      "chu_name": "リース・クレジット・その他金融",
+      "tags": []
     },
     {
       "id": "credit-saison",
@@ -784,7 +1264,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "lease-credit",
+      "chu_name": "リース・クレジット・その他金融",
+      "tags": []
     },
     {
       "id": "orico",
@@ -792,7 +1277,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "lease-credit",
+      "chu_name": "リース・クレジット・その他金融",
+      "tags": []
     },
     {
       "id": "acom",
@@ -800,7 +1290,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "lease-credit",
+      "chu_name": "リース・クレジット・その他金融",
+      "tags": []
     },
     {
       "id": "hamagin",
@@ -808,7 +1303,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "bank",
+      "chu_name": "銀行",
+      "tags": []
     },
     {
       "id": "chibagin",
@@ -816,7 +1316,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "bank",
+      "chu_name": "銀行",
+      "tags": []
     },
     {
       "id": "shizuokagin",
@@ -824,7 +1329,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "bank",
+      "chu_name": "銀行",
+      "tags": []
     },
     {
       "id": "sumishin-sbi-net",
@@ -832,7 +1342,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "bank",
+      "chu_name": "銀行",
+      "tags": []
     },
     {
       "id": "rakuten-bank",
@@ -840,7 +1355,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "bank",
+      "chu_name": "銀行",
+      "tags": []
     },
     {
       "id": "paypay-bank",
@@ -848,7 +1368,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "bank",
+      "chu_name": "銀行",
+      "tags": []
     },
     {
       "id": "jpx",
@@ -856,7 +1381,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "securities",
+      "chu_name": "証券・投資",
+      "tags": []
     },
     {
       "id": "dbj",
@@ -864,7 +1394,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "bank",
+      "chu_name": "銀行",
+      "tags": []
     },
     {
       "id": "jbic",
@@ -872,7 +1407,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "bank",
+      "chu_name": "銀行",
+      "tags": []
     },
     {
       "id": "shoko-chukin",
@@ -880,7 +1420,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "bank",
+      "chu_name": "銀行",
+      "tags": []
     },
     {
       "id": "norinchukin",
@@ -888,7 +1433,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "bank",
+      "chu_name": "銀行",
+      "tags": []
     }
   ],
   "IT・通信・SaaS": [
@@ -898,7 +1448,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "telecom-carrier",
+      "chu_name": "通信キャリア",
+      "tags": []
     },
     {
       "id": "ntt-data",
@@ -906,7 +1461,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "sier-itservice",
+      "chu_name": "SIer・ITサービス",
+      "tags": []
     },
     {
       "id": "ntt-docomo",
@@ -914,7 +1474,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "telecom-carrier",
+      "chu_name": "通信キャリア",
+      "tags": []
     },
     {
       "id": "kddi",
@@ -922,7 +1487,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "telecom-carrier",
+      "chu_name": "通信キャリア",
+      "tags": []
     },
     {
       "id": "softbank",
@@ -930,7 +1500,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "telecom-carrier",
+      "chu_name": "通信キャリア",
+      "tags": []
     },
     {
       "id": "rakuten-group",
@@ -938,7 +1513,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": []
     },
     {
       "id": "fujitsu",
@@ -946,7 +1526,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "sier-itservice",
+      "chu_name": "SIer・ITサービス",
+      "tags": []
     },
     {
       "id": "nec",
@@ -954,7 +1539,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "sier-itservice",
+      "chu_name": "SIer・ITサービス",
+      "tags": []
     },
     {
       "id": "otsuka-shokai",
@@ -962,7 +1552,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "sier-itservice",
+      "chu_name": "SIer・ITサービス",
+      "tags": []
     },
     {
       "id": "tis",
@@ -970,7 +1565,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "sier-itservice",
+      "chu_name": "SIer・ITサービス",
+      "tags": []
     },
     {
       "id": "scsk",
@@ -978,7 +1578,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "sier-itservice",
+      "chu_name": "SIer・ITサービス",
+      "tags": []
     },
     {
       "id": "ctc",
@@ -986,7 +1591,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "sier-itservice",
+      "chu_name": "SIer・ITサービス",
+      "tags": []
     },
     {
       "id": "ns-solutions",
@@ -994,7 +1604,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "sier-itservice",
+      "chu_name": "SIer・ITサービス",
+      "tags": []
     },
     {
       "id": "biprogy",
@@ -1002,7 +1617,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "sier-itservice",
+      "chu_name": "SIer・ITサービス",
+      "tags": []
     },
     {
       "id": "sky",
@@ -1010,7 +1630,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "sier-itservice",
+      "chu_name": "SIer・ITサービス",
+      "tags": []
     },
     {
       "id": "shift",
@@ -1018,7 +1643,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "sier-itservice",
+      "chu_name": "SIer・ITサービス",
+      "tags": []
     },
     {
       "id": "recruit-hd",
@@ -1026,7 +1656,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": []
     },
     {
       "id": "cyberagent",
@@ -1034,7 +1669,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": []
     },
     {
       "id": "dena",
@@ -1042,7 +1682,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": []
     },
     {
       "id": "gree",
@@ -1050,7 +1695,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": []
     },
     {
       "id": "mixi",
@@ -1058,7 +1708,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": []
     },
     {
       "id": "mercari",
@@ -1066,7 +1721,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": []
     },
     {
       "id": "line-yahoo",
@@ -1074,7 +1734,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": []
     },
     {
       "id": "gmo",
@@ -1082,7 +1747,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": []
     },
     {
       "id": "sansan",
@@ -1090,7 +1760,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "saas",
+      "chu_name": "SaaS・業務ソフト",
+      "tags": []
     },
     {
       "id": "freee",
@@ -1098,7 +1773,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "saas",
+      "chu_name": "SaaS・業務ソフト",
+      "tags": []
     },
     {
       "id": "moneyforward",
@@ -1106,7 +1786,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "saas",
+      "chu_name": "SaaS・業務ソフト",
+      "tags": []
     },
     {
       "id": "rakus",
@@ -1114,7 +1799,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "saas",
+      "chu_name": "SaaS・業務ソフト",
+      "tags": []
     },
     {
       "id": "visional",
@@ -1122,7 +1812,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "saas",
+      "chu_name": "SaaS・業務ソフト",
+      "tags": []
     },
     {
       "id": "smarthr",
@@ -1130,7 +1825,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "saas",
+      "chu_name": "SaaS・業務ソフト",
+      "tags": [
+        "startup"
+      ]
     },
     {
       "id": "layerx",
@@ -1138,7 +1840,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "saas",
+      "chu_name": "SaaS・業務ソフト",
+      "tags": [
+        "startup"
+      ]
     },
     {
       "id": "kaonavi",
@@ -1146,7 +1855,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "saas",
+      "chu_name": "SaaS・業務ソフト",
+      "tags": []
     },
     {
       "id": "kubell",
@@ -1154,7 +1868,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "saas",
+      "chu_name": "SaaS・業務ソフト",
+      "tags": []
     },
     {
       "id": "uzabase",
@@ -1162,7 +1881,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "saas",
+      "chu_name": "SaaS・業務ソフト",
+      "tags": []
     },
     {
       "id": "plaid",
@@ -1170,7 +1894,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "saas",
+      "chu_name": "SaaS・業務ソフト",
+      "tags": [
+        "startup"
+      ]
     },
     {
       "id": "pref-networks",
@@ -1178,7 +1909,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "ai-data",
+      "chu_name": "AI・データ・先端テック",
+      "tags": []
     },
     {
       "id": "sakana-ai",
@@ -1186,7 +1922,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "ai-data",
+      "chu_name": "AI・データ・先端テック",
+      "tags": [
+        "startup"
+      ]
     },
     {
       "id": "pksha",
@@ -1194,7 +1937,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "ai-data",
+      "chu_name": "AI・データ・先端テック",
+      "tags": []
     },
     {
       "id": "appier",
@@ -1202,7 +1950,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "ai-data",
+      "chu_name": "AI・データ・先端テック",
+      "tags": []
     },
     {
       "id": "brainpad",
@@ -1210,7 +1963,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "ai-data",
+      "chu_name": "AI・データ・先端テック",
+      "tags": []
     },
     {
       "id": "fronteo",
@@ -1218,7 +1976,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "ai-data",
+      "chu_name": "AI・データ・先端テック",
+      "tags": []
     },
     {
       "id": "abeja",
@@ -1226,7 +1989,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "ai-data",
+      "chu_name": "AI・データ・先端テック",
+      "tags": [
+        "startup"
+      ]
     },
     {
       "id": "elyza",
@@ -1234,7 +2004,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "ai-data",
+      "chu_name": "AI・データ・先端テック",
+      "tags": [
+        "startup"
+      ]
     },
     {
       "id": "turing",
@@ -1242,7 +2019,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "ai-data",
+      "chu_name": "AI・データ・先端テック",
+      "tags": [
+        "startup"
+      ]
     }
   ],
   "ゲーム・エンタメ": [
@@ -1252,7 +2036,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "game",
+      "chu_name": "ゲーム",
+      "tags": []
     },
     {
       "id": "bandai-namco",
@@ -1260,7 +2049,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "game",
+      "chu_name": "ゲーム",
+      "tags": []
     },
     {
       "id": "capcom",
@@ -1268,7 +2062,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "game",
+      "chu_name": "ゲーム",
+      "tags": []
     },
     {
       "id": "square-enix",
@@ -1276,7 +2075,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "game",
+      "chu_name": "ゲーム",
+      "tags": []
     },
     {
       "id": "konami",
@@ -1284,7 +2088,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "game",
+      "chu_name": "ゲーム",
+      "tags": []
     },
     {
       "id": "sega-sammy",
@@ -1292,7 +2101,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "game",
+      "chu_name": "ゲーム",
+      "tags": []
     }
   ],
   "コンサル": [
@@ -1302,7 +2116,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "strategy-consulting",
+      "chu_name": "戦略コンサル",
+      "tags": []
     },
     {
       "id": "bcg",
@@ -1310,7 +2129,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "strategy-consulting",
+      "chu_name": "戦略コンサル",
+      "tags": []
     },
     {
       "id": "bain",
@@ -1318,7 +2142,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "strategy-consulting",
+      "chu_name": "戦略コンサル",
+      "tags": []
     },
     {
       "id": "accenture",
@@ -1326,7 +2155,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "general-it-consulting",
+      "chu_name": "総合・ITコンサル",
+      "tags": []
     },
     {
       "id": "deloitte",
@@ -1334,7 +2168,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "general-it-consulting",
+      "chu_name": "総合・ITコンサル",
+      "tags": []
     },
     {
       "id": "pwc",
@@ -1342,7 +2181,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "general-it-consulting",
+      "chu_name": "総合・ITコンサル",
+      "tags": []
     },
     {
       "id": "ey",
@@ -1350,7 +2194,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "general-it-consulting",
+      "chu_name": "総合・ITコンサル",
+      "tags": []
     },
     {
       "id": "kpmg",
@@ -1358,7 +2207,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "general-it-consulting",
+      "chu_name": "総合・ITコンサル",
+      "tags": []
     },
     {
       "id": "abeam",
@@ -1366,7 +2220,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "general-it-consulting",
+      "chu_name": "総合・ITコンサル",
+      "tags": []
     },
     {
       "id": "baycurrent",
@@ -1374,7 +2233,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "general-it-consulting",
+      "chu_name": "総合・ITコンサル",
+      "tags": []
     },
     {
       "id": "adl",
@@ -1382,7 +2246,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "strategy-consulting",
+      "chu_name": "戦略コンサル",
+      "tags": []
     },
     {
       "id": "roland-berger",
@@ -1390,7 +2259,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "strategy-consulting",
+      "chu_name": "戦略コンサル",
+      "tags": []
     },
     {
       "id": "strategy-and",
@@ -1398,7 +2272,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "strategy-consulting",
+      "chu_name": "戦略コンサル",
+      "tags": []
     },
     {
       "id": "ibm-consulting",
@@ -1406,7 +2285,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "general-it-consulting",
+      "chu_name": "総合・ITコンサル",
+      "tags": []
     },
     {
       "id": "nri",
@@ -1414,7 +2298,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "think-tank",
+      "chu_name": "シンクタンク・リサーチ",
+      "tags": []
     },
     {
       "id": "mri",
@@ -1422,7 +2311,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "think-tank",
+      "chu_name": "シンクタンク・リサーチ",
+      "tags": []
     },
     {
       "id": "jri",
@@ -1430,7 +2324,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "think-tank",
+      "chu_name": "シンクタンク・リサーチ",
+      "tags": []
     },
     {
       "id": "murc",
@@ -1438,7 +2337,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "think-tank",
+      "chu_name": "シンクタンク・リサーチ",
+      "tags": []
     },
     {
       "id": "dream-incubator",
@@ -1446,7 +2350,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "strategy-consulting",
+      "chu_name": "戦略コンサル",
+      "tags": []
     },
     {
       "id": "cdi",
@@ -1454,7 +2363,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consulting",
+      "dai_name": "コンサル・シンクタンク",
+      "chu_slug": "strategy-consulting",
+      "chu_name": "戦略コンサル",
+      "tags": []
     }
   ],
   "専門商社": [
@@ -1464,7 +2378,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-food-pharma",
+      "chu_name": "専門商社（食品・医薬）",
+      "tags": []
     },
     {
       "id": "alfresa",
@@ -1472,7 +2391,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-food-pharma",
+      "chu_name": "専門商社（食品・医薬）",
+      "tags": []
     },
     {
       "id": "suzuken",
@@ -1480,7 +2404,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-food-pharma",
+      "chu_name": "専門商社（食品・医薬）",
+      "tags": []
     },
     {
       "id": "toho-hd",
@@ -1488,7 +2417,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-food-pharma",
+      "chu_name": "専門商社（食品・医薬）",
+      "tags": []
     },
     {
       "id": "mitsubishi-shokuhin",
@@ -1496,7 +2430,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-food-pharma",
+      "chu_name": "専門商社（食品・医薬）",
+      "tags": []
     },
     {
       "id": "kokubu",
@@ -1504,7 +2443,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-food-pharma",
+      "chu_name": "専門商社（食品・医薬）",
+      "tags": []
     },
     {
       "id": "kato-sangyo",
@@ -1512,7 +2456,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-food-pharma",
+      "chu_name": "専門商社（食品・医薬）",
+      "tags": []
     },
     {
       "id": "itochu-shokuhin",
@@ -1520,7 +2469,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-food-pharma",
+      "chu_name": "専門商社（食品・医薬）",
+      "tags": []
     },
     {
       "id": "metal-one",
@@ -1528,7 +2482,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-industrial",
+      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "tags": []
     },
     {
       "id": "hanwa",
@@ -1536,7 +2495,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-industrial",
+      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "tags": []
     },
     {
       "id": "jfe-shoji",
@@ -1544,7 +2508,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-industrial",
+      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "tags": []
     },
     {
       "id": "macnica-hd",
@@ -1552,7 +2521,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-industrial",
+      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "tags": []
     },
     {
       "id": "kaga-electronics",
@@ -1560,7 +2534,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-industrial",
+      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "tags": []
     },
     {
       "id": "lester-hd",
@@ -1568,7 +2547,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-industrial",
+      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "tags": []
     },
     {
       "id": "nagase",
@@ -1576,7 +2560,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-industrial",
+      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "tags": []
     },
     {
       "id": "inabata",
@@ -1584,7 +2573,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-industrial",
+      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "tags": []
     },
     {
       "id": "chori",
@@ -1592,7 +2586,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-industrial",
+      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "tags": []
     },
     {
       "id": "inaba-denki",
@@ -1600,7 +2599,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-industrial",
+      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "tags": []
     },
     {
       "id": "seika-sangyo",
@@ -1608,7 +2612,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-industrial",
+      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "tags": []
     },
     {
       "id": "daiichi-jitsugyo",
@@ -1616,7 +2625,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "senmon-shosha-industrial",
+      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "tags": []
     }
   ],
   "インフラ・エネルギー": [
@@ -1626,7 +2640,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "electric-power",
+      "chu_name": "電力",
+      "tags": []
     },
     {
       "id": "kepco",
@@ -1634,7 +2653,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "electric-power",
+      "chu_name": "電力",
+      "tags": []
     },
     {
       "id": "chubu-electric",
@@ -1642,7 +2666,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "electric-power",
+      "chu_name": "電力",
+      "tags": []
     },
     {
       "id": "kyushu-electric",
@@ -1650,7 +2679,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "electric-power",
+      "chu_name": "電力",
+      "tags": []
     },
     {
       "id": "tohoku-electric",
@@ -1658,7 +2692,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "electric-power",
+      "chu_name": "電力",
+      "tags": []
     },
     {
       "id": "chugoku-electric",
@@ -1666,7 +2705,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "electric-power",
+      "chu_name": "電力",
+      "tags": []
     },
     {
       "id": "shikoku-electric",
@@ -1674,7 +2718,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "electric-power",
+      "chu_name": "電力",
+      "tags": []
     },
     {
       "id": "hokkaido-electric",
@@ -1682,7 +2731,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "electric-power",
+      "chu_name": "電力",
+      "tags": []
     },
     {
       "id": "hokuriku-electric",
@@ -1690,7 +2744,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "electric-power",
+      "chu_name": "電力",
+      "tags": []
     },
     {
       "id": "okinawa-electric",
@@ -1698,7 +2757,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "electric-power",
+      "chu_name": "電力",
+      "tags": []
     },
     {
       "id": "j-power",
@@ -1706,7 +2770,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "electric-power",
+      "chu_name": "電力",
+      "tags": []
     },
     {
       "id": "jera",
@@ -1714,7 +2783,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "electric-power",
+      "chu_name": "電力",
+      "tags": []
     },
     {
       "id": "tokyo-gas",
@@ -1722,7 +2796,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "gas",
+      "chu_name": "ガス",
+      "tags": []
     },
     {
       "id": "osaka-gas",
@@ -1730,7 +2809,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "gas",
+      "chu_name": "ガス",
+      "tags": []
     },
     {
       "id": "toho-gas",
@@ -1738,7 +2822,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "gas",
+      "chu_name": "ガス",
+      "tags": []
     },
     {
       "id": "saibu-gas",
@@ -1746,7 +2835,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "gas",
+      "chu_name": "ガス",
+      "tags": []
     },
     {
       "id": "eneos",
@@ -1754,7 +2848,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "oil-resources",
+      "chu_name": "石油・資源・鉱業",
+      "tags": []
     },
     {
       "id": "idemitsu",
@@ -1762,7 +2861,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "oil-resources",
+      "chu_name": "石油・資源・鉱業",
+      "tags": []
     },
     {
       "id": "cosmo-energy",
@@ -1770,7 +2874,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "oil-resources",
+      "chu_name": "石油・資源・鉱業",
+      "tags": []
     },
     {
       "id": "inpex",
@@ -1778,7 +2887,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "oil-resources",
+      "chu_name": "石油・資源・鉱業",
+      "tags": []
     },
     {
       "id": "japex",
@@ -1786,7 +2900,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "oil-resources",
+      "chu_name": "石油・資源・鉱業",
+      "tags": []
     },
     {
       "id": "jgc-hd",
@@ -1794,7 +2913,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "plant-water",
+      "chu_name": "プラントエンジ・水環境",
+      "tags": []
     },
     {
       "id": "chiyoda",
@@ -1802,7 +2926,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "plant-water",
+      "chu_name": "プラントエンジ・水環境",
+      "tags": []
     },
     {
       "id": "renova",
@@ -1810,7 +2939,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "renewable-energy",
+      "chu_name": "再生可能エネルギー",
+      "tags": []
     },
     {
       "id": "erex",
@@ -1818,7 +2952,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "renewable-energy",
+      "chu_name": "再生可能エネルギー",
+      "tags": []
     },
     {
       "id": "west-hd",
@@ -1826,7 +2965,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "renewable-energy",
+      "chu_name": "再生可能エネルギー",
+      "tags": []
     },
     {
       "id": "kurita",
@@ -1834,7 +2978,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "plant-water",
+      "chu_name": "プラントエンジ・水環境",
+      "tags": []
     },
     {
       "id": "metawater",
@@ -1842,7 +2991,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "plant-water",
+      "chu_name": "プラントエンジ・水環境",
+      "tags": []
     },
     {
       "id": "shizuoka-gas",
@@ -1850,7 +3004,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "gas",
+      "chu_name": "ガス",
+      "tags": []
     },
     {
       "id": "hokkaido-gas",
@@ -1858,7 +3017,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "gas",
+      "chu_name": "ガス",
+      "tags": []
     }
   ],
   "不動産・建設": [
@@ -1868,7 +3032,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "real-estate-developer",
+      "chu_name": "不動産・デベロッパー",
+      "tags": []
     },
     {
       "id": "mitsubishi-estate",
@@ -1876,7 +3045,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "real-estate-developer",
+      "chu_name": "不動産・デベロッパー",
+      "tags": []
     },
     {
       "id": "sumitomo-fudosan",
@@ -1884,7 +3058,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "real-estate-developer",
+      "chu_name": "不動産・デベロッパー",
+      "tags": []
     },
     {
       "id": "nomura-fudosan-hd",
@@ -1892,7 +3071,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "real-estate-developer",
+      "chu_name": "不動産・デベロッパー",
+      "tags": []
     },
     {
       "id": "tokyu-fudosan-hd",
@@ -1900,7 +3084,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "real-estate-developer",
+      "chu_name": "不動産・デベロッパー",
+      "tags": []
     },
     {
       "id": "mori-building",
@@ -1908,7 +3097,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "real-estate-developer",
+      "chu_name": "不動産・デベロッパー",
+      "tags": []
     },
     {
       "id": "hulic",
@@ -1916,7 +3110,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "real-estate-developer",
+      "chu_name": "不動産・デベロッパー",
+      "tags": []
     },
     {
       "id": "tokyo-tatemono",
@@ -1924,7 +3123,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "real-estate-developer",
+      "chu_name": "不動産・デベロッパー",
+      "tags": []
     },
     {
       "id": "daiwa-house",
@@ -1932,7 +3136,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "housing",
+      "chu_name": "ハウスメーカー",
+      "tags": []
     },
     {
       "id": "sekisui-house",
@@ -1940,7 +3149,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "housing",
+      "chu_name": "ハウスメーカー",
+      "tags": []
     },
     {
       "id": "sumitomo-forestry",
@@ -1948,7 +3162,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "housing",
+      "chu_name": "ハウスメーカー",
+      "tags": []
     },
     {
       "id": "iida-group-hd",
@@ -1956,7 +3175,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "housing",
+      "chu_name": "ハウスメーカー",
+      "tags": []
     },
     {
       "id": "open-house-group",
@@ -1964,7 +3188,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "housing",
+      "chu_name": "ハウスメーカー",
+      "tags": []
     },
     {
       "id": "daito-kentaku",
@@ -1972,7 +3201,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "housing",
+      "chu_name": "ハウスメーカー",
+      "tags": []
     },
     {
       "id": "kajima",
@@ -1980,7 +3214,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "general-contractor",
+      "chu_name": "ゼネコン・建設",
+      "tags": []
     },
     {
       "id": "obayashi",
@@ -1988,7 +3227,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "general-contractor",
+      "chu_name": "ゼネコン・建設",
+      "tags": []
     },
     {
       "id": "shimizu",
@@ -1996,7 +3240,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "general-contractor",
+      "chu_name": "ゼネコン・建設",
+      "tags": []
     },
     {
       "id": "taisei",
@@ -2004,7 +3253,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "general-contractor",
+      "chu_name": "ゼネコン・建設",
+      "tags": []
     },
     {
       "id": "takenaka",
@@ -2012,7 +3266,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "general-contractor",
+      "chu_name": "ゼネコン・建設",
+      "tags": []
     },
     {
       "id": "haseko",
@@ -2020,7 +3279,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "general-contractor",
+      "chu_name": "ゼネコン・建設",
+      "tags": []
     },
     {
       "id": "toda",
@@ -2028,7 +3292,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "general-contractor",
+      "chu_name": "ゼネコン・建設",
+      "tags": []
     },
     {
       "id": "infroneer-hd",
@@ -2036,7 +3305,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "general-contractor",
+      "chu_name": "ゼネコン・建設",
+      "tags": []
     },
     {
       "id": "penta-ocean",
@@ -2044,7 +3318,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "general-contractor",
+      "chu_name": "ゼネコン・建設",
+      "tags": []
     },
     {
       "id": "kumagai-gumi",
@@ -2052,7 +3331,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "general-contractor",
+      "chu_name": "ゼネコン・建設",
+      "tags": []
     },
     {
       "id": "nishimatsu",
@@ -2060,7 +3344,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "general-contractor",
+      "chu_name": "ゼネコン・建設",
+      "tags": []
     },
     {
       "id": "ando-hazama",
@@ -2068,7 +3357,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "general-contractor",
+      "chu_name": "ゼネコン・建設",
+      "tags": []
     },
     {
       "id": "kinden",
@@ -2076,7 +3370,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "facility-electrical",
+      "chu_name": "設備・電気工事",
+      "tags": []
     },
     {
       "id": "kandenko",
@@ -2084,7 +3383,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "facility-electrical",
+      "chu_name": "設備・電気工事",
+      "tags": []
     },
     {
       "id": "takasago-thermal",
@@ -2092,7 +3396,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "facility-electrical",
+      "chu_name": "設備・電気工事",
+      "tags": []
     },
     {
       "id": "taiki-sha",
@@ -2100,7 +3409,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "construction-realestate",
+      "dai_name": "建設・不動産",
+      "chu_slug": "facility-electrical",
+      "chu_name": "設備・電気工事",
+      "tags": []
     }
   ],
   "小売・流通": [
@@ -2110,7 +3424,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "general-retail",
+      "chu_name": "総合小売（GMS・スーパー・CVS）",
+      "tags": []
     },
     {
       "id": "aeon",
@@ -2118,7 +3437,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "general-retail",
+      "chu_name": "総合小売（GMS・スーパー・CVS）",
+      "tags": []
     },
     {
       "id": "fast-retailing",
@@ -2126,7 +3450,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "specialty-apparel-ec",
+      "chu_name": "専門店・アパレル・EC",
+      "tags": []
     },
     {
       "id": "nitori-hd",
@@ -2134,7 +3463,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "specialty-apparel-ec",
+      "chu_name": "専門店・アパレル・EC",
+      "tags": []
     },
     {
       "id": "ppih",
@@ -2142,7 +3476,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "general-retail",
+      "chu_name": "総合小売（GMS・スーパー・CVS）",
+      "tags": []
     },
     {
       "id": "ryohin-keikaku",
@@ -2150,7 +3489,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "specialty-apparel-ec",
+      "chu_name": "専門店・アパレル・EC",
+      "tags": []
     },
     {
       "id": "lawson",
@@ -2158,7 +3502,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "general-retail",
+      "chu_name": "総合小売（GMS・スーパー・CVS）",
+      "tags": []
     },
     {
       "id": "familymart",
@@ -2166,7 +3515,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "general-retail",
+      "chu_name": "総合小売（GMS・スーパー・CVS）",
+      "tags": []
     },
     {
       "id": "isetan-mitsukoshi",
@@ -2174,7 +3528,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "department-store",
+      "chu_name": "百貨店",
+      "tags": []
     },
     {
       "id": "j-front",
@@ -2182,7 +3541,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "department-store",
+      "chu_name": "百貨店",
+      "tags": []
     },
     {
       "id": "takashimaya",
@@ -2190,7 +3554,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "department-store",
+      "chu_name": "百貨店",
+      "tags": []
     },
     {
       "id": "h2o-retailing",
@@ -2198,7 +3567,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "department-store",
+      "chu_name": "百貨店",
+      "tags": []
     },
     {
       "id": "life-corp",
@@ -2206,7 +3580,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "general-retail",
+      "chu_name": "総合小売（GMS・スーパー・CVS）",
+      "tags": []
     },
     {
       "id": "yaoko",
@@ -2214,7 +3593,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "general-retail",
+      "chu_name": "総合小売（GMS・スーパー・CVS）",
+      "tags": []
     },
     {
       "id": "shimamura",
@@ -2222,7 +3606,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "specialty-apparel-ec",
+      "chu_name": "専門店・アパレル・EC",
+      "tags": []
     },
     {
       "id": "adastria",
@@ -2230,7 +3619,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "specialty-apparel-ec",
+      "chu_name": "専門店・アパレル・EC",
+      "tags": []
     },
     {
       "id": "workman",
@@ -2238,7 +3632,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "specialty-apparel-ec",
+      "chu_name": "専門店・アパレル・EC",
+      "tags": []
     },
     {
       "id": "yamada-hd",
@@ -2246,7 +3645,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "electronics-retail-hc",
+      "chu_name": "家電量販・ホームセンター",
+      "tags": []
     },
     {
       "id": "biccamera",
@@ -2254,7 +3658,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "electronics-retail-hc",
+      "chu_name": "家電量販・ホームセンター",
+      "tags": []
     },
     {
       "id": "yodobashi",
@@ -2262,7 +3671,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "electronics-retail-hc",
+      "chu_name": "家電量販・ホームセンター",
+      "tags": []
     },
     {
       "id": "welcia-hd",
@@ -2270,7 +3684,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "drugstore",
+      "chu_name": "ドラッグストア",
+      "tags": []
     },
     {
       "id": "tsuruha-hd",
@@ -2278,7 +3697,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "drugstore",
+      "chu_name": "ドラッグストア",
+      "tags": []
     },
     {
       "id": "matsukiyococokara",
@@ -2286,7 +3710,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "drugstore",
+      "chu_name": "ドラッグストア",
+      "tags": []
     },
     {
       "id": "cosmos-pharma",
@@ -2294,7 +3723,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "drugstore",
+      "chu_name": "ドラッグストア",
+      "tags": []
     },
     {
       "id": "sugi-hd",
@@ -2302,7 +3736,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "drugstore",
+      "chu_name": "ドラッグストア",
+      "tags": []
     },
     {
       "id": "cainz",
@@ -2310,7 +3749,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "electronics-retail-hc",
+      "chu_name": "家電量販・ホームセンター",
+      "tags": []
     },
     {
       "id": "dcm-hd",
@@ -2318,7 +3762,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "electronics-retail-hc",
+      "chu_name": "家電量販・ホームセンター",
+      "tags": []
     },
     {
       "id": "komeri",
@@ -2326,7 +3775,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "electronics-retail-hc",
+      "chu_name": "家電量販・ホームセンター",
+      "tags": []
     },
     {
       "id": "zozo",
@@ -2334,7 +3788,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "specialty-apparel-ec",
+      "chu_name": "専門店・アパレル・EC",
+      "tags": []
     },
     {
       "id": "sundrug",
@@ -2342,7 +3801,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "retail",
+      "dai_name": "小売・流通",
+      "chu_slug": "drugstore",
+      "chu_name": "ドラッグストア",
+      "tags": []
     }
   ],
   "食品・飲料": [
@@ -2352,7 +3816,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "asahi-group",
@@ -2360,7 +3829,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "kirin-hd",
@@ -2368,7 +3842,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "ajinomoto",
@@ -2376,7 +3855,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "meiji-hd",
@@ -2384,7 +3868,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "nipponham",
@@ -2392,7 +3881,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "yamazaki-pan",
@@ -2400,7 +3894,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "nissin-hd",
@@ -2408,7 +3907,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "kikkoman",
@@ -2416,7 +3920,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "kagome",
@@ -2424,7 +3933,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "ezaki-glico",
@@ -2432,7 +3946,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "morinaga-seika",
@@ -2440,7 +3959,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "morinaga-milk",
@@ -2448,7 +3972,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "yukijirushi-megmilk",
@@ -2456,7 +3985,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "house-foods",
@@ -2464,7 +3998,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "itoen",
@@ -2472,7 +4011,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "nichirei",
@@ -2480,7 +4024,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "calbee",
@@ -2488,7 +4037,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "yakult",
@@ -2496,7 +4050,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "sapporo-hd",
@@ -2504,7 +4063,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "kewpie",
@@ -2512,7 +4076,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "fuji-oil-hd",
@@ -2520,7 +4089,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     },
     {
       "id": "lotte",
@@ -2528,7 +4102,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": []
     }
   ],
   "日用品・化粧品": [
@@ -2538,7 +4117,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "toiletry",
+      "chu_name": "日用品・トイレタリー",
+      "tags": []
     },
     {
       "id": "shiseido",
@@ -2546,7 +4130,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "cosmetics",
+      "chu_name": "化粧品・美容",
+      "tags": []
     },
     {
       "id": "kose",
@@ -2554,7 +4143,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "cosmetics",
+      "chu_name": "化粧品・美容",
+      "tags": []
     },
     {
       "id": "unicharm",
@@ -2562,7 +4156,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "toiletry",
+      "chu_name": "日用品・トイレタリー",
+      "tags": []
     },
     {
       "id": "lion",
@@ -2570,7 +4169,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "toiletry",
+      "chu_name": "日用品・トイレタリー",
+      "tags": []
     },
     {
       "id": "pola-orbis-hd",
@@ -2578,7 +4182,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "cosmetics",
+      "chu_name": "化粧品・美容",
+      "tags": []
     },
     {
       "id": "kobayashi-pharma",
@@ -2586,7 +4195,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "toiletry",
+      "chu_name": "日用品・トイレタリー",
+      "tags": []
     }
   ],
   "航空・運輸・物流": [
@@ -2596,7 +4210,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "railway",
+      "chu_name": "鉄道",
+      "tags": []
     },
     {
       "id": "jr-central",
@@ -2604,7 +4223,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "railway",
+      "chu_name": "鉄道",
+      "tags": []
     },
     {
       "id": "jr-west",
@@ -2612,7 +4236,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "railway",
+      "chu_name": "鉄道",
+      "tags": []
     },
     {
       "id": "ana-hd",
@@ -2620,7 +4249,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "airline",
+      "chu_name": "航空",
+      "tags": []
     },
     {
       "id": "jal",
@@ -2628,7 +4262,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "airline",
+      "chu_name": "航空",
+      "tags": []
     },
     {
       "id": "nyk",
@@ -2636,7 +4275,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "shipping",
+      "chu_name": "海運",
+      "tags": []
     },
     {
       "id": "mol",
@@ -2644,7 +4288,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "shipping",
+      "chu_name": "海運",
+      "tags": []
     },
     {
       "id": "k-line",
@@ -2652,7 +4301,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "shipping",
+      "chu_name": "海運",
+      "tags": []
     },
     {
       "id": "nippon-express-hd",
@@ -2660,7 +4314,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "logistics",
+      "chu_name": "陸運・物流",
+      "tags": []
     },
     {
       "id": "yamato-hd",
@@ -2668,7 +4327,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "logistics",
+      "chu_name": "陸運・物流",
+      "tags": []
     },
     {
       "id": "sg-hd",
@@ -2676,7 +4340,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "logistics",
+      "chu_name": "陸運・物流",
+      "tags": []
     },
     {
       "id": "seino-hd",
@@ -2684,7 +4353,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "logistics",
+      "chu_name": "陸運・物流",
+      "tags": []
     },
     {
       "id": "kintetsu-group-hd",
@@ -2692,7 +4366,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "railway",
+      "chu_name": "鉄道",
+      "tags": []
     },
     {
       "id": "hankyu-hanshin-hd",
@@ -2700,7 +4379,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "railway",
+      "chu_name": "鉄道",
+      "tags": []
     },
     {
       "id": "tokyu",
@@ -2708,7 +4392,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "railway",
+      "chu_name": "鉄道",
+      "tags": []
     },
     {
       "id": "odakyu",
@@ -2716,7 +4405,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "railway",
+      "chu_name": "鉄道",
+      "tags": []
     },
     {
       "id": "tobu",
@@ -2724,7 +4418,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "railway",
+      "chu_name": "鉄道",
+      "tags": []
     },
     {
       "id": "seibu-hd",
@@ -2732,7 +4431,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "railway",
+      "chu_name": "鉄道",
+      "tags": []
     },
     {
       "id": "meitetsu",
@@ -2740,7 +4444,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "railway",
+      "chu_name": "鉄道",
+      "tags": []
     },
     {
       "id": "keikyu",
@@ -2748,7 +4457,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "transport-logistics",
+      "dai_name": "運輸・物流",
+      "chu_slug": "railway",
+      "chu_name": "鉄道",
+      "tags": []
     }
   ],
   "広告・メディア": [
@@ -2758,7 +4472,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "advertising-agency",
+      "chu_name": "広告代理店",
+      "tags": []
     },
     {
       "id": "hakuhodo-dy",
@@ -2766,7 +4485,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "advertising-agency",
+      "chu_name": "広告代理店",
+      "tags": []
     },
     {
       "id": "adk-hd",
@@ -2774,7 +4498,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "advertising-agency",
+      "chu_name": "広告代理店",
+      "tags": []
     },
     {
       "id": "ntv-hd",
@@ -2782,7 +4511,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "broadcasting",
+      "chu_name": "テレビ・放送",
+      "tags": []
     },
     {
       "id": "tbs-hd",
@@ -2790,7 +4524,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "broadcasting",
+      "chu_name": "テレビ・放送",
+      "tags": []
     },
     {
       "id": "fuji-media-hd",
@@ -2798,7 +4537,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "broadcasting",
+      "chu_name": "テレビ・放送",
+      "tags": []
     },
     {
       "id": "tv-asahi-hd",
@@ -2806,7 +4550,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "broadcasting",
+      "chu_name": "テレビ・放送",
+      "tags": []
     },
     {
       "id": "tv-tokyo-hd",
@@ -2814,7 +4563,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "broadcasting",
+      "chu_name": "テレビ・放送",
+      "tags": []
     },
     {
       "id": "skyperfectjsat-hd",
@@ -2822,7 +4576,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "broadcasting",
+      "chu_name": "テレビ・放送",
+      "tags": []
     },
     {
       "id": "wowow",
@@ -2830,7 +4589,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "broadcasting",
+      "chu_name": "テレビ・放送",
+      "tags": []
     },
     {
       "id": "kadokawa",
@@ -2838,7 +4602,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "publishing",
+      "chu_name": "新聞・出版",
+      "tags": []
     },
     {
       "id": "shueisha",
@@ -2846,7 +4615,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "publishing",
+      "chu_name": "新聞・出版",
+      "tags": []
     },
     {
       "id": "kodansha",
@@ -2854,7 +4628,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "publishing",
+      "chu_name": "新聞・出版",
+      "tags": []
     },
     {
       "id": "shogakukan",
@@ -2862,7 +4641,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "publishing",
+      "chu_name": "新聞・出版",
+      "tags": []
     },
     {
       "id": "bungeishunju",
@@ -2870,7 +4654,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "publishing",
+      "chu_name": "新聞・出版",
+      "tags": []
     },
     {
       "id": "avex",
@@ -2878,7 +4667,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "entertainment",
+      "chu_name": "音楽・映画・エンタメ施設",
+      "tags": []
     },
     {
       "id": "amuse",
@@ -2886,7 +4680,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "entertainment",
+      "chu_name": "音楽・映画・エンタメ施設",
+      "tags": []
     },
     {
       "id": "yoshimoto-hd",
@@ -2894,7 +4693,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "entertainment",
+      "chu_name": "音楽・映画・エンタメ施設",
+      "tags": []
     },
     {
       "id": "oriental-land",
@@ -2902,7 +4706,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "entertainment",
+      "chu_name": "音楽・映画・エンタメ施設",
+      "tags": []
     },
     {
       "id": "usj",
@@ -2910,7 +4719,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "entertainment",
+      "chu_name": "音楽・映画・エンタメ施設",
+      "tags": []
     },
     {
       "id": "sanrio",
@@ -2918,7 +4732,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "entertainment",
+      "chu_name": "音楽・映画・エンタメ施設",
+      "tags": []
     },
     {
       "id": "round-one",
@@ -2926,7 +4745,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "entertainment",
+      "chu_name": "音楽・映画・エンタメ施設",
+      "tags": []
     },
     {
       "id": "toho",
@@ -2934,7 +4758,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "entertainment",
+      "chu_name": "音楽・映画・エンタメ施設",
+      "tags": []
     },
     {
       "id": "toei",
@@ -2942,7 +4771,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "entertainment",
+      "chu_name": "音楽・映画・エンタメ施設",
+      "tags": []
     },
     {
       "id": "shochiku",
@@ -2950,7 +4784,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "entertainment",
+      "chu_name": "音楽・映画・エンタメ施設",
+      "tags": []
     },
     {
       "id": "asahi-shimbun",
@@ -2958,7 +4797,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "publishing",
+      "chu_name": "新聞・出版",
+      "tags": []
     },
     {
       "id": "nikkei",
@@ -2966,7 +4810,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "publishing",
+      "chu_name": "新聞・出版",
+      "tags": []
     },
     {
       "id": "yomiuri-group",
@@ -2974,7 +4823,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "publishing",
+      "chu_name": "新聞・出版",
+      "tags": []
     },
     {
       "id": "septeni-hd",
@@ -2982,7 +4836,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "advertising-agency",
+      "chu_name": "広告代理店",
+      "tags": []
     },
     {
       "id": "pia",
@@ -2990,7 +4849,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "media-entertainment",
+      "dai_name": "マスコミ・広告・エンタメ",
+      "chu_slug": "publishing",
+      "chu_name": "新聞・出版",
+      "tags": []
     }
   ],
   "その他（外資・新興等）": [
@@ -3000,7 +4864,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": [
+        "foreign"
+      ]
     },
     {
       "id": "amazon-japan",
@@ -3008,7 +4879,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": [
+        "foreign"
+      ]
     },
     {
       "id": "microsoft-japan",
@@ -3016,7 +4894,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": [
+        "foreign"
+      ]
     },
     {
       "id": "salesforce-japan",
@@ -3024,7 +4909,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": [
+        "foreign"
+      ]
     },
     {
       "id": "oracle-japan",
@@ -3032,7 +4924,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": [
+        "foreign"
+      ]
     },
     {
       "id": "ibm-japan",
@@ -3040,7 +4939,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": [
+        "foreign"
+      ]
     },
     {
       "id": "sap-japan",
@@ -3048,7 +4954,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": [
+        "foreign"
+      ]
     },
     {
       "id": "pg-japan",
@@ -3056,7 +4969,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "toiletry",
+      "chu_name": "日用品・トイレタリー",
+      "tags": [
+        "foreign"
+      ]
     },
     {
       "id": "loreal-japan",
@@ -3064,7 +4984,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "cosmetics",
+      "chu_name": "化粧品・美容",
+      "tags": [
+        "foreign"
+      ]
     },
     {
       "id": "unilever-japan",
@@ -3072,7 +4999,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "toiletry",
+      "chu_name": "日用品・トイレタリー",
+      "tags": [
+        "foreign"
+      ]
     },
     {
       "id": "nestle-japan",
@@ -3080,7 +5014,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": [
+        "foreign"
+      ]
     },
     {
       "id": "persol-hd",
@@ -3088,7 +5029,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "education-hr",
+      "dai_name": "教育・人材",
+      "chu_slug": "hr-staffing",
+      "chu_name": "人材サービス",
+      "tags": []
     },
     {
       "id": "pasona-group",
@@ -3096,7 +5042,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "education-hr",
+      "dai_name": "教育・人材",
+      "chu_slug": "hr-staffing",
+      "chu_name": "人材サービス",
+      "tags": []
     },
     {
       "id": "benesse-hd",
@@ -3104,7 +5055,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "education-hr",
+      "dai_name": "教育・人材",
+      "chu_slug": "education",
+      "chu_name": "教育",
+      "tags": []
     },
     {
       "id": "gakken-hd",
@@ -3112,7 +5068,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "education-hr",
+      "dai_name": "教育・人材",
+      "chu_slug": "education",
+      "chu_name": "教育",
+      "tags": []
     },
     {
       "id": "nagase-toshin",
@@ -3120,7 +5081,12 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "education-hr",
+      "dai_name": "教育・人材",
+      "chu_slug": "education",
+      "chu_name": "教育",
+      "tags": []
     },
     {
       "id": "rapidus",
@@ -3128,7 +5094,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "semiconductor",
+      "chu_name": "半導体・半導体製造装置",
+      "tags": [
+        "startup"
+      ]
     },
     {
       "id": "jasm",
@@ -3136,7 +5109,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "semiconductor",
+      "chu_name": "半導体・半導体製造装置",
+      "tags": [
+        "foreign"
+      ]
     },
     {
       "id": "socionext",
@@ -3144,7 +5124,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "semiconductor",
+      "chu_name": "半導体・半導体製造装置",
+      "tags": [
+        "startup"
+      ]
     },
     {
       "id": "m3",
@@ -3152,7 +5139,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "medical-device-healthtech",
+      "chu_name": "医療機器・ヘルステック",
+      "tags": [
+        "startup"
+      ]
     },
     {
       "id": "medley",
@@ -3160,7 +5154,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "medical-device-healthtech",
+      "chu_name": "医療機器・ヘルステック",
+      "tags": [
+        "startup"
+      ]
     },
     {
       "id": "jmdc",
@@ -3168,7 +5169,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "medical-device-healthtech",
+      "chu_name": "医療機器・ヘルステック",
+      "tags": [
+        "startup"
+      ]
     },
     {
       "id": "ispace",
@@ -3176,7 +5184,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "deeptech-space",
+      "dai_name": "ディープテック・宇宙",
+      "chu_slug": "space-deeptech",
+      "chu_name": "宇宙・ディープテック",
+      "tags": [
+        "startup"
+      ]
     },
     {
       "id": "astroscale-hd",
@@ -3184,7 +5199,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "deeptech-space",
+      "dai_name": "ディープテック・宇宙",
+      "chu_slug": "space-deeptech",
+      "chu_name": "宇宙・ディープテック",
+      "tags": [
+        "startup"
+      ]
     },
     {
       "id": "openai-japan",
@@ -3192,7 +5214,15 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": [
+        "foreign",
+        "startup"
+      ]
     },
     {
       "id": "spiber",
@@ -3200,7 +5230,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "deeptech-space",
+      "dai_name": "ディープテック・宇宙",
+      "chu_slug": "biotech-newmaterial",
+      "chu_name": "バイオ・新素材",
+      "tags": [
+        "startup"
+      ]
     },
     {
       "id": "tbm",
@@ -3208,7 +5245,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "deeptech-space",
+      "dai_name": "ディープテック・宇宙",
+      "chu_slug": "biotech-newmaterial",
+      "chu_name": "バイオ・新素材",
+      "tags": [
+        "startup"
+      ]
     },
     {
       "id": "euglena",
@@ -3216,7 +5260,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "deeptech-space",
+      "dai_name": "ディープテック・宇宙",
+      "chu_slug": "biotech-newmaterial",
+      "chu_name": "バイオ・新素材",
+      "tags": [
+        "startup"
+      ]
     },
     {
       "id": "base-food",
@@ -3224,7 +5275,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "deeptech-space",
+      "dai_name": "ディープテック・宇宙",
+      "chu_slug": "biotech-newmaterial",
+      "chu_name": "バイオ・新素材",
+      "tags": [
+        "startup"
+      ]
     },
     {
       "id": "bitflyer",
@@ -3232,7 +5290,14 @@
       "jukoma_liff_id": "2010075487-89AJxZnA",
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
-      "kessan_url": null
+      "kessan_url": null,
+      "dai_slug": "finance",
+      "dai_name": "金融",
+      "chu_slug": "lease-credit",
+      "chu_name": "リース・クレジット・その他金融",
+      "tags": [
+        "startup"
+      ]
     }
   ]
 }

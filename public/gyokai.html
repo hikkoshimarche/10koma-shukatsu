@@ -104,24 +104,26 @@ async function loadSchedule(card){
   el.style.display='block';
 }
 function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-// 業界10コマの16業界。学ぶ導線=業界モードへ。「企業を探す」=企業一覧(?ind=)へ相互接続(名称一致する業界のみフィルタ、他は一覧トップ)。
+// 業界10コマの16業界。学ぶ導線=業界モードへ。「企業を探す」=企業一覧(?chu=)へ相互接続。
+// find = この業界研究(gyokai16)に対応する新・中分類slug群(taxonomy.json の gyokai16 ブリッジの逆引き)。
+// 企業ディレクトリは二層化済(大→中)。?chu=<slug,...> で該当中分類だけを事前フィルタして開く(精密・素通り無し)。
 const INDUSTRIES=[
-  {slug:'sogo-shosha',name:'総合商社',icon:'🌐',acc:'#2f6fb0',find:'総合商社'},
-  {slug:'senmon-shosha',name:'専門商社',icon:'📦',acc:'#b8823a',find:'専門商社'},
-  {slug:'finance',name:'銀行・証券・保険',icon:'🏦',acc:'#1f6f54',find:'銀行・証券・保険'},
-  {slug:'it-ai-saas-game',name:'IT・AI・SaaS・ゲーム',icon:'💻',acc:'#3b5bdb',find:'IT・通信・SaaS'},
-  {slug:'consulting',name:'コンサル',icon:'📈',acc:'#2c6fa8',find:'コンサル'},
-  {slug:'manufacturer',name:'メーカー',icon:'🏭',acc:'#4a6b8a',find:'自動車・モビリティ,電機・精密・重工,鉄鋼・素材・化学,日用品・化粧品'},
-  {slug:'ad-media',name:'広告・メディア',icon:'📣',acc:'#e0913a',find:'広告・メディア'},
-  {slug:'infra-energy',name:'インフラ・エネルギー',icon:'⚡',acc:'#d17d00',find:'インフラ・エネルギー'},
-  {slug:'realestate-construction',name:'不動産・建設',icon:'🏗️',acc:'#9a6a2f',find:'不動産・建設'},
-  {slug:'retail',name:'小売・流通',icon:'🛍️',acc:'#c0448a',find:'小売・流通'},
-  {slug:'food-beverage',name:'食品・飲料',icon:'🍽️',acc:'#d1495b',find:'食品・飲料'},
-  {slug:'medical-healthcare',name:'医療・ヘルスケア',icon:'💊',acc:'#16a085',find:'製薬・ヘルスケア'},
-  {slug:'transport-logistics',name:'航空・運輸・物流',icon:'✈️',acc:'#2f8fbf',find:'航空・運輸・物流'},
-  {slug:'education-hr',name:'教育・人材',icon:'🎓',acc:'#7d3c98',find:''},
-  {slug:'startup',name:'スタートアップ',icon:'🚀',acc:'#c0392b',find:''},
-  {slug:'deeptech-space-ai',name:'ディープテック・宇宙・AI',icon:'🛰️',acc:'#3a9d6b',find:''},
+  {slug:'sogo-shosha',name:'総合商社',icon:'🌐',acc:'#2f6fb0',find:'sogo-shosha'},
+  {slug:'senmon-shosha',name:'専門商社',icon:'📦',acc:'#b8823a',find:'senmon-shosha-food-pharma,senmon-shosha-industrial'},
+  {slug:'finance',name:'銀行・証券・保険',icon:'🏦',acc:'#1f6f54',find:'bank,securities,insurance,lease-credit'},
+  {slug:'it-ai-saas-game',name:'IT・AI・SaaS・ゲーム',icon:'💻',acc:'#3b5bdb',find:'telecom-carrier,sier-itservice,internet-web,saas,ai-data,game'},
+  {slug:'consulting',name:'コンサル',icon:'📈',acc:'#2c6fa8',find:'strategy-consulting,general-it-consulting,think-tank'},
+  {slug:'manufacturer',name:'メーカー',icon:'🏭',acc:'#4a6b8a',find:'automaker,auto-parts,electronics-general,electronic-components,semiconductor,precision-optics,heavy-machinery,steel-metal,chemical-materials,toiletry,cosmetics'},
+  {slug:'ad-media',name:'広告・メディア',icon:'📣',acc:'#e0913a',find:'advertising-agency,broadcasting,publishing,entertainment'},
+  {slug:'infra-energy',name:'インフラ・エネルギー',icon:'⚡',acc:'#d17d00',find:'electric-power,renewable-energy,gas,oil-resources,plant-water'},
+  {slug:'realestate-construction',name:'不動産・建設',icon:'🏗️',acc:'#9a6a2f',find:'real-estate-developer,housing,general-contractor,facility-electrical'},
+  {slug:'retail',name:'小売・流通',icon:'🛍️',acc:'#c0448a',find:'general-retail,department-store,specialty-apparel-ec,electronics-retail-hc,drugstore'},
+  {slug:'food-beverage',name:'食品・飲料',icon:'🍽️',acc:'#d1495b',find:'food-beverage'},
+  {slug:'medical-healthcare',name:'医療・ヘルスケア',icon:'💊',acc:'#16a085',find:'pharma,medical-device-healthtech'},
+  {slug:'transport-logistics',name:'航空・運輸・物流',icon:'✈️',acc:'#2f8fbf',find:'railway,airline,shipping,logistics'},
+  {slug:'education-hr',name:'教育・人材',icon:'🎓',acc:'#7d3c98',find:'hr-staffing,education'},
+  {slug:'startup',name:'スタートアップ',icon:'🚀',acc:'#c0392b',find:'biotech-newmaterial'},
+  {slug:'deeptech-space-ai',name:'ディープテック・宇宙・AI',icon:'🛰️',acc:'#3a9d6b',find:'space-deeptech'},
 ];
 // マイページ業界制覇スタンプからの引き継ぎ: focus=done|undone(絞り込み) / done=<達成slug csv>(バッジ表示・追加fetch不要)
 const GKP=new URLSearchParams(location.search);
@@ -132,7 +134,7 @@ function gkStatus(slug){ return GK_DONE.has(slug)?'done':'undone'; }
 function render(){
   document.getElementById('list').innerHTML=INDUSTRIES.map(ind=>{
     const s=encodeURIComponent(ind.slug), n=encodeURIComponent(ind.name);
-    const find=`/industry.html?from=gyokai${ind.find?('&ind='+encodeURIComponent(ind.find)):''}`;
+    const find=`/industry.html?from=gyokai${ind.find?('&chu='+encodeURIComponent(ind.find)):''}`;
     const st=gkStatus(ind.slug);
     const badge=GK_ANNOTATE?`<span class="gk-badge ${st}">${st==='done'?'🏅 達成':'未達成'}</span>`:'';
     return `
