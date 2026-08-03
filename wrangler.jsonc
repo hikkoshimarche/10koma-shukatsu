@@ -1,13 +1,16 @@
 {
-  // 本番 talkcareer.jp は Cloudflare Pages(git連携)。この設定は Pages プロジェクト設定。
-  // pages_build_output_dir があるため wrangler は「Pages プロジェクト」と認識し、
-  // 誤って `wrangler deploy`(Workers系) を打っても拒否する(=運用外 10koma-shukatsu.workers.dev への
-  // 事故デプロイ・作業ツリー未コミットの意図せぬ公開を根絶)。API は `cd api && npm run deploy`。
-  // Pages の404は public/404.html をプラットフォームが返す(旧 assets.not_found_handling は workers.dev 専用だったため撤去)。
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "10koma-shukatsu",
-  "pages_build_output_dir": "public",
   "compatibility_date": "2026-06-05",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": "public",
+    // 存在しないパスは 404.html を 404 で返す(既定のSPAフォールバック=index.htmlを200で返すソフト404を是正)。
+    // 実在ファイルの完全一致 + html_handling(クリーンURL /company→/company.html)は従来どおり有効。
+    "not_found_handling": "404-page"
+  },
   "compatibility_flags": [
     "nodejs_compat"
   ]
