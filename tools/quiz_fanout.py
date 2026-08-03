@@ -759,11 +759,12 @@ def _review_pass_ids(qs, corpus):
     rate = (len(passed) / graded) if graded else 1.0
     return passed, rate, graded, len(passed)
 
-def converge_locked(slug, name, corpus, target=30, max_round=5, extra=""):
+def converge_locked(slug, name, corpus, target=30, max_round=5, extra="", fin_floor=8):
     """品質固定: 生成→lint収束→OpenAI R1-R6レビュー→pass分のみ採用。ミックス強制(財務≤target/2)。
-    不足は非財務優先で再生成backfill。返り: (final[], dropped, review_pass_rate)。lint error=0 かつ review pass。"""
+    不足は非財務優先で再生成backfill。返り: (final[], dropped, review_pass_rate)。lint error=0 かつ review pass。
+    fin_floor: 財務設問の下限(既定8)。number希薄corpus(web中心)ではCFGで下げ、接地不能な財務強制→lint落ちを回避。"""
     FIN = "財務数値"
-    fin_cap, fin_floor = 15, 8      # 財務は8〜15
+    fin_cap = 15                    # 財務上限15
     accepted, seen_q, seen_concepts, fin_n, dry_n = [], set(), set(), 0, 0
     tot_graded, tot_passed = 0, 0
     for rnd in range(max_round):
@@ -771,7 +772,12 @@ def converge_locked(slug, name, corpus, target=30, max_round=5, extra=""):
         if need <= 0:
             break
         # 生成バイアス: 財務が下限未満→意味ある財務を、上限到達→非財務のみ
-        dyn = extra
+        # 【収量改善】誤答も本文実在の語から採らせる=no_fabrication_number/date のlint落ちを源流で削減
+        # (広範コングロマリットで数値/型番/日付の創作誤答が大量lint落ちしていた実測に基づく)
+        dyn = extra + ("\n【選択肢の作り方(厳守)】正解も誤答も提供本文に実在する語・数値・名称だけで作る。"
+                       "誤答は本文中の別の事業/製品/セグメント/名称から採る。本文に無い数値・型番・年月日・モデル名を"
+                       "誤答に創作しない。数値/型番/日付の設問は本文に誤答用の実在値が複数ある時のみ作り、"
+                       "無ければ事業・製品・概念・理念のテキスト型設問にする。")
         if fin_n < fin_floor:
             dyn = (extra + "\n【重要】意味のある財務設問を多めに作れ(収益/営業利益/税引前利益/当期利益/"
                    "親会社帰属利益/総資産/ROE/配当/キャッシュフロー等を各1問ずつ・異なる指標で)。")
@@ -806,7 +812,13 @@ def converge_locked(slug, name, corpus, target=30, max_round=5, extra=""):
             if len(accepted) >= target:
                 break
             concept = QL._concept_of(q)
-            key = (concept, (q.get("as_of") or "").strip(), QL._src_host(q))  # 会社別(業界で各社同概念を保持)
+            # 【収量改善】広範concept(セグメント事業)は正解の具体語で区別=別セグメント(ゲーム/音楽/半導体等)の
+            # 設問を「概念重複」で落とさない。真の重複(同一セグメント)は正解語一致で従来どおり除去。
+            ckey = concept
+            if concept == "セグメント事業":
+                _corr = str((q.get("options") or [""])[q.get("correct", 0)] if q.get("options") else "")
+                ckey = concept + ":" + re.sub(r"\s", "", _corr)[:12]
+            key = (ckey, (q.get("as_of") or "").strip(), QL._src_host(q))  # 会社別(業界で各社同概念を保持)
             if concept and key in seen_concepts:
                 continue                              # 概念重複(同一会社内)
             if concept in QL.DRY_CONCEPTS and dry_n >= QL.DRY_CAP:
