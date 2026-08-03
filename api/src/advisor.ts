@@ -141,9 +141,10 @@ function detectEmotion(text: string): boolean {
 // 明示的な希死念慮・自傷 + 周辺表現を拾う。就活の「つらい/落ち込む/しんどい/疲れた」程度は拾わない（通常フロー）。
 const CRISIS_RE = new RegExp([
   '死にたい', '死んでしまいたい', 'しにたい', '死のうか?', '自殺', '首を(つ|吊)',
-  '飛び降り', '飛びおり', 'リストカット', 'リスカ', '自傷', '過剰摂取', 'オーバードーズ',
-  '消えたい', '消えてしまいたい', 'きえたい', 'いなくなりたい', 'この世から(いなく|消え)',
-  '生きていたくない', '生きてても', '生きる(意味|価値)がない', '生きるのをやめ', 'もう生きて(いけ|られ)',
+  '飛び降り', '飛びおり', 'リストカット', 'リスカ', '手首を切', '自傷', '過剰摂取', 'オーバードーズ',
+  '消えたい', '消えてしまいたい', '消えてなくなりたい', 'きえたい', 'いなくなりたい', 'この世から(いなく|消え)',
+  '生きていたくない', '生きてても', '生きてる意味', '生きている意味', '生きる(意味|価値)がない',
+  '生きるのをやめ', 'もう生きて(いけ|られ)', '(もう)?終わりにしたい', '消えてしまお',
 ].join('|'))
 // 相談窓口は公式ページから実取得した値のみ（Source-or-Silence厳守・番号/受付時間は記憶で書かない）。
 // 受付時間の裏取り: #いのちSOS の電話は運営ライフリンク公式で「毎日24時間 受付中」(https://www.lifelink.or.jp/inochisos/)。
@@ -168,6 +169,27 @@ const CRISIS_MESSAGE_CONT =
   '聞いています。ひとりで抱えこまないで。\n' +
   '私はAIなので、ここから先は下の窓口の人に話してみてほしいです。いつ連絡しても大丈夫です。'
 
+// 窓口・119・出典を message 本文にも必ず含める（構造化 support を描画しないクライアントでも確実に見えるように）。
+function crisisMessage(cont: boolean): string {
+  const lead = cont ? CRISIS_MESSAGE_CONT : CRISIS_MESSAGE
+  const wins = CRISIS_SUPPORT.map(s => s.tel
+    ? `・${s.label}\n　${s.tel}${(s as any).note ? '（' + (s as any).note + '）' : ''}`
+    : `・${s.label}\n　${s.href}`).join('\n')
+  return `${lead}\n\n【相談窓口】\n${wins}\n\n${CRISIS_EMERGENCY}\n\n出典：厚生労働省「まもろうよ こころ」\n${CRISIS_SOURCE}`
+}
+// 危機専用応答（機能ルーティング一切なし）。cont=継続ターン, viaLLM=第2段LLMで検出。
+function crisisResponse(c: any, cont: boolean, viaLLM: boolean) {
+  try { console.log(`[advisor] crisis-path served (${viaLLM ? 'llm' : cont ? 'mode' : 'kw'}; body not logged)`) } catch {}
+  return c.json({
+    crisis: true, crisis_mode: true,
+    message: crisisMessage(cont),
+    support: CRISIS_SUPPORT, emergency: CRISIS_EMERGENCY, source: CRISIS_SOURCE,
+    choices: [], proposals: [],
+    disclaimer: '※ 出典：厚生労働省「まもろうよ こころ」' + CRISIS_SOURCE,
+    meta: { matched: 'crisis', llm_used: viaLLM, company: null, purpose: null },
+  })
+}
+
 // ---- R2: ascii/ローマ字・英語入力は会社照合の確信度が低い（誤解決は未解決より有害）→ テキストからは会社を取らない ----
 function asciiDominant(s: string): boolean {
   if (!s) return false
@@ -184,14 +206,18 @@ function asciiDominant(s: string): boolean {
 async function llmClassify(text: string, comps: { id: string; name: string }[], apiKey: string):
   Promise<{ purpose: string | null; company: string | null } | null> {
   const sys =
-    'あなたは就活ナビの意図分類器です。ユーザーの入力を、次の8つの目的IDのいずれか1つに分類します。' +
-    'know(会社を知る)/deep(深く知る)/find(会社を選ぶ・迷い)/es(ES作成)/mensetsu(面接・GD)/quiz(理解度)/ob(OB訪問)/omamori(不安・緊張)。' +
-    // R3: 迷ったら omamori に寄せない。判別できなければ null。
-    '確信が持てない場合・就活の意図として判別できない場合・外国語などで意図が不明な場合は、必ず purpose を null にすること（無理に omamori 等へ寄せない）。' +
-    'omamori は「本人が不安・緊張・落ち着かないと自分の気持ちを述べている」ときだけ選ぶ。合否・倍率・採用確率・競争率を問う質問は omamori ではなく null（この機能では扱わない）。' +
+    'あなたは就活ナビの意図分類器です。ユーザーの入力を、次の目的IDのいずれか1つに分類します。' +
+    'crisis / know(会社を知る)/deep(深く知る)/find(会社を選ぶ・迷い)/es(ES作成)/mensetsu(面接・GD)/quiz(理解度)/ob(OB訪問)/omamori(不安・緊張)。' +
+    // 第2段の危機検出（最優先）: 遠回し・絵文字・外国語も拾う。過検出は許容。
+    '【最優先】crisis は他のどの分類よりも優先する。入力が「死にたい・消えたい・いなくなりたい・生きていたくない・自分を傷つけたい・自傷・もう終わりにしたい」等、' +
+    '自分の生存や存在をやめたい／自分を害したい気持ちに、直接でも遠回しでも、絵文字でも、どの言語（日本語・英語・中国語・韓国語など）でも触れていれば、必ず crisis にする。少しでも迷ったら crisis に倒す。' +
+    'ただし、単なる就活の落ち込み（「就活がつらい」「しんどい」「疲れた」「落ちて落ち込む」「不安」程度）で、生存・自傷に触れていないものは crisis ではない（それらは通常の分類か null）。' +
+    // R3: それ以外で迷ったら omamori に寄せない。判別できなければ null。
+    'crisis でない場合、確信が持てない・就活の意図として判別できない・外国語で意図が不明なときは purpose を null にする（omamori 等へ無理に寄せない）。' +
+    'omamori は「本人が不安・緊張・落ち着かないと述べている」ときだけ。合否・倍率・採用確率・競争率を問う質問は omamori ではなく null。' +
     // R2: 英語・ローマ字・略称は確信が持てなければ会社を返さない。
     '会社名は、日本語で明示され確実に特定できるときだけ company に入れる。英語・ローマ字・略称・愛称で少しでも確信が持てなければ company は null。' +
-    '事実・評価・合否・倍率は一切書かないこと。出力は必ず JSON のみ: {"purpose":"<id or null>","company":"<日本語の会社名 or null>"}'
+    '事実・評価・合否・倍率は一切書かないこと。出力は必ず JSON のみ: {"purpose":"<id or crisis or null>","company":"<日本語の会社名 or null>"}'
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -207,7 +233,8 @@ async function llmClassify(text: string, comps: { id: string; name: string }[], 
     const m = raw.match(/\{[\s\S]*\}/)
     if (!m) return null
     const j = JSON.parse(m[0]) as { purpose?: string; company?: string }
-    const purpose = j.purpose && VALID_PURPOSES.has(j.purpose) ? j.purpose : null
+    const purpose = j.purpose === 'crisis' ? 'crisis'
+      : (j.purpose && VALID_PURPOSES.has(j.purpose) ? j.purpose : null)
     let company: string | null = null
     if (j.company) {
       const hit = matchCompany(j.company, _companies || [])
@@ -262,23 +289,11 @@ export async function handleAdvisor(c: any) {
   // 検出したら機能ルーティングを一切せず（お守りにも回さない）専用経路で返す。
   // さらに、一度危機を検出したセッションでは以降 crisis_mode を維持し、続けて話しかけられても
   // 機能案内フローに戻さない（クライアントが crisis_mode:true を送り続ける）。
+  // 第1段: 決定論キーワード（即時・確実）。一度検出したセッションは crisis_mode を維持し機能案内に戻さない。
   const crisisHit = !!text && CRISIS_RE.test(text)
   if (crisisHit || body.crisis_mode === true) {
-    const cont = body.crisis_mode === true && !crisisHit  // 危機語なしの継続ターン
-    // ★入力本文は一切ログ/DB/LLMに残さない（最前段returnでAnthropicにもDBにも渡らない）。
-    //   記録するのは「危機応答を返した」という事実のみ（本文なし）。
-    try { console.log('[advisor] crisis-path served (input body intentionally not logged)') } catch {}
-    return c.json({
-      crisis: true,
-      crisis_mode: true,                       // クライアントは以降これを送り続ける
-      message: cont ? CRISIS_MESSAGE_CONT : CRISIS_MESSAGE,
-      support: CRISIS_SUPPORT,
-      emergency: CRISIS_EMERGENCY,
-      source: CRISIS_SOURCE,
-      choices: [], proposals: [],
-      disclaimer: '※ 出典：厚生労働省「まもろうよ こころ」' + CRISIS_SOURCE,
-      meta: { matched: 'crisis', llm_used: false, company: null, purpose: null },
-    })
+    // ★入力本文は一切ログ/DB/LLMに残さない（最前段returnでAnthropicにもDBにも渡らない・事実のみ記録）。
+    return crisisResponse(c, body.crisis_mode === true && !crisisHit, false)
   }
 
   const comps = await loadCompanies(c.env.DB)
@@ -301,6 +316,10 @@ export async function handleAdvisor(c: any) {
   let llm_used = false
   if (text && !slug && !purpose) {
     const cls = await llmClassify(text, comps, c.env.ANTHROPIC_API_KEY)
+    // 第2段: LLMが危機と判定したら、キーワードで拾えなかった遠回し・絵文字・外国語も専用応答へ（機能に流さない）。
+    if (cls && cls.purpose === 'crisis') {
+      return crisisResponse(c, false, true)
+    }
     if (cls && (cls.purpose || cls.company)) {
       // R2: ascii/ローマ字入力では LLM の会社解決も採用しない（黙って別社に送らない＝聞き返す）
       if (cls.company && !asciiText) { slug = cls.company; cname = comps.find(x => x.id === slug)?.name ?? null }

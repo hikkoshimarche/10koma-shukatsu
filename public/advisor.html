@@ -35,7 +35,7 @@
     .composer .inner{max-width:640px;margin:0 auto;display:flex;gap:8px}
     .composer input{flex:1;border:1px solid #cdd8e8;border-radius:22px;padding:11px 15px;font-size:15px;outline:none}
     .composer button{background:var(--acc);color:#fff;border:none;border-radius:22px;padding:0 18px;font-size:15px;font-weight:600;cursor:pointer}
-    .bubble.crisis{background:#fff6f0;border-color:#f0d3bf;color:#5b3a24;font-size:15px;line-height:1.7}
+    .bubble.crisis{background:#fff6f0;border-color:#f0d3bf;color:#5b3a24;font-size:15px;line-height:1.7;white-space:pre-wrap}
     .support{display:flex;flex-direction:column;gap:9px;margin-top:6px}
     .sup{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid #e8b9a0;border-radius:12px;padding:13px 14px;text-decoration:none;color:inherit}
     .sup:active{background:#fdeee4}
@@ -105,9 +105,10 @@ function render(r){
       });
       thread.appendChild(wrap);
     }
-    if (r.emergency){ const em=document.createElement('div'); em.className='crisis-emg'; em.textContent=r.emergency; thread.appendChild(em); }
+    // 119・出典は message 本文にも含まれる（構造化フィールドを描画しないクライアントでも見えるように）。
+    // ここでは出典リンクを押せる形でも補助表示する。
     if (r.source){ const src=document.createElement('div'); src.className='crisis-src';
-      src.innerHTML = `出典：厚生労働省「まもろうよ こころ」<br><a href="${esc(r.source)}" target="_blank" rel="noopener">${esc(r.source)}</a>`;
+      src.innerHTML = `<a href="${esc(r.source)}" target="_blank" rel="noopener">厚生労働省「まもろうよ こころ」を開く ›</a>`;
       thread.appendChild(src); }
     if (r.disclaimer) disc.textContent = r.disclaimer;
     scroll(); return;
