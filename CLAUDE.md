@@ -97,6 +97,13 @@ class LintError(RuntimeError):
 - 検証: `env -i HOME="$HOME" PATH="/usr/bin:/bin:/usr/sbin:/sbin" /bin/bash -lc '<PATH前置>; command -v npx'` で npx が解決すればOK。
 - 既存で `deploy_salary.py` を使うジョブ(phasec/sheetsync等)は、同モジュールの `_npx()` が npx を解決するため追加対応不要。
 
+## 【必須】Cloudflare デプロイの安全手順（誤デプロイ根絶・2026-08-03確立）
+本番は **talkcareer.jp（= pages.dev・git連携の Cloudflare Pages）だけ**。`10koma-shukatsu.workers.dev` は運用外（使わない）。過去に複数タブが「リポジトリ直下で bare `wrangler deploy`」を打ち、auto-discovery が root設定を拾って運用外workersへ**作業ツリーの未コミットファイルを公開**する事故を起こした。恒久対策：
+- **Worker(API)デプロイは必ず `--config` を明示**。API は **`cd api && npm run deploy`**（=`wrangler deploy --config wrangler.toml` → `10koma-shukatsu-api`）のみ。root から打つなら `wrangler deploy --config api/wrangler.toml`。
+- **リポジトリ直下で bare `wrangler deploy` / `npm run deploy` は禁止**。root `wrangler.jsonc` は `pages_build_output_dir` を持つ Pages 設定＝wrangler が Workers デプロイを**ネイティブに拒否**する（打っても exit≠0）。この `pages_build_output_dir` を消さない（消すと footgun 復活）。
+- **本番反映は `git push`（Pages git連携が自動ビルド）**。手動 `wrangler deploy` で talkcareer.jp を更新しない。Pages の404は `public/404.html` をプラットフォームが返す。
+- CI `.github/workflows/deploy-api.yml` は `workingDirectory: api` で api 設定を使う（root不使用）。踏襲する。
+
 ## 【恒久ルール】社名表記・アプリ画面素材（対外物すべて）
 - **社名は「株式会社OSD」のみ**。英字社名「One Spirit Diamond」はLP/HP/アプリ/受け渡し物など**いかなる場所にも記載しない**（コピーライトも `© {年} 株式会社OSD. All rights reserved.`）。新規ページ作成時も必ずOSD単独表記。反映後は `grep -rn "One Spirit Diamond" public/` が0であることを確認。
 - **LP・HPに載せるアプリ画面は必ず本番の実機スクリーンショット（実データ）を使う**。手作りモック・合成画面・手描きの画面風画像は**禁止**（実物なら社名や数字の誤記が構造的に混入し得ないため）。画像内テキストの社名はD1 `companies` の正式名と一致すること。
