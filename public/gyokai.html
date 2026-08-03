@@ -198,6 +198,9 @@ async function main(){
     }
   }catch(e){}
   try{ await liff.init({liffId:LIFF_ID}); if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;} }catch(e){}
+  // リッチメニュー枠=業界研究 への到達を計測。profileが取れれば__tkUserに設定しUU化(取れなければanonで1行)。
+  try{ if(typeof liff!=='undefined'&&liff.isLoggedIn&&liff.isLoggedIn()){ const _p=await liff.getProfile(); if(_p&&_p.userId) window.__tkUser=_p.userId; } }catch(e){}
+  if(window.tkEvent) tkEvent('menu','業界研究');
 }
 main();
 </script>
