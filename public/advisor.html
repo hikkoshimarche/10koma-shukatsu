@@ -35,6 +35,17 @@
     .composer .inner{max-width:640px;margin:0 auto;display:flex;gap:8px}
     .composer input{flex:1;border:1px solid #cdd8e8;border-radius:22px;padding:11px 15px;font-size:15px;outline:none}
     .composer button{background:var(--acc);color:#fff;border:none;border-radius:22px;padding:0 18px;font-size:15px;font-weight:600;cursor:pointer}
+    .bubble.crisis{background:#fff6f0;border-color:#f0d3bf;color:#5b3a24;font-size:15px;line-height:1.7}
+    .support{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+    .sup{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid #e8b9a0;border-radius:12px;padding:13px 14px;text-decoration:none;color:inherit}
+    .sup:active{background:#fdeee4}
+    .sup-ic{font-size:20px}
+    .sup-l{font-size:14px;font-weight:600}
+    .sup-n{font-size:16px;font-weight:800;color:#c0562a;letter-spacing:.02em}
+    .sup-note{font-size:11px;color:var(--sub)}
+    .crisis-emg{font-size:13px;color:#b3261e;font-weight:700;margin-top:10px;padding:9px 12px;background:#fdecea;border-radius:10px;line-height:1.5}
+    .crisis-src{font-size:11px;color:var(--sub);margin-top:8px;line-height:1.5;padding:0 2px}
+    .crisis-src a{color:var(--acc);word-break:break-all}
     .disc{font-size:11px;color:var(--sub);margin-top:14px;line-height:1.5;padding:0 2px}
     .thinking{font-size:13px;color:var(--sub);padding:4px 2px}
     .sec-label{font-size:11px;color:var(--sub);margin:8px 2px 0;font-weight:600;letter-spacing:.02em}
@@ -64,6 +75,7 @@ const disc = document.getElementById('disc');
 const input = document.getElementById('text');
 let state = { company: null, purpose: null };
 let sentIntro = false;
+let crisisMode = false;   // R1: 一度危機を検出したら以降のターンも危機経路を維持（機能案内に戻さない）
 
 function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
@@ -75,6 +87,32 @@ function render(r){
   if (r.meta){ if(r.meta.company) state.company=r.meta.company; if(r.meta.purpose) state.purpose=r.meta.purpose; }
 
   if (r.ai_intro){ const i=document.createElement('div'); i.className='bubble intro'; i.textContent=r.ai_intro; thread.appendChild(i); }
+
+  // R1: 危機応答は機能提案を出さず、受け止め＋公式相談窓口のみを温かく提示。以降は危機モードを維持。
+  if (r.crisis){
+    crisisMode = true;   // 一度検出したら、このセッションでは機能案内フローに戻さない
+    const m=document.createElement('div'); m.className='bubble crisis'; m.textContent=r.message||''; thread.appendChild(m);
+    if (r.support && r.support.length){
+      const lbl=document.createElement('div'); lbl.className='sec-label'; lbl.textContent='相談窓口'; thread.appendChild(lbl);
+      const wrap=document.createElement('div'); wrap.className='support';
+      r.support.forEach(s=>{
+        const a=document.createElement('a'); a.className='sup';
+        a.href = s.tel ? ('tel:'+String(s.tel).replace(/[^0-9]/g,'')) : s.href;
+        if (!s.tel){ a.target='_blank'; a.rel='noopener'; }
+        const noteHtml = s.note ? `<br><span class="sup-note">${esc(s.note)}</span>` : '';
+        a.innerHTML = `<span class="sup-ic">${s.tel?'📞':'💬'}</span><span><span class="sup-l">${esc(s.label)}</span>${s.tel?`<br><span class="sup-n">${esc(s.tel)}</span>`:''}${noteHtml}</span>`;
+        wrap.appendChild(a);
+      });
+      thread.appendChild(wrap);
+    }
+    if (r.emergency){ const em=document.createElement('div'); em.className='crisis-emg'; em.textContent=r.emergency; thread.appendChild(em); }
+    if (r.source){ const src=document.createElement('div'); src.className='crisis-src';
+      src.innerHTML = `出典：厚生労働省「まもろうよ こころ」<br><a href="${esc(r.source)}" target="_blank" rel="noopener">${esc(r.source)}</a>`;
+      thread.appendChild(src); }
+    if (r.disclaimer) disc.textContent = r.disclaimer;
+    scroll(); return;
+  }
+
   if (r.message){ const m=document.createElement('div'); m.className='bubble'; m.textContent=r.message; thread.appendChild(m); }
 
   if (r.facts && r.facts.length){
@@ -124,6 +162,7 @@ function clearInteractive(){
 async function send(payload){
   const think=document.createElement('div'); think.className='thinking'; think.textContent='考え中…'; thread.appendChild(think); scroll();
   const body = Object.assign({ first: !sentIntro }, payload);
+  if (crisisMode) body.crisis_mode = true;   // 危機モード中は毎ターン送信し、機能案内に戻さない
   sentIntro = true;
   // 状態の引き継ぎ（選択肢が company/purpose を明示しない場合は現状を保持）
   if (body.company === undefined && state.company) body.company = state.company;
