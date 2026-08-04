@@ -76,6 +76,10 @@ const input = document.getElementById('text');
 let state = { company: null, purpose: null };
 let sentIntro = false;
 let crisisMode = false;   // R1: 一度危機を検出したら以降のターンも危機経路を維持（機能案内に戻さない）
+// セッションID（サーバ側の危機状態のキー。危機フラグそのものではなく不透明なキー）。
+const SID = (()=>{ try{ let s=sessionStorage.getItem('tk_adv_sid');
+  if(!s){ s=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():('s'+Math.abs(Date.now()^(Math.random()*1e9|0))); sessionStorage.setItem('tk_adv_sid',s);} return s;
+}catch(e){ return 's'+(Date.now()); } })();
 
 function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
@@ -162,7 +166,7 @@ function clearInteractive(){
 
 async function send(payload){
   const think=document.createElement('div'); think.className='thinking'; think.textContent='考え中…'; thread.appendChild(think); scroll();
-  const body = Object.assign({ first: !sentIntro }, payload);
+  const body = Object.assign({ first: !sentIntro, sid: SID }, payload);
   if (crisisMode) body.crisis_mode = true;   // 危機モード中は毎ターン送信し、機能案内に戻さない
   sentIntro = true;
   // 状態の引き継ぎ（選択肢が company/purpose を明示しない場合は現状を保持）
