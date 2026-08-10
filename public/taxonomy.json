@@ -4,7 +4,7 @@
   "note": "唯一の正準タクソノミー(構造のみ)。個社割当は tools/taxonomy_companies.csv に分離。業界研究ハブ(業界10コマ160枚+業界クイズ)は現行16を維持し、中分類→gyokai16 で橋渡し。将来ディレクトリと業界研究を揃えたくなったら gyokai16 を差し替えるだけで揃う構造。",
   "counts": {
     "daibunrui": 15,
-    "chubunrui": 56
+    "chubunrui": 59
   },
   "tags": [
     {
@@ -95,13 +95,28 @@
           "gyokai16": "sogo-shosha"
         },
         {
-          "slug": "senmon-shosha-food-pharma",
-          "name": "専門商社（食品・医薬）",
+          "slug": "steel-metal-trading",
+          "name": "鉄鋼・金属商社",
           "gyokai16": "senmon-shosha"
         },
         {
-          "slug": "senmon-shosha-industrial",
-          "name": "専門商社（エレキ・鉄鋼・化学・機械）",
+          "slug": "chemical-trading",
+          "name": "化学商社",
+          "gyokai16": "senmon-shosha"
+        },
+        {
+          "slug": "machinery-electronics-trading",
+          "name": "機械・電子部品商社",
+          "gyokai16": "senmon-shosha"
+        },
+        {
+          "slug": "food-trading",
+          "name": "食品商社",
+          "gyokai16": "senmon-shosha"
+        },
+        {
+          "slug": "pharma-trading",
+          "name": "医薬品商社",
           "gyokai16": "senmon-shosha"
         }
       ]

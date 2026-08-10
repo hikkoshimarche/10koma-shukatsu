@@ -109,7 +109,7 @@ function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 // 企業ディレクトリは二層化済(大→中)。?chu=<slug,...> で該当中分類だけを事前フィルタして開く(精密・素通り無し)。
 const INDUSTRIES=[
   {slug:'sogo-shosha',name:'総合商社',icon:'🌐',acc:'#2f6fb0',find:'sogo-shosha'},
-  {slug:'senmon-shosha',name:'専門商社',icon:'📦',acc:'#b8823a',find:'senmon-shosha-food-pharma,senmon-shosha-industrial'},
+  {slug:'senmon-shosha',name:'専門商社',icon:'📦',acc:'#b8823a',find:'steel-metal-trading,chemical-trading,machinery-electronics-trading,food-trading,pharma-trading'},
   {slug:'finance',name:'銀行・証券・保険',icon:'🏦',acc:'#1f6f54',find:'bank,securities,insurance,lease-credit'},
   {slug:'it-ai-saas-game',name:'IT・AI・SaaS・ゲーム',icon:'💻',acc:'#3b5bdb',find:'telecom-carrier,sier-itservice,internet-web,saas,ai-data,game'},
   {slug:'consulting',name:'コンサル',icon:'📈',acc:'#2c6fa8',find:'strategy-consulting,general-it-consulting,think-tank'},

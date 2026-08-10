@@ -26,9 +26,13 @@ TAGS = [
 # 大分類(slug,name) -> [ (中分類slug, 中分類name, 対応する業界研究16slug) ]
 STRUCT = [
  ("shosha","商社",[
+    # 専門商社は「何を扱っているか」(取扱分野)で中分類化。総合商社は多分野横断のみ。
     ("sogo-shosha","総合商社","sogo-shosha"),
-    ("senmon-shosha-food-pharma","専門商社（食品・医薬）","senmon-shosha"),
-    ("senmon-shosha-industrial","専門商社（エレキ・鉄鋼・化学・機械）","senmon-shosha"),
+    ("steel-metal-trading","鉄鋼・金属商社","senmon-shosha"),
+    ("chemical-trading","化学商社","senmon-shosha"),
+    ("machinery-electronics-trading","機械・電子部品商社","senmon-shosha"),
+    ("food-trading","食品商社","senmon-shosha"),
+    ("pharma-trading","医薬品商社","senmon-shosha"),
  ]),
  ("finance","金融",[
     ("bank","銀行","finance"),

@@ -111,10 +111,10 @@
       "room_liff_id": "2010075487-d4TJ2xZc",
       "video_url": null,
       "kessan_url": null,
-      "dai_slug": "shosha",
-      "dai_name": "商社",
-      "chu_slug": "sogo-shosha",
-      "chu_name": "総合商社",
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "gas",
+      "chu_name": "ガス",
       "tags": []
     },
     {
@@ -126,8 +126,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "sogo-shosha",
-      "chu_name": "総合商社",
+      "chu_slug": "steel-metal-trading",
+      "chu_name": "鉄鋼・金属商社",
       "tags": []
     }
   ],
@@ -2381,8 +2381,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-food-pharma",
-      "chu_name": "専門商社（食品・医薬）",
+      "chu_slug": "pharma-trading",
+      "chu_name": "医薬品商社",
       "tags": []
     },
     {
@@ -2394,8 +2394,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-food-pharma",
-      "chu_name": "専門商社（食品・医薬）",
+      "chu_slug": "pharma-trading",
+      "chu_name": "医薬品商社",
       "tags": []
     },
     {
@@ -2407,8 +2407,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-food-pharma",
-      "chu_name": "専門商社（食品・医薬）",
+      "chu_slug": "pharma-trading",
+      "chu_name": "医薬品商社",
       "tags": []
     },
     {
@@ -2420,8 +2420,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-food-pharma",
-      "chu_name": "専門商社（食品・医薬）",
+      "chu_slug": "pharma-trading",
+      "chu_name": "医薬品商社",
       "tags": []
     },
     {
@@ -2433,8 +2433,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-food-pharma",
-      "chu_name": "専門商社（食品・医薬）",
+      "chu_slug": "food-trading",
+      "chu_name": "食品商社",
       "tags": []
     },
     {
@@ -2446,8 +2446,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-food-pharma",
-      "chu_name": "専門商社（食品・医薬）",
+      "chu_slug": "food-trading",
+      "chu_name": "食品商社",
       "tags": []
     },
     {
@@ -2459,8 +2459,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-food-pharma",
-      "chu_name": "専門商社（食品・医薬）",
+      "chu_slug": "food-trading",
+      "chu_name": "食品商社",
       "tags": []
     },
     {
@@ -2472,8 +2472,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-food-pharma",
-      "chu_name": "専門商社（食品・医薬）",
+      "chu_slug": "food-trading",
+      "chu_name": "食品商社",
       "tags": []
     },
     {
@@ -2485,8 +2485,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-industrial",
-      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "chu_slug": "steel-metal-trading",
+      "chu_name": "鉄鋼・金属商社",
       "tags": []
     },
     {
@@ -2498,8 +2498,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-industrial",
-      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "chu_slug": "steel-metal-trading",
+      "chu_name": "鉄鋼・金属商社",
       "tags": []
     },
     {
@@ -2511,8 +2511,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-industrial",
-      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "chu_slug": "steel-metal-trading",
+      "chu_name": "鉄鋼・金属商社",
       "tags": []
     },
     {
@@ -2524,8 +2524,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-industrial",
-      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "chu_slug": "machinery-electronics-trading",
+      "chu_name": "機械・電子部品商社",
       "tags": []
     },
     {
@@ -2537,8 +2537,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-industrial",
-      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "chu_slug": "machinery-electronics-trading",
+      "chu_name": "機械・電子部品商社",
       "tags": []
     },
     {
@@ -2550,8 +2550,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-industrial",
-      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "chu_slug": "machinery-electronics-trading",
+      "chu_name": "機械・電子部品商社",
       "tags": []
     },
     {
@@ -2563,8 +2563,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-industrial",
-      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "chu_slug": "chemical-trading",
+      "chu_name": "化学商社",
       "tags": []
     },
     {
@@ -2576,8 +2576,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-industrial",
-      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "chu_slug": "chemical-trading",
+      "chu_name": "化学商社",
       "tags": []
     },
     {
@@ -2589,8 +2589,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-industrial",
-      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "chu_slug": "chemical-trading",
+      "chu_name": "化学商社",
       "tags": []
     },
     {
@@ -2602,8 +2602,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-industrial",
-      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "chu_slug": "machinery-electronics-trading",
+      "chu_name": "機械・電子部品商社",
       "tags": []
     },
     {
@@ -2615,8 +2615,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-industrial",
-      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "chu_slug": "machinery-electronics-trading",
+      "chu_name": "機械・電子部品商社",
       "tags": []
     },
     {
@@ -2628,8 +2628,8 @@
       "kessan_url": null,
       "dai_slug": "shosha",
       "dai_name": "商社",
-      "chu_slug": "senmon-shosha-industrial",
-      "chu_name": "専門商社（エレキ・鉄鋼・化学・機械）",
+      "chu_slug": "machinery-electronics-trading",
+      "chu_name": "機械・電子部品商社",
       "tags": []
     }
   ],
