@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link rel="stylesheet" href="/base.css">
+  <title>クイズがある企業 | トーキャリ</title>
+  <link rel="stylesheet" href="entry.css">
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="config.js"></script>
+  <script src="nav.js"></script>
+  <script src="entry.js"></script>
+  <style>
+    .ql-intro{padding:6px 16px 2px;color:rgba(255,255,255,0.85);font-size:12.5px;line-height:1.6}
+    .ql-count{font-weight:800;color:var(--gold)}
+    .ql-search-wrap{padding:10px 16px 4px}
+    .ql-search{width:100%;border:none;border-radius:10px;padding:11px 12px;font-size:15px;font-family:inherit;color:var(--ink);background:rgba(255,255,255,0.95);box-shadow:0 2px 8px rgba(0,0,0,0.14)}
+    .ql-body{padding:6px 16px 24px}
+    .ql-grp{margin-top:16px}
+    .ql-grp-h{font-size:13px;font-weight:800;color:#fff;margin:0 2px 8px;
+      text-shadow:0 1px 3px rgba(0,8,26,0.95),0 -1px 2px rgba(0,8,26,0.8),1px 0 2px rgba(0,8,26,0.8),-1px 0 2px rgba(0,8,26,0.8)}
+    .ql-grp-h .c{color:var(--gold);font-weight:700;font-size:11.5px;margin-left:6px}
+    .ql-card{display:flex;align-items:center;gap:11px;background:#fff;color:var(--ink);border-radius:14px;padding:11px 13px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.14);margin-bottom:8px}
+    .ql-badge{width:40px;height:40px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:"Reggae One",sans-serif;font-size:19px;color:#fff;background-color:var(--acc);background-image:linear-gradient(135deg,rgba(255,255,255,0.3),rgba(255,255,255,0) 62%)}
+    .ql-info{flex:1;min-width:0}
+    .ql-nm{font-size:15px;font-weight:700;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .ql-lvs{display:flex;gap:4px;margin-top:5px}
+    .ql-lv{font-size:10px;font-weight:800;color:#fff;border-radius:6px;padding:2px 6px;line-height:1.3}
+    .ql-lv.off{background:#e7ebf0 !important;color:#b3bdc8}
+    .ql-go{color:#c3ccd6;font-size:18px;font-weight:700;flex-shrink:0}
+    .ql-empty{background:rgba(255,255,255,0.06);border:1px dashed rgba(255,255,255,0.22);border-radius:14px;padding:22px 16px;text-align:center;color:rgba(255,255,255,0.85);font-size:14px}
+    .ql-load{text-align:center;color:rgba(255,255,255,0.7);padding:44px 0}
+    .ql-legend{display:flex;flex-wrap:wrap;gap:8px;padding:2px 16px 2px;font-size:10.5px;color:rgba(255,255,255,0.75)}
+    .ql-legend span{display:inline-flex;align-items:center;gap:4px}
+    .ql-legend i{width:9px;height:9px;border-radius:3px;display:inline-block}
+  </style>
+</head>
+<body>
+<div class="e-wrap">
+  <header class="e-header has-back">
+    <button class="e-back" id="btn-back" data-tkback="/home.html" data-tkback-keep aria-label="戻る">‹</button>
+    <p class="e-kicker">理解度クイズ</p>
+    <h1 class="e-title">クイズがある企業</h1>
+    <p class="ql-intro" id="ql-intro">読み込み中…</p>
+    <div class="ql-legend">
+      <span><i style="background:#28a45c"></i>Lv1 入門</span>
+      <span><i style="background:#2f6fb0"></i>Lv2 基礎</span>
+      <span><i style="background:#7d3c98"></i>Lv3 応用</span>
+      <span><i style="background:#d17d00"></i>Lv4 実践</span>
+    </div>
+  </header>
+  <div class="ql-search-wrap"><input class="ql-search" id="ql-search" type="search" placeholder="社名で検索（部分一致）" autocomplete="off" enterkeyhint="search"></div>
+  <div id="ql" class="ql-body"><div class="ql-load">クイズを読み込み中…</div></div>
+  <footer class="e-footer"><span class="brand-panel"><img class="brand-logo" src="/images/brand/tokyari_logo_wide.png" alt="トーキャリ"></span></footer>
+</div>
+<script>
+const CFG=window.TOKYARI||{};
+const LIFF_ID=CFG.LIFF_HUB||'2010075487-89AJxZnA';
+const API_BASE=CFG.API_BASE||'https://10koma-shukatsu-api.oscar-dodds.workers.dev';
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+const PAL=['#2f6fb0','#c0392b','#7d3c98','#16a085','#d17d00','#2d8659','#c0448a','#3b5bdb','#b8823a','#2f8fbf'];
+function hue(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;return PAL[h%PAL.length];}
+const LEVELS=[{lv:1,name:'入門',color:'#28a45c'},{lv:2,name:'基礎',color:'#2f6fb0'},{lv:3,name:'応用',color:'#7d3c98'},{lv:4,name:'実践',color:'#d17d00'}];
+const ql=()=>document.getElementById('ql');
+
+let GROUPS=[];   // [{industry, items:[{slug,name,levels}]}] companies.json の業界順
+let TOTAL=0;
+
+function lvPills(levels){
+  const set=new Set(levels||[]);
+  return `<span class="ql-lvs">${LEVELS.map(L=>`<span class="ql-lv ${set.has(L.lv)?'':'off'}" style="background:${L.color}">Lv${L.lv}</span>`).join('')}</span>`;
+}
+function card(c){
+  return `<a class="ql-card" href="/quiz.html?company=${encodeURIComponent(c.slug)}&name=${encodeURIComponent(c.name)}&from=quizlist">
+    <span class="ql-badge" style="--acc:${hue(c.slug)}">${esc(String(c.name||'？').charAt(0))}</span>
+    <span class="ql-info"><span class="ql-nm">${esc(c.name)}</span>${lvPills(c.levels)}</span>
+    <span class="ql-go">›</span></a>`;
+}
+function draw(){
+  const q=(document.getElementById('ql-search').value||'').trim().toLowerCase();
+  let shown=0;
+  const html=GROUPS.map(g=>{
+    const items=g.items.filter(c=> !q || String(c.name||'').toLowerCase().includes(q) || String(c.slug||'').toLowerCase().includes(q));
+    if(!items.length) return '';
+    shown+=items.length;
+    return `<div class="ql-grp"><div class="ql-grp-h">${esc(g.industry)}<span class="c">${items.length}社</span></div>${items.map(card).join('')}</div>`;
+  }).join('');
+  ql().innerHTML = shown ? html : `<div class="ql-empty">「${esc(q)}」に一致する企業のクイズはありません。<br>別のキーワードでお試しください。</div>`;
+  const intro=document.getElementById('ql-intro');
+  if(intro) intro.innerHTML = q ? `「${esc(q)}」で <span class="ql-count">${shown}社</span> 表示中（全<span class="ql-count">${TOTAL}社</span>公開中）`
+                                : `いま <span class="ql-count">${TOTAL}社</span>のクイズを公開中。気になる企業を選んでね。`;
+}
+
+async function load(){
+  let api=null, comp=null;
+  try{
+    [api,comp]=await Promise.all([
+      fetch(`${API_BASE}/api/quiz/companies`).then(r=>r.ok?r.json():null),
+      fetch('/companies.json').then(r=>r.ok?r.json():null),
+    ]);
+  }catch(e){}
+  if(!api || !Array.isArray(api.companies)){
+    ql().innerHTML=`<div class="ql-empty">クイズ一覧を取得できませんでした。<br>通信が不安定な可能性があります。時間をおいて再度お試しください。</div>`;
+    const intro=document.getElementById('ql-intro'); if(intro) intro.textContent='';
+    return;
+  }
+  TOTAL=api.total!=null?api.total:api.companies.length;
+  // companies.json(18業界キー)で slug→{name,industry} を作る。業界表示順=companies.jsonのキー順。
+  const meta={}; const order=[];
+  if(comp && typeof comp==='object'){
+    for(const industry of Object.keys(comp)){
+      order.push(industry);
+      for(const c of (comp[industry]||[])) if(c&&c.id) meta[c.id]={name:c.name||c.id, industry};
+    }
+  }
+  order.push('その他');
+  // クイズ保有社を業界にひも付け（companies.jsonに無い社は「その他」・名前はslug）
+  const byInd={};
+  for(const qc of api.companies){
+    const m=meta[qc.slug]||{name:qc.slug, industry:'その他'};
+    (byInd[m.industry] ||= []).push({slug:qc.slug, name:m.name, levels:qc.levels||[]});
+  }
+  GROUPS = order.filter(ind=>byInd[ind]&&byInd[ind].length).map(ind=>({
+    industry:ind, items:byInd[ind].sort((a,b)=>String(a.name).localeCompare(String(b.name),'ja')),
+  }));
+  draw();
+  document.getElementById('ql-search').addEventListener('input', draw);
+}
+
+async function main(){
+  document.getElementById('btn-back').onclick=()=>tkBack('/home.html');
+  try{
+    await liff.init({liffId:LIFF_ID});
+    if(!liff.isLoggedIn()&&liff.isInClient()){liff.login();return;}
+    if(liff.isLoggedIn()){ try{ const p=await liff.getProfile(); if(p&&p.userId) window.__tkUser=p.userId; }catch(e){} }
+  }catch(e){}
+  if(window.tkEvent) tkEvent('feature','クイズ一覧');   // 一覧ページ到達を計測
+  load();
+}
+main();
+</script>
+</body>
+</html>

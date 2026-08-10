@@ -734,6 +734,28 @@ app.get('/api/quiz', async (c) => {
   } catch (e) { return c.json([]) }
 })
 
+// クイズが実際に出題可能な会社一覧(=quiz_questionsに問題がある会社のみ)+各社の出題可能Lv。
+// クイズ一覧ページ用。ローカルにファイルがあってもD1に無ければ出さない(学生に見えないため)。増加に追随するためAPI経由。
+app.get('/api/quiz/companies', async (c) => {
+  try {
+    const r = await c.env.DB.prepare(
+      `SELECT set_id, COALESCE(difficulty,2) AS lv, COUNT(*) AS n
+       FROM quiz_questions WHERE set_type='company'
+       GROUP BY set_id, COALESCE(difficulty,2)`
+    ).all()
+    const bySlug: Record<string, Set<number>> = {}
+    for (const row of (r.results || []) as any[]) {
+      if (!row.n) continue
+      const s = String(row.set_id)
+      ;(bySlug[s] ||= new Set<number>()).add(Number(row.lv))
+    }
+    const companies = Object.keys(bySlug).sort().map(slug => ({
+      slug, levels: [...bySlug[slug]].filter(l => l >= 1 && l <= 4).sort((a, b) => a - b),
+    }))
+    return c.json({ total: companies.length, companies })
+  } catch (e) { return c.json({ total: 0, companies: [] }) }
+})
+
 // Lv解放状態（フロントのレベルはしご表示用）
 app.get('/api/quiz/unlock', async (c) => {
   const userId = c.req.query('user_id') || ''
