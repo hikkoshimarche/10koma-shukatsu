@@ -261,7 +261,11 @@ async function renderSelect(){
         <span class="e-card-body"><span class="e-card-label">${esc(name)}</span><span class="e-card-sub">${(data[name]||[]).length}社から選ぶ</span></span>
         <span class="e-card-arrow">›</span></button>`).join('');
   }
-  app().innerHTML = tabs + `<div class="e-list" id="sel-list">${list}</div>`;
+  // 会社別: 全社(未作成含む)が並ぶため、クイズが実際にある企業だけの一覧への導線を最上段に出す。
+  const listLink = (mode==='company')
+    ? `<a href="/quiz-list.html?from=quiz" style="display:block;text-align:center;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:10px;padding:11px;font-size:13px;font-weight:800;text-decoration:none;margin:10px 0 6px">🎯 クイズがある企業を一覧で見る</a>`
+    : '';
+  app().innerHTML = tabs + listLink + `<div class="e-list" id="sel-list">${list}</div>`;
 
   app().querySelectorAll('.quiz-tab').forEach(t=>t.onclick=()=>{ mode=t.dataset.mode; renderSelect(); });
   document.getElementById('sel-list').onclick = e=>{
