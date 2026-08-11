@@ -334,14 +334,14 @@ function secStats(d){
   const s=d.quiz_stats||{};
   if(!s.answered){
     return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">あなたのクイズ<span class="em">成績</span></span></div>
-      <div class="mp-empty"><p>まだクイズの記録がありません。<br>1問解くと成績がここに出ます。</p><a href="/quiz.html">クイズに挑戦 →</a></div></div>`;
+      <div class="mp-empty"><p>まだクイズの記録がありません。<br>1問解くと成績がここに出ます。</p><a href="/quiz-list">クイズがある企業を探す →</a></div></div>`;
   }
   const acc=(s.accuracy==null?'—':s.accuracy);
   const rows=(s.recent_scores||[]).map(r=>`<div class="mp-score-row">
       <span class="sn" style="flex:0 0 92px">${esc(r.name)}</span>
       <span class="bar"><i style="width:${Math.max(4,r.score)}%"></i></span>
       <span class="sp">${r.score}%</span></div>`).join('');
-  return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">あなたのクイズ<span class="em">成績</span></span></div>
+  return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">あなたのクイズ<span class="em">成績</span></span><a class="mp-more" href="/quiz-list">クイズがある企業 →</a></div>
     <div class="mp-card">
       <div class="mp-stats">
         <div class="mp-stat"><div class="v">${s.companies}<small>社</small></div><div class="l">受験社数</div></div>
@@ -436,25 +436,36 @@ function rallyNorm(s){ return String(s||'').replace(/[\s・･・　]/g,'').repl
 const RALLY_NAME2SLUG=(()=>{ const m={}; RALLY_SLUGS.forEach(([n,s])=>{ m[rallyNorm(n)]=s; }); return m; })();
 function rallySlug(name){ return RALLY_NAME2SLUG[rallyNorm(name)]||''; }
 
+// 取得済みスタンプの保持(sticky)用ストレージ(ユーザー別)。分類変更で所属社数が増えても🏅を外さないため。
+function stampEarnedKey(){ return 'tk_stamps_earned:'+(userId||'guest'); }
+function loadEarnedStamps(){ try{ return new Set(JSON.parse(localStorage.getItem(stampEarnedKey())||'[]')); }catch(e){ return new Set(); } }
+function saveEarnedStamps(set){ try{ localStorage.setItem(stampEarnedKey(), JSON.stringify([...set])); }catch(e){} }
+
 // v1.5: 業界制覇スタンプラリー
 // 押した対象の「業界」と「達成/未達成」を業界研究へ引き継ぐ(押した意味を着地点に残す):
 //   open=<slug>(その業界を自動展開) / focus=done|undone(その状態で絞り込み) / done=<達成slug csv>(gyokai側でバッジ表示・追加fetch不要=速度非退行)
 function secRally(d){
   const r=d.stamp_rally||{}; const inds=r.industries||[];
   if(!inds.length) return '';
+  // ★総数(total)・各業界の所属社数(x.total)は API(D1 industries×companies)由来＝分類ソース(タブH管理)の変更に自動追従。ここに数値の直書きは無い。
   const total=inds.length;
-  const done=inds.filter(x=>x.viewed>=x.total).length;      // 🏅制覇(全社閲覧)した業界数=スタンプ現在数
-  const started=inds.filter(x=>x.viewed>0).length;          // 着手した業界数
-  const doneSlugs=inds.filter(x=>x.viewed>=x.total).map(x=>rallySlug(x.name)).filter(Boolean);
+  // 取得済みスタンプは外さない(sticky): 業界の所属社数が増えても、一度🏅なら保持=「進んだものが戻る」を防ぐ。localStorage(ユーザー別)。
+  const earned=loadEarnedStamps();
+  inds.forEach(x=>{ if(x.total>0 && x.viewed>=x.total) earned.add(x.name); });   // 現在達成を記録(獲得を保存)
+  saveEarnedStamps(earned);
+  const isEarned=x=> (x.total>0 && x.viewed>=x.total) || earned.has(x.name);      // 現在達成 or 過去達成(保持)
+  const done=inds.filter(isEarned).length;                  // 🏅数(保持を含む)
+  const started=inds.filter(x=>x.viewed>0).length;
+  const doneSlugs=inds.filter(isEarned).map(x=>rallySlug(x.name)).filter(Boolean);
   const doneQS=doneSlugs.length?('&done='+encodeURIComponent(doneSlugs.join(','))):'';
   const cells=inds.map(x=>{
-    const isDone=x.viewed>=x.total, isStarted=x.viewed>0;
+    const isDone=isEarned(x), isStarted=x.viewed>0;
     const slug=rallySlug(x.name);
     // 押した業界(slug)・その状態(focus)・達成一覧(done)を渡す。slug未対応なら focus/done のみで状態絞り込みは効く。
     const href='/gyokai.html?from=mypage&focus='+(isDone?'done':'undone')
       +(slug?('&open='+encodeURIComponent(slug)):'')+doneQS;
-    const pct=x.total?Math.round(x.viewed/x.total*100):0;
-    // FB③: 未取得(灰色)は「あと何社で🏅か」を明示＝押せば何が起きるか分かる(灰色で無反応を解消)。縦を増やさないよう件数行にインライン。
+    const pct=x.total?Math.round(Math.min(100,x.viewed/x.total*100)):0;
+    // 未取得のみ「あと何社で🏅か」を明示(灰色で無反応を解消)。取得済(保持含む)には出さない=進んだ表示を戻さない。N=実所属社数から動的。
     const todo=isDone?'':`<span class="rl-todo">・あと${Math.max(0,x.total-x.viewed)}社で🏅</span>`;
     return `<a class="rl-cell ${isDone?'done':''} ${isStarted?'':'unexp'}" href="${href}">
       <div class="rl-nm">${isDone?'<span class="st">🏅</span>':''}${esc(x.name)}</div>
@@ -465,9 +476,9 @@ function secRally(d){
   const explain=`<div class="rl-explain" id="rl-explain" hidden>
       <b>これは何？</b> 業界研究の進み具合を見える化する仕組みです。全業界の制覇を目指せます。<br>
       <b>🏅が1個つく条件：</b> その業界の企業を<b>全社</b>見ると付きます。<br>
-      <b>ぜんぶで：</b> ${total}個（${total}業界）。<br>
+      <b>ぜんぶで：</b> ${total}個（${total}業界）。<span style="opacity:0.72">※業界の数はトーキャリの分類に合わせて自動更新されます</span><br>
       <b>いま：</b> 🏅<b>${done}</b>個 制覇 ／ ${started}業界に着手中。<br>
-      灰色（未取得）を押すと、その業界の研究ページへ。全社見れば🏅が付きます。</div>`;
+      一度取れた🏅は外れません（会社が増えても保持。次に見れば埋まります）。灰色を押すとその業界の研究ページへ。</div>`;
   return `<div class="mp-sec"><div class="mp-h">
       <span class="mp-t">業界制覇<span class="em">スタンプ</span><button class="rl-help" data-rlhelp aria-label="スタンプの説明">?</button></span>
       <span class="mp-more">🏅${done}/${total}</span></div>
