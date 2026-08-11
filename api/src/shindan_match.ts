@@ -94,9 +94,10 @@ function rationale(d: any, matched: string[], meta: any, axes: {key:string,m:num
     .map(a=>({ label: AXIS_LABELS[a.key]||a.key, score: Math.round(a.m*100)/100 }))
     .sort((a,b)=> b.score - a.score)
   const r:any = { trend: d.t||'', matched: matched.slice(0,4), facts:{}, notes:[], axes: axesOut }
-  if (d.av) r.facts.avg_salary = { text:`平均年収 約${d.av.v}万円`, source:d.av.u||'', as_of:d.av.a||'' }
+  // Source-or-Silence: 出典URLの無い数値は表示しない(compare.ts と同基準)。無出典の年収/初任給提示を防ぐ。
+  if (d.av && d.av.v && (d.av.u||'').trim()) r.facts.avg_salary = { text:`平均年収 約${d.av.v}万円`, source:d.av.u, as_of:d.av.a||'' }
   else if (meta && meta.missing_salary_pref) r.notes.push('年収データなし（出典のある平均年収が非公開のため、年収面は参考程度に）')
-  if (d.st) r.facts.starting_salary = { text:`初任給 ${d.st.v.toLocaleString()}円/月`, source:d.st.u||'' }
+  if (d.st && d.st.v && (d.st.u||'').trim()) r.facts.starting_salary = { text:`初任給 ${d.st.v.toLocaleString()}円/月`, source:d.st.u }
   return r
 }
 
