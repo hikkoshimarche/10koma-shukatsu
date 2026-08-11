@@ -192,8 +192,10 @@ async function main(){
       fetch('/search_aliases.json').then(r=>r.ok?r.json():({})).catch(()=>({})),
     ]);
   }catch(e){ wrap().innerHTML='<div class="loading">データの読み込みに失敗しました</div>'; return; }
-  for(const [ind,arr] of Object.entries(comp)){
+  // 業界ラベルは各社の chu_name(新・中分類)を正とする。トップレベルキー(旧18)はルーム互換の凍結コンテナで使わない。
+  for(const arr of Object.values(comp)){
     for(const c of (arr||[])){
+      const ind=c.chu_name||c.dai_name||'';
       NAME[c.id]=c.name; IND[c.id]=ind;
       IDX.push({id:c.id, name:c.name, ind, key:normJ([c.name, c.id, c.id.replace(/-/g,' '), ...((aliases[c.id]||[]))].join(' '))});
     }

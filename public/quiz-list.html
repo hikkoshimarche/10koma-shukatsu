@@ -105,12 +105,17 @@ async function load(){
     return;
   }
   TOTAL=api.total!=null?api.total:api.companies.length;
-  // companies.json(18業界キー)で slug→{name,industry} を作る。業界表示順=companies.jsonのキー順。
+  // 各社の chu_name(新・中分類)で slug→{name,industry} を作る。表示順=各中分類の初出順。
+  // ※トップレベルキー(旧18)はルーム互換の凍結コンテナで、学生の業界表示には使わない。
   const meta={}; const order=[];
   if(comp && typeof comp==='object'){
-    for(const industry of Object.keys(comp)){
-      order.push(industry);
-      for(const c of (comp[industry]||[])) if(c&&c.id) meta[c.id]={name:c.name||c.id, industry};
+    for(const arr of Object.values(comp)){
+      for(const c of (arr||[])){
+        if(!c||!c.id||String(c.id).startsWith('industry_10koma__')) continue;
+        const industry=c.chu_name||c.dai_name||'その他';
+        if(!order.includes(industry)) order.push(industry);
+        meta[c.id]={name:c.name||c.id, industry};
+      }
     }
   }
   order.push('その他');

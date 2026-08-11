@@ -254,11 +254,12 @@ async function renderSelect(){
         <span class="e-card-body"><span class="e-card-label">${esc(ind.name)}</span><span class="e-card-sub">業界クイズに挑戦</span></span>
         <span class="e-card-arrow">›</span></button>`).join('');
   } else {
-    // 会社別 = 企業タクソノミー(companies.json)で業界→会社へドリル
-    list = Object.keys(data).map(name=>`
+    // 会社別 = 各社の chu_name(新・中分類)で業界→会社へドリル。トップレベルキー(旧18)は使わない(凍結コンテナ)。
+    const byChu = groupByChu(data);
+    list = Object.keys(byChu).map(name=>`
       <button class="e-card" data-ind="${esc(name)}" style="--acc:#2f6fb0">
         <span class="e-icon">${IND_ICON[name]||'🏢'}</span>
-        <span class="e-card-body"><span class="e-card-label">${esc(name)}</span><span class="e-card-sub">${(data[name]||[]).length}社から選ぶ</span></span>
+        <span class="e-card-body"><span class="e-card-label">${esc(name)}</span><span class="e-card-sub">${byChu[name].length}社から選ぶ</span></span>
         <span class="e-card-arrow">›</span></button>`).join('');
   }
   // 会社別: 全社(未作成含む)が並ぶため、クイズが実際にある企業だけの一覧への導線を最上段に出す。
@@ -276,10 +277,20 @@ async function renderSelect(){
   };
 }
 
+// 各社を chu_name(新・中分類)でグルーピング。companies.json 出現順を保持(≒大分類→中分類の並び)。
+function groupByChu(data){
+  const by={};
+  for(const arr of Object.values(data)) for(const c of (arr||[])){
+    if(!c||!c.id||String(c.id).startsWith('industry_10koma__')) continue;
+    const k=c.chu_name||c.dai_name||'その他'; (by[k]=by[k]||[]).push(c);
+  }
+  return by;
+}
 async function renderCompanyList(industry){
   mountGuide('会社を選んで<br>スタート！');
   const data = await loadCompanies();
-  const comps = data[industry]||[];
+  const byChu = groupByChu(data);
+  const comps = byChu[industry] || data[industry] || [];   // 新中分類名が正・旧18キーは互換フォールバック
   const list = comps.map(c=>`
     <button class="e-card" data-id="${esc(c.id)}" data-name="${esc(c.name)}" style="--acc:${hue(c.id)}">
       <span class="e-badge">${esc(String(c.name||'？').charAt(0))}</span>

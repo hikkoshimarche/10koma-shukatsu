@@ -4,7 +4,7 @@
   "note": "唯一の正準タクソノミー(構造のみ)。個社割当は tools/taxonomy_companies.csv に分離。業界研究ハブ(業界10コマ160枚+業界クイズ)は現行16を維持し、中分類→gyokai16 で橋渡し。将来ディレクトリと業界研究を揃えたくなったら gyokai16 を差し替えるだけで揃う構造。",
   "counts": {
     "daibunrui": 15,
-    "chubunrui": 59
+    "chubunrui": 61
   },
   "tags": [
     {
@@ -169,7 +169,7 @@
       "chubunrui": [
         {
           "slug": "electronics-general",
-          "name": "総合電機・重電",
+          "name": "総合電機（コングロマリット）",
           "gyokai16": "manufacturer"
         },
         {
@@ -236,7 +236,7 @@
         },
         {
           "slug": "medical-device-healthtech",
-          "name": "医療機器・ヘルステック",
+          "name": "ヘルステック（医療IT）",
           "gyokai16": "medical-healthcare"
         }
       ]
@@ -427,8 +427,18 @@
           "gyokai16": "ad-media"
         },
         {
-          "slug": "entertainment",
-          "name": "音楽・映画・エンタメ施設",
+          "slug": "film-video",
+          "name": "映画・映像",
+          "gyokai16": "ad-media"
+        },
+        {
+          "slug": "music-talent",
+          "name": "音楽・芸能",
+          "gyokai16": "ad-media"
+        },
+        {
+          "slug": "themepark-leisure",
+          "name": "テーマパーク・レジャー",
           "gyokai16": "ad-media"
         },
         {

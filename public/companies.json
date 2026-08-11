@@ -287,7 +287,7 @@
       "dai_slug": "electronics-machinery",
       "dai_name": "電機・機械・重工",
       "chu_slug": "electronics-general",
-      "chu_name": "総合電機・重電",
+      "chu_name": "総合電機（コングロマリット）",
       "tags": []
     },
     {
@@ -300,7 +300,7 @@
       "dai_slug": "electronics-machinery",
       "dai_name": "電機・機械・重工",
       "chu_slug": "electronics-general",
-      "chu_name": "総合電機・重電",
+      "chu_name": "総合電機（コングロマリット）",
       "tags": []
     },
     {
@@ -313,7 +313,7 @@
       "dai_slug": "electronics-machinery",
       "dai_name": "電機・機械・重工",
       "chu_slug": "electronics-general",
-      "chu_name": "総合電機・重電",
+      "chu_name": "総合電機（コングロマリット）",
       "tags": []
     },
     {
@@ -326,7 +326,7 @@
       "dai_slug": "electronics-machinery",
       "dai_name": "電機・機械・重工",
       "chu_slug": "electronics-general",
-      "chu_name": "総合電機・重電",
+      "chu_name": "総合電機（コングロマリット）",
       "tags": []
     },
     {
@@ -4670,8 +4670,8 @@
       "kessan_url": null,
       "dai_slug": "media-entertainment",
       "dai_name": "マスコミ・広告・エンタメ",
-      "chu_slug": "entertainment",
-      "chu_name": "音楽・映画・エンタメ施設",
+      "chu_slug": "music-talent",
+      "chu_name": "音楽・芸能",
       "tags": []
     },
     {
@@ -4683,8 +4683,8 @@
       "kessan_url": null,
       "dai_slug": "media-entertainment",
       "dai_name": "マスコミ・広告・エンタメ",
-      "chu_slug": "entertainment",
-      "chu_name": "音楽・映画・エンタメ施設",
+      "chu_slug": "music-talent",
+      "chu_name": "音楽・芸能",
       "tags": []
     },
     {
@@ -4696,8 +4696,8 @@
       "kessan_url": null,
       "dai_slug": "media-entertainment",
       "dai_name": "マスコミ・広告・エンタメ",
-      "chu_slug": "entertainment",
-      "chu_name": "音楽・映画・エンタメ施設",
+      "chu_slug": "music-talent",
+      "chu_name": "音楽・芸能",
       "tags": []
     },
     {
@@ -4709,8 +4709,8 @@
       "kessan_url": null,
       "dai_slug": "media-entertainment",
       "dai_name": "マスコミ・広告・エンタメ",
-      "chu_slug": "entertainment",
-      "chu_name": "音楽・映画・エンタメ施設",
+      "chu_slug": "themepark-leisure",
+      "chu_name": "テーマパーク・レジャー",
       "tags": []
     },
     {
@@ -4722,8 +4722,8 @@
       "kessan_url": null,
       "dai_slug": "media-entertainment",
       "dai_name": "マスコミ・広告・エンタメ",
-      "chu_slug": "entertainment",
-      "chu_name": "音楽・映画・エンタメ施設",
+      "chu_slug": "themepark-leisure",
+      "chu_name": "テーマパーク・レジャー",
       "tags": []
     },
     {
@@ -4735,8 +4735,8 @@
       "kessan_url": null,
       "dai_slug": "media-entertainment",
       "dai_name": "マスコミ・広告・エンタメ",
-      "chu_slug": "entertainment",
-      "chu_name": "音楽・映画・エンタメ施設",
+      "chu_slug": "themepark-leisure",
+      "chu_name": "テーマパーク・レジャー",
       "tags": []
     },
     {
@@ -4748,8 +4748,8 @@
       "kessan_url": null,
       "dai_slug": "media-entertainment",
       "dai_name": "マスコミ・広告・エンタメ",
-      "chu_slug": "entertainment",
-      "chu_name": "音楽・映画・エンタメ施設",
+      "chu_slug": "themepark-leisure",
+      "chu_name": "テーマパーク・レジャー",
       "tags": []
     },
     {
@@ -4761,8 +4761,8 @@
       "kessan_url": null,
       "dai_slug": "media-entertainment",
       "dai_name": "マスコミ・広告・エンタメ",
-      "chu_slug": "entertainment",
-      "chu_name": "音楽・映画・エンタメ施設",
+      "chu_slug": "film-video",
+      "chu_name": "映画・映像",
       "tags": []
     },
     {
@@ -4774,8 +4774,8 @@
       "kessan_url": null,
       "dai_slug": "media-entertainment",
       "dai_name": "マスコミ・広告・エンタメ",
-      "chu_slug": "entertainment",
-      "chu_name": "音楽・映画・エンタメ施設",
+      "chu_slug": "film-video",
+      "chu_name": "映画・映像",
       "tags": []
     },
     {
@@ -4787,8 +4787,8 @@
       "kessan_url": null,
       "dai_slug": "media-entertainment",
       "dai_name": "マスコミ・広告・エンタメ",
-      "chu_slug": "entertainment",
-      "chu_name": "音楽・映画・エンタメ施設",
+      "chu_slug": "film-video",
+      "chu_name": "映画・映像",
       "tags": []
     },
     {
@@ -5143,7 +5143,7 @@
       "dai_slug": "consumer-healthcare",
       "dai_name": "消費財・ヘルスケアメーカー",
       "chu_slug": "medical-device-healthtech",
-      "chu_name": "医療機器・ヘルステック",
+      "chu_name": "ヘルステック（医療IT）",
       "tags": [
         "startup"
       ]
@@ -5158,7 +5158,7 @@
       "dai_slug": "consumer-healthcare",
       "dai_name": "消費財・ヘルスケアメーカー",
       "chu_slug": "medical-device-healthtech",
-      "chu_name": "医療機器・ヘルステック",
+      "chu_name": "ヘルステック（医療IT）",
       "tags": [
         "startup"
       ]
@@ -5173,7 +5173,7 @@
       "dai_slug": "consumer-healthcare",
       "dai_name": "消費財・ヘルスケアメーカー",
       "chu_slug": "medical-device-healthtech",
-      "chu_name": "医療機器・ヘルステック",
+      "chu_name": "ヘルステック（医療IT）",
       "tags": [
         "startup"
       ]

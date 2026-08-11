@@ -45,7 +45,7 @@ STRUCT = [
     ("auto-parts","自動車部品","manufacturer"),
  ]),
  ("electronics-machinery","電機・機械・重工",[
-    ("electronics-general","総合電機・重電","manufacturer"),
+    ("electronics-general","総合電機（コングロマリット）","manufacturer"),
     ("electronic-components","電子部品・デバイス","manufacturer"),
     ("semiconductor","半導体・半導体製造装置","manufacturer"),
     ("precision-optics","精密・光学・計測機器","manufacturer"),
@@ -60,7 +60,7 @@ STRUCT = [
     ("toiletry","日用品・トイレタリー","manufacturer"),
     ("cosmetics","化粧品・美容","manufacturer"),
     ("pharma","医薬品・製薬","medical-healthcare"),
-    ("medical-device-healthtech","医療機器・ヘルステック","medical-healthcare"),
+    ("medical-device-healthtech","ヘルステック（医療IT）","medical-healthcare"),
  ]),
  ("it-telecom-internet","IT・通信・インターネット",[
     ("telecom-carrier","通信キャリア","it-ai-saas-game"),
@@ -104,7 +104,10 @@ STRUCT = [
     ("advertising-agency","広告代理店","ad-media"),
     ("broadcasting","テレビ・放送","ad-media"),
     ("publishing","新聞・出版","ad-media"),
-    ("entertainment","音楽・映画・エンタメ施設","ad-media"),
+    # 旧「音楽・映画・エンタメ施設」を"やっていること"で3分割(FB③承認)。3つとも業界研究ブリッジはad-media据置。
+    ("film-video","映画・映像","ad-media"),
+    ("music-talent","音楽・芸能","ad-media"),
+    ("themepark-leisure","テーマパーク・レジャー","ad-media"),
     ("game","ゲーム","it-ai-saas-game"),   # 業界研究16では ゲーム は it-ai-saas-game 側(directory大分類とは独立=ブリッジの意義)
  ]),
  ("education-hr","教育・人材",[

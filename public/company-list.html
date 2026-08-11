@@ -53,21 +53,34 @@ async function main() {
     location.href = `/industry?from=${encodeURIComponent(from)}`;
   });
 
+  // 分類は各社の chu_name(新・中分類) を正として読む。companies.json のトップレベル18キーは
+  // ルーム互換の凍結コンテナ(Ph6橋渡し)であり、学生の分類表示には使わない。
+  async function loadGrouped() {
+    const [data, tax] = await Promise.all([
+      fetch('/companies.json').then(r => { if (!r.ok) throw new Error('companies '+r.status); return r.json(); }),
+      fetch('/taxonomy.json').then(r => r.ok ? r.json() : null),
+    ]);
+    const all = Object.values(data).flat().filter(c => c && c.id && !String(c.id).startsWith('industry_10koma__'));
+    const chuOrder = {};
+    if (tax) { let i = 0; for (const d of tax.daibunrui) for (const c of d.chubunrui) chuOrder[c.name] = i++; }
+    const byChu = {};
+    for (const c of all) { const k = c.chu_name || 'その他'; (byChu[k] = byChu[k] || []).push(c); }
+    return { data, all, byChu, chuOrder };
+  }
+
   if (!industry) {
-    // 業界未指定は行き止まりにせず、業界(companies.jsonのカテゴリ)を選べるようにして前へ進める。
+    // 業界未指定は行き止まりにせず、中分類(新・やっていること別)を選べるようにして前へ進める。
     document.getElementById('page-title').innerHTML = '業界をえらぶ';
     document.title = '業界をえらぶ | トーキャリ';
     try {
-      const res = await fetch('/companies.json');
-      if (!res.ok) throw new Error(`fetch error ${res.status}`);
-      const data = await res.json();
-      const cats = Object.keys(data).filter(k => Array.isArray(data[k]) && data[k].length);
+      const { byChu, chuOrder } = await loadGrouped();
+      const cats = Object.keys(byChu).sort((a, b) => (chuOrder[a] ?? 999) - (chuOrder[b] ?? 999));
       cardsEl.innerHTML = cats.map(cat => `
         <button class="e-card" data-cat="${esc(encodeURIComponent(cat))}" style="--acc:${hue(cat)}">
           <span class="e-badge">${esc(String(cat).trim().charAt(0))}</span>
           <span class="e-card-body">
             <span class="e-card-label">${esc(cat)}</span>
-            <span class="e-card-sub">${data[cat].length}社</span>
+            <span class="e-card-sub">${byChu[cat].length}社</span>
           </span>
           <span class="e-card-arrow">›</span>
         </button>`).join('');
@@ -88,11 +101,12 @@ async function main() {
   document.title = `${industry} | トーキャリ`;
 
   try {
-    const res = await fetch('/companies.json');
-    if (!res.ok) throw new Error(`fetch error ${res.status}`);
-    const data = await res.json();
-
-    const companies = data[industry];
+    const { data, all, byChu } = await loadGrouped();
+    // industry パラメータは 新・中分類名 が正。後方互換で 大分類名 / 旧トップキー(18) も受ける。
+    let companies = byChu[industry]
+      || all.filter(c => c.dai_name === industry)
+      || null;
+    if (!companies || companies.length === 0) companies = data[industry];   // 旧18キー(キャッシュ済リンク)互換
     if (!companies || companies.length === 0) {
       cardsEl.innerHTML = '<p class="error-text">この業界の会社データがありません</p>';
       return;

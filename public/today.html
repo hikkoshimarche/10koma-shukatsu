@@ -228,10 +228,11 @@ async function ensureCompanies(){
   try{
     const comp = await fetch('/companies.json').then(r=>r.json());
     const items = [];
-    for(const ind of Object.keys(comp)){
-      for(const c of comp[ind]){
+    // 業界ラベルは各社の chu_name(新・中分類)を正とする。トップレベルキー(旧18)はルーム互換の凍結コンテナで使わない。
+    for(const arr of Object.values(comp)){
+      for(const c of arr){
         if(String(c.id).startsWith('industry_10koma__')) continue;
-        items.push({id:c.id, name:c.name, industry:ind, key:normJ([c.name, c.id, c.id.replace(/-/g,' ')].join(' '))});
+        items.push({id:c.id, name:c.name, industry:(c.chu_name||c.dai_name||''), key:normJ([c.name, c.id, c.id.replace(/-/g,' ')].join(' '))});
       }
     }
     COMPANIES = items;
