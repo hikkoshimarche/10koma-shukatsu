@@ -47,22 +47,22 @@ function scoreCompany(d: any, answers: any){
       if (m>=0.75) matched.push(why(q,opts[0]))
     } else if (kind==='salary_avg'){
       const target = opts[0].target; if (target==null) continue
-      const av = d.av
+      const av = (d.av && (d.av.u||'').trim()) ? d.av : null   // 出典なしは順位計算でも非採用(表示ゲートと同基準・破損値の混入防止)
       if (av){ const m=closeness(avgBand(av.v),target); acc+=w*m; wsum+=w; axesArr.push({key:q.id,m}); if(m>=0.75) matched.push(`年収志向に合致(平均年収${av.v}万円)`) }
       else if (target>=4){ acc+=w*MISSING_SALARY_SCORE; wsum+=w; axesArr.push({key:q.id,m:MISSING_SALARY_SCORE}); meta.missing_salary_pref=true }
     } else if (kind==='salary_start'){
       const target = opts[0].target; if (target==null) continue
-      const st = d.st
+      const st = (d.st && (d.st.u||'').trim()) ? d.st : null
       if (st){ const m=closeness(startBand(st.v),target); acc+=w*m; wsum+=w; axesArr.push({key:q.id,m}); if(m>=0.75) matched.push(`初任給重視に合致`) }
       else if (target>=4){ acc+=w*MISSING_SALARY_SCORE; wsum+=w; axesArr.push({key:q.id,m:MISSING_SALARY_SCORE}) }
     } else if (kind==='salary_wlb'){
       const tgt = opts[0].target || {}
       let axM:number|null=null
       if (tgt.salary){
-        const sT = tgt.salary; const av = d.av
+        const sT = tgt.salary; const av = (d.av && (d.av.u||'').trim()) ? d.av : null
         if (av){ const m=closeness(avgBand(av.v),sT); acc+=w*m; wsum+=w; axM=m; if(m>=0.75) matched.push(`年収志向に合致(平均年収${av.v}万円)`) }
         else if (sT>=4){ acc+=w*MISSING_SALARY_SCORE; wsum+=w; axM=MISSING_SALARY_SCORE; meta.missing_salary_pref=true }
-        const st = d.st
+        const st = (d.st && (d.st.u||'').trim()) ? d.st : null
         if (st){ const m2=closeness(startBand(st.v),sT); acc+=w*0.5*m2; wsum+=w*0.5; if(axM==null) axM=m2 }
       } else if (tgt.wlb){
         const wT = tgt.wlb; const v = soft.remote_flex
