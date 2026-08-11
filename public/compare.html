@@ -58,7 +58,9 @@
     .badge{display:inline-block;font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px;margin:0 5px 5px 0}
     .b-stab{background:#e8f0fb;color:#2f6fb0}
     .b-grow{background:#eaf6ee;color:#2f8a54}
-    .est{display:inline-block;font-size:9.5px;font-weight:700;color:#9a7b1e;background:#fbf3dd;border-radius:6px;padding:1px 5px;margin-left:3px}
+    .est{display:inline-block;font-size:11px;font-weight:700;color:#8a5a00;background:#fdeecb;border-radius:999px;padding:2px 8px;margin-top:4px}
+    .qhelp{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-left:4px;font-size:11px;font-weight:800;color:#43506a;background:#dbe4f0;border-radius:50%;cursor:pointer;vertical-align:middle}
+    .trendhelp{margin:8px 0 0;padding:10px 12px;font-size:12px;line-height:1.6;color:#43506a;background:#fbf7ec;border:1px solid #f0e4c6;border-radius:10px}
     .nd{color:#aeb7c2;font-size:12px;font-weight:600}
     .note{font-size:11px;color:#6a7686;line-height:1.5;margin-top:5px}
     .disc{font-size:11.5px;color:rgba(255,255,255,0.82);background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:10px;padding:11px 12px;line-height:1.6}
@@ -139,7 +141,7 @@ function trendCell(t){
   const b=[];
   if(t.stability) b.push(`<span class="badge b-stab">安定：${esc(t.stability)}</span>`);
   if(t.growth) b.push(`<span class="badge b-grow">成長：${esc(t.growth)}</span>`);
-  return `${b.join('')}<span class="est">推定</span>${t.note?`<div class="note">${esc(t.note)}</div>`:''}`;
+  return `${b.join('')}<span class="est">傾向（推定）</span>${t.note?`<div class="note">${esc(t.note)}</div>`:''}`;
 }
 
 function renderResult(ids){
@@ -157,7 +159,7 @@ function drawTable(data){
   const rows=[
     ['平均年収', c=>salaryCell(c.avg_salary)],
     ['初任給', c=>salaryCell(c.starting_salary)],
-    ['成長・<br>安定の傾向', c=>trendCell(c.trend)],
+    ['成長・安定の<br>傾向（推定）<span class="qhelp" id="trendq" role="button" aria-label="この項目の根拠">？</span>', c=>trendCell(c.trend)],
     ['事業<br>セグメント', c=>listCell(c.segments)],
     ['社風・<br>人物像', c=>listCell(c.culture)],
     ['直近決算の<br>主要数字', c=>listCell(c.financials)],
@@ -169,9 +171,12 @@ function drawTable(data){
     <p class="sub">${cs.map(c=>esc(c.name)).join(' ／ ')}</p>
     <button class="editbtn" id="edit">＋ 会社を選びなおす</button>
     <div class="tblwrap"><table><thead>${head}</thead><tbody>${body}</tbody></table></div>
+    <div class="trendhelp" id="trendhelp" hidden>「成長・安定の傾向」は、<b>業界の一般傾向と公式情報の記述をもとにした推定の傾向</b>です。出典付きの数値ではありません（星やスコアでの順位づけもしていません）。会社ごとの具体的な数字は、下の「直近決算の主要数字」や「平均年収」（いずれも出典付き）をご覧ください。</div>
     <p class="disc">${esc(data.disclaimer||'')}</p>`;
   document.getElementById('bk').onclick=()=>renderPicker();
   document.getElementById('edit').onclick=()=>renderPicker();
+  const _tq=document.getElementById('trendq'); const _th=document.getElementById('trendhelp');
+  if(_tq&&_th){ _tq.onclick=(e)=>{ e.stopPropagation(); _th.hidden=!_th.hidden; if(!_th.hidden) _th.scrollIntoView({block:'nearest',behavior:'smooth'}); }; }
 }
 
 async function main(){

@@ -28,8 +28,9 @@ export function bundleCompany(id: string, ds: any){
   return {
     id, name: a.n, industry: a.i, found: true,
     has_datasheet: !!ds,
-    avg_salary: av ? { text:`約${av.v}万円`, source: av.u || '', as_of: av.a || '' } : null,
-    starting_salary: (st && st.v) ? { text:`${Number(st.v).toLocaleString()}円/月`, source: st.u || '' } : null,
+    // Source-or-Silence: 出典URLが無い数値は表示しない(→フロントで「データなし」)。捏造・無出典の数値提示を防ぐ。
+    avg_salary: (av && av.v && (av.u || '').trim()) ? { text:`約${av.v}万円`, source: av.u, as_of: av.a || '' } : null,
+    starting_salary: (st && st.v && (st.u || '').trim()) ? { text:`${Number(st.v).toLocaleString()}円/月`, source: st.u } : null,
     // 推定(傾向バッジ)。soft属性由来なので断定しない。
     trend: {
       note: a.t || '',
