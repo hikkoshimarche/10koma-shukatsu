@@ -10,7 +10,7 @@ const MISSING_SALARY_SCORE = 0.25
 const AXIS_LABELS: Record<string,string> = {
   q_salary_wlb:'年収・働き方', q_kaigai:'海外志向', q_tenkin:'転勤', q_stability:'安定/成長',
   q_growth:'成長性', q_remote:'柔軟な働き方', q_young:'若手裁量', q_bunri:'文理適性',
-  q_jobtags:'希望職種', q_industry:'気になる業界', q_salary_avg:'年収志向', q_salary_start:'初任給',
+  q_jobtags:'希望職種', q_salary_avg:'年収志向', q_salary_start:'初任給',
 }
 
 function avgBand(man: number){ for (const [thr,b] of [[1200,5],[900,4],[700,3],[550,2]]) if (man>=thr) return b; return 1 }
@@ -79,12 +79,10 @@ function scoreCompany(d: any, answers: any){
       const have = new Set<string>(soft.job_tags || []); if (!have.size) continue
       const inter = [...want].filter(x=>have.has(x)); const m = Math.min(1.0, inter.length/Math.max(1,want.size))
       acc+=w*m; wsum+=w; axesArr.push({key:q.id,m}); if (inter.length) matched.push(`希望職種と重なり(${inter.sort().join('・')})`)
-    } else if (kind==='industry'){
-      const want = new Set<string>(); for (const o of opts) if (o.target) o.target.forEach((x:string)=>want.add(x))
-      if (!want.size) continue
-      const m = want.has(d.i) ? 1.0 : 0.0; acc+=w*m; wsum+=w; axesArr.push({key:q.id,m})
-      if (m) matched.push(`きになる業界に該当(${d.i})`)
     }
+    // 注: kind==='industry'(「気になる業界」)は相性%の計算から意図的に除外(学生FB: 気になる業界≠向いている業界)。
+    // 設問自体を SHINDAN_QUESTIONS から削除済のため到達しないが、万一データが戻っても加点しないようブランチも撤去。
+
   }
   if (wsum===0) return { s:0.0, matched:[], meta, axes:[] }
   return { s: acc/wsum, matched, meta, axes: axesArr }
@@ -109,7 +107,9 @@ export function recommend(answers: any, topCompanies=8, topIndustries=5, tiebrea
   })
   scored.sort((a,b)=> b.sortKey - a.sortKey)
   const comps = scored.slice(0, topCompanies).map(({s,matched,meta,axes,d})=>({
-    name:d.n, slug:d.s, industry:d.i, score:Math.round(s*1000)/1000, rationale:rationale(d,matched,meta,axes)
+    name:d.n, slug:d.s, industry:d.i, score:Math.round(s*1000)/1000,
+    low_signal:(axes?.length||0) < 2,   // 加点軸が1つ以下=「こだわらない」中心。UIで%を過信表示させない honest フラグ。
+    rationale:rationale(d,matched,meta,axes)
   }))
   const indAcc: Record<string, number[]> = {}
   for (const {s,d} of scored){ (indAcc[d.i] ||= []).push(s) }

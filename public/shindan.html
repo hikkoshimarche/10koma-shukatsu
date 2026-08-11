@@ -61,6 +61,12 @@
     .sh-axis .ab i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--gold-deep))}
     .sh-axis.lo .ab i{background:#cbd5e1}
     .sh-axis .ap{flex:0 0 34px;text-align:right;font-weight:800;color:var(--navy)}
+    .sh-match-low .mv{font-size:15px;color:#94a0ac}
+    .sh-indref{border-top:1px dashed #e2e8f0;margin-top:16px;padding-top:12px}
+    .sh-indref-t{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:8px}
+    .sh-indchips{display:flex;flex-wrap:wrap;gap:7px}
+    .sh-indchip{display:inline-block;padding:7px 11px;border-radius:99px;background:#eef2f7;color:#334;font-size:12px;font-weight:700;text-decoration:none;border:1px solid #e2e8f0}
+    .sh-indref-n{font-size:10.5px;color:#94a0ac;margin-top:8px;line-height:1.5}
     .sh-actions{display:flex;flex-direction:column;gap:10px;margin-top:16px}
     .sh-btn{padding:14px;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;border:none;text-align:center;text-decoration:none}
     .sh-btn.p{background:var(--gold);color:#2a1c00}
@@ -89,6 +95,16 @@ function hue(id){let h=0;for(const c of String(id))h=(h*31+c.charCodeAt(0))>>>0;
 // 業界名(companies.json 18)→ 業界研究16slug（詳細導線用・無ければ業界一覧へ）
 const IND2SLUG={'総合商社':'sogo-shosha','専門商社':'senmon-shosha','銀行・証券・保険':'finance','IT・通信・SaaS':'it-ai-saas-game','ゲーム・エンタメ':'it-ai-saas-game','コンサル':'consulting','広告・メディア':'ad-media','インフラ・エネルギー':'infra-energy','不動産・建設':'realestate-construction','小売・流通':'retail','食品・飲料':'food-beverage','日用品・化粧品':'manufacturer','製薬・ヘルスケア':'medical-healthcare','航空・運輸・物流':'transport-logistics','自動車・モビリティ':'manufacturer','電機・精密・重工':'manufacturer','鉄鋼・素材・化学':'manufacturer','その他（外資・新興等）':'startup'};
 
+// 「気になる業界」は相性%計算から除外(学生FB)。結果ページ末尾の任意の絞り込み導線としてのみ残す。
+// 各チップは代表業界の業界研究へ誘導する（%には一切影響しない）。
+const INDUSTRY_CHIPS=[
+  {label:'総合商社／専門商社',slug:'sogo-shosha',name:'総合商社'},
+  {label:'メーカー',slug:'manufacturer',name:'メーカー'},
+  {label:'金融(銀行・証券・保険)',slug:'finance',name:'銀行・証券・保険'},
+  {label:'IT・通信・ゲーム・エンタメ',slug:'it-ai-saas-game',name:'IT・通信・SaaS'},
+  {label:'コンサル・広告・メディア',slug:'consulting',name:'コンサル'},
+  {label:'インフラ・不動産・運輸・小売',slug:'infra-energy',name:'インフラ・エネルギー'},
+];
 // フォールバック(質問JSON未取得時のみ)
 const FALLBACK_Q=[{id:'q_kaigai',kind:'soft',text:'海外との関わり方は？',options:[{label:'海外でバリバリ'},{label:'どちらかといえば海外'},{label:'どちらでも'},{label:'国内寄り'},{label:'国内でじっくり'}]}];
 let QUESTIONS=FALLBACK_Q, qi=0, answers={}, connected=false;
@@ -172,7 +188,11 @@ function whyBlock(rat){
 function matchBlock(c){
   const rat=c.rationale||{}; const axes=rat.axes||[];
   const pct=(c.score!=null)?Math.round(c.score*100):null;
-  const head=(pct!=null)?`<div class="sh-match"><span class="mv">${pct}<small>%</small></span><span class="ml">総合マッチ度<br>下の各軸の重み付き平均です</span></div>`:'';
+  // 低シグナル(「こだわらない」中心で加点軸<2)は、1軸のまぐれ一致で100%等の過信表示になるのを避け参考扱いにする。
+  const low=(c.low_signal===true)||axes.length<2;
+  const head = low
+    ? `<div class="sh-match sh-match-low"><span class="mv">参考</span><span class="ml">回答が「こだわらない」中心のため<br>マッチ度は参考程度です</span></div>`
+    : ((pct!=null)?`<div class="sh-match"><span class="mv">${pct}<small>%</small></span><span class="ml">総合マッチ度<br>下の各軸の重み付き平均です</span></div>`:'');
   if(!axes.length) return head;
   const bars=axes.map(a=>{
     const p=Math.max(0,Math.min(100,Math.round((a.score||0)*100)));
@@ -216,6 +236,11 @@ function renderResult(data){
     <div class="sh-disc">※${esc(disc)}</div>
     <div class="sh-sec-t">あなたにおすすめの<span class="em">業界</span></div>${indCards||'<div class="sh-rc">—</div>'}
     <div class="sh-sec-t">おすすめの<span class="em">企業</span></div>${compCards||'<div class="sh-rc">—</div>'}
+    <div class="sh-indref">
+      <div class="sh-indref-t">参考：気になっている業界も見てみる</div>
+      <div class="sh-indchips">${INDUSTRY_CHIPS.map(ic=>`<a class="sh-indchip" href="/company.html?industry=${encodeURIComponent(ic.slug)}&name=${encodeURIComponent(ic.name)}&from=shindan">${esc(ic.label)}</a>`).join('')}</div>
+      <div class="sh-indref-n">※これはあなたの興味での絞り込み導線です。上の相性％の計算には含めていません。</div>
+    </div>
     <div class="sh-actions">
       ${comps.length>=2?`<a class="sh-btn p" href="/compare.html?ids=${encodeURIComponent(comps.slice(0,3).map(c=>c.slug).join(','))}">おすすめ社を比較する</a>`:''}
       <button class="sh-btn p" id="sh-retry">もう一度診断する</button>
