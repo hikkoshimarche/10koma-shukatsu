@@ -147,11 +147,13 @@ const CRISIS_RE = new RegExp([
   '消えたい', '消えてしまいたい', '消えてなくなりたい', 'きえたい', 'いなくなりたい', 'この世から(いなく|消え)',
   '生きていたくない', '生きてても', '生きてる意味', '生きている意味', '生きる(意味|価値)がない',
   '生きるのをやめ', 'もう生きて(いけ|られ)', '(もう)?終わりにしたい', '消えてしまお',
-  // --- 英語（\\b語境界。通常の落ち込み "so hard"/"exhausted"/"tired" には当てない） ---
-  "\\b(do ?n'?t|do not|dont) want to (be alive|live)\\b", '\\bwant(ing)? to die\\b', '\\bwanna die\\b',
-  '\\bi want to die\\b', '\\bkill(ing)? myself\\b', '\\btake my (own )?life\\b',
-  '\\bend(ing)? (my life|it all)\\b', '\\bsuicid(e|al)\\b', '\\bno reason to (live|be alive)\\b',
-  '\\bwant to disappear\\b', '\\bcut(ting)? myself\\b', '\\bself[ -]?harm\\b', "\\bcan'?t go on\\b",
+  // --- 英語（先頭\\bのみ。末尾に\\bを付けると self-harm[ing] 等の語形変化を取りこぼす＝Fの穴。時制/省略形を系統展開） ---
+  "\\b(do ?n'?t|do not|dont) want to (be alive|live)", '\\bno longer want to (be alive|live)',
+  '\\bwant(ing|ed|s)? to die', '\\bwanna die', '\\bwish (i )?(was|were) dead',
+  '\\bkill(ing|ed|s)? myself', '\\bhurt(ing|s)? myself', '\\bcut(ting|s)? (myself|my wrist)',
+  '\\bself[ -]?harm(ing|ed|s)?', '\\btake (my )?(own )?life', '\\bend(ing|ed|s)? (my life|it all)',
+  "\\b(can'?t|cannot|can ?not|couldn'?t|could ?not) go on",
+  '\\bno reason to (live|be alive)', '\\bwant(ing|ed)? to disappear', '\\bsuicid(e|al)',
 ].join('|'), 'i')
 // 相談窓口は公式ページから実取得した値のみ（Source-or-Silence厳守・番号/受付時間は記憶で書かない）。
 // 受付時間の裏取り: #いのちSOS の電話は運営ライフリンク公式で「毎日24時間 受付中」(https://www.lifelink.or.jp/inochisos/)。
@@ -239,6 +241,7 @@ async function llmClassify(text: string, comps: { id: string; name: string }[], 
     '英語なら "I don\'t want to live" "I want to die" "kill myself" "end my life/it all" "no reason to live" "I can\'t go on" 等、' +
     '自分の生存や存在をやめたい／自分を害したい気持ちに、直接でも遠回しでも、絵文字でも、どの言語（日本語・英語・中国語・韓国語など）でも触れていれば、必ず crisis にする。少しでも迷ったら crisis に倒す。' +
     '同じ文に就活の話（"job hunting broke me" 等）が混ざっていても、生存・自傷のシグナルがあれば ob 等ではなく crisis を最優先にすること。' +
+    '特に self-harm 系（self-harm / self-harming / cut myself / cutting myself / hurt myself 等、語形変化・時制を含む）は、どんな文脈でも最優先で crisis にする。' +
     'ただし、単なる就活の落ち込み（"就活がつらい""しんどい""疲れた""落ちて落ち込む""不安"、英語なら "job hunting is so hard" "I\'m exhausted" "I\'m so tired" 程度）で、生存・自傷に触れていないものは crisis ではない（通常の分類か null）。' +
     // R3: それ以外で迷ったら omamori に寄せない。判別できなければ null。
     'crisis でない場合、確信が持てない・就活の意図として判別できない・外国語で意図が不明なときは purpose を null にする（omamori 等へ無理に寄せない）。' +
