@@ -144,6 +144,8 @@
     .n3-info{flex:1;min-width:0}.n3-nm{font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.n3-sub{font-size:11px;color:#7a8794;margin-top:1px}
     .n3-match{flex-shrink:0;font-size:11px;font-weight:800;color:#fff;background:var(--navy);border-radius:999px;padding:3px 9px}
     .n3-arrow{color:#c3ccd6;font-size:18px;font-weight:700;flex-shrink:0}
+    .n3-foot{font-size:11px;color:#7a8794;line-height:1.6;margin-top:2px}
+    .n3-foot a{color:var(--navy);font-weight:800;text-decoration:underline;margin-left:3px}
 
     /* v1.5: 更新フィード */
     .fd-item{display:flex;align-items:center;gap:11px;background:#fff;border-radius:12px;padding:11px 13px;text-decoration:none;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,0.14);margin-bottom:8px}
@@ -352,6 +354,11 @@ function secStats(d){
     </div></div>`;
 }
 
+// 保存済み診断のcreated_at(ISO/D1 datetime)→「M月D日」。学生が"いつの結果か=古くないか"を判断できるように。
+function jpDate(iso){
+  const s=String(iso||'').slice(0,10); const m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return m?`${+m[2]}月${+m[3]}日`:'';
+}
 function secShindan(d){
   const sh=d.shindan;
   if(!sh){
@@ -360,12 +367,12 @@ function secShindan(d){
   }
   const inds=(sh.top_industries||[]).slice(0,3).map(i=>`<span class="mp-chip">${esc(i.industry||i.name||'')}</span>`).join('');
   const cos=(sh.top_companies||[]).slice(0,3).map(c=>esc(c.name)).join('、');
-  const date=sh.created_at?String(sh.created_at).slice(0,10):'';
+  const date=jpDate(sh.created_at);
   return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">あなたの<span class="em">診断結果</span></span></div>
     <div class="mp-card">
       <div style="font-size:12px;color:#7a8794;font-weight:700;margin-bottom:6px">おすすめ業界</div>${inds||'<span class="mp-chip">—</span>'}
       ${cos?`<div class="mp-diag-co" style="margin-top:8px"><b>おすすめ企業：</b>${cos}</div>`:''}
-      ${date?`<div class="mp-diag-date">診断日：${esc(date)}</div>`:''}
+      ${date?`<div class="mp-diag-date">${esc(date)}の診断結果</div>`:''}
       <a class="mp-btn" href="/shindan.html">もう一度診断する</a>
     </div></div>`;
 }
@@ -416,11 +423,13 @@ function secNext3(d){
     return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">次に見る<span class="em">べき3社</span></span></div>
       <div class="mp-empty"><p>相性診断をすると、<br>あなたに合う企業を提案します。</p><a href="/shindan.html">診断してみる →</a></div></div>`;
   }
-  return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">次に見る<span class="em">べき3社</span></span><span class="mp-more">診断より</span></div>
+  const dstr=jpDate(d.shindan&&d.shindan.created_at);
+  return `<div class="mp-sec"><div class="mp-h"><span class="mp-t">次に見る<span class="em">べき3社</span></span><span class="mp-more">${dstr?esc(dstr)+'の診断より':'診断より'}</span></div>
     ${n3.map(c=>`<a class="n3-card" href="/company.html?id=${encodeURIComponent(c.slug)}&from=mypage">
       <span class="n3-badge" style="--acc:${hue(c.slug)}">${esc(String(c.name||'？').charAt(0))}</span>
       <span class="n3-info"><span class="n3-nm">${esc(c.name)}</span><span class="n3-sub">${esc(c.industry||'')}</span></span>
-      ${(c.score!=null)?`<span class="n3-match">相性${Math.round(c.score*100)}%</span>`:''}<span class="n3-arrow">›</span></a>`).join('')}</div>`;
+      ${(c.score!=null)?`<span class="n3-match">相性${Math.round(c.score*100)}%</span>`:''}<span class="n3-arrow">›</span></a>`).join('')}
+    <div class="n3-foot">${dstr?`この相性％は<b>${esc(dstr)}</b>の診断結果です。`:'この相性％は前回の診断結果です。'}最新の企業情報で見直すには<a href="/shindan.html?from=mypage">再診断する</a></div></div>`;
 }
 // 業界名(D1 stamp_rally) → 業界研究(gyokai)slug の対応表。gyokai.html の INDUSTRIES と同一。
 // 正規化(空白/中黒/長音などを除去)して照合＝表記ゆれに強い。未対応名は open を付けず素通り(退行なし)。
