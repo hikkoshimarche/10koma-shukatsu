@@ -1,0 +1,38 @@
+{
+  "_about": "相性診断(POST /api/shindan)の回帰テスト用・固定入力5ペルソナ。全タブ(A/F/G)が同一入力で再測定するための単一の真実。",
+  "_schema": "answers の値=各設問の選択肢index(0始まり)。multi設問(q_jobtags)は配列。設問idは api/src/shindan_data.ts の SHINDAN_QUESTIONS と public/shindan_questions.json に一致(9問)。",
+  "_note": "q_industry(気になる業界)は相性%計算から除外済のため含めない。設問の選択肢順が変わったらこの値も見直すこと。",
+  "_endpoint": "POST https://10koma-shukatsu-api.oscar-dodds.workers.dev/api/shindan  body={\"answers\": <persona.answers>}",
+  "personas": [
+    {
+      "id": "A",
+      "intent": "商社志向: 高年収・海外バリバリ・全国転勤OK・成長/挑戦・若手裁量・営業",
+      "answers": {"q_salary_wlb": 0, "q_kaigai": 0, "q_tenkin": 0, "q_stability": 3, "q_growth": 0, "q_remote": 2, "q_young": 0, "q_bunri": 0, "q_jobtags": [0]}
+    },
+    {
+      "id": "B",
+      "intent": "IT/WLB志向: WLB重視・国内・地元・安定・リモート重視・理系・エンジニアIT",
+      "answers": {"q_salary_wlb": 4, "q_kaigai": 4, "q_tenkin": 2, "q_stability": 0, "q_growth": 2, "q_remote": 0, "q_young": 2, "q_bunri": 1, "q_jobtags": [2]}
+    },
+    {
+      "id": "C",
+      "intent": "全部こだわらない(低シグナル検証): 加点軸が1本のみ→low_signal=true になる想定の病的入力",
+      "answers": {"q_salary_wlb": 2, "q_kaigai": 2, "q_tenkin": 3, "q_stability": 1, "q_growth": 3, "q_remote": 3, "q_young": 3, "q_bunri": 2, "q_jobtags": [6]}
+    },
+    {
+      "id": "D",
+      "intent": "極端高年収・刺激成長: 高年収・海外・刺激と成長最優先・急成長・理系・コンサル専門職",
+      "answers": {"q_salary_wlb": 0, "q_kaigai": 0, "q_tenkin": 0, "q_stability": 3, "q_growth": 0, "q_remote": 0, "q_young": 0, "q_bunri": 1, "q_jobtags": [4]}
+    },
+    {
+      "id": "E",
+      "intent": "WLB裁量創造: WLB寄り・国内寄り・地元・安定寄り・裁量ほしい・文系・クリエイティブ",
+      "answers": {"q_salary_wlb": 3, "q_kaigai": 3, "q_tenkin": 2, "q_stability": 1, "q_growth": 1, "q_remote": 0, "q_young": 0, "q_bunri": 0, "q_jobtags": [5]}
+    },
+    {
+      "id": "F",
+      "intent": "年収最重視・他は中庸(年収軸の回帰テスト): 破損年収値(スズケン7279万等)の誤上位混入を検出する用。海外/成長等の他強シグナルを抑え、年収志向軸が支配的になる入力。",
+      "answers": {"q_salary_wlb": 0, "q_kaigai": 2, "q_tenkin": 3, "q_stability": 1, "q_growth": 3, "q_remote": 3, "q_young": 3, "q_bunri": 2, "q_jobtags": [6]}
+    }
+  ]
+}
