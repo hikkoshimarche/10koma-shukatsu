@@ -147,6 +147,10 @@ const CRISIS_RE = new RegExp([
   '消えたい', '消えてしまいたい', '消えてなくなりたい', 'きえたい', 'いなくなりたい', 'この世から(いなく|消え)',
   '生きていたくない', '生きてても', '生きてる意味', '生きている意味', '生きる(意味|価値)がない',
   '生きるのをやめ', 'もう生きて(いけ|られ)', '(もう)?終わりにしたい', '消えてしまお',
+  // --- 日本語の遠回し表現（時が過ぎてほしくない／存在を消したい系。就活の愚痴に紛れやすいが、誤発火は後段のやわらかい初手で吸収） ---
+  '明日が(来|こ)(なけれ|ないで|てほしくな)', '明日なんて(来|こ)(なけれ|ないで)', 'このまま(朝|明日)が(来|こ)なけれ',
+  '朝が(来|こ)(なけれ|ないで|てほしくな)', '目が覚め(なけれ|ないで)', '(もう)?目を覚ましたくない',
+  'いなくなった方が(いい|まし|楽)', 'いない方が(いい|まし|楽|みんな)', '自分がいない方', '私(も|なんて)終わりに',
   // --- 英語（先頭\\bのみ。末尾に\\bを付けると self-harm[ing] 等の語形変化を取りこぼす＝Fの穴。時制/省略形を系統展開） ---
   "\\b(do ?n'?t|do not|dont) want to (be alive|live)", '\\bno longer want to (be alive|live)',
   '\\bwant(ing|ed|s)? to die', '\\bwanna die', '\\bwish (i )?(was|were) dead',
@@ -169,10 +173,11 @@ const CRISIS_SUPPORT = [
 // 切迫時は窓口(これから相談する人向け)では届かない → 119 を窓口リストの後に短く。
 const CRISIS_EMERGENCY = 'いますぐ強い危険を感じているときは、ためらわず 119 に連絡してください。'
 // ★R1応答文面（デプロイ前にオスカー承認）: 受け止め(1回)→AIだから人へ委ねる明示→選べる形で窓口→急かさない。断定(匿名/秘密保証)しない・短く温かく。
+// 初手はやわらかく（誤発火した学生を驚かせない）。断定的な安心の約束・守秘/対応の保証は書かない。
 const CRISIS_MESSAGE =
-  'つらい気持ちを話してくれて、ありがとう。ひとりで抱えこまなくて大丈夫です。\n' +
-  '私はAIです。だからこそ、ここから先はあなたの話を人が受け止めてくれる窓口に頼ってほしいです。' +
-  'よければ、つながってみてください。急いで決めなくても大丈夫です。'
+  'ふと気になって、声をかけますね。大丈夫ですか。\n' +
+  'つらいことがあったのかもしれません。ひとりで抱えこまないでほしいと思っています。\n' +
+  '私はAIなので、ここから先はあなたの話を人が受け止めてくれる窓口に頼ってほしいです。よければ下の窓口へ。急がなくてかまいません。'
 // 危機検出後の同一セッションで続けて話しかけられたときの継続文面（機能案内には戻さない）。
 const CRISIS_MESSAGE_CONT =
   '聞いています。ひとりで抱えこまないで。\n' +
@@ -204,6 +209,10 @@ async function recentServerCrisis(db: DB, sid: string): Promise<boolean> {
     return !!row && (Date.now() - row.last_crisis_at) < CRISIS_TTL_MS
   } catch { return false }
 }
+// 学生が明示的に「就活の相談に戻る」を選んだときだけサーバ側状態を消す（自動では消さない＝安全側）。
+async function clearCrisis(db: DB, sid: string) {
+  try { await db.prepare('DELETE FROM advisor_crisis_sessions WHERE sid = ?').bind(sid).run() } catch {}
+}
 
 // 危機専用応答（機能ルーティング一切なし）。cont=継続ターン, viaLLM=第2段LLMで検出。
 function crisisResponse(c: any, cont: boolean, viaLLM: boolean) {
@@ -212,7 +221,9 @@ function crisisResponse(c: any, cont: boolean, viaLLM: boolean) {
     crisis: true, crisis_mode: true,
     message: crisisMessage(cont),
     support: CRISIS_SUPPORT, emergency: CRISIS_EMERGENCY, source: CRISIS_SOURCE,
-    choices: [], proposals: [],
+    // 機能へのルーティングはしないが、就活の相談に戻りたい学生のための明示的な導線だけ1つ残す
+    // （自動では戻さない＝安全側。押したときだけサーバ側状態も消す）。
+    choices: [{ label: '🗒 就活の相談に戻る', value: { resume: true }, kind: 'resume' }], proposals: [],
     disclaimer: '※ 出典：厚生労働省「まもろうよ こころ」' + CRISIS_SOURCE,
     meta: { matched: 'crisis', llm_used: viaLLM, company: null, purpose: null },
   })
@@ -242,6 +253,8 @@ async function llmClassify(text: string, comps: { id: string; name: string }[], 
     '自分の生存や存在をやめたい／自分を害したい気持ちに、直接でも遠回しでも、絵文字でも、どの言語（日本語・英語・中国語・韓国語など）でも触れていれば、必ず crisis にする。少しでも迷ったら crisis に倒す。' +
     '同じ文に就活の話（"job hunting broke me" 等）が混ざっていても、生存・自傷のシグナルがあれば ob 等ではなく crisis を最優先にすること。' +
     '特に self-harm 系（self-harm / self-harming / cut myself / cutting myself / hurt myself 等、語形変化・時制を含む）は、どんな文脈でも最優先で crisis にする。' +
+    '日本語の遠回し表現も同様に crisis：「明日が来てほしくない」「明日が来なければ」「朝が来なければ」「朝目が覚めなければ」「目が覚めないでほしい」' +
+    '「自分がいない方がみんな楽」「いなくなった方がいい」「親に申し訳ないから、もういい」「就活が終わったら私も終わりにします」——これらは全て crisis として扱う。' +
     'ただし、単なる就活の落ち込み（"就活がつらい""しんどい""疲れた""落ちて落ち込む""不安"、英語なら "job hunting is so hard" "I\'m exhausted" "I\'m so tired" 程度）で、生存・自傷に触れていないものは crisis ではない（通常の分類か null）。' +
     // R3: それ以外で迷ったら omamori に寄せない。判別できなければ null。
     'crisis でない場合、確信が持てない・就活の意図として判別できない・外国語で意図が不明なときは purpose を null にする（omamori 等へ無理に寄せない）。' +
@@ -322,15 +335,19 @@ export async function handleAdvisor(c: any) {
   // 機能案内フローに戻さない（クライアントが crisis_mode:true を送り続ける）。
   const sid = (typeof body.sid === 'string' && body.sid) ? body.sid.slice(0, 64) : null
 
-  // 第1段: 決定論キーワード（即時・確実）。クライアントの crisis_mode か、サーバ側に記録した直近の危機で維持。
+  // 学生が明示的に「就活の相談に戻る」を選んだ場合のみ、サーバ側の危機状態を消して通常フローへ戻す（自動では戻さない）。
+  if (body.resume === true && sid) await clearCrisis(c.env.DB, sid)
+
+  // 第1段: 決定論キーワード（即時・確実）。危機語があれば resume より常に優先。
+  // それ以外は crisis_mode フラグ or サーバ側の直近記録で維持（resume 選択時は維持しない）。
   const crisisHit = !!text && CRISIS_RE.test(text)
-  if (crisisHit || body.crisis_mode === true) {
+  if (crisisHit || (body.crisis_mode === true && body.resume !== true)) {
     // ★入力本文は一切ログ/DB/LLMに残さない（最前段returnでAnthropicにもDBにも渡らない・事実のみ記録）。
     if (sid) await recordCrisis(c.env.DB, sid)   // サーバ側にも「危機だった事実＋時刻」を記録（本文なし）
     return crisisResponse(c, body.crisis_mode === true && !crisisHit, false)
   }
   // 二重化: クライアントがフラグを落としても、サーバに直近の危機記録があれば危機モードを維持（機能へ流さない）。
-  if (sid && await recentServerCrisis(c.env.DB, sid)) {
+  if (body.resume !== true && sid && await recentServerCrisis(c.env.DB, sid)) {
     return crisisResponse(c, true, false)
   }
 

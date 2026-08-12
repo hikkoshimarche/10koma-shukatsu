@@ -114,6 +114,19 @@ function render(r){
     if (r.source){ const src=document.createElement('div'); src.className='crisis-src';
       src.innerHTML = `<a href="${esc(r.source)}" target="_blank" rel="noopener">厚生労働省「まもろうよ こころ」を開く ›</a>`;
       thread.appendChild(src); }
+    // 就活の相談に戻りたい学生のための明示的な導線（押したときだけ危機モードを解除＝自動では戻さない）。
+    if (r.choices && r.choices.length){
+      const wrap=document.createElement('div'); wrap.className='choices';
+      r.choices.forEach(ch=>{
+        const b=document.createElement('button'); b.className='choice';
+        b.textContent=ch.label;
+        b.onclick=()=>{ addYou(ch.label); clearInteractive();
+          if (ch.value && ch.value.resume){ crisisMode=false; send({ resume:true }); }
+          else { send({ ...ch.value }); } };
+        wrap.appendChild(b);
+      });
+      thread.appendChild(wrap);
+    }
     if (r.disclaimer) disc.textContent = r.disclaimer;
     scroll(); return;
   }
