@@ -103,32 +103,6 @@
       "chu_slug": "sogo-shosha",
       "chu_name": "総合商社",
       "tags": []
-    },
-    {
-      "id": "iwatani",
-      "name": "岩谷産業",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "infra-energy",
-      "dai_name": "インフラ・エネルギー",
-      "chu_slug": "gas",
-      "chu_name": "ガス",
-      "tags": []
-    },
-    {
-      "id": "shinkokusyoji",
-      "name": "神鋼商事",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "shosha",
-      "dai_name": "商社",
-      "chu_slug": "steel-metal-trading",
-      "chu_name": "鉄鋼・金属商社",
-      "tags": []
     }
   ],
   "自動車・モビリティ": [
@@ -356,19 +330,6 @@
       "tags": []
     },
     {
-      "id": "shinetsu-chemical",
-      "name": "信越化学工業",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "materials-chemical",
-      "dai_name": "素材・化学",
-      "chu_slug": "chemical-materials",
-      "chu_name": "化学・繊維・ゴム・ガラス",
-      "tags": []
-    },
-    {
       "id": "tokyo-electron",
       "name": "東京エレクトロン",
       "jukoma_liff_id": "2010075487-89AJxZnA",
@@ -538,19 +499,6 @@
       "tags": []
     },
     {
-      "id": "bridgestone",
-      "name": "ブリヂストン",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "materials-chemical",
-      "dai_name": "素材・化学",
-      "chu_slug": "chemical-materials",
-      "chu_name": "化学・繊維・ゴム・ガラス",
-      "tags": []
-    },
-    {
       "id": "kawasaki-heavy",
       "name": "川崎重工業",
       "jukoma_liff_id": "2010075487-89AJxZnA",
@@ -666,9 +614,80 @@
       "chu_slug": "precision-optics",
       "chu_name": "精密・光学・計測機器",
       "tags": []
+    },
+    {
+      "id": "rapidus",
+      "name": "Rapidus（ラピダス）",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "semiconductor",
+      "chu_name": "半導体・半導体製造装置",
+      "tags": [
+        "startup"
+      ]
+    },
+    {
+      "id": "jasm",
+      "name": "JASM（TSMC日本子会社）",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "semiconductor",
+      "chu_name": "半導体・半導体製造装置",
+      "tags": [
+        "foreign"
+      ]
+    },
+    {
+      "id": "socionext",
+      "name": "ソシオネクスト",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "electronics-machinery",
+      "dai_name": "電機・機械・重工",
+      "chu_slug": "semiconductor",
+      "chu_name": "半導体・半導体製造装置",
+      "tags": [
+        "startup"
+      ]
     }
   ],
   "鉄鋼・素材・化学": [
+    {
+      "id": "shinetsu-chemical",
+      "name": "信越化学工業",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "materials-chemical",
+      "dai_name": "素材・化学",
+      "chu_slug": "chemical-materials",
+      "chu_name": "化学・繊維・ゴム・ガラス",
+      "tags": []
+    },
+    {
+      "id": "bridgestone",
+      "name": "ブリヂストン",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "materials-chemical",
+      "dai_name": "素材・化学",
+      "chu_slug": "chemical-materials",
+      "chu_name": "化学・繊維・ゴム・ガラス",
+      "tags": []
+    },
     {
       "id": "nippon-steel",
       "name": "日本製鉄",
@@ -917,6 +936,51 @@
       "chu_slug": "pharma",
       "chu_name": "医薬品・製薬",
       "tags": []
+    },
+    {
+      "id": "m3",
+      "name": "エムスリー",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "medical-device-healthtech",
+      "chu_name": "ヘルステック（医療IT）",
+      "tags": [
+        "startup"
+      ]
+    },
+    {
+      "id": "medley",
+      "name": "メドレー",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "medical-device-healthtech",
+      "chu_name": "ヘルステック（医療IT）",
+      "tags": [
+        "startup"
+      ]
+    },
+    {
+      "id": "jmdc",
+      "name": "JMDC",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "medical-device-healthtech",
+      "chu_name": "ヘルステック（医療IT）",
+      "tags": [
+        "startup"
+      ]
     }
   ],
   "銀行・証券・保険": [
@@ -2027,6 +2091,127 @@
       "tags": [
         "startup"
       ]
+    },
+    {
+      "id": "google-japan",
+      "name": "Google日本",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": [
+        "foreign"
+      ]
+    },
+    {
+      "id": "amazon-japan",
+      "name": "アマゾンジャパン",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": [
+        "foreign"
+      ]
+    },
+    {
+      "id": "microsoft-japan",
+      "name": "日本マイクロソフト",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": [
+        "foreign"
+      ]
+    },
+    {
+      "id": "salesforce-japan",
+      "name": "セールスフォース・ジャパン",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": [
+        "foreign"
+      ]
+    },
+    {
+      "id": "oracle-japan",
+      "name": "日本オラクル",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": [
+        "foreign"
+      ]
+    },
+    {
+      "id": "ibm-japan",
+      "name": "日本アイ・ビー・エム",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": [
+        "foreign"
+      ]
+    },
+    {
+      "id": "sap-japan",
+      "name": "SAPジャパン",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": [
+        "foreign"
+      ]
+    },
+    {
+      "id": "openai-japan",
+      "name": "OpenAI Japan",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "it-telecom-internet",
+      "dai_name": "IT・通信・インターネット",
+      "chu_slug": "internet-web",
+      "chu_name": "インターネット・Webサービス",
+      "tags": [
+        "foreign",
+        "startup"
+      ]
     }
   ],
   "ゲーム・エンタメ": [
@@ -2373,6 +2558,19 @@
   ],
   "専門商社": [
     {
+      "id": "shinkokusyoji",
+      "name": "神鋼商事",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "shosha",
+      "dai_name": "商社",
+      "chu_slug": "steel-metal-trading",
+      "chu_name": "鉄鋼・金属商社",
+      "tags": []
+    },
+    {
       "id": "medipal",
       "name": "メディパルホールディングス",
       "jukoma_liff_id": "2010075487-89AJxZnA",
@@ -2634,6 +2832,19 @@
     }
   ],
   "インフラ・エネルギー": [
+    {
+      "id": "iwatani",
+      "name": "岩谷産業",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "infra-energy",
+      "dai_name": "インフラ・エネルギー",
+      "chu_slug": "gas",
+      "chu_name": "ガス",
+      "tags": []
+    },
     {
       "id": "tepco",
       "name": "東京電力ホールディングス",
@@ -4108,6 +4319,21 @@
       "chu_slug": "food-beverage",
       "chu_name": "食品・飲料",
       "tags": []
+    },
+    {
+      "id": "nestle-japan",
+      "name": "ネスレ日本",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "food-beverage",
+      "chu_name": "食品・飲料",
+      "tags": [
+        "foreign"
+      ]
     }
   ],
   "日用品・化粧品": [
@@ -4201,6 +4427,51 @@
       "chu_slug": "toiletry",
       "chu_name": "日用品・トイレタリー",
       "tags": []
+    },
+    {
+      "id": "pg-japan",
+      "name": "P＆Gジャパン",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "toiletry",
+      "chu_name": "日用品・トイレタリー",
+      "tags": [
+        "foreign"
+      ]
+    },
+    {
+      "id": "loreal-japan",
+      "name": "日本ロレアル",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "cosmetics",
+      "chu_name": "化粧品・美容",
+      "tags": [
+        "foreign"
+      ]
+    },
+    {
+      "id": "unilever-japan",
+      "name": "ユニリーバ・ジャパン",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "consumer-healthcare",
+      "dai_name": "消費財・ヘルスケアメーカー",
+      "chu_slug": "toiletry",
+      "chu_name": "日用品・トイレタリー",
+      "tags": [
+        "foreign"
+      ]
     }
   ],
   "航空・運輸・物流": [
@@ -4859,171 +5130,6 @@
   ],
   "その他（外資・新興等）": [
     {
-      "id": "google-japan",
-      "name": "Google日本",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "it-telecom-internet",
-      "dai_name": "IT・通信・インターネット",
-      "chu_slug": "internet-web",
-      "chu_name": "インターネット・Webサービス",
-      "tags": [
-        "foreign"
-      ]
-    },
-    {
-      "id": "amazon-japan",
-      "name": "アマゾンジャパン",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "it-telecom-internet",
-      "dai_name": "IT・通信・インターネット",
-      "chu_slug": "internet-web",
-      "chu_name": "インターネット・Webサービス",
-      "tags": [
-        "foreign"
-      ]
-    },
-    {
-      "id": "microsoft-japan",
-      "name": "日本マイクロソフト",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "it-telecom-internet",
-      "dai_name": "IT・通信・インターネット",
-      "chu_slug": "internet-web",
-      "chu_name": "インターネット・Webサービス",
-      "tags": [
-        "foreign"
-      ]
-    },
-    {
-      "id": "salesforce-japan",
-      "name": "セールスフォース・ジャパン",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "it-telecom-internet",
-      "dai_name": "IT・通信・インターネット",
-      "chu_slug": "internet-web",
-      "chu_name": "インターネット・Webサービス",
-      "tags": [
-        "foreign"
-      ]
-    },
-    {
-      "id": "oracle-japan",
-      "name": "日本オラクル",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "it-telecom-internet",
-      "dai_name": "IT・通信・インターネット",
-      "chu_slug": "internet-web",
-      "chu_name": "インターネット・Webサービス",
-      "tags": [
-        "foreign"
-      ]
-    },
-    {
-      "id": "ibm-japan",
-      "name": "日本アイ・ビー・エム",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "it-telecom-internet",
-      "dai_name": "IT・通信・インターネット",
-      "chu_slug": "internet-web",
-      "chu_name": "インターネット・Webサービス",
-      "tags": [
-        "foreign"
-      ]
-    },
-    {
-      "id": "sap-japan",
-      "name": "SAPジャパン",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "it-telecom-internet",
-      "dai_name": "IT・通信・インターネット",
-      "chu_slug": "internet-web",
-      "chu_name": "インターネット・Webサービス",
-      "tags": [
-        "foreign"
-      ]
-    },
-    {
-      "id": "pg-japan",
-      "name": "P＆Gジャパン",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "consumer-healthcare",
-      "dai_name": "消費財・ヘルスケアメーカー",
-      "chu_slug": "toiletry",
-      "chu_name": "日用品・トイレタリー",
-      "tags": [
-        "foreign"
-      ]
-    },
-    {
-      "id": "loreal-japan",
-      "name": "日本ロレアル",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "consumer-healthcare",
-      "dai_name": "消費財・ヘルスケアメーカー",
-      "chu_slug": "cosmetics",
-      "chu_name": "化粧品・美容",
-      "tags": [
-        "foreign"
-      ]
-    },
-    {
-      "id": "unilever-japan",
-      "name": "ユニリーバ・ジャパン",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "consumer-healthcare",
-      "dai_name": "消費財・ヘルスケアメーカー",
-      "chu_slug": "toiletry",
-      "chu_name": "日用品・トイレタリー",
-      "tags": [
-        "foreign"
-      ]
-    },
-    {
-      "id": "nestle-japan",
-      "name": "ネスレ日本",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "consumer-healthcare",
-      "dai_name": "消費財・ヘルスケアメーカー",
-      "chu_slug": "food-beverage",
-      "chu_name": "食品・飲料",
-      "tags": [
-        "foreign"
-      ]
-    },
-    {
       "id": "persol-hd",
       "name": "パーソルホールディングス",
       "jukoma_liff_id": "2010075487-89AJxZnA",
@@ -5089,96 +5195,6 @@
       "tags": []
     },
     {
-      "id": "rapidus",
-      "name": "Rapidus（ラピダス）",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "electronics-machinery",
-      "dai_name": "電機・機械・重工",
-      "chu_slug": "semiconductor",
-      "chu_name": "半導体・半導体製造装置",
-      "tags": [
-        "startup"
-      ]
-    },
-    {
-      "id": "jasm",
-      "name": "JASM（TSMC日本子会社）",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "electronics-machinery",
-      "dai_name": "電機・機械・重工",
-      "chu_slug": "semiconductor",
-      "chu_name": "半導体・半導体製造装置",
-      "tags": [
-        "foreign"
-      ]
-    },
-    {
-      "id": "socionext",
-      "name": "ソシオネクスト",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "electronics-machinery",
-      "dai_name": "電機・機械・重工",
-      "chu_slug": "semiconductor",
-      "chu_name": "半導体・半導体製造装置",
-      "tags": [
-        "startup"
-      ]
-    },
-    {
-      "id": "m3",
-      "name": "エムスリー",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "consumer-healthcare",
-      "dai_name": "消費財・ヘルスケアメーカー",
-      "chu_slug": "medical-device-healthtech",
-      "chu_name": "ヘルステック（医療IT）",
-      "tags": [
-        "startup"
-      ]
-    },
-    {
-      "id": "medley",
-      "name": "メドレー",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "consumer-healthcare",
-      "dai_name": "消費財・ヘルスケアメーカー",
-      "chu_slug": "medical-device-healthtech",
-      "chu_name": "ヘルステック（医療IT）",
-      "tags": [
-        "startup"
-      ]
-    },
-    {
-      "id": "jmdc",
-      "name": "JMDC",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "consumer-healthcare",
-      "dai_name": "消費財・ヘルスケアメーカー",
-      "chu_slug": "medical-device-healthtech",
-      "chu_name": "ヘルステック（医療IT）",
-      "tags": [
-        "startup"
-      ]
-    },
-    {
       "id": "ispace",
       "name": "ispace（アイスペース）",
       "jukoma_liff_id": "2010075487-89AJxZnA",
@@ -5205,22 +5221,6 @@
       "chu_slug": "space-deeptech",
       "chu_name": "宇宙・ディープテック",
       "tags": [
-        "startup"
-      ]
-    },
-    {
-      "id": "openai-japan",
-      "name": "OpenAI Japan",
-      "jukoma_liff_id": "2010075487-89AJxZnA",
-      "room_liff_id": "2010075487-d4TJ2xZc",
-      "video_url": null,
-      "kessan_url": null,
-      "dai_slug": "it-telecom-internet",
-      "dai_name": "IT・通信・インターネット",
-      "chu_slug": "internet-web",
-      "chu_name": "インターネット・Webサービス",
-      "tags": [
-        "foreign",
         "startup"
       ]
     },

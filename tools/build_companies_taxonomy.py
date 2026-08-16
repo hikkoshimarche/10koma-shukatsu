@@ -34,24 +34,25 @@ for r in csv.DictReader(open(CSVF, encoding="utf-8-sig")):
     row_of[r["slug"]] = (r["現行分類(18)"], r["新・中分類"], tag_ids)
 
 old = json.load(open(CJ))
-# id -> 既存の基礎フィールド(liff/video等)と、現在のトップキー(整合チェック用)
-base = {}; cur_key = {}; order = []
+# id -> 既存の基礎フィールド(liff/video等)。順序は既存を保持=差分最小。
+base = {}; order = []
 for topkey, arr in old.items():
     for c in arr:
         base[c["id"]] = {k: c[k] for k in ("id", "name", "jukoma_liff_id", "room_liff_id", "video_url", "kessan_url") if k in c}
-        cur_key[c["id"]] = topkey
         order.append(c["id"])
 
-# 生成: 現行分類(18)でグルーピング(=現状キーと一致するはず)。順序は既存を保持=差分最小。
+# 生成: トップレベル18キーは CSV「現行分類(18)」列が"正"(＝この列がコンテナのグルーピングを定義する)。
+# 旧: 現状キーと一致必須の関所を置いていたが、ルームのアーキタイプ是正のため 18キー間で社を移設する運用に変更。
+# ※移設先は IND18_TO_V3 に存在する18キーのみ(room_industry_roles_v3)。存在しないキーへは入れない(フォールバック回避)。
+VALID18 = set(old.keys())   # 既存18キーの集合。CSVの現行分類(18)はこの中に限る(構造は18キーのまま)。
 errs = []
 grouped = {}  # topkey -> [company]
 for cid in order:
     if cid not in row_of:
         errs.append(f"CSVに無い社: {cid}"); continue
     genkou18, chu_name, tag_ids = row_of[cid]
-    if genkou18 != cur_key[cid]:
-        errs.append(f"{cid}: 現行分類(18)='{genkou18}' が現トップキー='{cur_key[cid]}' と不一致(コンテナ破壊回避のため停止)")
-        continue
+    if genkou18 not in VALID18:
+        errs.append(f"{cid}: 現行分類(18)='{genkou18}' が既存18キーに無い(構造変更は禁止・停止)"); continue
     if chu_name not in chu_idx:
         errs.append(f"{cid}: 未知の中分類 '{chu_name}'"); continue
     chu_slug, dai_slug, dai_name = chu_idx[chu_name]
@@ -63,7 +64,7 @@ for cid in order:
 if errs:
     print("❌ 生成中止:"); [print("  ", e) for e in errs]; raise SystemExit(1)
 
-# トップキーの順序は既存 companies.json の順序を踏襲
+# トップキーの順序は既存 companies.json の順序を踏襲(空になったキーは省く)
 new = {k: grouped[k] for k in old.keys() if k in grouped}
 with open(CJ, "w", encoding="utf-8") as f:
     json.dump(new, f, ensure_ascii=False, indent=2); f.write("\n")
