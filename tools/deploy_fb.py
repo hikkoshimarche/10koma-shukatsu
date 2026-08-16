@@ -40,13 +40,20 @@ def gas(params):
     return requests.get(GAS_URL, params=params, timeout=60).json()
 
 
-def should_setreflected(has_overrides: bool, lint_err: int, has_pending_image: bool) -> bool:
-    """反映済にしてよいか。台本反映あり かつ lint error0 かつ 画像FB未消化なし の時のみ True。
+def should_setreflected(has_effective_change: bool, lint_err: int,
+                        has_pending_image: bool, has_unresolved: bool = False) -> bool:
+    """反映済にしてよいか。**実D1が実際に変化した** かつ lint error0 かつ 画像FB未消化なし
+    かつ 未消化コマ(要調査/judgment等)なし の時のみ True。
 
-    画像FBが未消化の間に反映済化すると『直ってないのに反映済』=偽陽性となり、提出者が
-    同一FBを再送し続けるループを生む(=本不具合の主因)。それを構造的に禁じる関所。
+    真因(2026-08-16): 旧実装は has_overrides(=override生成の有無)で判定していたため、
+    生成したoverrideが既存D1と同一(=実効変化ゼロ)でも『反映済』になり、提出者が同一FBを
+    再送し続けるループを生んでいた(uzabase/fronteo round2まで偽陽性)。
+    根治: 判定を『そのコマの実D1が反映前から変化したか(has_effective_change)』に置き換える。
+    これにより【変化ゼロなのに反映済】は物理的に起きない。round完全解消(全対象コマが実効変化・
+    未消化なし)の社のみ反映済化し、未消化コマが残る社は hold。
     """
-    return bool(has_overrides and lint_err == 0 and not has_pending_image)
+    return bool(has_effective_change and lint_err == 0
+                and not has_pending_image and not has_unresolved)
 
 
 def _existing_commonfix_rules():
@@ -183,10 +190,13 @@ def selftest():
         print(("  ✅ " if cond else "  ❌ ") + name)
         ok = ok and cond
 
-    print("[selftest] STEP2 should_setreflected (偽陽性防止の関所)")
-    chk("台本反映+lint0+画像なし → 反映済OK", should_setreflected(True, 0, False) is True)
-    chk("台本反映+画像未消化 → 反映しない(偽陽性防止)", should_setreflected(True, 0, True) is False)
-    chk("台本反映なし → 反映しない", should_setreflected(False, 0, False) is False)
+    print("[selftest] STEP2 should_setreflected (真因の根治=実効変化基準)")
+    chk("実効変化+lint0+画像なし+未消化なし → 反映済OK", should_setreflected(True, 0, False) is True)
+    chk("★実効変化ゼロ(D1が変わっていない) → 反映しない(偽陽性ループ根治)",
+        should_setreflected(False, 0, False) is False)
+    chk("実効変化あり+画像未消化 → 反映しない", should_setreflected(True, 0, True) is False)
+    chk("実効変化あり+要調査等の未消化残 → 反映しない(round未完=hold)",
+        should_setreflected(True, 0, False, True) is False)
     chk("lint error>0 → 反映しない", should_setreflected(True, 1, False) is False)
 
     print("[selftest] STEP3 is_overlay_text_fb (画像内テキスト→台本経路)")
@@ -262,9 +272,21 @@ def main():
         print("\n[backup + UPDATE 台本列(image_url不変)]")
         for r in deployable:
             D.backup_d1(r["slug"])
+            before = _cur(d1_panels(r["slug"]))   # 反映前の実D1(koma→{script,...})。実効変化判定の基準。
+            eff = []
             for koma, after in r["overrides"].items():
+                prev = before.get(koma, {})
                 proc = D.wrangler(["--command", D.update_sql(r["slug"], koma, after)])
-                print(f"  {r['slug']:14} koma{koma} {'✅' if proc.returncode==0 else '❌ '+proc.stderr[:100]}")
+                ok = proc.returncode == 0
+                # 実効変化: 書込内容(after.script)が反映前D1(prev.script)と異なるか。
+                # 同一(=変化ゼロ)なら『反映』にカウントしない → 偽陽性ループ(真因)の根治。
+                changed = ok and (after.get("script") != prev.get("script"))
+                if changed:
+                    eff.append(koma)
+                print(f"  {r['slug']:14} koma{koma} {'✅' if ok else '❌ '+proc.stderr[:100]}"
+                      f"{'' if changed else ' (変化なし=反映扱いにしない)'}")
+            r["effective_komas"] = sorted(eff)
+            r["dead_overrides"] = sorted(k for k in r["overrides"] if k not in eff)
 
         c_after = D.canary_snapshot(target_slugs)
         drift = D.canary_diff(c_before, c_after)
@@ -343,19 +365,27 @@ def main():
                              "朝9時1通に集約(要れば後で覆せる)")
                     _existing_judgment_keys.add(key)
                     tally["judgment"] += 1
-        # 【偽陽性防止】台本を反映しても、当該社に未消化の画像FBが残る間は setreflected しない。
-        #   (画像単独FBは deployed_slugs に入らないので元々反映済化されない。ここでは
-        #    台本+画像 混在社が『台本が直った=全部反映済』と誤表示されるのを防ぐ。)
-        if r["slug"] in deployed_slugs and not r.get("image_queue"):
+        # 【真因の根治】per-コマ実D1基準で反映済化を判定する(会社単位でなくコマ単位の実効変化)。
+        #   round完全解消(全overrideが実効変化・変化ゼロなし・画像/要調査の未消化なし)の社のみ setreflected。
+        #   変化ゼロのoverride/未消化コマが残る社は hold(反映済にしない)=偽陽性の再送ループを断つ。
+        eff = r.get("effective_komas") or []
+        dead = r.get("dead_overrides") or []
+        has_unresolved = bool(r.get("unresolved") or r.get("investigate"))
+        fully_resolved = should_setreflected(
+            bool(eff), r["lint"][0], bool(r.get("image_queue")), has_unresolved) and not dead
+        if r["slug"] in deployed_slugs and fully_resolved:
             res = gas({"mode": "setreflected", "company": r["company"]})
             tally["reflected"] += 1
             dl = f" [Claudeが判断して進めた: {'; '.join(r.get('default_log', [])[:2])}]" if r.get("default_log") else ""
-            print(f"  {r['slug']:14} 反映済 koma{sorted(r['overrides'])}{dl}")
+            print(f"  {r['slug']:14} 反映済 実効koma{eff}{dl}")
         elif r["slug"] in deployed_slugs and r.get("image_queue"):
             tally["held_img"] += 1
-            # 【偽・未反映の可視化】反映列を空欄で放置せず『台本済・画像待ちN件』の中間表示に。
-            #   反映済にはしない(次ラウンドは開かない)。インターン誤解/オスカー誤警報の両方を防ぐ。
+            # 【偽・未反映の可視化】反映列を空欄で放置せず『台本済・画像待ちN件』の中間表示に(反映済にはしない)。
             gas({"mode": "setpartial", "company": r["company"], "nimg": str(len(r.get("image_queue", [])))})
+        elif r["slug"] in deployed_slugs and (dead or has_unresolved):
+            # 変化ゼロのoverride/要調査コマが残る → hold。反映列は据置(=次ラウンドが開いたまま)。
+            tally["held_img"] += 1
+            print(f"  {r['slug']:14} hold(反映済にしない): 変化なしkoma{dead} 要調査/未消化={has_unresolved}")
             print(f"  {r['slug']:14} 台本koma{sorted(r['overrides'])}反映→反映列『台本済・画像待ち{len(r['image_queue'])}件』(偽陽性防止)")
         elif r.get("unresolved"):
             gas({"mode": "addcommonfix", "scope": "system",
