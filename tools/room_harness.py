@@ -285,7 +285,10 @@ def process(slug, company, force=False, industry=""):
     if any(r.get("cond") == "research_only" for r in roster) and not _factpack_has_research(factpack):
         dropped = [r["role_key"] for r in roster if r.get("cond") == "research_only"]
         roster = [r for r in roster if r.get("cond") != "research_only"]
-        roster = [dict(r, role_key=f"R{i+1}") for i, r in enumerate(roster)]  # role_key詰め直し
+        # ★role_keyは詰め直さない(canonical維持)。詰め直すと女性役等の位置がズレ、氏名/本文は新role_keyで生成される一方、
+        #   ラベル・アバターは room_personas_to_live / room_avatar_* が roles_for_company(canonical)で role_key→label を引くため、
+        #   role_code配下の「本文の役割」と「表示ラベル/アバター」が全ロールでズレる(インフラ・エネルギー28社の不整合の真因)。
+        #   canonicalのまま(欠番あり)にすれば本文=ラベル=アバターが同じrole_keyで一致する。
     rec["archetype"] = RIRV3.archetype_for(slug, industry); rec["n_roles"] = len(roster)
     if dropped:
         rec["dropped_cond"] = dropped
