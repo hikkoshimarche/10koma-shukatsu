@@ -4,6 +4,12 @@
 金型調査結論: 三井GOLDアバターのPNGにC2PA/JUMBF+OpenAI/gpt署名=gpt-image-1製。同モデル・同質で作り直す。
 会社ごとに Claude が『別々の人物像セット』を生成(_face_traits微振りを置換)=会社A7人とB7人が全員別人。
 パイロット: --slugs a,b,c → personas_gpt/ に出力(既存Gemini版を上書きせず)+モンタージュ。★承認までフル生成しない。
+
+★★ 画像2系統の区別(後任が必ず混乱するので明記) ★★
+  ・ルーム(AI OB訪問)のアバター = 【本ファイル: gpt-image-1(OpenAI) + 会社別 appearance-spec / 三井GOLD統一】。
+    保存先 public/images/<slug>/personas/ ・DB列 personas.image_url。char-refは使わない(会社ごとにClaudeが人物像を新規設計)。
+  ・10コマ(scenario)の画像 = 別系統【Gemini + char-ref(ハルキ/ナナ) / prompt_builder.py】。DB列 company_panels.image_url。
+  この2つはモデルもref体系も保存先もDB列も別。片方の手順を他方に流用しないこと。
 """
 import argparse, base64, io, json, os, re, subprocess, sys, threading, time
 from concurrent.futures import ThreadPoolExecutor, as_completed
