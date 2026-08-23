@@ -48,12 +48,34 @@ def _npx():
     return "npx"  # 最後の砦(見つからなければ従来通り→明示的にエラー)
 
 
+def _cloudflare_token():
+    """CLOUDFLARE_API_TOKEN を env→loginキーチェーンの順で解決。値はログに出さない。
+    launchd等の非対話環境は ~/.zshrc を読まず env が空 → OAuthフォールバックも無く 400 で毎時死ぬ
+    (2026-08の12日沈黙・PATH→npx と同型の『launchd実行環境≠ログインシェル』障害)。
+    キーチェーン(security)を非対話参照することで、plistに値を焼かず(=public repo露出なし)に解決する。"""
+    import os
+    t = (os.environ.get("CLOUDFLARE_API_TOKEN") or "").strip()
+    if t:
+        return t
+    try:
+        r = subprocess.run(["security", "find-generic-password",
+                            "-a", os.environ.get("USER", ""),
+                            "-s", "tokyari-cloudflare-api-token", "-w"],
+                           capture_output=True, text=True, timeout=10)
+        return (r.stdout or "").strip()
+    except Exception:
+        return ""
+
+
 def wrangler(sql_args, timeout=120):
     import os
     npx = _npx()
     # npxが内部で呼ぶnodeも同じbinディレクトリにある → 子プロセスPATHに注入(launchd最小PATHでも動く恒久対策)
     env = dict(os.environ)
     env["PATH"] = str(Path(npx).parent) + os.pathsep + env.get("PATH", "")
+    tok = _cloudflare_token()                     # env→keychain。値はログに出さない。
+    if tok:
+        env["CLOUDFLARE_API_TOKEN"] = tok         # 非対話(launchd)でも認証を通す恒久対策
     cmd = [npx, "wrangler", "d1", "execute", DB, "--remote", "--config", WRANGLER_CONFIG] + sql_args
     return subprocess.run(cmd, cwd=str(REPO), capture_output=True, text=True, timeout=timeout, env=env)
 

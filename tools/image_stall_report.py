@@ -25,6 +25,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 SNAPSHOT = REPO / "tools" / ".image_pending_snapshot.json"
 STATE = REPO / "tools" / ".image_fix_state.json"
+HEALTH = REPO / "tools" / ".image_consumer_health.json"   # deploy_fb が毎時 finally で書く消化役の生死
 CLASSIFY_CACHE = REPO / "tools" / "_pending_classification.json"
 
 STALE_ALERT_DAYS = 2      # 消化役の state.day がこの日数以上古く、かつ pending>0 なら赤信号
@@ -73,26 +74,46 @@ def stall_summary(today: date | None = None) -> dict:
     consumer_stale = _days_since(consumer_day, today)
     consumer_paused = bool(st.get("paused"))
 
+    # 消化役の生死(deploy_fb が毎時 finally で残す health)。『クラッシュ0件』と『正常0件』を判別する。
+    hp = {}
+    if HEALTH.exists():
+        try:
+            hp = json.load(open(HEALTH, encoding="utf-8"))
+        except Exception:
+            hp = {}
+    h_attempt_stale = _days_since(hp.get("last_attempt"), today)
+    h_ok = hp.get("ok")
+    h_error = hp.get("error")
+    h_processed = hp.get("processed")
+
     # 型別内訳(best-effort・キャッシュがあれば)
     types = None
     if CLASSIFY_CACHE.exists():
         try:
             c = json.load(open(CLASSIFY_CACHE, encoding="utf-8"))
-            types = {"safe": c.get("safe"), "fragile": c.get("fragile"),
-                     "unknown": c.get("unknown"), "as_of": c.get("as_of")}
+            types = {"safe": c.get("safe"), "review_text": c.get("review_text"),
+                     "fragile": c.get("fragile"), "unknown": c.get("unknown"),
+                     "as_of": c.get("as_of")}
         except Exception:
             types = None
 
-    # 赤信号判定: 待ちがあり、かつ(消化役が止まっている OR 最古滞留が閾値超 OR 消化役pause中)
-    consumer_dead = (total_koma > 0 and consumer_stale is not None
-                     and consumer_stale >= STALE_ALERT_DAYS)
+    # 消化役クラッシュ判定: 直近の実行が例外で落ちた(ok=False)= 静かな死。health優先、無ければstate鮮度で代替。
+    consumer_crashed = (h_ok is False)
+    # 起動していない(health自体が古い/無い) or state.day凍結 = 停止。
+    consumer_dead = (total_koma > 0 and (
+        (h_attempt_stale is not None and h_attempt_stale >= STALE_ALERT_DAYS) or
+        (h_attempt_stale is None and consumer_stale is not None and consumer_stale >= STALE_ALERT_DAYS)))
     old_backlog = (oldest_days is not None and oldest_days >= OLD_ALERT_DAYS and total_koma > 0)
-    alert = bool(consumer_dead or old_backlog or (consumer_paused and total_koma > 0))
+    alert = bool(consumer_crashed or consumer_dead or old_backlog
+                 or (consumer_paused and total_koma > 0))
 
     return {
         "total_koma": total_koma, "total_comp": total_comp, "oldest_days": oldest_days,
         "consumer_day": consumer_day, "consumer_stale_days": consumer_stale,
         "consumer_paused": consumer_paused, "consumer_dead": consumer_dead,
+        "consumer_crashed": consumer_crashed, "consumer_error": h_error,
+        "consumer_ok": h_ok, "consumer_processed": h_processed,
+        "consumer_attempt_stale_days": h_attempt_stale,
         "old_backlog": old_backlog, "alert": alert, "types": types,
     }
 
@@ -106,16 +127,20 @@ def format_report(s: dict) -> str:
          f"・最古の滞留: {s['oldest_days']}日" + ("　⚠️" if s["old_backlog"] else "")]
     if s["types"] and s["types"].get("safe") is not None:
         t = s["types"]
-        L.append(f"・型別: 安全{t['safe']} / 崩れやすい{t['fragile']} / 要調査{t['unknown']}"
+        L.append(f"・型別: 安全auto{t['safe']} / 焼込文字=目視必須{t.get('review_text','?')} / "
+                 f"崩れやすい{t['fragile']} / 要調査{t['unknown']}"
                  + (f" (as_of {t['as_of']})" if t.get("as_of") else ""))
     cs = s["consumer_stale_days"]
-    if s["consumer_dead"]:
-        L.append(f"🔴 消化役が {cs}日 停止中(state.day={s['consumer_day']})"
-                 "＝自動消化されていません。D1認証(CLOUDFLARE_API_TOKEN)を要確認。")
+    if s["consumer_crashed"]:
+        L.append(f"🔴 消化役が直近実行でクラッシュ(0件)＝正常な0件ではない。last_error: {s['consumer_error']}")
+    elif s["consumer_dead"]:
+        L.append(f"🔴 消化役が {cs}日 起動していない(state.day={s['consumer_day']})＝自動消化されていません。要確認。")
     elif s["consumer_paused"]:
         L.append("🔴 消化役 paused=True(上限/QA連続失敗で自動停止)。要確認。")
+    elif s["consumer_ok"] is True and (s["consumer_processed"] or 0) == 0:
+        L.append(f"消化役 稼働・正常に0件処理(state.day={s['consumer_day']}・クラッシュではない)")
     else:
-        L.append(f"消化役 稼働: state.day={s['consumer_day']}(stale {cs}日)")
+        L.append(f"消化役 稼働: 直近processed={s['consumer_processed']} (state.day={s['consumer_day']}・stale {cs}日)")
     return "\n".join(L)
 
 

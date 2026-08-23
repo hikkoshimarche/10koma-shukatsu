@@ -9,7 +9,9 @@ deploy_fb.py(台本FB反映)の後段で呼ばれ、画像系の人手工程を�
 
 自動化レベル(型別フラグ・既定は安全側):
   master  AUTO_IMAGE_FIX_ENABLED=1 でのみライブ稼働(既定OFF=dry。テキストFB反映とは独立)。
-  安全型   AUTO_SAFE_TYPES=meta_frame,white_band,hline,text_leak → full auto(QA/canary/404通過分のみ反映)。
+  安全型   AUTO_SAFE_TYPES=meta_frame,white_band,hline → full auto(QA/canary/404通過分のみ反映)。
+           ※text_leak(焼き込み文字/吹き出し)は既定から除外＝目視必須(mixed候補生成→人QA後に反映)。
+             理由: vision QA が焼き込み文字を1度通した実証(良品計画8で"MUJI HOTEL"看板)があり自動反映の根拠が無い。
   協調型   AUTO_COORDINATED=1 → 入口3社型(台本+画像を同一トランザクションで反映。片方だけの反映を構造禁止)。
   混在型   AUTO_MIXED_MODE=notify → 候補画像を自動生成→レビューURL→LINEで人QA依頼まで(自動反映しない)。
            人は OK/NG を返すだけ。OK は次ループの consume_human_qa が全ゲート付きで反映。
@@ -31,7 +33,7 @@ import deploy_salary as D            # noqa: E402  (update_sql/canary/backup/wra
 COORD_REGISTRY = REPO / "tools" / "_coordinated_targets.json"
 EXTRA_IMG_REGISTRY = REPO / "tools" / "_image_targets_extra.json"
 DRAINED_FILE = REPO / "tools" / ".image_drained.json"
-SAFE_TYPES_DEFAULT = "meta_frame,white_band,hline,text_leak"
+SAFE_TYPES_DEFAULT = "meta_frame,white_band,hline"   # text_leakは目視必須のため既定から除外(下記selftest参照)
 
 
 def _drained_set():
@@ -799,7 +801,9 @@ def selftest():
     os.environ.pop("AUTO_IMAGE_FIX_ENABLED", None)
     c = auto_cfg()
     chk("master 既定OFF(未設定)", c["enabled"] is False)
-    chk("safe_types 既定に text_leak 含む", "text_leak" in c["safe_types"])
+    chk("safe_types 既定に text_leak を含まない(焼き込み文字=目視必須)", "text_leak" not in c["safe_types"])
+    chk("safe_types 既定は meta_frame/white_band/hline のみ",
+        c["safe_types"] == {"meta_frame", "white_band", "hline"})
     chk("mixed 既定 notify(自動反映しない)", c["mixed_mode"] == "notify")
     chk("mixed_max_per_loop 既定3(洪水停止)", c["mixed_max_per_loop"] == 3)
 

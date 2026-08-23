@@ -16,6 +16,11 @@ from pathlib import Path
 import requests
 
 REPO = Path(__file__).resolve().parents[1]
+
+
+def _re_scrub(s: str) -> str:
+    """ログ/health file に秘匿値(APIトークン等)を残さない: 40桁以上の英数_-連続を伏せる。"""
+    return re.sub(r"[A-Za-z0-9_\-]{40,}", "<redacted>", str(s))
 sys.path.insert(0, str(REPO / "tools"))
 import phase_c_lib as L          # noqa: E402
 import deploy_salary as D        # noqa: E402
@@ -405,18 +410,38 @@ def main():
     #   既存の台本FB反映(上記)は不変。拡張分は phase_c_auto に隔離し、
     #   master AUTO_IMAGE_FIX_ENABLED=1 の時のみライブ、既定OFF=dryで挙動不変。
     #   1社/1件の例外がこのループ全体(台本反映の成功)を巻き戻さないよう try で隔離。
+    # 消化役の健全性を必ず記録(落ちても finally で残す)。2026-08の12日沈黙の教訓:
+    #   例外を print だけで握り潰すと『起動したが落ちて0件』が『正常に0件』と区別できず沈黙する。
+    #   ok/last_attempt/last_success/error/counts を .image_consumer_health.json に残し、
+    #   image_stall_report が『クラッシュ0件』と『正常0件』を判別して翌日通知できるようにする。
+    import os
+    import time as _t
+    health = {"last_attempt": _t.strftime("%Y-%m-%dT%H:%M:%S"), "ok": None,
+              "live": os.environ.get("AUTO_IMAGE_FIX_ENABLED", "0") == "1",
+              "processed": None, "counts": None, "error": None}
     try:
-        import os
         import phase_c_auto as PCA
-        live = os.environ.get("AUTO_IMAGE_FIX_ENABLED", "0") == "1"
+        live = health["live"]
         print(f"\n=== [拡張] phase_c_auto 画像自動化 [{'LIVE' if live else 'dry(既定)'}] ===")
         res = PCA.run_batch(dry=not live)
-        print(f"  協調反映 {len(res.get('coordinated',[]))} / 人QA消化 {len(res.get('human_qa',[]))} "
-              f"/ 安全型auto {len(res.get('safe',[]))} / 混在型notify {len(res.get('mixed',[]))}")
+        counts = {k: len(res.get(k, [])) for k in ("coordinated", "human_qa", "safe", "mixed")}
+        health.update(ok=True, counts=counts, processed=sum(counts.values()),
+                      last_success=_t.strftime("%Y-%m-%dT%H:%M:%S"))
+        print(f"  協調反映 {counts['coordinated']} / 人QA消化 {counts['human_qa']} "
+              f"/ 安全型auto {counts['safe']} / 混在型notify {counts['mixed']}")
     except Exception as ex:
         import traceback
-        print(f"  ⚠ 画像自動化拡張でエラー(台本反映は成功済・非巻戻し): {ex}")
+        # 秘匿値の万一の混入を除去(40桁以上の英数_-連続をマスク)してから記録
+        msg = _re_scrub(f"{type(ex).__name__}: {ex}")
+        health.update(ok=False, error=msg[:400])
+        print(f"  ⚠ 画像自動化拡張でエラー(台本反映は成功済・非巻戻し): {msg[:200]}")
         traceback.print_exc()
+    finally:
+        try:
+            (REPO / "tools" / ".image_consumer_health.json").write_text(
+                json.dumps(health, ensure_ascii=False, indent=1), encoding="utf-8")
+        except Exception:
+            pass
     return 0
 
 

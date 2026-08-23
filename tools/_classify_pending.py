@@ -10,8 +10,9 @@ import phase_c_image_fix as PCI
 import phase_c_auto as PA
 import phase_c_autoloop as A
 
-SAFE = {"meta_frame", "white_band", "hline", "text_leak"}   # AUTO_SAFE_TYPES 既定 = task 安全型定義
-FRAGILE = {"scale", "hands", "accuracy"}                     # physical_plausibility/props_and_hands/scale 系
+SAFE = {"meta_frame", "white_band", "hline"}   # 真の安全型(自動反映可)= AUTO_SAFE_TYPES 既定(text_leak除外後)
+FRAGILE = {"scale", "hands", "accuracy"}       # physical_plausibility/props_and_hands/scale 系(人レビュー必須)
+# text_leak(焼き込み文字/吹き出し)は独立バケット「目視必須」= mixed候補生成→人QA後反映(自動反映しない)
 
 cf_items = PCI.commonfixes_fast().get("items", [])
 qa_items = PCI.gas({"mode": "imageqa_list"}).get("items", [])
@@ -39,7 +40,7 @@ for it in qa_items:
         if d:
             detail_map.setdefault((slug, int(koma)), []).append(str(d))
 
-buckets = {"safe": [], "fragile": [], "unknown": []}
+buckets = {"safe": [], "review_text": [], "fragile": [], "unknown": []}
 per_type = {}
 by_company_type = {}   # slug -> set of bucket
 rows = []
@@ -51,10 +52,14 @@ for slug, komas in pmap.items():
         cats = PCI.classify_image_bug_cats(detail)
         if not cats:
             bucket = "unknown"
-        elif set(cats) <= SAFE:
+        elif set(cats) & FRAGILE:            # scale/hands/accuracy を含むなら崩れやすい優先
+            bucket = "fragile"
+        elif "text_leak" in cats:            # 焼き込み文字/吹き出し = 目視必須(自動反映しない)
+            bucket = "review_text"
+        elif set(cats) <= SAFE:              # meta_frame/white_band/hline のみ = 自動反映可
             bucket = "safe"
         else:
-            bucket = "fragile"
+            bucket = "unknown"
         buckets[bucket].append((slug, koma))
         key_t = "+".join(cats) if cats else "(未分類)"
         per_type[key_t] = per_type.get(key_t, 0) + 1
@@ -65,9 +70,11 @@ for slug, komas in pmap.items():
 def ncomp(bkt):
     return len(set(s for s, k in buckets[bkt]))
 
+label = {"safe": "安全型auto", "review_text": "焼き込み文字=目視必須",
+         "fragile": "崩れやすい(人レビュー)", "unknown": "要調査"}
 print(f"=== 滞留 pending 総数: {total} コマ / {len(pmap)} 社 ===\n")
-for b in ("safe", "fragile", "unknown"):
-    print(f"[{b}] {len(buckets[b])} コマ / {ncomp(b)} 社")
+for b in ("safe", "review_text", "fragile", "unknown"):
+    print(f"[{label[b]}] {len(buckets[b])} コマ / {ncomp(b)} 社")
 print("\n--- 型内訳(cats組合せ別) ---")
 for t, n in sorted(per_type.items(), key=lambda x: -x[1]):
     grp = "safe" if t != "(未分類)" and set(t.split("+")) <= SAFE else ("unknown" if t == "(未分類)" else "fragile")
@@ -79,11 +86,11 @@ print(f"\n--- 純・安全型のみの社(全pendingがsafe): {len(pure_safe)} �
 print(", ".join(sorted(pure_safe)[:40]) + (" ..." if len(pure_safe) > 40 else ""))
 
 out = Path("_pending_classification.json")
-json.dump({"total": total, "companies": len(pmap),
-           "safe": len(buckets["safe"]), "fragile": len(buckets["fragile"]),
-           "unknown": len(buckets["unknown"]),
-           "safe_companies": ncomp("safe"), "fragile_companies": ncomp("fragile"),
-           "unknown_companies": ncomp("unknown"),
+json.dump({"total": total, "companies": len(pmap), "as_of": "2026-08-24",
+           "safe": len(buckets["safe"]), "review_text": len(buckets["review_text"]),
+           "fragile": len(buckets["fragile"]), "unknown": len(buckets["unknown"]),
+           "safe_companies": ncomp("safe"), "review_text_companies": ncomp("review_text"),
+           "fragile_companies": ncomp("fragile"), "unknown_companies": ncomp("unknown"),
            "pure_safe_companies": sorted(pure_safe),
            "per_type": per_type, "rows": rows},
           open(out, "w", encoding="utf-8"), ensure_ascii=False, indent=1)

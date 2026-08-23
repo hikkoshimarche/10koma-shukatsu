@@ -70,3 +70,4 @@ tools/.company_news_notify_armed
 
 # 画像滞留分析のlocalキャッシュ(intern FB detail含む→public repoに出さない)
 tools/_pending_classification.json
+tools/.image_consumer_health.json
