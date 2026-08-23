@@ -99,6 +99,9 @@ def auto_cfg():
         # FIX1: 混在型は 1ループ上限件数を絞る(既定3)。安全型→協調→混在の順で枠(hour上限)を配分し、
         #   安全型が常に先に枠を取る。per_koマ到達/起票済は再生成しない(洪水=クレジット浪費の停止)。
         "mixed_max_per_loop": int(_env("AUTO_MIXED_MAX_PER_LOOP", "3")),
+        # 陳腐化ゲート: 再生成の前に配信中(D1 image_url)画像の症状残存を確認し、既に直っていれば
+        #   再生成せず落とす(古いFBで直った絵を壊さない・2026-08-24 nidec#10/背景ドリフトの教訓)。既定ON。
+        "staleness_gate": _env("AUTO_STALENESS_GATE", "1") == "1",
     })
     return base
 
@@ -485,7 +488,47 @@ def collect_image_fbs(c, results):
                                        "type": cats[0], "from_backlog": True})
     except Exception as e:
         results["note"] += f" [backlog drain失敗:{e}]"
+    # 陳腐化ゲート(再生成フローの最初): 配信中画像に症状が既に無いコマは再生成しない。
+    if c.get("staleness_gate", True):
+        safe_items = _drop_stale(safe_items, results)
+        mixed_items = _drop_stale(mixed_items, results)
     return safe_items, mixed_items
+
+
+def _drop_stale(items, results):
+    """配信中(D1 image_url)画像に症状が現存しない(=既に直っている)itemを除外し、drained登録。
+       古いFBに従って直っている絵を再生成し背景をドリフトさせる事故を防ぐ(nidec#10の教訓)。
+       判定不能/取得失敗は present 扱い(=残す)＝壊れ放置しない安全側。GEMINI鍵が無い環境では
+       is_stale が例外→present で全件残るため誤って落とさない。"""
+    try:
+        import image_staleness as ST
+    except Exception as e:
+        results["note"] += f" [陳腐化ゲートskip(import不可):{e}]"
+        return items
+    kept, dropped = [], []
+    for it in items:
+        try:
+            r = ST.is_stale(it["slug"], int(it["koma"]), it.get("detail", ""))
+        except Exception:
+            r = {"stale": False}
+        if r.get("stale"):
+            dropped.append(it)
+            try:
+                _mark_drained([f"{it['slug']}#{it['koma']}"])   # 良い画像を上書きしない登録
+            except Exception:
+                pass
+            try:
+                PCI.gas({"mode": "setpartial", "company": it.get("company", it["slug"]),
+                         "nimg": "0", "note": f"陳腐化(配信画像に症状無し)自動クローズ koma{it['koma']}"})
+            except Exception:
+                pass
+        else:
+            kept.append(it)
+    if dropped:
+        results["note"] += f" [陳腐化ゲート: {len(dropped)}件を配信画像確認で除外]"
+        results.setdefault("stale_dropped", []).extend(
+            {"slug": d["slug"], "koma": d["koma"]} for d in dropped)
+    return kept
 
 
 def _pending_image_map(cf_items=None, qa_items=None):
