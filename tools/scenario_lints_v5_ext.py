@@ -1,14 +1,8 @@
 #!/usr/bin/env python3
-# === VENDORED COPY (このrepoがversion管理側=正本) ===
-# dev/run元: ~/oscar-ai/tokyari-pipeline/scripts/scenario_lints_v5_ext.py
-# 依存: scenario_v4.json は tokyari-pipeline/output/<slug>/（このrepoには無い）
-# selftest: tokyari-pipeline側で `python scripts/scenario_lints_v5_ext.py --selftest`
-#   ここからは path指定: `python tools/scenario_lints_v5_ext.py <scenario_v4.jsonのpath>`
-# 編集時は両コピーを必ず同期。
 # -*- coding: utf-8 -*-
 """scenario_lints_v5_ext.py — 📚知見集の未機械化項目を加算式で機械化（既存lints非干渉）。
 error=マージ不可 / warning=人間レビュー。CLI: <slug|path> | --selftest"""
-import json, os, re, sys
+import json, os, re, sys, datetime
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUTPUT = os.path.join(REPO, "output")
@@ -33,6 +27,11 @@ TERMINAL_OK = "。．！？!?」』）)…ー〜"
 TOKEN_RE = re.compile(r"[一-龯々ァ-ヶーＡ-ＺA-Z]{2,}")
 STOP = {"事業","会社","仕事","自分","就活","社員","本当","存在","世界","会話","今日",
         "場所","海外","日本","世の中","みんな","一緒","気持","意味","理由","最初","普通"}
+
+# 年数の算術チェック用。現在年は実行時に解決するため 2027年以降も自動で古い台本を検出する。
+_SEIREKI_RE = re.compile(r"(1[6-9]\d\d|20\d\d)\s*年")      # 西暦 1600-2099
+_NENMAE_RE = re.compile(r"(約|およそ|ほぼ)?\s*(\d{1,3})\s*年前")
+_NENMAE_APPROX_SUF = re.compile(r"^(以上|超|近く|余り|弱|程|ほど|ちょっと)")
 
 def parse_lines(scenario):
     out = []
@@ -126,10 +125,50 @@ def lint_third_party_dominance(scenario):
             res.append(_f("third_party_dominance","warning",koma,f"第三者[{sp}]がコマ{koma}(原則6-8)"))
     return res
 
+def lint_year_arithmetic(scenario):
+    """『N年前』が近傍の西暦と算術一致するかを実行時の現在年で検証。
+    台本は書いた年に固定で書かれるため、時間経過で必ず古くなる(2024年に書いた『87年前』は
+    2026年には89年前)。同一行/同一コマの西暦と不一致=error(本番反映ブロック)、西暦が近傍に
+    無い or 概数(約/以上)は warning(誤検出でのブロックを避ける)。現在年は datetime で毎回解決。"""
+    CY = datetime.date.today().year
+    res = []
+    by_koma = {}
+    for koma, sp, text in parse_lines(scenario):
+        by_koma.setdefault(koma, []).append(text)
+    for koma, key, text in overlay_texts(scenario):
+        by_koma.setdefault(koma, []).append(text)
+    for koma, texts in by_koma.items():
+        koma_years = sorted({int(m.group(1)) for t in texts for m in _SEIREKI_RE.finditer(t) if int(m.group(1)) <= CY})
+        for text in texts:
+            same_years = [int(m.group(1)) for m in _SEIREKI_RE.finditer(text) if int(m.group(1)) <= CY]
+            for m in _NENMAE_RE.finditer(text):
+                approx = bool(m.group(1)) or bool(_NENMAE_APPROX_SUF.match(text[m.end():m.end()+3]))
+                n = int(m.group(2))
+                cand = same_years if same_years else koma_years
+                if not cand:
+                    res.append(_f("year_arith", "warning", koma,
+                                  f"『{n}年前』に対応する西暦が近傍に無い(創業年で要確認・現在{CY}年基準)"))
+                    continue
+                corrects = [CY - y for y in cand]
+                if any(abs(c - n) <= (2 if approx else 0) for c in corrects):
+                    continue  # いずれかの近傍西暦と一致 → OK
+                best = min(cand, key=lambda y: abs((CY - y) - n))
+                diff = abs((CY - best) - n)
+                strict = bool(same_years) or len(koma_years) == 1
+                # 高確度(同一行/コマ内一意西暦)・非概数・ズレ2〜12年=年数の陳腐化バグ→error。
+                # ズレ1年=丸め許容 / ズレ>12年=別事象や意図的な丸め(例『150年前』motif) / 概数・多西暦
+                # =誤検出でのブロックを避けるため warning。
+                sev = "error" if (strict and not approx and 2 <= diff <= 12) else "warning"
+                res.append(_f("year_arith", sev, koma,
+                              f"『{'約' if approx else ''}{n}年前』が西暦{best}と不一致"
+                              f"(現在{CY}年基準で正しくは{CY-best}年前)"))
+    return res
+
 def run_ext_lints(scenario, company_slug=None):
     findings = (lint_ratio_ban(scenario, company_slug) + lint_raw_markdown(scenario)
                 + lint_unsourced_headcount(scenario) + lint_word_repeat(scenario)
-                + lint_terminal_punctuation(scenario) + lint_third_party_dominance(scenario))
+                + lint_terminal_punctuation(scenario) + lint_third_party_dominance(scenario)
+                + lint_year_arithmetic(scenario))
     e = sum(1 for f in findings if f["severity"]=="error")
     w = sum(1 for f in findings if f["severity"]=="warning")
     return {"slug": company_slug, "findings": findings, "errors": e, "warnings": w}
@@ -159,6 +198,7 @@ def _fixtures():
       "third_party_dominance":{"meta":{},"koma":[
           {"script":["[senpai] 俺が主役だ。","[senpai] ずっと喋る。"]},
           {"script":["[senpai] まだ喋る。","[nana] 一言。"]}]},
+      "year_arith":{"meta":{},"koma":[{"script":["[haruki] 1936年に創業。50年前のことだ。"]}]},
     }
 
 def selftest():
