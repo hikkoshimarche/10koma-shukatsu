@@ -231,9 +231,22 @@ def main():
     STATE.write_text(json.dumps({"failing": failing_out, "counts": counts, "last_run": NOW_S,
                                  "img_fail": len(img_fail), "url_fail": len(url_fail)}, ensure_ascii=False, indent=1))
 
+    # 画像レビュー待ち滞留(snapshot+stateのみ・消化役/GAS/D1非依存)。2026-08の12日沈黙の再発防止。
+    try:
+        import image_stall_report as ISR
+        stall = ISR.stall_summary()
+        stall_block = ISR.format_report(stall)
+        log(f"画像滞留: {stall['total_koma']}コマ/{stall['total_comp']}社 alert={stall['alert']} "
+            f"consumer_stale={stall['consumer_stale_days']}日")
+    except Exception as e:
+        stall, stall_block = {"alert": False}, ""
+        log(f"画像滞留チェック失敗(非致命): {e}")
+
     # 異常判定 + 通知
-    anomaly = bool(new_fail) or bool(count_drops)
+    anomaly = bool(new_fail) or bool(count_drops) or bool(stall.get("alert"))
     lines = [f"🩺 トーキャリ コンテンツ健全性 {NOW_S}"]
+    if stall_block and stall.get("alert"):
+        lines.append(stall_block)
     if count_drops:
         lines.append("― 充足数の減少 ―")
         for k, (pv, v) in count_drops.items():

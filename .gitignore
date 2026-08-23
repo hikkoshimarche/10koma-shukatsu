@@ -67,3 +67,6 @@ scratchpad_button_audit/
 
 # お気に入りニュース通知 初回ゲートの実行時状態(コミットしない)
 tools/.company_news_notify_armed
+
+# 画像滞留分析のlocalキャッシュ(intern FB detail含む→public repoに出さない)
+tools/_pending_classification.json
