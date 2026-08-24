@@ -84,6 +84,15 @@ def d1(sql):
     return rows
 
 
+def count_one(sql, label):
+    """count(*) 系を実行し、必ず1行・整数 n が返ることを検証して返す。
+    取得失敗（空・非整数）は「対象0件」と解釈せず例外で止める（ルール4: 握り潰さない）。"""
+    rows = d1(sql)
+    if not rows or "n" not in rows[0] or not isinstance(rows[0]["n"], int):
+        raise RuntimeError(f"count取得失敗({label}): 期待=1行int, 実際={rows!r}")
+    return rows[0]["n"]
+
+
 def load_env():
     for f in (ENV_PHASE_C,):
         if f.exists():
@@ -151,13 +160,13 @@ def main():
     load_env()
     log(f"=== content_health 開始 (npx={NPX}) ===")
 
-    # (3) 充足数
+    # (3) 充足数（count_one で取得失敗を検証。空を0と解釈しない）
     counts = {}
-    counts["datasheets"] = d1("SELECT count(*) n FROM datasheets")[0]["n"]
-    counts["es_kits"] = d1("SELECT count(*) n FROM es_kits")[0]["n"]
-    counts["quiz_companies"] = d1("SELECT count(DISTINCT set_id) n FROM quiz_questions WHERE set_type='company'")[0]["n"]
-    counts["room_companies"] = d1("SELECT count(DISTINCT company_slug) n FROM room_personas")[0]["n"]
-    counts["panel_companies"] = d1("SELECT count(DISTINCT company_id) n FROM company_panels WHERE company_id NOT LIKE 'industry_10koma__%'")[0]["n"]
+    counts["datasheets"] = count_one("SELECT count(*) n FROM datasheets", "datasheets")
+    counts["es_kits"] = count_one("SELECT count(*) n FROM es_kits", "es_kits")
+    counts["quiz_companies"] = count_one("SELECT count(DISTINCT set_id) n FROM quiz_questions WHERE set_type='company'", "quiz_companies")
+    counts["room_companies"] = count_one("SELECT count(DISTINCT company_slug) n FROM room_personas", "room_companies")
+    counts["panel_companies"] = count_one("SELECT count(DISTINCT company_id) n FROM company_panels WHERE company_id NOT LIKE 'industry_10koma__%'", "panel_companies")
     log(f"充足数: {counts}")
 
     # (1) 画像実在: 全10コマ image_url を HEAD
@@ -208,6 +217,28 @@ def main():
     prev_fail = prev.get("failing", {})     # {key: {"code":..,"since":..}}
     prev_counts = prev.get("counts", {})
     first_run = not bool(prev)
+
+    # ★取得失敗と対象不在を区別する(全タブ共通ルール2026-08)。空/急減/大量失敗を「データ消失」と誤報せず、
+    #   かつ bogus な値で state baseline を上書きしない。疑わしければ通知して止まる(状態は保存しない)。
+    suspect = []
+    for k, v in counts.items():
+        if v == 0:  # 5項目とも本来データが存在する→0は取得失敗の疑い(対象不在ではない)
+            suspect.append(f"{k}=0(取得失敗の疑い)")
+        pv = prev_counts.get(k)
+        if pv and v < pv * 0.5:  # 前回比で半減以上=実削除より読み取り異常の可能性が高い
+            suspect.append(f"{k}: {pv}→{v}(急減)")
+    if imgs and len(img_fail) > len(imgs) * 0.3:      # 画像の3割超が非200=環境/ネット障害の疑い
+        suspect.append(f"画像失敗{len(img_fail)}/{len(imgs)}(環境障害の疑い)")
+    if comps and len(url_fail) > len(comps) * 5 * 0.3:  # URLの3割超が非200=同上
+        suspect.append(f"URL失敗{len(url_fail)}/{len(comps)*5}(環境障害の疑い)")
+    if suspect:
+        msg = ("🩺⚠️ トーキャリ コンテンツ健全性 " + NOW_S +
+               "\n取得失敗の疑いを検出。データ消失ではなく読み取り/環境の問題として扱い、"
+               "state を更新せず停止しました(誤報・baseline汚染の防止)。\n・" + "\n・".join(suspect) +
+               "\n→ 手動で本当に0/急減か確認してください。")
+        log("⚠️取得失敗の疑い→state非更新で停止: " + " / ".join(suspect))
+        notify_oscar(msg)  # 取得失敗は沈黙させない(2026-08「18日沈黙」の教訓)。常に通知
+        return 2           # 非ゼロ終了でlaunchd err にも残す(握り潰さない)
 
     # 新規失敗(前回に無い) + since付与(既存はsince保持)
     failing_out = {}
