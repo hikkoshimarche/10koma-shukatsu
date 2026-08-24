@@ -26,7 +26,14 @@ def is_person_ans(o):
 
 
 def kata_space(o):
-    return bool(re.fullmatch(r"[ァ-ヶ]{2,10}[\s　][ァ-ヶ]{2,10}", str(o).strip()))
+    # カタカナ姓名: 区切りにスペースだけでなく中黒(・)も許容(例 スムリガ・ミロスラブ)
+    return bool(re.fullmatch(r"[ァ-ヶー]{2,10}[\s　・][ァ-ヶー]{2,10}", str(o).strip()))
+
+
+def kanji_name_nospace(o):
+    """スペース無し2〜5字の漢字姓名(例 小早川智明/佐々木大輔)。_TERM(会社/施設等)は除外。文脈(ctx)付きでのみ使う。"""
+    s = re.sub(r"[\s　]", "", str(o))
+    return bool(re.fullmatch(r"[一-龥々〆ヶ㐀-鿿]{2,5}", s)) and not _TERM.search(str(o))
 
 
 def roman_name(o):
@@ -59,6 +66,9 @@ def detect(rows):
             if roman_name(corr) or kata_space(corr):
                 hit.append(r); continue
             if re.sub(r"[\s　]", "", corr) in SURNAMES:   # 1字姓含む
+                hit.append(r); continue
+            # スペース無し2〜5字漢字姓名(小早川智明/佐々木大輔)。人名を問う文脈でのみ→誤検出抑制
+            if kanji_name_nospace(corr):
                 hit.append(r); continue
             if sum(kanji_2_4(o) for o in opts) >= 3 and kanji_2_4(corr):
                 hit.append(r); continue

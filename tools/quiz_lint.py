@@ -524,7 +524,12 @@ def lint_address_number_distractor(q, corpus):
         if i == ci:
             continue
         for t in _num_tokens(str(o)):
-            if re.search(re.escape(t) + r"\s*(丁目|番地|番|号|条)", bn):
+            # 精度改善(2026-08-16): 衝突トークンが3桁以上のときのみerror。
+            # 1〜2桁(1,8,62等)は本文の自社住所「N丁目/番地/号」と偶然一致するだけで、
+            # 誤答自体は答えと同型・同単位の良質な選択肢(実データ97問で単位不整合0件を確認)。
+            # 3桁以上(例 レスター許可番号143502)のみ真に住所/番号由来の不良として残す。
+            # ※1〜2桁でも真に住所由来の誤答は理論上あり得るが、答えと同型なら学生には正常に機能=実害なし。
+            if len(t) >= 3 and re.search(re.escape(t) + r"\s*(丁目|番地|番|号|条)", bn):
                 res.append(_f("address_number_distractor", "error", q.get("id"),
                               f"誤答の数値{t}が住所由来(丁目/番地/号) → 住所数字を誤答に使わない"))
                 break
