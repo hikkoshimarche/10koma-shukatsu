@@ -74,3 +74,5 @@ tools/.image_consumer_health.json
 tools/_staleness_sweep.json
 tools/_stale_split.json
 tools/_sheet_name_mismatch.json
+tools/_dropped_46.json
+tools/_subj_clear_errors.json
