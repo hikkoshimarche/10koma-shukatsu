@@ -507,6 +507,12 @@ def _drop_stale(items, results):
         return items
     kept, dropped = [], []
     for it in items:
+        # 主観/追加系FB(背景を詳細に・個性・OBを追加 等=classify空)は vision陳腐化判定が信頼できない
+        #   (2026-08-24 obayashi#6: 「OB追加」FBを配信画像に人物不在のまま resolved と誤判定)。
+        #   具体症状型(text_leak/hands/scale/meta_frame/white_band/hline/accuracy=classify非空)のみ auto-drop。
+        if not PCI.classify_image_bug_cats(it.get("detail", "")):
+            kept.append(it)
+            continue
         try:
             r = ST.is_stale(it["slug"], int(it["koma"]), it.get("detail", ""))
         except Exception:
