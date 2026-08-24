@@ -13,7 +13,13 @@ import deploy_salary as D
 import image_staleness as ST
 
 # 1) pending map(505) + detail
-cf_items = PCI.commonfixes_fast().get("items", [])
+_cf = PCI.commonfixes_fast()
+cf_items = _cf.get("items", [])
+# 【空=取得失敗の可能性】ルール: commonfixesがerror or 空を返したら『対象0=陳腐化判定』に進まない。
+#   ここで空を0件扱いすると『陳腐化0』でなく最悪『全部stale』誤判定→破壊に繋がるため、取得失敗は止める。
+if _cf.get("error") or not cf_items:
+    raise SystemExit(f"[abort] commonfixes取得失敗/空 (error={_cf.get('error')}, items={len(cf_items)}) "
+                     "→ 0件が本物か取れなかったか区別できないため中止(ルール: 空で破壊しない)")
 qa_items = PCI.gas({"mode": "imageqa_list"}).get("items", [])
 pmap = PA._pending_image_map(cf_items=cf_items, qa_items=qa_items)
 detail_map = {}

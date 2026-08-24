@@ -585,6 +585,18 @@ def _pending_stall_map(pmap, persist=True):
     except Exception:
         snap = {}
     cur = {s: len(k) for s, k in pmap.items() if k}
+    # 【全タブ共通ルール: 空=取得失敗の可能性・破壊しない】pmapが空なのに既存snapshotに社がある
+    #   = commonfixes/GAS取得が失敗して空を返した疑い(0件が本物か取れなかったか区別不能)。
+    #   ここでpruneするとキュー可視化が丸ごと消える(image_stall_reportが偽の0件=全クリアに)。
+    #   → snapshotを上書き/削除せず保全し、既存snapshotから停滞日数のみ返す(過去の3件障害と同型を断つ)。
+    if not cur and snap:
+        out = {}
+        for slug, meta in snap.items():
+            try:
+                out[slug] = (now - _dt.fromisoformat(meta["since"])).days
+            except Exception:
+                out[slug] = 0
+        return out                                       # persistしない=破壊しない
     out = {}
     for slug, count in cur.items():
         prev = snap.get(slug)
