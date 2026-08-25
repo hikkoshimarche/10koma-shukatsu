@@ -10,7 +10,11 @@ import quiz_fanout as q
 from _d1 import d1
 
 APPLY = "--apply" in sys.argv
-PAT = re.compile(r'[0-9０-９,，]+\s*(円|百万円|億円|兆円|千円|万円|％|%|人|名|社|拠点|店|年|歳|件|カ国|か国|ヶ国)\s*です[。\.]?$')
+# FB5: 解説末尾が「数値+(任意の短い単位表現)+です/である」の言い換えを一般化検出。
+# 単位を列挙せず「数値直後≤5字(空白/句点/数字/ひらがな以外)+です/である」で終わる形に一般化
+# (倍/十億円/レシオ倍/基/kW/kVA/名程度/ドル/時間/店舗/箇所… 新単位でも取りこぼさない)。
+# ひらがな除外+窓≤5で「…歴史ある企業です」等の記述文の誤検出を回避。
+PAT = re.compile(r'[0-9０-９][0-9０-９,，\.．]*[^\s。、，,0-9ぁ-ん]{0,5}(です|である|でした)[。．\.]?\s*$')
 
 rows = d1("SELECT id,set_id,q_text,options,correct,explanation FROM quiz_questions")
 targets = [r for r in rows if PAT.search((r['explanation'] or '').strip())]
