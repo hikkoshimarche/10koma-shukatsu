@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.tokyari.sheetsync</string>
+  <key>ProgramArguments</key><array>
+    <string>/Users/oscardodds/oscar-ai/tokyari-pipeline/.venv/bin/python</string>
+    <string>/Users/oscardodds/projects/10koma-shukatsu/tools/reconcile_register.py</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Users/oscardodds/projects/10koma-shukatsu</string>
+  <key>StartCalendarInterval</key><dict><key>Minute</key><integer>20</integer></dict>
+  <key>StandardOutPath</key><string>/Users/oscardodds/projects/10koma-shukatsu/logs/sheetsync.out.log</string>
+  <key>StandardErrorPath</key><string>/Users/oscardodds/projects/10koma-shukatsu/logs/sheetsync.err.log</string>
+</dict></plist>

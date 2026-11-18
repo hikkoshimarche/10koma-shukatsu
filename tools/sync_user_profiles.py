@@ -10,6 +10,9 @@ env(tools/.env.phase_c): USER_SYNC_WEBAPP_URL, USER_SYNC_TOKEN
       python tools/sync_user_profiles.py --dry-run  # POSTせず計算結果をJSON出力(検証用)
 """
 import os, sys, json, subprocess
+import sys as _cf_sys, os as _cf_os  # wrangler 認証(env→keychain)の単一解決点 cf_env。2026-11-18 同型一掃
+_cf_d = _cf_os.path.dirname(_cf_os.path.abspath(__file__)); _cf_d in _cf_sys.path or _cf_sys.path.append(_cf_d)
+import cf_env as _cf_env; _cf_env.apply()
 from collections import Counter
 
 DB = "10koma-shukatsu-db"

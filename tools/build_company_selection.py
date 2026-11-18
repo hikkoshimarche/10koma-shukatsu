@@ -6,12 +6,17 @@ evidence/token_coverageはD1に入れない(パイプライン側selection_info.
 生成物: .backups/pre_company_selection_<ts>.sql と scratchpad/company_selection.sql
 """
 import json, os, sys, glob, re, datetime, subprocess
+import sys as _cf_sys, os as _cf_os  # wrangler 認証(env→keychain)の単一解決点 cf_env。2026-11-18 同型一掃
+_cf_d = _cf_os.path.dirname(_cf_os.path.abspath(__file__)); _cf_d in _cf_sys.path or _cf_sys.path.append(_cf_d)
+import cf_env as _cf_env; _cf_env.apply()
 
 ROOT = os.path.expanduser("~/projects/10koma-shukatsu")
+_SQL_OUT = os.environ.get("TOKYARI_SQL_OUT") or os.path.join(ROOT, ".backups", "sql")  # 旧: 別セッションのClaude scratchpad固定(消えると静かに失敗)。2026-11-18
+os.makedirs(_SQL_OUT, exist_ok=True)
 OUT = os.path.expanduser("~/oscar-ai/tokyari-pipeline/output")
 TS = sys.argv[1] if len(sys.argv) > 1 else "manual"
 BACKUP = os.path.join(ROOT, ".backups", f"pre_company_selection_{TS}.sql")
-SQL = "/private/tmp/claude-501/-Users-oscardodds-projects-10koma-shukatsu/7bb93f17-be86-4a51-a16e-c0b146625361/scratchpad/company_selection.sql"
+SQL = os.path.join(_SQL_OUT, "company_selection.sql")
 TODAY = datetime.date(2026, 7, 24)
 FLOOR60 = TODAY - datetime.timedelta(days=60)
 # 締切・イベント(未来のみ) vs 告知(60日以内可)

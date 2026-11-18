@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Phase C 毎時: FB本番反映(deploy_fb.py)+画像自動修正(phase_c_auto)。tools/launchd_template.plist 準拠(2026-11-18)。
+     旧版は EnvironmentVariables PATH に nvm v24.14.1 直書き・トークン解決なし。毎時ジョブのため RunAtLoad なし。
+     ⚠ 2026-11-18 ibm-consulting koma08 311回ループで unload 中。再開はオスカー判断。 -->
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.tokyari.phasec</string>
+  <key>ProgramArguments</key><array>
+    <string>/bin/bash</string><string>-lc</string>
+    <string>export PATH="$(/bin/ls -d "$HOME"/.nvm/versions/node/*/bin 2&gt;/dev/null|sort -V|tail -1):/usr/local/bin:/opt/homebrew/bin:$PATH"; export CLOUDFLARE_API_TOKEN="${CLOUDFLARE_API_TOKEN:-$(/usr/bin/security find-generic-password -a "$(id -un)" -s tokyari-cloudflare-api-token -w 2&gt;/dev/null)}"; exec /usr/bin/caffeinate -dims /Users/oscardodds/oscar-ai/tokyari-pipeline/.venv/bin/python /Users/oscardodds/projects/10koma-shukatsu/tools/deploy_fb.py</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Users/oscardodds/projects/10koma-shukatsu</string>
+  <key>StartInterval</key><integer>3600</integer>
+  <key>RunAtLoad</key><false/>
+  <key>StandardOutPath</key><string>/Users/oscardodds/projects/10koma-shukatsu/logs/phasec.out.log</string>
+  <key>StandardErrorPath</key><string>/Users/oscardodds/projects/10koma-shukatsu/logs/phasec.err.log</string>
+</dict></plist>

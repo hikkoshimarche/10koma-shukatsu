@@ -416,32 +416,70 @@ def main():
     #   image_stall_report が『クラッシュ0件』と『正常0件』を判別して翌日通知できるようにする。
     import os
     import time as _t
-    health = {"last_attempt": _t.strftime("%Y-%m-%dT%H:%M:%S"), "ok": None,
+    # 【G 2026-11-18】ok の定義を「例外なし」→「反映1件以上 or 処理対象0件」に変更。
+    #   ibm-consulting koma08 は毎時正常起動→同じ1コマを作り直し→反映0 を311回。旧定義では『進捗ゼロ』が見えなかった。
+    #   status: progress(反映>=1) / idle(対象0) / no_progress(対象>0・反映0) / crashed(例外) / dry(フラグOFF)
+    #   ok = status in (progress, idle)。no_progress/crashed は連続回数(streak)と開始時刻(since)を持ち越す。
+    _prev = {}
+    try:
+        _hp = REPO / "tools" / ".image_consumer_health.json"
+        if _hp.exists():
+            _prev = json.loads(_hp.read_text(encoding="utf-8"))
+    except Exception as _ex:   # 前回healthが読めない=streak不明。0と偽らず記録。
+        _prev = {"_read_error": f"{type(_ex).__name__}"}
+    health = {"last_attempt": _t.strftime("%Y-%m-%dT%H:%M:%S"), "ok": None, "status": None,
               "live": os.environ.get("AUTO_IMAGE_FIX_ENABLED", "0") == "1",
-              "processed": None, "counts": None, "error": None}
+              "processed": None, "deployed": None, "eligible": None, "item_errors": None,
+              "counts": None, "error": None, "last_success": _prev.get("last_success"),
+              "last_progress": _prev.get("last_progress")}
     try:
         import phase_c_auto as PCA
         live = health["live"]
         print(f"\n=== [拡張] phase_c_auto 画像自動化 [{'LIVE' if live else 'dry(既定)'}] ===")
         res = PCA.run_batch(dry=not live)
         counts = {k: len(res.get(k, [])) for k in ("coordinated", "human_qa", "safe", "mixed")}
-        health.update(ok=True, counts=counts, processed=sum(counts.values()),
+        def _n(kind, flag):
+            return sum(1 for r in res.get(kind, []) if isinstance(r, dict) and r.get(flag))
+        deployed = _n("safe", "deployed") + _n("coordinated", "reflected") + _n("human_qa", "reflected") \
+            + _n("mixed", "notified")
+        eligible = int(res.get("eligible", 0)) + counts["human_qa"]
+        item_errors = len(res.get("errors", []))
+        if not live:
+            status = "dry"
+        elif deployed >= 1:
+            status = "progress"
+        elif eligible == 0 and item_errors == 0:
+            status = "idle"
+        else:
+            status = "no_progress"
+        health.update(status=status, ok=(status in ("progress", "idle")) if live else None,
+                      counts=counts, processed=sum(counts.values()), deployed=deployed,
+                      eligible=eligible, item_errors=item_errors,
+                      item_error_samples=[str(e.get("error"))[:160] for e in res.get("errors", [])[:3]],
+                      ledger=res.get("ledger"), queue_remaining=res.get("queue_remaining"),
                       last_success=_t.strftime("%Y-%m-%dT%H:%M:%S"))
+        if status == "progress":
+            health["last_progress"] = _t.strftime("%Y-%m-%dT%H:%M:%S")
         print(f"  協調反映 {counts['coordinated']} / 人QA消化 {counts['human_qa']} "
               f"/ 安全型auto {counts['safe']} / 混在型notify {counts['mixed']}")
     except Exception as ex:
         import traceback
         # 秘匿値の万一の混入を除去(40桁以上の英数_-連続をマスク)してから記録
         msg = _re_scrub(f"{type(ex).__name__}: {ex}")
-        health.update(ok=False, error=msg[:400])
+        health.update(ok=False, status="crashed", error=msg[:400])
         print(f"  ⚠ 画像自動化拡張でエラー(台本反映は成功済・非巻戻し): {msg[:200]}")
         traceback.print_exc()
     finally:
+        bad = health.get("status") in ("no_progress", "crashed")
+        health["bad_streak"] = (int(_prev.get("bad_streak") or 0) + 1) if bad else 0
+        health["bad_since"] = (_prev.get("bad_since") or health["last_attempt"]) if bad else None
         try:
             (REPO / "tools" / ".image_consumer_health.json").write_text(
                 json.dumps(health, ensure_ascii=False, indent=1), encoding="utf-8")
-        except Exception:
-            pass
+        except Exception as _ex:   # 握り潰さない: health が書けないこと自体を stderr に残す
+            sys.stderr.write(f"[deploy_fb] ⚠ health 書込失敗: {type(_ex).__name__}: {_ex}\n")
+        print(f"  [health] status={health.get('status')} ok={health.get('ok')} deployed={health.get('deployed')} "
+              f"eligible={health.get('eligible')} item_errors={health.get('item_errors')} bad_streak={health['bad_streak']}")
     return 0
 
 

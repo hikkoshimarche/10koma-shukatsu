@@ -199,6 +199,18 @@ def coordinated_reflect_one(target, dry, st, c):
         rec["escalate"] = f"lint error={lint_err} → 台本未整備。画像も反映しない(協調中止)"
         return rec
 
+    # 【試行台帳 2026-11-18】生成前に上限判定→加算→即保存
+    import image_fix_ledger as LG
+    _lks = [LG.key(slug, k) for k in image_komas]
+    for _lk in _lks:
+        _blk, _why = LG.blocked(_lk)
+        if _blk:
+            rec["escalate"] = f"台帳 {_lk}: {_why}"; rec["ledger_blocked"] = True
+            return rec
+    for _lk in _lks:
+        LG.begin(_lk, "coordinated", target.get("label", ""), target.get("company", slug))
+    rec["_ledger_keys"] = _lks
+
     D.backup_d1(slug)
     canary_before = D.canary_snapshot({slug})
 
@@ -308,6 +320,14 @@ def mixed_notify_one(company, slug, tslug, koma, detail, instruction, dry, st, c
     allowed, reason, showcase = PCI.guard(slug, koma, st, c)
     if not allowed:
         rec["escalate"] = f"ガード不可: {reason}"; return rec
+    import image_fix_ledger as LG          # 【試行台帳 2026-11-18】生成前に上限判定→加算→即保存
+    _lk = LG.key(slug, koma)
+    _blk, _why = LG.blocked(_lk)
+    if _blk:
+        rec["escalate"] = f"台帳: {_why}"; rec["ledger_blocked"] = True
+        return rec
+    LG.begin(_lk, "mixed", detail, company)
+    rec["_ledger_keys"] = [_lk]
     ng_hint = _get_ng_hint(slug, koma)   # 前回NG理由があれば次プロンプトに反映
     instr2 = (instruction + f" 【前回のNG指摘を必ず反映】{ng_hint}") if ng_hint else instruction
     FAD.add_fix_instructions_to_scenario(tslug, koma, [instr2])
@@ -709,19 +729,59 @@ def load_coord_targets():
     return []
 
 
+def _guarded(results, keys, fn, success_flag):
+    """【C 2026-11-18】1件ずつ隔離。1件の例外がバッチ全体(=後続全件・save_state)を止めない。
+    例外は握り潰さない: traceback を stderr、rec.error、results['errors']、台帳 fail(上限で human_review 起票)に残す。
+    正常returnでも台帳 begin 済(_ledger_keys)なら success_flag で succeed/fail を確定する。"""
+    import traceback
+    import image_fix_ledger as LG
+    try:
+        rec = fn()
+    except Exception as ex:
+        msg = f"{type(ex).__name__}: {ex}"[:400]
+        sys.stderr.write(f"[phase_c_auto] 項目例外 {keys}: {msg}\n")
+        traceback.print_exc()
+        for k in keys:
+            LG.fail(k, msg, PCI.gas)
+        rec = {"keys": keys, "error": msg, "crashed": True}
+        results["errors"].append(rec)
+        return rec
+    for k in (rec.get("_ledger_keys") or []):
+        if rec.get(success_flag):
+            LG.succeed(k, rec.get("commit") or "")
+        else:
+            LG.fail(k, rec.get("escalate") or "未反映(理由未記録)", PCI.gas)
+    return rec
+
+
 def run_batch(dry=True):
     PCI._load_env()
     c = auto_cfg(); st = PCI.load_state()
+    results = {"human_qa": [], "coordinated": [], "safe": [], "mixed": [], "note": "",
+               "errors": [], "ledger_skipped": [], "eligible": 0}
+    try:
+        return _run_batch_body(dry, c, st, results)
+    finally:
+        if not dry:
+            PCI.save_state(st)   # 【C】例外でも必ず保存(旧: 末尾のみ → 例外で per_koma が永続化されず311回ループ)
+
+
+def _run_batch_body(dry, c, st, results):
+    import image_fix_ledger as LG
     print("=" * 64)
     print(f"=== phase_c_auto バッチ [{'DRY' if dry else 'LIVE'}] ===")
     print(f"master AUTO_IMAGE_FIX_ENABLED={'ON' if c['enabled'] else 'OFF'} / "
           f"safe={sorted(c['safe_types'])} / coordinated={c['coordinated']} / mixed={c['mixed_mode']}")
     print(f"state day_cost=${st['day_cost']:.2f} hour={len(st['hour_events'])} paused={st['paused']}")
     print("=" * 64)
-    results = {"human_qa": [], "coordinated": [], "safe": [], "mixed": [], "note": ""}
 
     # 1) 人QA OK候補の反映(前ラウンド承認分) — 最安・最優先で着地
-    results["human_qa"] = consume_human_qa(dry, st, c)
+    try:
+        results["human_qa"] = consume_human_qa(dry, st, c)
+    except Exception as ex:
+        import traceback
+        traceback.print_exc()
+        results["errors"].append({"keys": ["human_qa"], "error": f"{type(ex).__name__}: {ex}"[:400], "crashed": True})
 
     # master OFF(dry)では生成系(Claude triage/画像)を走らせない(浪費防止)。協調のdry計画のみ提示。
     if not (c["enabled"] or results.get("_force_route")):
@@ -737,7 +797,13 @@ def run_batch(dry=True):
     # 2) 【優先1】安全型 full-auto を先に hour 枠へ(安全型が常に先に枠を取る)
     _drain_ok = []
     for it in safe_items:
-        rec = PCI.run_one(it["company"], it["slug"], it["koma"], it["detail"], dry, st, c)
+        _k = LG.key(it["slug"], it["koma"])
+        _blk, _why = LG.blocked(_k)
+        if _blk:
+            results["ledger_skipped"].append({"key": _k, "why": _why}); continue
+        results["eligible"] += 1
+        rec = _guarded(results, [_k], lambda it=it: PCI.run_one(it["company"], it["slug"], it["koma"],
+                                                                 it["detail"], dry, st, c), "deployed")
         results["safe"].append(rec)
         # backlogドレイン由来で反映成功 → drained記録(再生成防止=良い画像を上書きしない)
         if not dry and it.get("from_backlog") and rec.get("deployed"):
@@ -746,7 +812,12 @@ def run_batch(dry=True):
 
     # 3) 【優先2】協調反映(入口型)
     for t in load_coord_targets():
-        results["coordinated"].append(coordinated_reflect_one(t, dry, st, c))
+        _ks = [LG.key(t["slug"], k) for k in t.get("image_komas", [])]
+        if any(LG.blocked(k)[0] for k in _ks):
+            results["ledger_skipped"].append({"key": ",".join(_ks), "why": "台帳 blocked"}); continue
+        results["eligible"] += 1
+        results["coordinated"].append(_guarded(results, _ks, lambda t=t: coordinated_reflect_one(t, dry, st, c),
+                                               "reflected"))
 
     # 4) 【優先3】混在型: 1ループ上限件数・起票済/per_koマ到達は再生成しない(洪水=クレジット浪費の停止)。
     ticketed = _ticketed_set(c)
@@ -757,12 +828,17 @@ def run_batch(dry=True):
             results["mixed"].append({"slug": it["slug"], "koma": it["koma"],
                                      "skip": "起票済/per_koマ到達→再生成せず"})
             continue
+        if LG.blocked(LG.key(it["slug"], it["koma"]))[0]:
+            results["ledger_skipped"].append({"key": key, "why": "台帳 blocked"}); continue
         if mixed_done >= c["mixed_max_per_loop"]:
             results["mixed"].append({"slug": it["slug"], "koma": it["koma"],
                                      "skip": f"1ループ上限{c['mixed_max_per_loop']}件到達→次ループへ"})
             continue
-        results["mixed"].append(
-            mixed_notify_one(it["company"], it["slug"], it["tslug"], it["koma"], it["detail"], it["instruction"], dry, st, c))
+        results["eligible"] += 1
+        results["mixed"].append(_guarded(
+            results, [LG.key(it["slug"], it["koma"])],
+            lambda it=it: mixed_notify_one(it["company"], it["slug"], it["tslug"], it["koma"], it["detail"],
+                                           it["instruction"], dry, st, c), "notified"))
         mixed_done += 1
     results["counts"]["mixed_generated_this_loop"] = mixed_done
 
@@ -777,12 +853,13 @@ def run_batch(dry=True):
             try:
                 import phase_c_autoloop as A
                 slug2name = {v: k for k, v in A._name_to_slug_map().items()}
-            except Exception:
-                pass
+            except Exception as ex:
+                results["errors"].append({"keys": ["slug2name"], "error": f"{type(ex).__name__}: {ex}"[:200]})
             payload = "|".join(f"{slug2name.get(s, s)}:{dd}日" for s, dd in stuck[:30])
             PCI.gas({"mode": "setimgstall", "stall": payload})
-        except Exception:
+        except Exception as ex:   # 握り潰さない(2026-11-18): errors に残し health に反映
             pmap = None; stall = None
+            results["errors"].append({"keys": ["stall_map"], "error": f"{type(ex).__name__}: {ex}"[:300]})
         # 反映が起きた社はラベルを即更新
         reflected = {}
         for key, flag in (("safe", "deployed"), ("coordinated", "reflected"), ("human_qa", "reflected")):
@@ -795,8 +872,8 @@ def run_batch(dry=True):
                 try:
                     PCI.gas({"mode": "setpartial" if n > 0 else "setreflected",
                              "company": company, **({"nimg": str(n)} if n > 0 else {})})
-                except Exception:
-                    pass
+                except Exception as ex:
+                    results["errors"].append({"keys": [f"label:{slug}"], "error": f"{type(ex).__name__}: {ex}"[:200]})
             _rebuild_audit_tab(pmap=pmap, stall=stall)
         results["labels_refreshed"] = sorted(reflected)
 
@@ -804,7 +881,7 @@ def run_batch(dry=True):
     try:
         safe_ok = sum(1 for r in results.get("safe", []) if isinstance(r, dict) and r.get("deployed"))
         mixed_n = sum(1 for r in results.get("mixed", []) if isinstance(r, dict) and r.get("notified"))
-        qn = 0
+        qn = None                 # 取得失敗を「キュー0件」と表示しない(空=失敗ルール 2026-11-18)
         try:
             import re as _re
             cf = PCI.commonfixes_fast()
@@ -816,15 +893,22 @@ def run_batch(dry=True):
                 for km in _re.findall(r"(?:koma|コマ)\s*0*(\d+)", m.group(2)):
                     seen.add((m.group(1).strip(), km))
             qn = len(seen)
-        except Exception:
-            pass
-        status = f"{'ON' if c['enabled'] else 'OFF'}|今回:安全auto{safe_ok}/混在候補{mixed_n}|キュー残{qn}コマ"
+        except Exception as ex:
+            results["errors"].append({"keys": ["queue_count"], "error": f"{type(ex).__name__}: {ex}"[:200]})
+        results["queue_remaining"] = qn
+        status = (f"{'ON' if c['enabled'] else 'OFF'}|今回:安全auto{safe_ok}/混在候補{mixed_n}|"
+                  f"キュー残{qn if qn is not None else '取得失敗'}コマ")
         PCI.gas({"mode": "setimgstatus", "status": status})
-    except Exception:
-        pass
+    except Exception as ex:       # 握り潰さない(2026-11-18)
+        results["errors"].append({"keys": ["setimgstatus"], "error": f"{type(ex).__name__}: {ex}"[:300]})
 
+    # 起票失敗で human_review のまま未起票の項目を再起票(握り潰さない)
     if not dry:
-        PCI.save_state(st)
+        try:
+            results["tickets_retried"] = LG.retry_tickets(PCI.gas)
+        except Exception as ex:
+            results["errors"].append({"keys": ["retry_tickets"], "error": f"{type(ex).__name__}: {ex}"[:300]})
+        results["ledger"] = LG.summary()
     return results
 
 
@@ -899,9 +983,39 @@ def selftest():
 
     print("[selftest] 安全型優先: run_batch は safe→協調→混在の順(安全型が先にhour枠を取る)")
     import inspect
-    src = inspect.getsource(run_batch)
+    src = inspect.getsource(_run_batch_body)      # 2026-11-18: 本体は _run_batch_body(run_batch は try/finally 殻)
     i_safe = src.find("優先1】安全型"); i_coord = src.find("優先2】協調"); i_mixed = src.find("優先3】混在")
     chk("コード順が 安全型→協調→混在", 0 < i_safe < i_coord < i_mixed)
+
+    # ---- 2026-11-18 是正 B/C の回帰(311回ループ再現) ----
+    print("[selftest] B/C: D1で例外→台帳に試行が残り、3回で human_review・後続件は処理継続・state保存")
+    import tempfile, image_fix_ledger as LG
+    _orig = LG.LEDGER
+    with tempfile.TemporaryDirectory() as td:
+        LG.LEDGER = Path(td) / "ledger.json"
+        tickets = []
+        fake_gas = lambda p: (tickets.append(p) or {"ok": True})
+        _g = PCI.gas
+        PCI.gas = fake_gas
+        try:
+            res = {"errors": []}
+            def boom():
+                LG.begin("x#8", "safe", "白帯", "X社")   # run_one と同じく生成前に begin
+                raise RuntimeError("cmd failed: wrangler d1 execute ... CLOUDFLARE_API_TOKEN")
+            for _ in range(3):
+                if not LG.blocked("x#8")[0]:
+                    _guarded(res, ["x#8"], boom, "deployed")
+            e = LG.get("x#8")
+            chk("例外でも試行が永続化(attempts=3)", e.get("attempts") == 3)
+            chk("3回未反映で human_review", e.get("status") == "human_review")
+            chk("4回目は blocked(自動処理対象外)", LG.blocked("x#8")[0] is True)
+            chk("スプシ起票1回(重複起票なし)", sum("要人レビュー" in str(x.get("rule")) for x in tickets) == 1)
+            chk("例外は errors に3件記録(握り潰しなし)", len(res["errors"]) == 3)
+            ok_rec = _guarded(res, ["y#1"], lambda: {"_ledger_keys": ["y#1"], "deployed": True, "commit": "abc"}, "deployed")
+            chk("後続件は処理継続・成功は resolved", LG.get("y#1").get("status") == "resolved" and ok_rec.get("deployed"))
+        finally:
+            PCI.gas = _g
+            LG.LEDGER = _orig
 
     print("\n=== phase_c_auto selftest: " + ("ALL PASS ✅" if ok else "FAIL ❌") + " ===")
     return 0 if ok else 1

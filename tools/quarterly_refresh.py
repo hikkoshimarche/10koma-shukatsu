@@ -6,8 +6,13 @@
 実行=launchd or 手動。ログ: logs/quarterly_refresh.log(追記)。
 """
 import os, sys, subprocess, datetime
+import sys as _cf_sys, os as _cf_os  # wrangler 認証(env→keychain)の単一解決点 cf_env。2026-11-18 同型一掃
+_cf_d = _cf_os.path.dirname(_cf_os.path.abspath(__file__)); _cf_d in _cf_sys.path or _cf_sys.path.append(_cf_d)
+import cf_env as _cf_env; _cf_env.apply()
 
 ROOT = os.path.expanduser("~/projects/10koma-shukatsu")
+_SQL_OUT = os.environ.get("TOKYARI_SQL_OUT") or os.path.join(ROOT, ".backups", "sql")  # 旧: 別セッションのClaude scratchpad固定(消えると静かに失敗)。2026-11-18
+os.makedirs(_SQL_OUT, exist_ok=True)
 OUT = os.path.expanduser("~/oscar-ai/tokyari-pipeline/output")
 LOG = os.path.join(ROOT, "logs", "quarterly_refresh.log")
 APPLY_FRESH = "/private/tmp/quarterly_freshness_update.sql"
@@ -69,7 +74,6 @@ def stage_d1(dry):
     b = _run([PY, "tools/build_freshness_d1_update.py", ts])
     if b.returncode != 0:
         _log(f"(2)D1 SQL構築失敗 rc={b.returncode}: {b.stderr[-200:]}"); return False
-    sqlpath = "/private/tmp/claude-501"  # build script既定の出力先を尊重(stderr/ stdoutにpath)
     upd = next((l.split("->", 1)[1].strip().split(" ")[0] for l in b.stdout.splitlines() if "update ->" in l), "")
     if not upd or not os.path.exists(upd):
         _log(f"(2)更新SQL不明={upd} → skip"); return False
@@ -97,11 +101,16 @@ def stage_industry(dry):
     b = _run([PY, "tools/build_gyokai_d1_insert.py", ts])
     if b.returncode != 0:
         _log(f"(1b)D1 SQL構築失敗: {b.stderr[-160:]}"); return False
-    ins = next((l.split("->", 1)[1].strip().split(" ")[0] for l in b.stdout.splitlines() if "upsert ->" in l), "")
-    if ins and os.path.exists(ins):
-        a = _run(["npx", "wrangler", "d1", "execute", "10koma-shukatsu-db", "--remote",
-                  "--config", "api/wrangler.toml", "--file", ins])
-        _log(f"(1b)業界D1再同期 rc={a.returncode} " + next((l.strip() for l in a.stdout.splitlines() if "rows_written" in l), ""))
+    # build_gyokai_d1_insert の出力行は "insert -> <path>"(旧コードは "upsert ->" を探して毎回黙ってskipしていた)
+    ins = next((l.split("->", 1)[1].strip().split(" ")[0] for l in b.stdout.splitlines()
+                if l.startswith(("insert ->", "upsert ->"))), "")
+    if not ins or not os.path.exists(ins):
+        _log(f"(1b)✗ 業界D1 SQL不明/欠落={ins!r} → 失敗扱い(空=失敗)"); return False
+    a = _run(["npx", "wrangler", "d1", "execute", "10koma-shukatsu-db", "--remote",
+              "--config", "api/wrangler.toml", "--file", ins])
+    _log(f"(1b)業界D1再同期 rc={a.returncode} " + next((l.strip() for l in a.stdout.splitlines() if "rows_written" in l), a.stderr[-160:]))
+    if a.returncode != 0:
+        return False
     # difficulty再充填(再同期でNULL化した industry 行: 財務Lv4/数値Lv3/他Lv2)
     for sql in ("UPDATE quiz_questions SET difficulty=4 WHERE difficulty IS NULL AND set_type='industry' AND (category='財務数値' OR as_of LIKE '%年3月期%' OR q_text LIKE '%利益%' OR q_text LIKE '%売上%' OR q_text LIKE '%収益%' OR q_text LIKE '%配当%' OR q_text LIKE '%資産%');",
                 "UPDATE quiz_questions SET difficulty=3 WHERE difficulty IS NULL AND set_type='industry' AND (q_text LIKE '%従業員%' OR q_text LIKE '%拠点%' OR q_text LIKE '%資本金%');",
@@ -124,12 +133,13 @@ def stage_selection(dry):
     _log(f"(1d)取得 rc={g.returncode}: " + "\n".join(g.stdout.strip().splitlines()[-2:]))
     ts = datetime.datetime.now().strftime("%Y%m%d_%H%M")
     b = _run([PY, "tools/build_company_selection.py", ts])
-    ins = next((l.split("->", 1)[1].strip().split(" ")[0] for l in b.stdout.splitlines() if "upsert ->" in l), "")
-    if ins and os.path.exists(ins):
-        a = _run(["npx", "wrangler", "d1", "execute", "10koma-shukatsu-db", "--remote",
-                  "--config", "api/wrangler.toml", "--file", ins])
-        _log(f"(1d)選考情報D1 rc={a.returncode} " + next((l.strip() for l in a.stdout.splitlines() if "rows_written" in l), ""))
-    return True
+    ins = next((l.split("upsert ->", 1)[1].strip().split(" ")[0] for l in b.stdout.splitlines() if "upsert ->" in l), "")
+    if b.returncode != 0 or not ins or not os.path.exists(ins):
+        _log(f"(1d)✗ 選考SQL構築失敗/欠落 rc={b.returncode} path={ins!r}: {b.stderr[-160:]}"); return False
+    a = _run(["npx", "wrangler", "d1", "execute", "10koma-shukatsu-db", "--remote",
+              "--config", "api/wrangler.toml", "--file", ins])
+    _log(f"(1d)選考情報D1 rc={a.returncode} " + next((l.strip() for l in a.stdout.splitlines() if "rows_written" in l), a.stderr[-160:]))
+    return a.returncode == 0
 
 
 def stage_product_urls(dry):
@@ -170,10 +180,12 @@ def stage_salary(dry):
     _log(f"(1c)反映 rc={ap.returncode}: " + "\n".join(ap.stdout.strip().splitlines()[-2:]))
     bd = _run([PY, "tools/batch_salary_d1.py"])
     _log(f"(1c)panels生成 rc={bd.returncode}: " + "\n".join(bd.stdout.strip().splitlines()[-2:]))
-    SCR = "/private/tmp/claude-501/-Users-oscardodds-projects-10koma-shukatsu/7bb93f17-be86-4a51-a16e-c0b146625361/scratchpad"
+    SCR = _SQL_OUT
     for sql in ("salary_panels.sql", "salary_datasheets.sql"):
         p = os.path.join(SCR, sql)
-        if os.path.exists(p):
+        if not os.path.exists(p):
+            _log(f"(1c)✗ {sql} 欠落(batch_salary_d1 rc={bd.returncode}) → 失敗扱い(空=失敗)"); return False
+        if True:
             a = _run(["npx", "wrangler", "d1", "execute", "10koma-shukatsu-db", "--remote",
                       "--config", "api/wrangler.toml", "--file", p])
             _log(f"(1c)D1 {sql} rc={a.returncode} " + next((l.strip() for l in a.stdout.splitlines() if "rows_written" in l), ""))

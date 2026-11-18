@@ -5,6 +5,9 @@
 全通過=exit0(Phase3継続可)/1つでも失敗=exit1(停止)。1社ぶんペルソナ全文ダンプ。
 """
 import json
+import sys as _cf_sys, os as _cf_os  # wrangler 認証(env→keychain)の単一解決点 cf_env。2026-11-18 同型一掃
+_cf_d = _cf_os.path.dirname(_cf_os.path.abspath(__file__)); _cf_d in _cf_sys.path or _cf_sys.path.append(_cf_d)
+import cf_env as _cf_env; _cf_env.apply()
 import os
 import re
 import sys

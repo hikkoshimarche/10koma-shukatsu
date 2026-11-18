@@ -20,6 +20,9 @@
 """
 from __future__ import annotations
 import argparse, glob, json, os, shutil, subprocess, sys, time
+import sys as _cf_sys, os as _cf_os  # wrangler 認証(env→keychain)の単一解決点 cf_env。2026-11-18 同型一掃
+_cf_d = _cf_os.path.dirname(_cf_os.path.abspath(__file__)); _cf_d in _cf_sys.path or _cf_sys.path.append(_cf_d)
+import cf_env as _cf_env; _cf_env.apply()
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
@@ -30,6 +33,7 @@ ROOT = Path(__file__).resolve().parent.parent
 HDIR = Path(__file__).resolve().parent / "content_health"
 HDIR.mkdir(exist_ok=True)
 STATE = HDIR / "state.json"
+HEARTBEAT = HDIR / "heartbeat.json"   # 【F 2026-11-18】完了時刻。別ジョブ(health/watch_content_health.py)が鮮度を監視
 LOG = HDIR / "runs.log"
 ENV_PHASE_C = Path(__file__).resolve().parent / ".env.phase_c"
 
@@ -91,6 +95,24 @@ def count_one(sql, label):
     if not rows or "n" not in rows[0] or not isinstance(rows[0]["n"], int):
         raise RuntimeError(f"count取得失敗({label}): 期待=1行int, 実際={rows!r}")
     return rows[0]["n"]
+
+
+def _heartbeat(status, **kw):
+    """完了/開始を記録。started のまま last_complete が古い = 起動はするが完走しない(2026-08-05〜11-18の死に方)。"""
+    hb = {}
+    if HEARTBEAT.exists():
+        try:
+            hb = json.loads(HEARTBEAT.read_text())
+        except Exception as e:
+            log(f"heartbeat 読込失敗(上書き再生成): {type(e).__name__}")
+    now = datetime.now(JST).isoformat(timespec="seconds")
+    if status == "started":
+        hb["last_start"] = now
+    else:
+        hb["last_complete"] = now
+        hb["last_status"] = status
+        hb["detail"] = {k: (v if isinstance(v, (int, bool, dict, list)) else str(v)) for k, v in kw.items()}
+    HEARTBEAT.write_text(json.dumps(hb, ensure_ascii=False, indent=1))
 
 
 def load_env():
@@ -158,6 +180,7 @@ def main():
     ap.add_argument("--force-notify", action="store_true", help="異常有無に関わらず結果を送信(テスト用)")
     args = ap.parse_args()
     load_env()
+    _heartbeat("started")
     log(f"=== content_health 開始 (npx={NPX}) ===")
 
     # (3) 充足数（count_one で取得失敗を検証。空を0と解釈しない）
@@ -238,6 +261,7 @@ def main():
                "\n→ 手動で本当に0/急減か確認してください。")
         log("⚠️取得失敗の疑い→state非更新で停止: " + " / ".join(suspect))
         notify_oscar(msg)  # 取得失敗は沈黙させない(2026-08「18日沈黙」の教訓)。常に通知
+        _heartbeat("completed_suspect", suspect=suspect)
         return 2           # 非ゼロ終了でlaunchd err にも残す(握り潰さない)
 
     # 新規失敗(前回に無い) + since付与(既存はsince保持)
@@ -310,6 +334,7 @@ def main():
         log("異常なし → 通知しない(設計どおり)")
 
     log(f"=== 完了 anomaly={anomaly} notified={sent} ===")
+    _heartbeat("completed", anomaly=anomaly, counts=counts, img_fail=len(img_fail), url_fail=len(url_fail))
     return 0
 
 

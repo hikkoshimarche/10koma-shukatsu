@@ -6,6 +6,9 @@ registered-v3 の全社(三井mitsui-bussanは除外=GOLDのmitsui_corpに触れ
 使い方: room_personas_to_live.py [--all | --new-only | --slug X] [--dry]
 """
 import argparse
+import sys as _cf_sys, os as _cf_os  # wrangler 認証(env→keychain)の単一解決点 cf_env。2026-11-18 同型一掃
+_cf_d = _cf_os.path.dirname(_cf_os.path.abspath(__file__)); _cf_d in _cf_sys.path or _cf_sys.path.append(_cf_d)
+import cf_env as _cf_env; _cf_env.apply()
 import csv
 import json
 import os

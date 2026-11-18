@@ -1,4 +1,5 @@
 #!/bin/bash
+export CLOUDFLARE_API_TOKEN="${CLOUDFLARE_API_TOKEN:-$(/usr/bin/security find-generic-password -a "$(id -un)" -s tokyari-cloudflare-api-token -w 2>/dev/null || true)}"  # cf_env と同方式(2026-11-18 同型一掃)
 # --all を最大4巡。各巡でskip社(不運な抽出ゆらぎ)をretry。D1完成数が増えなくなったら終了。
 cd ~/oscar-ai/tokyari-pipeline
 WCONF=/Users/oscardodds/projects/10koma-shukatsu/api/wrangler.toml

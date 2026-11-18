@@ -12,6 +12,9 @@
   この2つはモデルもref体系も保存先もDB列も別。片方の手順を他方に流用しないこと。
 """
 import argparse, base64, io, json, os, re, subprocess, sys, threading, time
+import sys as _cf_sys, os as _cf_os  # wrangler 認証(env→keychain)の単一解決点 cf_env。2026-11-18 同型一掃
+_cf_d = _cf_os.path.dirname(_cf_os.path.abspath(__file__)); _cf_d in _cf_sys.path or _cf_sys.path.append(_cf_d)
+import cf_env as _cf_env; _cf_env.apply()
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 REPO = Path("/Users/oscardodds/projects/10koma-shukatsu")

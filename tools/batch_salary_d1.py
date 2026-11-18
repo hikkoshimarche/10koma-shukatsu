@@ -6,10 +6,12 @@ INSERT を収集(lint error社は自動除外)、datasheet(平均年間給与追
 import os, sys, json, subprocess
 
 ROOT = os.path.expanduser("~/projects/10koma-shukatsu")
+_SQL_OUT = os.environ.get("TOKYARI_SQL_OUT") or os.path.join(ROOT, ".backups", "sql")  # 旧: 別セッションのClaude scratchpad固定(消えると静かに失敗)。2026-11-18
+os.makedirs(_SQL_OUT, exist_ok=True)
 OUT = os.path.expanduser("~/oscar-ai/tokyari-pipeline/output")
 PIPE = os.path.expanduser("~/oscar-ai/tokyari-pipeline")
 APPLIED = os.path.join(OUT, "_salary_applied.json")
-SCR = "/private/tmp/claude-501/-Users-oscardodds-projects-10koma-shukatsu/7bb93f17-be86-4a51-a16e-c0b146625361/scratchpad"
+SCR = _SQL_OUT
 SEC_MAP = {"事業内容・セグメント": "事業", "主要財務": "財務", "社風・求める人物像": "社風", "沿革・基本情報": "沿革"}
 
 

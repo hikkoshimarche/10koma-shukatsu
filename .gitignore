@@ -76,3 +76,7 @@ tools/_stale_split.json
 tools/_sheet_name_mismatch.json
 tools/_dropped_46.json
 tools/_subj_clear_errors.json
+
+# 画像自動修正の試行台帳(2026-11-18・public repoに出さない)
+tools/.image_fix_attempts.json
+tools/.image_fix_attempts.json.tmp

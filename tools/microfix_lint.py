@@ -8,6 +8,9 @@ microfix後 v4ゲートでlint=0を確認。deployは別途deploy_industryが拾
 使い方: microfix_lint.py 業界1 業界2 ...
 """
 import json
+import sys as _cf_sys, os as _cf_os  # wrangler 認証(env→keychain)の単一解決点 cf_env。2026-11-18 同型一掃
+_cf_d = _cf_os.path.dirname(_cf_os.path.abspath(__file__)); _cf_d in _cf_sys.path or _cf_sys.path.append(_cf_d)
+import cf_env as _cf_env; _cf_env.apply()
 import re
 import subprocess
 import sys

@@ -5,6 +5,9 @@
 ★破壊操作なし: アバターの生成も削除もしない。全社共通ルール(空を対象なしと解釈しない/肯定確認/期待vs実件数/例外を握り潰さない)を実装。
 安全弁: (a)取得が空=失敗として中止(削除・スキップしない) (b)per-company control-canaryで対象外社の変化を検知したら即停止。"""
 import sys, os, json, subprocess, hashlib
+import sys as _cf_sys, os as _cf_os  # wrangler 認証(env→keychain)の単一解決点 cf_env。2026-11-18 同型一掃
+_cf_d = _cf_os.path.dirname(_cf_os.path.abspath(__file__)); _cf_d in _cf_sys.path or _cf_sys.path.append(_cf_d)
+import cf_env as _cf_env; _cf_env.apply()
 from pathlib import Path
 REPO = Path("/Users/oscardodds/projects/10koma-shukatsu")
 API = REPO/"api"

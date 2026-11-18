@@ -29,6 +29,7 @@ HEALTH = REPO / "tools" / ".image_consumer_health.json"   # deploy_fb が毎時 
 CLASSIFY_CACHE = REPO / "tools" / "_pending_classification.json"
 
 STALE_ALERT_DAYS = 2      # 消化役の state.day がこの日数以上古く、かつ pending>0 なら赤信号
+NO_PROGRESS_ALERT_RUNS = 3   # 毎時ジョブで進捗ゼロ(no_progress/crashed)が3回連続したら alert (2026-11-18)
 OLD_ALERT_DAYS = 3        # 最古の滞留がこの日数以上なら赤信号(setpartialのbumpに影響されない停滞検知)
 
 
@@ -85,6 +86,10 @@ def stall_summary(today: date | None = None) -> dict:
     h_ok = hp.get("ok")
     h_error = hp.get("error")
     h_processed = hp.get("processed")
+    # 【G 2026-11-18】進捗ゼロ検知: 起動・正常終了しても反映0が続けば異常(311回ループは旧定義で全部「正常」だった)
+    h_status = hp.get("status")
+    h_streak = int(hp.get("bad_streak") or 0)
+    no_progress = (h_status in ("no_progress", "crashed") and h_streak >= NO_PROGRESS_ALERT_RUNS)
 
     # 型別内訳(best-effort・キャッシュがあれば)
     types = None
@@ -104,7 +109,7 @@ def stall_summary(today: date | None = None) -> dict:
         (h_attempt_stale is not None and h_attempt_stale >= STALE_ALERT_DAYS) or
         (h_attempt_stale is None and consumer_stale is not None and consumer_stale >= STALE_ALERT_DAYS)))
     old_backlog = (oldest_days is not None and oldest_days >= OLD_ALERT_DAYS and total_koma > 0)
-    alert = bool(consumer_crashed or consumer_dead or old_backlog
+    alert = bool(consumer_crashed or consumer_dead or old_backlog or no_progress
                  or (consumer_paused and total_koma > 0))
 
     return {
@@ -115,6 +120,10 @@ def stall_summary(today: date | None = None) -> dict:
         "consumer_ok": h_ok, "consumer_processed": h_processed,
         "consumer_attempt_stale_days": h_attempt_stale,
         "old_backlog": old_backlog, "alert": alert, "types": types,
+        "consumer_status": h_status, "consumer_bad_streak": h_streak, "consumer_bad_since": hp.get("bad_since"),
+        "consumer_no_progress": no_progress, "consumer_deployed": hp.get("deployed"),
+        "consumer_eligible": hp.get("eligible"), "consumer_last_progress": hp.get("last_progress"),
+        "ledger": hp.get("ledger"),
     }
 
 
@@ -131,13 +140,21 @@ def format_report(s: dict) -> str:
                  f"崩れやすい{t['fragile']} / 要調査{t['unknown']}"
                  + (f" (as_of {t['as_of']})" if t.get("as_of") else ""))
     cs = s["consumer_stale_days"]
+    if s.get("consumer_no_progress"):
+        L.append(f"🔴 消化役 進捗ゼロが{s['consumer_bad_streak']}回連続(since {s['consumer_bad_since']}・"
+                 f"status={s['consumer_status']}・対象{s['consumer_eligible']}件/反映{s['consumer_deployed']}件・"
+                 f"最終進捗 {s['consumer_last_progress']})＝起動はしているが進んでいない。要確認。")
+    lg = s.get("ledger") or {}
+    if lg.get("human_review") or lg.get("repeating"):
+        L.append(f"・試行台帳: 人レビュー送り{len(lg.get('human_review', []))}件 / 繰り返し処理中{len(lg.get('repeating', []))}件"
+                 + (f" / 未起票{len(lg['unticketed'])}件⚠️" if lg.get("unticketed") else ""))
     if s["consumer_crashed"]:
         L.append(f"🔴 消化役が直近実行でクラッシュ(0件)＝正常な0件ではない。last_error: {s['consumer_error']}")
     elif s["consumer_dead"]:
         L.append(f"🔴 消化役が {cs}日 起動していない(state.day={s['consumer_day']})＝自動消化されていません。要確認。")
     elif s["consumer_paused"]:
         L.append("🔴 消化役 paused=True(上限/QA連続失敗で自動停止)。要確認。")
-    elif s["consumer_ok"] is True and (s["consumer_processed"] or 0) == 0:
+    elif s["consumer_ok"] is True and s.get("consumer_status") == "idle":
         L.append(f"消化役 稼働・正常に0件処理(state.day={s['consumer_day']}・クラッシュではない)")
     else:
         L.append(f"消化役 稼働: 直近processed={s['consumer_processed']} (state.day={s['consumer_day']}・stale {cs}日)")

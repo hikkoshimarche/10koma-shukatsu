@@ -10,6 +10,12 @@
           もしくは下記 bash -lc の動的PATH前置を使うこと。nvm版数は glob で最新を自動選択(版上げに追随)。
     確認: `env -i HOME="$HOME" PATH="/usr/bin:/bin:/usr/sbin:/sbin" /bin/bash -lc '<PATH前置>; command -v npx'`
 
+  【必須】wrangler を(直接 or subprocess経由で)呼ぶジョブは、下の CLOUDFLARE_API_TOKEN 前置も必ず使う(2026-11-18)。
+    理由: wrangler OAuth は 2026-08-05 に失効。対話シェルは ~/.zshrc のトークンで動くが launchd は zshrc を読まない
+          → 非対話 wrangler が即死し、phasec画像/content_health/user_profiles同期等が3ヶ月半静かに死んだ。
+    値は plist に焼かない(keychain service=tokyari-cloudflare-api-token から実行時解決)。
+    Python 側は tools/cf_env.py が同じ解決をする。検査: python tools/check_wrangler_auth.py (exit 0 = PASS)
+
   【RunAtLoad 方針】
     - 毎日ジョブ … <key>RunAtLoad</key><true/> を付ける(電源OFF/再起動/ログインで実行=取りこぼしを取り戻す。
                    睡眠時はStartCalendarIntervalがlaunchd標準で起床時に実行)。
@@ -23,7 +29,7 @@
   <key>ProgramArguments</key><array>
     <string>/bin/bash</string><string>-lc</string>
     <!-- ↓ PATH前置は原則そのまま。__CMD__ を実コマンド(例: /opt/homebrew/bin/python3 /abs/script.py)に置換 -->
-    <string>export PATH="$(/bin/ls -d "$HOME"/.nvm/versions/node/*/bin 2&gt;/dev/null|sort -V|tail -1):/usr/local/bin:/opt/homebrew/bin:$PATH"; exec __CMD__</string>
+    <string>export PATH="$(/bin/ls -d "$HOME"/.nvm/versions/node/*/bin 2&gt;/dev/null|sort -V|tail -1):/usr/local/bin:/opt/homebrew/bin:$PATH"; export CLOUDFLARE_API_TOKEN="${CLOUDFLARE_API_TOKEN:-$(/usr/bin/security find-generic-password -a "$(id -un)" -s tokyari-cloudflare-api-token -w 2&gt;/dev/null)}"; exec __CMD__</string>
   </array>
   <key>WorkingDirectory</key><string>/Users/oscardodds/projects/10koma-shukatsu</string>
   <!-- スケジュール例(毎日7:05)。週次={Weekday,Hour,Minute} / 月次={Day,Hour,Minute} / 毎時=<key>StartInterval</key><integer>3600</integer> -->

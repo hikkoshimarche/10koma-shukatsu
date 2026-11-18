@@ -386,6 +386,15 @@ def run_one(company, slug, koma, detail, dry, st, c):
         return rec
 
     # ===== ライブ実行 (フラグON時のみ到達) =====
+    # 【試行台帳 2026-11-18】生成の前に上限判定→加算→即保存。例外で落ちても試行は残る(311回ループの根治)。
+    import image_fix_ledger as LG
+    _lk = LG.key(slug, koma)
+    _blk, _why = LG.blocked(_lk)
+    if _blk:
+        rec["escalate"] = f"台帳: {_why}"; rec["ledger_blocked"] = True
+        return rec
+    rec["ledger_attempt"] = LG.begin(_lk, "safe", detail, company)
+    rec["_ledger_keys"] = [_lk]
     import fix_and_deploy as FAD
     # slug_map拡張 (deploy slug→自身、tokyari override考慮)
     FAD.SLUG_MAP.setdefault(tslug, slug)
@@ -430,6 +439,7 @@ def run_one(company, slug, koma, detail, dry, st, c):
     panel = FAD.copy_panel_to_deploy(tslug, koma)
     sha = FAD.git_commit_push(panel, f"fix(image:{slug}): koma{koma:02d} 自動修正(FB)")
     rec["commit"] = sha
+    LG.note(_lk, last_commit=sha)          # push済・D1未反映の状態を先に残す(D1で落ちても追跡可能)
     FAD.wait_jsdelivr(slug, koma, sha)
     FAD.update_d1_panel(slug, koma, sha)
 

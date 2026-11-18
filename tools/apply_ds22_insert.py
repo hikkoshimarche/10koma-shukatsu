@@ -6,6 +6,9 @@ usage: python apply_ds22_insert.py            (dry: SQL生成のみ)
        python apply_ds22_insert.py --apply    (実行)
 """
 import json, os, sys, subprocess, hashlib, time
+import sys as _cf_sys, os as _cf_os  # wrangler 認証(env→keychain)の単一解決点 cf_env。2026-11-18 同型一掃
+_cf_d = _cf_os.path.dirname(_cf_os.path.abspath(__file__)); _cf_d in _cf_sys.path or _cf_sys.path.append(_cf_d)
+import cf_env as _cf_env; _cf_env.apply()
 
 ROOT = os.path.expanduser("~/projects/10koma-shukatsu")
 OUT = os.path.expanduser("~/oscar-ai/tokyari-pipeline/output")

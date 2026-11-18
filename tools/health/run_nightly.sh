@@ -20,3 +20,8 @@ if command -v node >/dev/null 2>&1; then
 else
   echo "⚠ node 未解決のため導線/画像チェックskip" >> "$LOG"
 fi
+
+# 【F 2026-11-18】検知役の検知役: content_health 最終完了/画像消化役の進捗ゼロ/wrangler認証ガード。異常=緊急pushoscar。
+echo "=== 監視系ウォッチ (watch_content_health.py) $(date) ===" >> "$LOG"
+/usr/bin/caffeinate -dimsu "$VENV" "$HOME/projects/10koma-shukatsu/tools/health/watch_content_health.py" >> "$LOG" 2>&1
+echo "watch_content_health exit=$?" >> "$LOG"

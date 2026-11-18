@@ -1,4 +1,5 @@
 #!/bin/bash
+export CLOUDFLARE_API_TOKEN="${CLOUDFLARE_API_TOKEN:-$(/usr/bin/security find-generic-password -a "$(id -un)" -s tokyari-cloudflare-api-token -w 2>/dev/null || true)}"  # cf_env と同方式(2026-11-18 同型一掃)
 # shutdown_and_snapshot.sh — 出発時に1発で: スナップショット保存→3プロセス停止→再開コマンド出力。
 # 自走FBループ(launchd com.tokyari.phasec)は触らない(海外でMac起動時に自動復帰)。
 set +e
