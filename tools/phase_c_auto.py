@@ -94,7 +94,8 @@ def auto_cfg():
         return v if v not in (None, "") else d
     base.update({
         "safe_types": set(s.strip() for s in _env("AUTO_SAFE_TYPES", SAFE_TYPES_DEFAULT).split(",") if s.strip()),
-        "coordinated": _env("AUTO_COORDINATED", "1") == "1",
+        # 協調反映は画像を再生成して自動反映する=描き直し型 → 2026-11-19 既定OFF(crop方式承認・人レビューへ)
+        "coordinated": _env("AUTO_COORDINATED", "0") == "1",
         "mixed_mode": _env("AUTO_MIXED_MODE", "notify"),   # notify | off
         # FIX1: 混在型は 1ループ上限件数を絞る(既定3)。安全型→協調→混在の順で枠(hour上限)を配分し、
         #   安全型が常に先に枠を取る。per_koマ到達/起票済は再生成しない(洪水=クレジット浪費の停止)。
@@ -432,7 +433,7 @@ def _classify_image_item(company, slug, tslug, koma, detail, c):
             "koma": koma, "detail": detail, "instruction": instr, "type": typ}
 
 
-def collect_image_fbs(c, results):
+def collect_image_fbs(c, results, dry=False):
     """attention由来の画像FB + 追加ターゲットを収集・型分類(生成しない)。返り値 (safe_items, mixed_items)。"""
     safe_items, mixed_items = [], []
     def _add(company, slug, tslug, koma, detail):
@@ -510,12 +511,12 @@ def collect_image_fbs(c, results):
         results["note"] += f" [backlog drain失敗:{e}]"
     # 陳腐化ゲート(再生成フローの最初): 配信中画像に症状が既に無いコマは再生成しない。
     if c.get("staleness_gate", True):
-        safe_items = _drop_stale(safe_items, results)
-        mixed_items = _drop_stale(mixed_items, results)
+        safe_items = _drop_stale(safe_items, results, dry)
+        mixed_items = _drop_stale(mixed_items, results, dry)
     return safe_items, mixed_items
 
 
-def _drop_stale(items, results):
+def _drop_stale(items, results, dry=False):
     """配信中(D1 image_url)画像に症状が現存しない(=既に直っている)itemを除外し、drained登録。
        古いFBに従って直っている絵を再生成し背景をドリフトさせる事故を防ぐ(nidec#10の教訓)。
        判定不能/取得失敗は present 扱い(=残す)＝壊れ放置しない安全側。GEMINI鍵が無い環境では
@@ -544,6 +545,8 @@ def _drop_stale(items, results):
                                       "error": f"陳腐化判定不可: {r.get('reason')}"[:300]})
         if r.get("stale"):
             dropped.append(it)
+            if dry:     # 2026-11-19: dry は判定のみ。drained登録/スプシ書込をしない(dry で10社のステータスを書き換えた事故)
+                continue
             try:
                 _mark_drained([f"{it['slug']}#{it['koma']}"])   # 良い画像を上書きしない登録
             except Exception:
@@ -796,7 +799,7 @@ def _run_batch_body(dry, c, st, results):
         return results
 
     # 収集(型分類のみ・生成しない)
-    safe_items, mixed_items = collect_image_fbs(c, results)
+    safe_items, mixed_items = collect_image_fbs(c, results, dry)
     results["counts"] = {"safe_candidates": len(safe_items), "mixed_candidates": len(mixed_items)}
 
     # 2) 【優先1】安全型 full-auto を先に hour 枠へ(安全型が常に先に枠を取る)
@@ -807,8 +810,21 @@ def _run_batch_body(dry, c, st, results):
         if _blk:
             results["ledger_skipped"].append({"key": _k, "why": _why}); continue
         results["eligible"] += 1
-        rec = _guarded(results, [_k], lambda it=it: PCI.run_one(it["company"], it["slug"], it["koma"],
-                                                                 it["detail"], dry, st, c), "deployed")
+        # 【2026-11-19 crop方式・オスカー承認】安全型でも再生成(=丸ごと描き直し)はしない。
+        #   白帯のみ(white_band 単独)→ image_crop_fix(余白判定・上限15%・焼込み文字判定・決定的crop)。
+        #   それ以外(meta_frame/hline/複合)は描き直しが要る → 自動処理の対象外=人のレビューへ。
+        _cats = set(PCI.classify_image_bug_cats(it.get("detail", "")))
+        if _cats == {"white_band"}:
+            import image_crop_fix as CROP
+            rec = _guarded(results, [_k], lambda it=it: CROP.crop_fix_one(
+                it["slug"], it["koma"], it.get("company", ""), it.get("detail", ""), dry, PCI.gas), "deployed")
+            if not dry and (rec.get("analysis") or {}).get("decision") == "none":
+                _drain_ok.append(_k)      # 配信画像に余白なし=既に解消。再処理しない
+        else:
+            _why = f"型{sorted(_cats)}は描き直し(再生成)が必要=自動処理の対象外(crop方式 2026-11-19)"
+            if not dry:
+                LG.escalate_human(_k, _why, it.get("company", ""), PCI.gas)
+            rec = {"slug": it["slug"], "koma": it["koma"], "method": "human", "escalate": f"人レビュー: {_why}"}
         results["safe"].append(rec)
         # backlogドレイン由来で反映成功 → drained記録(再生成防止=良い画像を上書きしない)
         if not dry and it.get("from_backlog") and rec.get("deployed"):

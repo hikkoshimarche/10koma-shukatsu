@@ -107,10 +107,32 @@ def fail(k: str, err: str, gas=None) -> dict:
     return e
 
 
+def escalate_human(k: str, reason: str, company: str = "", gas=None) -> dict:
+    """自動では扱わない(判定不能/絵の内側の白/文字焼込み/上限超/描き直し要の型)→ 即 human_review・起票。
+    試行回数は加算しない(生成していない)。所見(reason)を台帳とスプシに残す。2026-11-19 crop方式。"""
+    d = load()
+    e = d.setdefault(k, {"attempts": 0, "first": _now(), "history": []})
+    already = e.get("status") == "human_review" and e.get("human_reason") == reason
+    e.update(status="human_review", human_review_at=_now(), human_reason=str(reason)[:300])
+    if company:
+        e["company"] = company
+    if not already:
+        e["ticketed"] = False
+    e["history"] = (e.get("history", []) + [{"t": _now(), "ev": "to_human", "why": str(reason)[:120]}])[-30:]
+    _save(d)
+    if not e.get("ticketed") and gas is not None:
+        _ticket(k, e, gas)
+    return get(k)          # 起票結果(ticketed)を反映した最新を返す
+
+
 def _ticket(k: str, e: dict, gas) -> bool:
     slug, koma = k.split("#")
-    rule = (f"[要人レビュー:画像自動上限] {e.get('company') or slug} koma{koma}: "
-            f"自動修正{e.get('attempts')}回未反映→自動処理から除外。最終エラー: {str(e.get('last_error'))[:80]}")
+    if e.get("human_reason"):
+        rule = (f"[要人レビュー:画像] {e.get('company') or slug} koma{koma}: 自動修正の対象外。"
+                f"所見: {str(e.get('human_reason'))[:160]}")
+    else:
+        rule = (f"[要人レビュー:画像自動上限] {e.get('company') or slug} koma{koma}: "
+                f"自動修正{e.get('attempts')}回未反映→自動処理から除外。最終エラー: {str(e.get('last_error'))[:80]}")
     try:
         r = gas({"mode": "addcommonfix", "scope": "system", "rule": rule,
                  "note": "phase_c 試行台帳(tools/.image_fix_attempts.json)。人が直したら image_fix_ledger.release で再開"})
