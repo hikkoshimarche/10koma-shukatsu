@@ -535,8 +535,13 @@ def _drop_stale(items, results):
             continue
         try:
             r = ST.is_stale(it["slug"], int(it["koma"]), it.get("detail", ""))
-        except Exception:
-            r = {"stale": False}
+        except Exception as e:
+            r = {"stale": False, "reason": f"error→安全側present:{type(e).__name__}: {e}"}
+        # 判定エラー(安全側present)は握り潰さず errors に残す(2026-11-19: 鍵未読込で関所が全件素通し
+        #   =全件丸ごと再生成、を3ヶ月誰も見ていなかった)。present扱いは維持(壊れ放置しない)。
+        if str(r.get("reason", "")).startswith("error→"):
+            results["errors"].append({"keys": [f"{it['slug']}#{it['koma']}"],
+                                      "error": f"陳腐化判定不可: {r.get('reason')}"[:300]})
         if r.get("stale"):
             dropped.append(it)
             try:

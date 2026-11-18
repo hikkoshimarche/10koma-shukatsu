@@ -30,6 +30,17 @@ def _client():
         from google import genai
         from google.genai import types as _t
         key = os.environ.get("GEMINI_API_KEY", "").strip()
+        if not key:
+            # 2026-11-19: 鍵は tokyari-pipeline/.env にあり .env.phase_c には無い。未読込のまま
+            #   全件 ValueError→安全側present となり、関所が一度も効かず全件丸ごと再生成されていた。
+            envf = TOKYARI / ".env"
+            if envf.exists():
+                for line in envf.read_text(encoding="utf-8").splitlines():
+                    if line.strip().startswith("GEMINI_API_KEY=") :
+                        key = line.split("=", 1)[1].strip().strip('"').strip("'")
+                        os.environ.setdefault("GEMINI_API_KEY", key)
+        if not key:
+            raise RuntimeError("GEMINI_API_KEY 未解決(env / tokyari-pipeline/.env) → 陳腐化判定不可")
         # per-request タイムアウト(ms)。ハングした1件が worker を占有し全体を止めるのを防ぐ。
         _CLIENT = genai.Client(api_key=key,
                                http_options=_t.HttpOptions(timeout=30_000))
