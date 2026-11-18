@@ -83,6 +83,13 @@ class LintError(RuntimeError):
 ```
 ※ `--all` は `SLUG_MAP` のうち scenario 実在slugのみ対象に限定（テスト用 `__lint_test__` 等で batch が壊れないため）。
 
+## 【必須】D1上書き防止の関所（台本ファイル→D1・2026-11-19）
+`scenario_to_panels.py --v4` は **INSERT OR REPLACE を廃止**し、本番D1の当該社を読んでフィールド単位で比較 → **変更フィールドだけの UPDATE（旧値一致条件付き）**を出す。新規社（D1行0件）のみ INSERT。
+- D1値＝ファイル現行 → 出さない／D1値∈台本の過去版（v4履歴・v3）→ ファイルが新しい＝UPDATE／**どれとも一致しない＝D1に直接書かれた新しい値 → 上書き拒否（exit 3・SQLを出さない）**。先に D1→scenario_v4.json へ書き戻す。
+- **既存社の image_url は `--image-komas 2,8` で明示したコマだけ更新**。未指定なら据置（public/images に人QA待ちの候補画像が commit されているため、repoの新しい画像＝承認済みではない）。
+- 迂回は `--allow-d1-overwrite` のみ（stderr「⚠️ D1 OVERWRITE GUARD」・監査記録必須）。lint確認だけなら `--lint-only`（D1を読まない）。回帰: `--selftest-guard`。
+- D1 を直接書く経路（deploy_fb のテキストFB等）はズレの発生源。既存社の反映を手でやる時も「生成SQL全件」ではなく関所経由の列UPDATE。
+
 ## 【恒久ルール】オスカーへの受け渡し物の置き場所
 オスカーがChatGPT・KDP等に添付するファイル（レビュー素材zip・epub・図版・原稿等）は、必ず **`~/Desktop/kindle_受け渡し/`** に置く。全社（全編）・全スレ共通、ここ1箇所のみ。
 - **フォルダ直下＝「いま渡すもの」だけ**にする。過去の受け渡し物は `~/Desktop/kindle_受け渡し/_old/` へ退避してから新規を置く。
