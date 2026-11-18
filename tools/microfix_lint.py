@@ -29,8 +29,7 @@ RULES = (REPO / "tools" / "koma_rules.md").read_text(encoding="utf-8")
 
 def gate_errors(slug):
     """v4全部入りゲートを走らせ (returncode, stderr) を返す。"""
-    p = subprocess.run([TPY, "scripts/scenario_to_panels.py", "--slug", slug, "--v4",
-                        "--no-schema", "--out", f"/tmp/mfx_{slug}.sql"],
+    p = subprocess.run([TPY, "scripts/scenario_to_panels.py", "--slug", slug, "--v4", "--lint-only"],
                        cwd=str(TOK), capture_output=True, text=True, timeout=120)
     return p.returncode, (p.stderr or "") + (p.stdout or "")
 

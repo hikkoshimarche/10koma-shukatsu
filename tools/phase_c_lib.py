@@ -121,6 +121,10 @@ def parse_migration_sql(slug: str) -> dict:
             row["panel_num"] = int(row["panel_num"])
         panels.append(row)
     panels.sort(key=lambda r: r.get("panel_num") or 0)
+    if not panels:
+        # 2026-11-19: scenario_to_panels は INSERT OR REPLACE を廃止(変更フィールドUPDATE)。新形式の SQL を
+        #   ここに渡すと 0 件になる。0件を「パネル無し」と解釈して空の台本で D1 を書かない(空≠不在)。
+        raise ValueError(f"{p.name}: INSERT OR REPLACE 形式の company_panels が 0 件(形式不一致/欠落) → 中止")
     return {"path": p, "panels": panels, "raw": raw}
 
 

@@ -31,13 +31,11 @@ def main():
             lint_failed.append(slug); continue
         for ln in p.stdout.splitlines():
             pass
-        # INSERT開始以降(複数行dialogue対応)
-        started = False
-        for ln in p.stdout.split("\n"):
-            if ln.startswith("INSERT OR REPLACE INTO company_panels"):
-                started = True
-            if started:
-                panels_sql.append(ln)
+        # 2026-11-19: 生成SQLは D1関所付きの変更フィールドUPDATE(INSERT OR REPLACE 廃止)。marker 以降を採る。
+        #   marker が無い=生成形式の想定外 → 黙って空にせず失敗扱い(空≠変更なし)。
+        if "-- PANELS BEGIN (company_panels)" not in p.stdout:
+            lint_failed.append(f"{slug}(PANELS marker 無し=想定外出力)"); continue
+        panels_sql.extend(p.stdout.split("-- PANELS BEGIN (company_panels)", 1)[1].split("\n"))
         if (i + 1) % 30 == 0:
             sys.stderr.write(f"  panels {i+1}/{len(changed)}\n")
     open(os.path.join(SCR, "salary_panels.sql"), "w", encoding="utf-8").write("\n".join(panels_sql) + "\n")
