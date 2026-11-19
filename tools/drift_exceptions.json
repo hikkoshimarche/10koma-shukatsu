@@ -1,0 +1,78 @@
+{
+ "_doc": "毎晩のズレ監視(drift_monitor.py)の例外。lint の RATIO_WHITELIST と同じ考え方: 理由と期限が必須。期限を過ぎたら自動で警告に戻る。fields は対象列(dialogue なら script_json も同扱い)。",
+ "items": [
+  {
+   "slug": "mitsubishi-corp",
+   "panel": 1,
+   "fields": [
+    "visual_hook",
+    "brand_object_json"
+   ],
+   "reason": "koma1 入口固有化の visual_hook/brand_object は画像の描き直しとセット。テキストだけ先に出すと絵と食い違う(オスカー 2026-11-19)。画像描き直し(人の目視が要る型)と同時に --image-komas 1 で出す",
+   "added": "2026-11-19",
+   "expires": "2026-12-31"
+  },
+  {
+   "slug": "sojitz",
+   "panel": 1,
+   "fields": [
+    "visual_hook",
+    "brand_object_json"
+   ],
+   "reason": "同上(商社koma1・画像の描き直しとセット)",
+   "added": "2026-11-19",
+   "expires": "2026-12-31"
+  },
+  {
+   "slug": "industry_10koma__sogo-shosha",
+   "panel": 1,
+   "fields": [
+    "visual_hook",
+    "brand_object_json"
+   ],
+   "reason": "同上(業界10コマ総合商社koma1・画像の描き直しとセット)",
+   "added": "2026-11-19",
+   "expires": "2026-12-31"
+  },
+  {
+   "slug": "honda",
+   "panel": 1,
+   "fields": [
+    "dialogue"
+   ],
+   "reason": "③と同じ判断ルールに当てはまらずオスカー判断待ち(2026-11-19報告)。決まったら scenario_writer 経由で揃えて削除",
+   "added": "2026-11-19",
+   "expires": "2026-11-26"
+  },
+  {
+   "slug": "honda",
+   "panel": 4,
+   "fields": [
+    "dialogue"
+   ],
+   "reason": "③と同じ判断ルールに当てはまらずオスカー判断待ち(2026-11-19報告)。決まったら scenario_writer 経由で揃えて削除",
+   "added": "2026-11-19",
+   "expires": "2026-11-26"
+  },
+  {
+   "slug": "honda",
+   "panel": 5,
+   "fields": [
+    "dialogue"
+   ],
+   "reason": "③と同じ判断ルールに当てはまらずオスカー判断待ち(2026-11-19報告)。決まったら scenario_writer 経由で揃えて削除",
+   "added": "2026-11-19",
+   "expires": "2026-11-26"
+  },
+  {
+   "slug": "mitsubishi-shokuhin",
+   "panel": 2,
+   "fields": [
+    "dialogue"
+   ],
+   "reason": "持ち主不明の未コミット変更(koma7倍率除去・D1と一致)の処理承認待ちで書き戻し保留(2026-11-19報告)。承認後に commit→koma2 を D1→ファイル書き戻しして削除",
+   "added": "2026-11-19",
+   "expires": "2026-11-26"
+  }
+ ]
+}

@@ -24,6 +24,7 @@ def _re_scrub(s: str) -> str:
 sys.path.insert(0, str(REPO / "tools"))
 import phase_c_lib as L          # noqa: E402
 import deploy_salary as D        # noqa: E402
+import scenario_writer as SW     # noqa: E402  台本の唯一の書き込み口(ファイル先行→lint→関所UPDATE)
 import phase_c_autoloop as A     # noqa: E402
 
 # 懸念分類(2026-06-22): preference=要判断(オスカー) / factcheck=要調査(Claude裏取り・オスカーに戻さない)。
@@ -73,9 +74,15 @@ def _existing_commonfix_rules():
 
 
 def d1_panels(slug):
-    """本番D1の現行台本(ファイル非依存の正)。"""
-    return D.d1_query("SELECT panel_num,dialogue,script_json,main_copy,sub_copy "
-                      f"FROM company_panels WHERE company_id='{slug}' ORDER BY panel_num")
+    """現行台本 = scenario_v4.json(ファイルが正・2026-11-19 ⑤ファイル先行)。
+    旧: 本番D1を正として直接UPDATEし、ファイルへ書き戻さなかった(216社ズレの真因)。
+    D1 とファイルが食い違う社は scenario_writer.apply が書込前に拒否する(ズレを先に解消)。"""
+    rows = []
+    for n, c in sorted(SW.current(slug).items()):
+        rows.append({"panel_num": n, "dialogue": "\n".join(c["script"]),
+                     "script_json": json.dumps(c["script"], ensure_ascii=False),
+                     "main_copy": c["main_copy"], "sub_copy": c["sub_copy"]})
+    return rows
 
 
 def _cur(panels):
@@ -276,22 +283,20 @@ def main():
         print(f"\n[canary before] 対象外 {len(c_before)}社を監視 (対象={sorted(target_slugs)})")
         print("\n[backup + UPDATE 台本列(image_url不変)]")
         for r in deployable:
-            D.backup_d1(r["slug"])
-            before = _cur(d1_panels(r["slug"]))   # 反映前の実D1(koma→{script,...})。実効変化判定の基準。
-            eff = []
-            for koma, after in r["overrides"].items():
-                prev = before.get(koma, {})
-                proc = D.wrangler(["--command", D.update_sql(r["slug"], koma, after)])
-                ok = proc.returncode == 0
-                # 実効変化: 書込内容(after.script)が反映前D1(prev.script)と異なるか。
-                # 同一(=変化ゼロ)なら『反映』にカウントしない → 偽陽性ループ(真因)の根治。
-                changed = ok and (after.get("script") != prev.get("script"))
-                if changed:
-                    eff.append(koma)
-                print(f"  {r['slug']:14} koma{koma} {'✅' if ok else '❌ '+proc.stderr[:100]}"
-                      f"{'' if changed else ' (変化なし=反映扱いにしない)'}")
+            # 【⑤ファイル先行】scenario_v4.json 修正→lint→commit→関所の列UPDATE(旧値一致)→changes照合→canary。
+            #   D1 を直接 UPDATE しない。書込前検査で止まった社は反映0(実効変化なし扱い=書き戻さない)。
+            try:
+                wr = SW.apply(r["slug"], {int(k): v for k, v in r["overrides"].items()},
+                              reason=f"FB反映 {r['company']} koma{sorted(r['overrides'])}")
+                eff = sorted(int(n) for n in wr["updates"])
+                print(f"  {r['slug']:14} ✅ commit={wr['commit']} UPDATE koma={eff} changes={wr['changes']}")
+            except SW.WriterError as ex:
+                eff = []
+                r["proc_error"] = f"scenario_writer 中止: {ex}"
+                print(f"  {r['slug']:14} ❌ scenario_writer 中止(D1未書込): {str(ex)[:200]}")
+            # 実効変化ゼロのコマは『反映』にカウントしない → 偽陽性ループ(真因)の根治(従来どおり)。
             r["effective_komas"] = sorted(eff)
-            r["dead_overrides"] = sorted(k for k in r["overrides"] if k not in eff)
+            r["dead_overrides"] = sorted(k for k in r["overrides"] if int(k) not in eff)
 
         c_after = D.canary_snapshot(target_slugs)
         drift = D.canary_diff(c_before, c_after)
@@ -313,7 +318,7 @@ def main():
     #  台本反映/デフォルト適用→setreflected(+『Claudeが判断して進めた』ログ) / 画像→再生成キュー /
     #  要調査未解決→据置(裏取りキュー) / 真のブランド判断のみ judgment_daily(朝9時1通に集約)。
     print("\n[書き戻し]")
-    deployed_slugs = {d["slug"] for d in deployable}
+    deployed_slugs = {d["slug"] for d in deployable if not d.get("proc_error")}  # writer中止社は台本済扱いにしない
     tally = {"reflected": 0, "image": 0, "investigate": 0, "judgment": 0, "noop": 0, "held_img": 0}
     # 【重複再投入の抑止】既存の未適用commonfixルールを集合化し、同一ruleは再addしない
     #  (これがないと毎時同一FBを積み続け 共通の修正案タブが膨張する)。

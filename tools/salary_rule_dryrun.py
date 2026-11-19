@@ -42,11 +42,12 @@ def factsheet_salary(slug: str) -> str:
 
 
 def find_salary_koma(slug: str):
-    p = L.parse_migration_sql(slug)
-    for r in p["panels"]:
-        sj = r.get("script_json") or ""
+    """年収コマ番号(元データ = scenario_v4.json・⑤ 2026-11-19)。"""
+    import scenario_writer as SW
+    for n, c in sorted(SW.current(slug).items()):
+        sj = "\n".join(c["script"])
         if "年収" in sj or "万円" in sj:
-            return r["panel_num"]
+            return n
     return None
 
 

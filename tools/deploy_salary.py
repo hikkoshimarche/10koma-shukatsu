@@ -164,44 +164,30 @@ def apply_salary(slug):
         res2 = strip_markdown_koma(slug, 10)
         if res2:
             changed.append((10, res2))
-    e, w, _ = L.lint_company(slug)
+    e, w, _ = L.lint_with_overrides(slug, dict(changed))   # 修正案を当てた台本で全部入り lint
     return {"slug": slug, "changed": changed, "lint": (e, w)}
 
 
 def strip_markdown_koma(slug, koma_num):
-    """指定コマの script_json/main_copy/sub_copy から ** を除去(内容は保持)。backup付き。"""
-    parsed = L.parse_migration_sql(slug)
-    target = next((r for r in parsed["panels"] if r["panel_num"] == koma_num), None)
-    if not target:
-        return None
-    try:
-        script = json.loads(target.get("script_json") or "[]")
-    except Exception:
+    """指定コマの script/main_copy/sub_copy から ** を除去した案を返す(内容は保持・書込なし)。
+    元データ = scenario_v4.json(⑤)。反映は呼び出し側が scenario_writer.apply で行う。"""
+    import scenario_writer as SW
+    cur = SW.current(slug).get(koma_num)
+    if not cur:
         return None
     def clean(s):
         return (s or "").replace("**", "").replace("__", "")
-    new_script = [clean(x) for x in script]
-    after = {"script": new_script, "main_copy": clean(target.get("main_copy")),
-             "sub_copy": clean(target.get("sub_copy"))}
-    before = {"script": script, "main_copy": target.get("main_copy"), "sub_copy": target.get("sub_copy")}
-    if after == before:
+    after = {"script": [clean(x) for x in cur["script"]], "main_copy": clean(cur["main_copy"]) or None,
+             "sub_copy": clean(cur["sub_copy"]) or None}
+    if after == cur:
         return None
-    L.backup_file(parsed["path"], f"{slug}_koma{koma_num}_mdstrip")
-    new_raw = L._replace_panel_fields(parsed["raw"], slug, koma_num, after, "\n".join(new_script))
-    parsed["path"].write_text(new_raw, encoding="utf-8")
-    L.append_diff_log({"slug": slug, "koma": koma_num, "kind": "md_strip", "before": before, "after": after})
     return after
 
 
 def update_sql(slug, koma, after):
-    """台本列のみUPDATE(image_url不変)。"""
-    dialogue = "\n".join(after["script"])
-    return (f"UPDATE company_panels SET "
-            f"dialogue={sqlq(dialogue)}, "
-            f"script_json={sqlq(json.dumps(after['script'], ensure_ascii=False))}, "
-            f"main_copy={sqlq(after.get('main_copy'))}, "
-            f"sub_copy={sqlq(after.get('sub_copy'))} "
-            f"WHERE company_id='{slug}' AND panel_num={koma};")
+    """【廃止 2026-11-19 ⑤】D1 の台本列を直接 UPDATE する SQL は作らない(216社ズレの真因)。
+    台本の書き込みは scenario_writer.apply(slug, {koma: after}, reason) を使う(ファイル先行→lint→関所UPDATE)。"""
+    raise RuntimeError("deploy_salary.update_sql は廃止: scenario_writer.apply を使う(ファイル先行・関所経由)")
 
 
 def backup_d1(slug):
@@ -235,20 +221,16 @@ def main():
         print("\n(--deploy 未指定: D1へは反映していません)")
         return 0
 
-    print("\n[2] D1バックアップ + canary(before)")
-    for r in applied:
-        p = backup_d1(r["slug"])
-        print(f"  backup: {p.name}")
+    print("\n[2-3] scenario_writer.apply(ファイル先行→lint→commit→関所の列UPDATE→changes照合→canary)")
+    import scenario_writer as SW
     c_before = canary_hash()
-    print(f"  canary({CANARY}) before = {c_before}")
-
-    print("\n[3] 台本列UPDATE(image_url不変)を本番D1へ")
-    for r in applied:
-        stmts = [update_sql(r["slug"], k, a) for k, a in r["changed"]]
-        sql = " ".join(stmts)
-        proc = wrangler(["--command", sql])
-        ok = proc.returncode == 0
-        print(f"  {r['slug']:16} UPDATE {len(stmts)}件 {'✅' if ok else '❌ '+proc.stderr[:120]}")
+    for r in list(applied):
+        try:
+            wr = SW.apply(r["slug"], {k: a for k, a in r["changed"]}, reason="年収共通ルール反映")
+            print(f"  {r['slug']:16} ✅ commit={wr['commit']} UPDATE koma={sorted(wr['updates'])}")
+        except SW.WriterError as ex:
+            print(f"  {r['slug']:16} ❌ scenario_writer 中止(D1未書込): {str(ex)[:160]}")
+            applied.remove(r)
 
     print("\n[4] canary(after) 確認")
     c_after = canary_hash()

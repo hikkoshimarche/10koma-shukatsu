@@ -30,17 +30,14 @@ def clean_line(line: str) -> str:
 
 
 def scan(slug):
-    p = L.parse_migration_sql(slug)
+    """台本ファイル(scenario_v4.json・⑤ 2026-11-19 以降の元データ)から『静かに』を含む行を検出。"""
+    import scenario_writer as SW
     hits = []
-    for r in p["panels"]:
-        try:
-            script = json.loads(r.get("script_json") or "[]")
-        except Exception:
-            continue
-        for i, line in enumerate(script):
+    for n, c in sorted(SW.current(slug).items()):
+        for i, line in enumerate(c["script"]):
             if "静かに" in line:
                 cleaned = clean_line(line)
-                hits.append({"koma": r["panel_num"], "idx": i, "before": line, "after": cleaned,
+                hits.append({"koma": n, "idx": i, "before": line, "after": cleaned,
                              "removed": line != cleaned})
     return hits
 

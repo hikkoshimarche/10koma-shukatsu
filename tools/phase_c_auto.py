@@ -250,16 +250,18 @@ def coordinated_reflect_one(target, dry, st, c):
         rec["escalate"] = rec["escalate"] or f"協調ゲート不成立({decision}) → D1反映せず"
         return rec
 
-    # --- 台本(text_komas)+画像(image_komas)を同一wranglerコマンドで反映(両方 or どちらも無し) ---
-    stmts = []
-    for koma in text_komas:
-        stmts.append(D.update_sql(slug, koma, afters[koma]).rstrip(";"))    # 台本列(image_url不変)
+    # --- 台本(text_komas)+画像(image_komas)を scenario_writer.apply の1操作で反映(⑤ 2026-11-19) ---
+    #   ファイル先行→lint→commit→関所の列UPDATE(旧値一致)。画像は最後に push した SHA(全コマの画像を含む)で出す。
+    import scenario_writer as SW
+    last_sha = shas[image_komas[-1]] if image_komas else None
     for koma in image_komas:
-        img_url = f"https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@{shas[koma]}/public/images/{slug}/panel_{koma:02d}.png"
-        stmts.append(f"UPDATE company_panels SET image_url='{img_url}' WHERE company_id='{slug}' AND panel_num={koma}")
-    proc = D.wrangler(["--command", ";\n".join(stmts) + ";"])
-    if proc.returncode != 0:
-        rec["escalate"] = f"D1協調UPDATE失敗: {proc.stderr[:160]}"; return rec
+        FAD.wait_jsdelivr(slug, koma, last_sha)
+    try:
+        SW.apply(slug, {k: afters[k] for k in text_komas}, reason=f"協調反映 {target.get('label','')}",
+                 image_komas=set(image_komas), ref=last_sha)
+    except SW.WriterError as ex:
+        rec["escalate"] = f"D1協調反映 中止(scenario_writer): {str(ex)[:160]}"; return rec
+    shas = {k: last_sha for k in image_komas}
 
     # --- canary(対象外不変) + 404/整合検証 ---
     drift = D.canary_diff(canary_before, D.canary_snapshot({slug}))

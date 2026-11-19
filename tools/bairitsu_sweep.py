@@ -39,18 +39,10 @@ INSTRUCTION = (
 
 
 def d1_cur(slug):
-    """D1ライブ台本を {koma: {script, main_copy, sub_copy}} で返す。"""
-    rows = D.d1_query("SELECT panel_num,dialogue,script_json,main_copy,sub_copy "
-                      f"FROM company_panels WHERE company_id='{slug}' ORDER BY panel_num")
-    cur = {}
-    for p in rows:
-        try:
-            sc = json.loads(p.get("script_json") or "[]")
-        except Exception:
-            sc = [x for x in (p.get("dialogue") or "").split("\n") if x.strip()]
-        cur[p["panel_num"]] = {"script": sc, "main_copy": p.get("main_copy") or "",
-                               "sub_copy": p.get("sub_copy") or ""}
-    return cur
+    """現行台本 = scenario_v4.json(ファイルが正・⑤ 2026-11-19)。{koma: {script, main_copy, sub_copy}}"""
+    import scenario_writer as SW
+    return {n: {"script": c["script"], "main_copy": c["main_copy"] or "", "sub_copy": c["sub_copy"] or ""}
+            for n, c in SW.current(slug).items()}
 
 
 def bairitsu_komas(cur):
@@ -78,13 +70,8 @@ def target_companies():
 
 
 def update_sql(slug, koma, after):
-    def q(s):
-        return "'" + str(s).replace("'", "''") + "'"
-    dlg = "\n".join(after["script"])
-    sj = json.dumps(after["script"], ensure_ascii=False)
-    cols = [f"dialogue={q(dlg)}", f"script_json={q(sj)}",
-            f"main_copy={q(after['main_copy'])}", f"sub_copy={q(after['sub_copy'])}"]
-    return f"UPDATE company_panels SET {', '.join(cols)} WHERE company_id='{slug}' AND panel_num={koma};"
+    """【廃止 2026-11-19 ⑤】D1 直接 UPDATE は作らない。scenario_writer.apply を使う。"""
+    raise RuntimeError("bairitsu_sweep.update_sql は廃止: scenario_writer.apply を使う")
 
 
 def process(slug, rules, dry=False):
@@ -120,11 +107,12 @@ def process(slug, rules, dry=False):
     if dry:
         return {"slug": slug, "changed_komas": sorted(overrides), "held": held,
                 "dry_after": {k: overrides[k]["script"] for k in overrides}}
-    # 台本ソース(scenario_v4.json)も同期(将来の再生成で倍率が復活しないように)。
-    _sync_scenario(slug, overrides)
-    # D1反映(image_url不変)
-    for kn, after in overrides.items():
-        D.wrangler(["--command", update_sql(slug, kn, after)])
+    # ⑤ファイル先行: scenario_v4.json→lint→commit→関所の列UPDATE→changes照合→canary(唯一の書き込み口)
+    import scenario_writer as SW
+    try:
+        SW.apply(slug, overrides, reason="倍率語の除去")
+    except SW.WriterError as ex:
+        return {"slug": slug, "changed_komas": [], "held": komas, "error": f"scenario_writer 中止: {str(ex)[:160]}"}
     return {"slug": slug, "changed_komas": sorted(overrides), "held": held}
 
 

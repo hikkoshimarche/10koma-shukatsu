@@ -64,7 +64,7 @@ def is_oscar_judgment(text: str) -> bool:
 
 # --- migration SQL パース --------------------------------------------------
 PANEL_RE = re.compile(
-    r"INSERT OR REPLACE INTO company_panels\s*\([^)]*\)\s*VALUES\s*\((.*?)\);",
+    r"INSERT OR REPLACE INTO company_panels\s*\([^)]*\)\s*VALUES\s*\((.*?)\);",  # d1-writers: allow(読取用パーサ・D1を書かない)
     re.S,
 )
 
@@ -110,7 +110,8 @@ PANEL_COLS = ["company_id", "panel_num", "image_url", "character", "dialogue",
 
 
 def parse_migration_sql(slug: str) -> dict:
-    """api/migration_v4_<slug>.sql → {'path','panels':[{col:val,...}x10],'raw'}"""
+    """api/migration_v4_<slug>.sql → {'path','panels':[{col:val,...}x10],'raw'}
+    ⚠️ 2026-11-19 ⑤: migration は履歴として残すだけ。台本の元データに使わない(scenario_writer.current を使う)。"""
     p = API_DIR / f"migration_v4_{slug}.sql"
     raw = p.read_text(encoding="utf-8")
     panels = []
@@ -147,13 +148,22 @@ def sql_to_scenario(parsed: dict) -> dict:
 
 
 def lint_company(slug: str):
-    """台本(SQL)を scenario_lints_v5_ext でlint。(errors,warnings,findings)。"""
+    """台本ファイル(scenario_v4.json)を全部入りゲートで lint。(errors,warnings,findings)。
+    2026-11-19 ⑤: api/migration_v4_<slug>.sql(台本の第3コピー)を元データに使うのをやめた。"""
+    import scenario_writer as SW
+    scen = json.loads((SW.PIPE / SW.scenario_rel(slug)).read_text(encoding="utf-8"))
+    return _lint_full(scen, slug)
+
+
+def _lint_full(scen: dict, slug: str):
+    """errors=全部入りゲート(scenario_to_panels.run_lint_gate)の件数 / warnings,findings=v5_ext。"""
     import sys
     sys.path.insert(0, str(REPO / "tools"))
+    import scenario_writer as SW
     import scenario_lints_v5_ext as v5
-    scen = sql_to_scenario(parse_migration_sql(slug))
+    gate = SW.S2P.run_lint_gate(scen, SW.tok_of(slug))
     r = v5.run_ext_lints(scen, slug)
-    return r["errors"], r["warnings"], r["findings"]
+    return len(gate), r["warnings"], r["findings"] + [{"level": "error", "gate": g} for g in gate]
 
 
 # --- 可逆性: backup + diff log --------------------------------------------
@@ -309,69 +319,27 @@ def triage_fb(company: str, fb: str) -> dict:
 
 
 def fix_script_koma(slug: str, koma_num: int, instruction: str, rules: str, dry: bool = False) -> dict:
-    """該当コマの台詞/overlayをClaudeで修正。dry=Trueなら書込まず提案のみ返す。
-
-    戻り値: {'changed':bool,'before':{...},'after':{...},'backup':Path|None,'note':str}
-    """
-    parsed = parse_migration_sql(slug)
-    target = next((r for r in parsed["panels"] if r["panel_num"] == koma_num), None)
-    if target is None:
+    """該当コマの台詞/overlayをClaudeで修正した案を返す(ファイル/D1 は書かない)。
+    元データ = scenario_v4.json(2026-11-19 ⑤: migration SQL を元データに使うのをやめた)。
+    反映は呼び出し側が scenario_writer.apply(slug, {koma: after}, reason) で行う(唯一の書き込み口)。
+    戻り値: {'changed':bool,'before':{...},'after':{...},'note':str}"""
+    import scenario_writer as SW
+    cur = SW.current(slug)
+    if koma_num not in cur:
         return {"changed": False, "note": f"koma{koma_num}が無い"}
-    try:
-        script = json.loads(target.get("script_json") or "[]")
-    except Exception:
-        script = []
-    before = {"script": script, "main_copy": target.get("main_copy"), "sub_copy": target.get("sub_copy")}
-    prompt = (f"【ルール】\n{rules}\n\n【会社】{slug} koma{koma_num}\n"
-              f"【現行script(JSON配列)】{json.dumps(script, ensure_ascii=False)}\n"
-              f"【現行main_copy】{target.get('main_copy')}\n【現行sub_copy】{target.get('sub_copy')}\n\n"
-              f"【修正指示(FB由来のバグ)】{instruction}\n\n"
-              "ルールを厳守し最小限の修正。生Markdown禁止/倍率数値禁止/出典なき数字禁止。"
-              '出力はJSONのみ: {"script":[...], "main_copy":"...", "sub_copy":"...", "note":"何を直したか"}')
-    txt = _anthropic(prompt, max_tokens=1500)
-    m = re.search(r"\{.*\}", txt, re.S)
-    if not m:
-        return {"changed": False, "note": "Claude応答からJSON抽出失敗", "before": before}
-    new = json.loads(m.group(0))
-    after = {"script": new.get("script", script),
-             "main_copy": new.get("main_copy", target.get("main_copy")),
-             "sub_copy": new.get("sub_copy", target.get("sub_copy"))}
-    if after == before:
-        return {"changed": False, "note": "変更なし(反映済)", "before": before, "after": after}
-    if dry:
-        return {"changed": True, "before": before, "after": after, "backup": None,
-                "note": new.get("note", ""), "dry": True}
-
-    backup = backup_file(parsed["path"], f"{slug}_koma{koma_num}")
-    new_dialogue = "\n".join(after["script"])
-    new_raw = _replace_panel_fields(parsed["raw"], slug, koma_num, after, new_dialogue)
-    parsed["path"].write_text(new_raw, encoding="utf-8")
-    append_diff_log({"slug": slug, "koma": koma_num, "kind": "script_fix",
-                     "before": before, "after": after, "backup": str(backup),
-                     "note": new.get("note", instruction[:80])})
-    return {"changed": True, "before": before, "after": after, "backup": backup, "note": new.get("note", "")}
+    before = cur[koma_num]
+    res = fix_koma_text(slug, koma_num, instruction, rules, before)
+    res["dry"] = dry
+    return res
 
 
 def lint_with_overrides(slug: str, overrides: dict):
-    """台本に koma別 override({koma:{'script','main_copy','sub_copy'}})を当てた状態でlint。
-
-    overrides を反映した仮想 scenario を作って scenario_lints_v5_ext にかける(ファイルは触らない)。
-    戻り値: (errors, warnings, findings)
-    """
-    import sys
-    sys.path.insert(0, str(REPO / "tools"))
-    import scenario_lints_v5_ext as v5
-    parsed = parse_migration_sql(slug)
-    scen = sql_to_scenario(parsed)
-    for k in scen["koma"]:
-        ov = overrides.get(k["koma_number"])
-        if ov:
-            if "script" in ov:
-                k["script"] = ov["script"]
-            k["overlay_text"] = {"main_copy": ov.get("main_copy", k["overlay_text"]["main_copy"]),
-                                 "sub": ov.get("sub_copy", k["overlay_text"]["sub"])}
-    r = v5.run_ext_lints(scen, slug)
-    return r["errors"], r["warnings"], r["findings"]
+    """台本ファイルに koma別 override({koma:{'script','main_copy','sub_copy'}})を当てた状態で全部入り lint。
+    ファイルは触らない。戻り値: (errors, warnings, findings)"""
+    import scenario_writer as SW
+    scen = json.loads((SW.PIPE / SW.scenario_rel(slug)).read_text(encoding="utf-8"))
+    scen = SW._apply_edits(scen, {int(k): v for k, v in overrides.items()})
+    return _lint_full(scen, slug)
 
 
 def _sqlq(v) -> str:

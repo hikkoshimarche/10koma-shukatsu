@@ -23,6 +23,7 @@ TOK = Path.home() / "oscar-ai" / "tokyari-pipeline"
 sys.path.insert(0, str(TOK / "scripts"))
 import phase_c_lib as L      # noqa: E402
 import deploy_salary as D    # noqa: E402
+import scenario_writer as SW  # noqa: E402  台本の唯一の書き込み口
 import scenario_lints_v5_ext as v5  # noqa: E402
 import persona_review as PR  # noqa: E402 (data_caveat queue)
 
@@ -57,17 +58,9 @@ def human_fb(company):
 
 
 def d1_cur(slug):
-    rows = D.d1_query("SELECT panel_num,dialogue,script_json,main_copy,sub_copy "
-                      f"FROM company_panels WHERE company_id='{slug}' ORDER BY panel_num")
-    cur = {}
-    for p in rows:
-        try:
-            sc = json.loads(p.get("script_json") or "[]")
-        except Exception:
-            sc = [x for x in (p.get("dialogue") or "").split("\n") if x.strip()]
-        cur[p["panel_num"]] = {"script": sc, "main_copy": p.get("main_copy") or "",
-                               "sub_copy": p.get("sub_copy") or ""}
-    return cur
+    """現行台本 = scenario_v4.json(ファイルが正・⑤ファイル先行 2026-11-19)。D1 とズレた社は apply が拒否。"""
+    return {n: {"script": c["script"], "main_copy": c["main_copy"] or "", "sub_copy": c["sub_copy"] or ""}
+            for n, c in SW.current(slug).items()}
 
 
 def map_fb(company, fb, cur):
@@ -137,13 +130,12 @@ def process(company, slug):
         rec["note"] = f"lint err={rep['errors']} / 反映{len(overrides)}" + ("(変更なし)" if not overrides else "")
         return rec
     # D1反映 + canary + setreflected
-    cb = D.canary_snapshot({slug}); D.backup_d1(slug)
-    for koma, after in overrides.items():
-        D.wrangler(["--command", D.update_sql(slug, koma, after)])
-    ca = D.canary_snapshot({slug})
-    drift = [s for s in cb if cb[s] != ca.get(s)]
-    if drift:
-        rec["note"] = f"🛑canary異常{drift}"; return rec
+    # ⑤ファイル先行: scenario_v4.json→lint→commit→関所の列UPDATE→changes照合→canary(対象社のみ変化)
+    try:
+        wr = SW.apply(slug, overrides, reason=f"要判断の自律解消 {company} koma{sorted(overrides)}")
+    except SW.WriterError as ex:
+        rec["note"] = f"scenario_writer 中止(D1未書込): {str(ex)[:160]}"; return rec
+    rec["commit"] = wr["commit"]
     try:
         j = requests.get(f"{D.API_BASE}/api/companies/{slug}", timeout=30).json()
         rec["api200"] = len(j.get("panels", [])) == 10

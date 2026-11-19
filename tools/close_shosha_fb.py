@@ -21,6 +21,7 @@ sys.path.insert(0, str(REPO / "tools"))
 sys.path.insert(0, str(Path.home() / "oscar-ai" / "tokyari-pipeline" / "scripts"))
 import phase_c_lib as L      # noqa: E402
 import deploy_salary as D    # noqa: E402
+import scenario_writer as SW  # noqa: E402  台本の唯一の書き込み口
 import scenario_lints_v5_ext as v5  # noqa: E402
 
 ENV = REPO / "tools" / ".env.phase_c"
@@ -59,8 +60,10 @@ def gas(params):
 
 
 def d1_panels(slug):
-    return D.d1_query("SELECT panel_num,dialogue,script_json,main_copy,sub_copy "
-                      f"FROM company_panels WHERE company_id='{slug}' ORDER BY panel_num")
+    """現行台本 = scenario_v4.json(ファイルが正・⑤ファイル先行 2026-11-19)。"""
+    return [{"panel_num": n, "dialogue": "\n".join(c["script"]),
+             "script_json": json.dumps(c["script"], ensure_ascii=False),
+             "main_copy": c["main_copy"], "sub_copy": c["sub_copy"]} for n, c in sorted(SW.current(slug).items())]
 
 
 def build_scenario(slug, panels, overrides=None):
@@ -148,11 +151,14 @@ def main():
 
     # backup + D1 UPDATE
     print("\n[backup + D1 UPDATE 台本列(image_url不変)]")
-    for slug, info in plan.items():
-        D.backup_d1(slug)
-        for koma, after in info["overrides"].items():
-            proc = D.wrangler(["--command", D.update_sql(slug, koma, after)])
-            print(f"  {TARGETS[slug]['name']:8} koマ{koma} {'✅' if proc.returncode==0 else '❌ '+proc.stderr[:120]}")
+    for slug, info in list(plan.items()):
+        # ⑤ファイル先行: scenario_v4.json→lint→commit→関所の列UPDATE(旧値一致)→changes照合→canary
+        try:
+            wr = SW.apply(slug, info["overrides"], reason=f"商社FB収束 {TARGETS[slug]['name']}")
+            print(f"  {TARGETS[slug]['name']:8} ✅ commit={wr['commit']} UPDATE koma={sorted(wr['updates'])}")
+        except SW.WriterError as ex:
+            print(f"  {TARGETS[slug]['name']:8} ❌ scenario_writer 中止(D1未書込): {str(ex)[:160]}")
+            del plan[slug]
 
     # canary after (before-keysのみ比較=wave新規INSERT無視)
     ca = D.canary_snapshot(target_slugs)

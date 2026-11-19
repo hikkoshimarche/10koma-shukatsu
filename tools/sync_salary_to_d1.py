@@ -18,78 +18,30 @@ import salary_rule_dryrun as S   # noqa: E402
 import deploy_salary as D        # noqa: E402
 
 
-def koma_from_sql(slug, koma):
-    p = L.parse_migration_sql(slug)
-    r = next((x for x in p["panels"] if x["panel_num"] == koma), None)
-    if not r:
-        return None
-    try:
-        script = json.loads(r.get("script_json") or "[]")
-    except Exception:
-        script = []
-    return {"script": script, "main_copy": r.get("main_copy"), "sub_copy": r.get("sub_copy"),
-            "dialogue": r.get("dialogue")}
-
-
-def koma_from_d1(slug, koma):
-    rows = D.d1_query(f"SELECT panel_num,dialogue,main_copy,sub_copy,script_json FROM company_panels WHERE company_id='{slug}' AND panel_num={koma}")
-    if not rows:
-        return None
-    r = rows[0]
-    try:
-        script = json.loads(r.get("script_json") or "[]")
-    except Exception:
-        script = []
-    return {"script": script, "main_copy": r.get("main_copy"), "sub_copy": r.get("sub_copy"),
-            "dialogue": r.get("dialogue")}
-
-
 def main():
-    print("=== 修正済みSQL→D1 冪等同期 (年収コマ+toyota koma10・三井除外) ===")
-    targets = []  # (slug, koma)
+    """台本ファイル(scenario_v4.json)が先行している年収コマを D1 へ出す(冪等)。
+    2026-11-19 ⑤: 旧版は api/migration_v4_<slug>.sql を正として D1 を直接 UPDATE していた(巻き戻し経路)。
+    今は scenario_writer.sync_from_file(関所: D1 が履歴に無い新しい値なら拒否・旧値一致 UPDATE)。"""
+    import scenario_writer as SW
+    print("=== 台本ファイル→D1 冪等同期 (年収コマ+toyota koma10・三井除外・関所経由) ===")
+    targets = {}
     for slug in S.SHOSHA:
         k = S.find_salary_koma(slug)
         if k:
-            targets.append((slug, k))
+            targets.setdefault(slug, set()).add(k)
         if slug == "toyota-tsusho":
-            targets.append((slug, 10))
-
-    c_before = D.canary_hash()
-    print(f"canary({D.CANARY}) before = {c_before}\n")
-
-    to_update = []
-    for slug, koma in targets:
-        sql = koma_from_sql(slug, koma)
-        d1 = koma_from_d1(slug, koma)
-        if not sql or not d1:
-            print(f"  {slug} koma{koma}: 取得不可"); continue
-        same = (sql["script"] == d1["script"] and sql["main_copy"] == d1["main_copy"]
-                and sql["sub_copy"] == d1["sub_copy"])
-        print(f"  {slug:16} koma{koma}: {'一致(skip)' if same else '差分→UPDATE予定'}")
-        if not same:
-            to_update.append((slug, koma, sql))
-
-    if not to_update:
-        print("\n全て一致。D1反映済み。")
-        return 0
-
-    # backup(対象社) + UPDATE
-    print(f"\n[backup] {len({s for s,_,_ in to_update})}社")
-    for slug in {s for s, _, _ in to_update}:
-        p = D.backup_d1(slug)
-        print(f"  {p.name}")
-
-    print("\n[UPDATE] 台本列のみ(image_url不変)")
-    for slug, koma, sql in to_update:
-        after = {"script": sql["script"], "main_copy": sql["main_copy"], "sub_copy": sql["sub_copy"]}
-        stmt = D.update_sql(slug, koma, after)
-        proc = D.wrangler(["--command", stmt])
-        print(f"  {slug:16} koma{koma} {'✅' if proc.returncode==0 else '❌ '+proc.stderr[:120]}")
-
-    c_after = D.canary_hash()
-    print(f"\ncanary({D.CANARY}) after = {c_after} {'✅不変' if c_after==c_before else '⚠️変化!'}")
-    print("完了。巻き戻しは .backups/d1_*.json から。")
-    return 0
+            targets.setdefault(slug, set()).add(10)
+    if not targets:
+        raise SystemExit("対象0社(空=失敗: S.SHOSHA/find_salary_koma を確認)")
+    rc = 0
+    for slug, komas in targets.items():
+        try:
+            r = SW.sync_from_file(slug, komas, reason="年収コマ同期", dry="--dry" in sys.argv)
+            print(f"  {slug:16} koma{sorted(komas)}: {r.get('note') or ('UPDATE ' + str(sorted(r['updates'])))}")
+        except SW.WriterError as ex:
+            rc = 1
+            print(f"  {slug:16} ❌ 中止: {str(ex)[:160]}")
+    return rc
 
 
 if __name__ == "__main__":
