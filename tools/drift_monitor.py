@@ -99,11 +99,15 @@ def main(argv):
                     res["d1_new"].append(key)
     bad, seen = CW.scan()
     res["writer_check"] = {"files": seen, "fail": bad}
+    import nen_lint as NL   # 会社年齢「◯年」の陳腐化(創業年マスタ照合)。ログのみ・LINE通知しない
+    res["nen_lint"] = NL.run_all()
     OUT.parent.mkdir(exist_ok=True)
     OUT.write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
     cnt = {k: len(v) for k, v in res.items() if isinstance(v, list)}
     print(f"[drift_monitor] {res['at']} 社{res['companies']} 行{res['rows']} " + " ".join(f"{k}={v}" for k, v in cnt.items())
-          + f" writer_fail={len(bad)}")
+          + f" writer_fail={len(bad)} nen_error={len(res['nen_lint']['error'])} nen_warning={len(res['nen_lint']['warning'])}")
+    for x in res["nen_lint"]["error"][:20]:
+        print(f"  [nen_error] {x}")
     for k in ("d1_new", "expired_exceptions", "no_file", "dirty_file"):
         for x in res[k][:20]:
             print(f"  [{k}] {x}")
