@@ -32,10 +32,18 @@ def _edinet_financial_corpus(slug, name):
         return {}
     try:
         idx = ES2.build_index()
-        e = ES2.match(slug, idx)
-        if not e:
+        # 2026-11-20: 社名の部分一致は廃止(別社の有報を拾う事故)。提出者は対応表のEDINETコードだけで決める。
+        # 財務値(連結)は持株会社の有報でも正当なので needs_judgment も可。no_filing/未登録は使わない。
+        f = ES2.load_filer_map().get(slug)
+        if not f or f.get("use") not in ("filer", "needs_judgment"):
             return {}
+        hits = [x for x in idx.values() if x.get("edinetCode") == f["edinet_code"]]
+        if not hits:
+            return {}
+        e = max(hits, key=lambda x: x.get("periodEnd") or "")
         text = ES2.fetch_text(e["docid"])
+        if not ES2.filer_name_ok(text, f):
+            return {}
         i = text.find("主要な経営指標")
         seg = text[i:i + 2600] if i >= 0 else ""
         if not seg or not re.search(r"売上|営業利益|経常|純利益", seg):
