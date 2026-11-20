@@ -53,7 +53,7 @@ def publish_and_commit(slugs, industry):
     subprocess.run(["git", "add"] + paths, cwd=str(REPO), capture_output=True)
     subprocess.run(["git", "commit", "-m", f"feat({industry}): 画像公開(D1投入用)", "--"] + paths,
                    cwd=str(REPO), capture_output=True)
-    sha = subprocess.run(["git", "rev-parse", "--short=7", "HEAD"], cwd=str(REPO),
+    sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(REPO),
                          capture_output=True, text=True).stdout.strip()
     subprocess.run(["git", "push", "origin", "main"], cwd=str(REPO), capture_output=True)
     return sha

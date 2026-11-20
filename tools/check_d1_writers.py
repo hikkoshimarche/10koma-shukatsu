@@ -19,7 +19,7 @@ REPO = Path(__file__).resolve().parent.parent
 PIPE = Path.home() / "oscar-ai" / "tokyari-pipeline"
 ROOTS = [REPO / "tools", REPO / "api" / "src", REPO / "functions", PIPE / "scripts"]
 WRITER_OK = {"scenario_writer.py", "scenario_to_panels.py", "check_d1_writers.py"}
-IMAGE_ONLY = {"image_crop_fix.py", "inpaint_apply.py", "fix_and_deploy.py", "phase_c_image_fix.py"}
+IMAGE_ONLY = {"image_crop_fix.py", "inpaint_apply.py", "fix_and_deploy.py", "phase_c_image_fix.py", "expand_short_refs.py"}
 SKIP_PARTS = {"node_modules", ".backups", "archive", "__pycache__"}
 PAT = re.compile(r"(UPDATE\s+company_panels\s+SET\s+(?P<cols>.{0,400}?)\s+WHERE|"
                  r"INSERT(?:\s+OR\s+\w+)?\s+INTO\s+company_panels|REPLACE\s+INTO\s+company_panels|"

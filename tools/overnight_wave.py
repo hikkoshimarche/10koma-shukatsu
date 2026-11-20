@@ -63,7 +63,7 @@ def git_push_images(industry):
     subprocess.run(["git", "add", "public/images/"], cwd=str(REPO), capture_output=True)
     subprocess.run(["git", "commit", "-q", "-m", f"feat(wave): {industry} 画像公開(D1投入用)"],
                    cwd=str(REPO), capture_output=True)
-    sha = subprocess.run(["git", "rev-parse", "--short=7", "HEAD"], cwd=str(REPO),
+    sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(REPO),
                          capture_output=True, text=True).stdout.strip()
     subprocess.run(["git", "push", "origin", "main"], cwd=str(REPO), capture_output=True)
     return sha

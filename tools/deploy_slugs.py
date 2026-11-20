@@ -64,7 +64,7 @@ def main():
     subprocess.run(["git", "add"] + paths, cwd=str(REPO), capture_output=True)
     subprocess.run(["git", "commit", "-m", f"fix({args.label}): Gemini画像で上書き(ChatGPT→Gemini)", "--"] + paths,
                    cwd=str(REPO), capture_output=True)
-    sha = subprocess.run(["git", "rev-parse", "--short=7", "HEAD"], cwd=str(REPO),
+    sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(REPO),
                          capture_output=True, text=True).stdout.strip()
     subprocess.run(["git", "push", "origin", "main"], cwd=str(REPO), capture_output=True)
     print(f"  sha={sha}")

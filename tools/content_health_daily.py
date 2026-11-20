@@ -193,7 +193,8 @@ def main():
     log(f"充足数: {counts}")
 
     # (1) 画像実在: 全10コマ image_url を HEAD
-    imgs = [r["image_url"] for r in d1("SELECT image_url FROM company_panels WHERE company_id NOT LIKE 'industry_10koma__%' AND image_url IS NOT NULL")]
+    # 2026-11-20: 業界10コマ(industry_10koma__*)の170行も対象に含める(従来は除外=未確認だった)
+    imgs = [r["image_url"] for r in d1("SELECT image_url FROM company_panels WHERE image_url IS NOT NULL")]
     log(f"画像HEAD対象: {len(imgs)}枚")
     img_fail = {}
     def chk_img(u):
