@@ -31,13 +31,15 @@ def build_index():
     if os.path.exists(INDEX):
         return json.load(open(INDEX))
     idx = {}
+    failed = []
     start, end = datetime.date(2026, 3, 1), datetime.date(2026, 7, 24)
     d = start; days = 0
     while d <= end:
         if d.weekday() < 5:
             try:
                 r = json.load(urllib.request.urlopen(DOC_API.format(d=d.isoformat(), k=KEY), context=CTX, timeout=40))
-            except Exception:
+            except Exception as ex:   # 2026-11-20: 黙って飛ばさない(取得失敗日=提出の見落とし=空≠不在)
+                failed.append(f"{d.isoformat()}: {ex}")
                 d += datetime.timedelta(days=1); continue
             for x in r.get("results", []):
                 if x.get("docTypeCode") != "120":
@@ -51,6 +53,8 @@ def build_index():
                                 "edinetCode": x.get("edinetCode"), "filer": x.get("filerName")}
             days += 1
         d += datetime.timedelta(days=1)
+    if failed:
+        sys.exit(f"⛔ index 構築で {len(failed)} 営業日の取得に失敗(例: {failed[:3]})→ 不完全な index は保存しない")
     json.dump(idx, open(INDEX, "w", encoding="utf-8"), ensure_ascii=False)
     sys.stderr.write(f"  [idx] 有報{len(idx)}社 ({days}営業日走査)\n")
     return idx
@@ -112,7 +116,7 @@ def match(slug, idx, fmap):
 
 def filer_name_ok(text, f):
     """取得した有報の【会社名】が対応表の提出者名と一致するか(取り違えの最終防御)。"""
-    m = re.search(r"【会社名】\s*(\S+)", text)
+    m = re.search(r"【会社名】[ \t　]*([^\n]+)", text)   # 社名内の空白で切れないよう行末まで(2026-11-20)
     return bool(m) and norm(m.group(1)) == norm(f["filer"])
 
 

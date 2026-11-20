@@ -102,12 +102,12 @@
   },
   "ntt-data": {
    "edinet_code": "E04430",
-   "filer": "日本電信電話株式会社",
+   "filer": "ＮＴＴ株式会社",
    "sec_code": "9432",
    "verified_doc": "S100YCP3",
    "verified": "2026-11-20 有報PDFの【会社名】・従業員の状況表で確認(年収取り違え調査)",
    "use": "needs_judgment",
-   "note": "NTTデータグループは自社有報なし(非上場化)。親NTTの最大人員会社欄に㈱NTTデータの値。親(持株)の平均は使わない ／ オスカー判断2026-11-20: 有報の最大人員会社欄(事業会社)の値を採用。スイープは自動で書かない(手動・注記付き)"
+   "note": "NTTデータグループは自社有報なし(非上場化)。親NTTの最大人員会社欄に㈱NTTデータの値。親(持株)の平均は使わない ／ オスカー判断2026-11-20: 有報の最大人員会社欄(事業会社)の値を採用。スイープは自動で書かない(手動・注記付き) ／ 2025年に日本電信電話株式会社→NTT株式会社へ商号変更(index現行名)"
   },
   "jasm": {
    "use": "no_filing",
@@ -128,6 +128,2760 @@
    "use": "no_filing",
    "verified": "2026-11-20 有報PDFの【会社名】・従業員の状況表で確認(年収取り違え調査)",
    "note": "有報なし(親PayPayの有報に銀行の年収記載なし)"
+  },
+  "acom": {
+   "edinet_code": "E03693",
+   "filer": "アコム株式会社",
+   "sec_code": "8572",
+   "verified_doc": "S100YBXA",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "adastria": {
+   "edinet_code": "E03368",
+   "filer": "株式会社アンドエスティＨＤ",
+   "sec_code": "2685",
+   "verified_doc": "S100Y5ZC",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "ページ=アダストリア。2025-09会社分割で提出会社が持株会社化し㈱アンドエスティHDに商号変更(旧アダストリア)。提出会社506名 vs 連結6,936名"
+  },
+  "advantest": {
+   "edinet_code": "E01950",
+   "filer": "株式会社アドバンテスト",
+   "sec_code": "6857",
+   "verified_doc": "S100YKTA",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "agc": {
+   "edinet_code": "E01122",
+   "filer": "ＡＧＣ株式会社",
+   "sec_code": "5201",
+   "verified_doc": "S100XSTU",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "aioi-nissay": {
+   "edinet_code": "E03833",
+   "filer": "あいおいニッセイ同和損害保険株式会社",
+   "sec_code": "",
+   "verified_doc": "S100YN5G",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "aisin": {
+   "edinet_code": "E01593",
+   "filer": "株式会社アイシン",
+   "sec_code": "7259",
+   "verified_doc": "S100YAWO",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "ajinomoto": {
+   "edinet_code": "E00436",
+   "filer": "味の素株式会社",
+   "sec_code": "2802",
+   "verified_doc": "S100Y992",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "alfresa": {
+   "edinet_code": "E02962",
+   "filer": "アルフレッサホールディングス株式会社",
+   "sec_code": "2784",
+   "verified_doc": "S100YH29",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株67名 vs 連結12,525名(最大人員会社アルフレッサ㈱)"
+  },
+  "amuse": {
+   "edinet_code": "E05219",
+   "filer": "株式会社アミューズ",
+   "sec_code": "4301",
+   "verified_doc": "S100YBX4",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "ana-hd": {
+   "edinet_code": "E04273",
+   "filer": "ＡＮＡホールディングス株式会社",
+   "sec_code": "9202",
+   "verified_doc": "S100YKL4",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株286名 vs 連結47,826名"
+  },
+  "ando-hazama": {
+   "edinet_code": "E00317",
+   "filer": "株式会社安藤・間",
+   "sec_code": "1719",
+   "verified_doc": "S100YHJP",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "appier": {
+   "edinet_code": "E36372",
+   "filer": "Ａｐｐｉｅｒ　Ｇｒｏｕｐ株式会社",
+   "sec_code": "4180",
+   "verified_doc": "S100XTNG",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "純粋持株会社で提出会社従業員なし(平均年収の記載なし)。事業はAppier,Inc.・Appier Japan㈱。連結791名 / ⚠【会社名】に空白を含む→スイープのfiler_name_ok(\\S+)が先頭語しか取れず不一致holdになる"
+  },
+  "asahi-kasei": {
+   "edinet_code": "E00877",
+   "filer": "旭化成株式会社",
+   "sec_code": "3407",
+   "verified_doc": "S100YGRD",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "avex": {
+   "edinet_code": "E02453",
+   "filer": "エイベックス株式会社",
+   "sec_code": "7860",
+   "verified_doc": "S100YKQ4",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "エイベックス㈱は持株。提出会社85名 vs 連結1,372名"
+  },
+  "bandai-namco": {
+   "edinet_code": "E02481",
+   "filer": "株式会社バンダイナムコホールディングス",
+   "sec_code": "7832",
+   "verified_doc": "S100YBXE",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株80名 vs 連結11,457名"
+  },
+  "base-food": {
+   "edinet_code": "E38104",
+   "filer": "ベースフード株式会社",
+   "sec_code": "2936",
+   "verified_doc": "S100Y7A4",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "baycurrent": {
+   "edinet_code": "E32549",
+   "filer": "株式会社ベイカレント",
+   "sec_code": "6532",
+   "verified_doc": "S100Y69G",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "ページ=ベイカレント・コンサルティング。提出会社は㈱ベイカレント(旧ベイカレント・コンサルティングから商号変更・持株化)866名 vs 連結6,788名"
+  },
+  "biprogy": {
+   "edinet_code": "E02611",
+   "filer": "ＢＩＰＲＯＧＹ株式会社",
+   "sec_code": "8056",
+   "verified_doc": "S100YFCP",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "bridgestone": {
+   "edinet_code": "E01086",
+   "filer": "株式会社ブリヂストン",
+   "sec_code": "5108",
+   "verified_doc": "S100XRPR",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "calbee": {
+   "edinet_code": "E25303",
+   "filer": "カルビー株式会社",
+   "sec_code": "2229",
+   "verified_doc": "S100YEHI",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "canon": {
+   "edinet_code": "E02274",
+   "filer": "キヤノン株式会社",
+   "sec_code": "7751",
+   "verified_doc": "S100XTLJ",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "capcom": {
+   "edinet_code": "E02417",
+   "filer": "株式会社カプコン",
+   "sec_code": "9697",
+   "verified_doc": "S100YCGO",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "chibagin": {
+   "edinet_code": "E03556",
+   "filer": "株式会社千葉銀行",
+   "sec_code": "8331",
+   "verified_doc": "S100YDSE",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "chiyoda": {
+   "edinet_code": "E01569",
+   "filer": "千代田化工建設株式会社",
+   "sec_code": "6366",
+   "verified_doc": "S100YEDH",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "chori": {
+   "edinet_code": "E02509",
+   "filer": "蝶理株式会社",
+   "sec_code": "8014",
+   "verified_doc": "S100YBIN",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "chubu-electric": {
+   "edinet_code": "E04502",
+   "filer": "中部電力株式会社",
+   "sec_code": "9502",
+   "verified_doc": "S100YDH0",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "chugai": {
+   "edinet_code": "E00932",
+   "filer": "中外製薬株式会社",
+   "sec_code": "4519",
+   "verified_doc": "S100XTBJ",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "chugoku-electric": {
+   "edinet_code": "E04504",
+   "filer": "中国電力株式会社",
+   "sec_code": "9504",
+   "verified_doc": "S100YGCV",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "cosmo-energy": {
+   "edinet_code": "E31632",
+   "filer": "コスモエネルギーホールディングス株式会社",
+   "sec_code": "5021",
+   "verified_doc": "S100YI3A",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株267名 vs 連結6,675名(最大人員コスモ石油販売1,593名)"
+  },
+  "daiichi-jitsugyo": {
+   "edinet_code": "E02578",
+   "filer": "第一実業株式会社",
+   "sec_code": "8059",
+   "verified_doc": "S100YGOV",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "daiichi-life": {
+   "edinet_code": "E06141",
+   "filer": "株式会社第一ライフグループ",
+   "sec_code": "8750",
+   "verified_doc": "S100YC7A",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "ページ=第一生命保険。提出会社=㈱第一ライフグループ(2026-04旧第一生命HDから商号変更)702名 vs 第一生命保険46,447名(同有報の提出会社及び最大人員会社欄)"
+  },
+  "daiichi-sankyo": {
+   "edinet_code": "E00984",
+   "filer": "第一三共株式会社",
+   "sec_code": "4568",
+   "verified_doc": "S100YEY0",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "daikin": {
+   "edinet_code": "E01570",
+   "filer": "ダイキン工業株式会社",
+   "sec_code": "6367",
+   "verified_doc": "S100YFQL",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "daito-kentaku": {
+   "edinet_code": "E00218",
+   "filer": "大東建託株式会社",
+   "sec_code": "1878",
+   "verified_doc": "S100YFJK",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "daiwa-house": {
+   "edinet_code": "E00048",
+   "filer": "大和ハウス工業株式会社",
+   "sec_code": "1925",
+   "verified_doc": "S100YAZ5",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "dbj": {
+   "edinet_code": "E11701",
+   "filer": "株式会社日本政策投資銀行",
+   "sec_code": "",
+   "verified_doc": "S100YLAV",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "dcm-hd": {
+   "edinet_code": "E03489",
+   "filer": "ＤＣＭホールディングス株式会社",
+   "sec_code": "3050",
+   "verified_doc": "S100Y6MK",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "純粋持株会社で従業員なし(提出会社の状況は記載省略)。連結4,982名"
+  },
+  "dena": {
+   "edinet_code": "E05460",
+   "filer": "株式会社ディー・エヌ・エー",
+   "sec_code": "2432",
+   "verified_doc": "S100YLDV",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "denso": {
+   "edinet_code": "E01892",
+   "filer": "株式会社デンソー",
+   "sec_code": "6902",
+   "verified_doc": "S100Y9T1",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "dentsu": {
+   "edinet_code": "E04760",
+   "filer": "株式会社電通グループ",
+   "sec_code": "4324",
+   "verified_doc": "S100XS0O",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "ページ=電通。提出会社=㈱電通グループ135名 vs 連結67,454名"
+  },
+  "eisai": {
+   "edinet_code": "E00939",
+   "filer": "エーザイ株式会社",
+   "sec_code": "4523",
+   "verified_doc": "S100YB05",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "eneos": {
+   "edinet_code": "E24050",
+   "filer": "ＥＮＥＯＳホールディングス株式会社",
+   "sec_code": "5020",
+   "verified_doc": "S100YF7I",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "持株1,207名(連結34,099)。最大人員会社ENEOS㈱7,539名→『持株会社の平均』注記"
+  },
+  "erex": {
+   "edinet_code": "E31065",
+   "filer": "イーレックス株式会社",
+   "sec_code": "9517",
+   "verified_doc": "S100YKV1",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "ezaki-glico": {
+   "edinet_code": "E00373",
+   "filer": "江崎グリコ株式会社",
+   "sec_code": "2206",
+   "verified_doc": "S100XRXN",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "fanuc": {
+   "edinet_code": "E01946",
+   "filer": "ファナック株式会社",
+   "sec_code": "6954",
+   "verified_doc": "S100YG3Q",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "fronteo": {
+   "edinet_code": "E05700",
+   "filer": "株式会社ＦＲＯＮＴＥＯ",
+   "sec_code": "2158",
+   "verified_doc": "S100YGJA",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "fuji-media-hd": {
+   "edinet_code": "E04462",
+   "filer": "株式会社フジ・メディア・ホールディングス",
+   "sec_code": "4676",
+   "verified_doc": "S100YHYX",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株122名 vs 最大人員会社フジテレビジョン1,140名"
+  },
+  "fuji-oil-hd": {
+   "edinet_code": "E00431",
+   "filer": "不二製油株式会社",
+   "sec_code": "2607",
+   "verified_doc": "S100YEWN",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "ページ名「不二製油グループ本社」→提出会社は不二製油株式会社(商号変更・同一EDINETコード)。提出会社1,550名/連結5,891名"
+  },
+  "fujifilm-hd": {
+   "edinet_code": "E00988",
+   "filer": "富士フイルムホールディングス株式会社",
+   "sec_code": "4901",
+   "verified_doc": "S100YIBH",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "持株1,198名(連結73,526)。富士フイルム㈱4,338名→『持株会社の平均』注記"
+  },
+  "fujitsu": {
+   "edinet_code": "E01766",
+   "filer": "富士通株式会社",
+   "sec_code": "6702",
+   "verified_doc": "S100YM3K",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "gmo": {
+   "edinet_code": "E05041",
+   "filer": "ＧＭＯインターネットグループ株式会社",
+   "sec_code": "9449",
+   "verified_doc": "S100XSG3",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "GMOインターネットグループ㈱(持株)197名 vs 連結6,484名"
+  },
+  "h2o-retailing": {
+   "edinet_code": "E03020",
+   "filer": "エイチ・ツー・オー　リテイリング株式会社",
+   "sec_code": "8242",
+   "verified_doc": "S100YDD0",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株210名 vs 連結7,775名"
+  },
+  "hankyu-hanshin-hd": {
+   "edinet_code": "E04103",
+   "filer": "阪急阪神ホールディングス株式会社",
+   "sec_code": "9042",
+   "verified_doc": "S100YCBL",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株241名(最大人員会社=阪急電鉄)"
+  },
+  "hanwa": {
+   "edinet_code": "E02554",
+   "filer": "阪和興業株式会社",
+   "sec_code": "8078",
+   "verified_doc": "S100YED6",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "haseko": {
+   "edinet_code": "E00090",
+   "filer": "株式会社　長谷工コーポレーション",
+   "sec_code": "1808",
+   "verified_doc": "S100YJVQ",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "hokkaido-electric": {
+   "edinet_code": "E04500",
+   "filer": "北海道電力株式会社",
+   "sec_code": "9509",
+   "verified_doc": "S100YDWY",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "hokkaido-gas": {
+   "edinet_code": "E04511",
+   "filer": "北海道瓦斯株式会社",
+   "sec_code": "9534",
+   "verified_doc": "S100YGOL",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "hokuriku-electric": {
+   "edinet_code": "E04503",
+   "filer": "北陸電力株式会社",
+   "sec_code": "9505",
+   "verified_doc": "S100YE68",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "house-foods": {
+   "edinet_code": "E00462",
+   "filer": "ハウス食品グループ本社株式会社",
+   "sec_code": "2810",
+   "verified_doc": "S100YD7A",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "ハウス食品グループ本社(持株)470名 vs 連結6,564名"
+  },
+  "hoya": {
+   "edinet_code": "E01124",
+   "filer": "ＨＯＹＡ株式会社",
+   "sec_code": "7741",
+   "verified_doc": "S100Y90T",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "hulic": {
+   "edinet_code": "E00523",
+   "filer": "ヒューリック株式会社",
+   "sec_code": "3003",
+   "verified_doc": "S100XR5L",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "提出会社234名/連結3,495名だが事業会社そのもの(持株ではない)"
+  },
+  "idemitsu": {
+   "edinet_code": "E01084",
+   "filer": "出光興産株式会社",
+   "sec_code": "5019",
+   "verified_doc": "S100YCS3",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "ihi": {
+   "edinet_code": "E02128",
+   "filer": "株式会社ＩＨＩ",
+   "sec_code": "7013",
+   "verified_doc": "S100YENT",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "iida-group-hd": {
+   "edinet_code": "E27759",
+   "filer": "飯田グループホールディングス株式会社",
+   "sec_code": "3291",
+   "verified_doc": "S100YID4",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株109名 vs 連結14,217名"
+  },
+  "inaba-denki": {
+   "edinet_code": "E02761",
+   "filer": "因幡電機産業株式会社",
+   "sec_code": "9934",
+   "verified_doc": "S100YFJE",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "inabata": {
+   "edinet_code": "E02517",
+   "filer": "稲畑産業株式会社",
+   "sec_code": "8098",
+   "verified_doc": "S100YB2W",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "infroneer-hd": {
+   "edinet_code": "E36723",
+   "filer": "インフロニア・ホールディングス株式会社",
+   "sec_code": "5076",
+   "verified_doc": "S100YCIP",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "ページ=インフロニアHD(前田建設)。持株96名 vs 連結13,837名(最大人員会社=前田建設工業)"
+  },
+  "inpex": {
+   "edinet_code": "E00043",
+   "filer": "株式会社ＩＮＰＥＸ",
+   "sec_code": "1605",
+   "verified_doc": "S100XU9L",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "isetan-mitsukoshi": {
+   "edinet_code": "E03521",
+   "filer": "株式会社三越伊勢丹ホールディングス",
+   "sec_code": "3099",
+   "verified_doc": "S100YD7C",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株386名 vs 連結8,670名"
+  },
+  "isuzu": {
+   "edinet_code": "E02143",
+   "filer": "いすゞ自動車株式会社",
+   "sec_code": "7202",
+   "verified_doc": "S100YFBQ",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "itochu-shoji": {
+   "edinet_code": "E02497",
+   "filer": "伊藤忠商事株式会社",
+   "sec_code": "8001",
+   "verified_doc": "S100YA6H",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "D1のidは itochu(slug不一致に注意)"
+  },
+  "itoen": {
+   "edinet_code": "E00414",
+   "filer": "株式会社伊藤園",
+   "sec_code": "2593",
+   "verified_doc": "S100YRK7",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "iwatani": {
+   "edinet_code": "E02567",
+   "filer": "岩谷産業株式会社",
+   "sec_code": "8088",
+   "verified_doc": "S100YBEM",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "j-front": {
+   "edinet_code": "E03516",
+   "filer": "Ｊ．フロント　リテイリング株式会社",
+   "sec_code": "3086",
+   "verified_doc": "S100Y6K0",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株243名 vs 連結5,584名"
+  },
+  "j-power": {
+   "edinet_code": "E04510",
+   "filer": "電源開発株式会社",
+   "sec_code": "9513",
+   "verified_doc": "S100YISC",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "japex": {
+   "edinet_code": "E00041",
+   "filer": "石油資源開発株式会社",
+   "sec_code": "1662",
+   "verified_doc": "S100YERU",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "jbic": {
+   "edinet_code": "E26837",
+   "filer": "株式会社国際協力銀行",
+   "sec_code": "",
+   "verified_doc": "S100YECJ",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "jera": {
+   "edinet_code": "E34837",
+   "filer": "株式会社ＪＥＲＡ",
+   "sec_code": "",
+   "verified_doc": "S100YCJZ",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "jfe-hd": {
+   "edinet_code": "E01264",
+   "filer": "ＪＦＥホールディングス株式会社",
+   "sec_code": "5411",
+   "verified_doc": "S100YCUD",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株60名 vs 連結61,628名(JFEスチール14,747名)"
+  },
+  "jgc-hd": {
+   "edinet_code": "E01575",
+   "filer": "日揮ホールディングス株式会社",
+   "sec_code": "1963",
+   "verified_doc": "S100YEFQ",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株245名 vs 連結8,154名(最大人員会社=日揮グローバル1,334名)"
+  },
+  "jmdc": {
+   "edinet_code": "E35308",
+   "filer": "株式会社ＪＭＤＣ",
+   "sec_code": "4483",
+   "verified_doc": "S100YJCA",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "jr-central": {
+   "edinet_code": "E04149",
+   "filer": "東海旅客鉄道株式会社",
+   "sec_code": "9022",
+   "verified_doc": "S100YD7H",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "jr-east": {
+   "edinet_code": "E04147",
+   "filer": "東日本旅客鉄道株式会社",
+   "sec_code": "9020",
+   "verified_doc": "S100YC7N",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "jr-west": {
+   "edinet_code": "E04148",
+   "filer": "西日本旅客鉄道株式会社",
+   "sec_code": "9021",
+   "verified_doc": "S100YCFK",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "k-line": {
+   "edinet_code": "E04237",
+   "filer": "川崎汽船株式会社",
+   "sec_code": "9107",
+   "verified_doc": "S100YC6B",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "kadokawa": {
+   "edinet_code": "E30731",
+   "filer": "株式会社ＫＡＤＯＫＡＷＡ",
+   "sec_code": "9468",
+   "verified_doc": "S100YGF5",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "kaga-electronics": {
+   "edinet_code": "E02676",
+   "filer": "加賀電子株式会社",
+   "sec_code": "8154",
+   "verified_doc": "S100YNQJ",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "kagome": {
+   "edinet_code": "E00444",
+   "filer": "カゴメ株式会社",
+   "sec_code": "2811",
+   "verified_doc": "S100XQN0",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "kajima": {
+   "edinet_code": "E00058",
+   "filer": "鹿島建設株式会社",
+   "sec_code": "1812",
+   "verified_doc": "S100YGGI",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "kampo": {
+   "edinet_code": "E31755",
+   "filer": "株式会社かんぽ生命保険",
+   "sec_code": "7181",
+   "verified_doc": "S100YD29",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "kandenko": {
+   "edinet_code": "E00074",
+   "filer": "株式会社関電工",
+   "sec_code": "1942",
+   "verified_doc": "S100YDOZ",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "kao": {
+   "edinet_code": "E00883",
+   "filer": "花王株式会社",
+   "sec_code": "4452",
+   "verified_doc": "S100XT6G",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "kawasaki-heavy": {
+   "edinet_code": "E02127",
+   "filer": "川崎重工業株式会社",
+   "sec_code": "7012",
+   "verified_doc": "S100Y99Z",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "kddi": {
+   "edinet_code": "E04425",
+   "filer": "ＫＤＤＩ株式会社",
+   "sec_code": "9433",
+   "verified_doc": "S100YKG2",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "keikyu": {
+   "edinet_code": "E04089",
+   "filer": "京浜急行電鉄株式会社",
+   "sec_code": "9006",
+   "verified_doc": "S100YK5J",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "kepco": {
+   "edinet_code": "E04499",
+   "filer": "関西電力株式会社",
+   "sec_code": "9503",
+   "verified_doc": "S100YFXZ",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "kinden": {
+   "edinet_code": "E00075",
+   "filer": "株式会社きんでん",
+   "sec_code": "1944",
+   "verified_doc": "S100YFY8",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "kintetsu-group-hd": {
+   "edinet_code": "E04102",
+   "filer": "近鉄グループホールディングス株式会社",
+   "sec_code": "9041",
+   "verified_doc": "S100YCLR",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株264名"
+  },
+  "kirin-hd": {
+   "edinet_code": "E00395",
+   "filer": "キリンホールディングス株式会社",
+   "sec_code": "2503",
+   "verified_doc": "S100XTVS",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "持株1,124名(連結31,144)→『持株会社の平均』注記"
+  },
+  "kobayashi-pharma": {
+   "edinet_code": "E01047",
+   "filer": "小林製薬株式会社",
+   "sec_code": "4967",
+   "verified_doc": "S100XSXS",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "kobe-steel": {
+   "edinet_code": "E01231",
+   "filer": "株式会社　神戸製鋼所",
+   "sec_code": "5406",
+   "verified_doc": "S100YCDA",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "⚠【会社名】に空白を含む→スイープのfiler_name_ok(\\S+)が先頭語しか取れず不一致holdになる"
+  },
+  "komatsu": {
+   "edinet_code": "E01532",
+   "filer": "株式会社小松製作所",
+   "sec_code": "6301",
+   "verified_doc": "S100YD25",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "komeri": {
+   "edinet_code": "E03120",
+   "filer": "株式会社コメリ",
+   "sec_code": "8218",
+   "verified_doc": "S100YJBF",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "konami": {
+   "edinet_code": "E01956",
+   "filer": "コナミグループ株式会社",
+   "sec_code": "9766",
+   "verified_doc": "S100YKX5",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "コナミグループ㈱(持株)259名 vs 連結5,186名"
+  },
+  "kose": {
+   "edinet_code": "E01049",
+   "filer": "株式会社コーセーホールディングス",
+   "sec_code": "4922",
+   "verified_doc": "S100XSUW",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "ページ=コーセー。提出会社は㈱コーセーホールディングス(商号変更・持株化)981名 vs 連結8,566名"
+  },
+  "kubell": {
+   "edinet_code": "E35124",
+   "filer": "株式会社ｋｕｂｅｌｌ",
+   "sec_code": "4448",
+   "verified_doc": "S100XSJP",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "旧Chatwork(商号変更)"
+  },
+  "kubota": {
+   "edinet_code": "E01267",
+   "filer": "株式会社　クボタ",
+   "sec_code": "6326",
+   "verified_doc": "S100XR0M",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "kumagai-gumi": {
+   "edinet_code": "E00056",
+   "filer": "株式会社　熊谷組",
+   "sec_code": "1861",
+   "verified_doc": "S100YK9Q",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "kurita": {
+   "edinet_code": "E01573",
+   "filer": "栗田工業株式会社",
+   "sec_code": "6370",
+   "verified_doc": "S100YBAT",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "kyocera": {
+   "edinet_code": "E01182",
+   "filer": "京セラ株式会社",
+   "sec_code": "6971",
+   "verified_doc": "S100YF47",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "kyushu-electric": {
+   "edinet_code": "E04506",
+   "filer": "九州電力株式会社",
+   "sec_code": "9508",
+   "verified_doc": "S100YHHO",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "index上secCode 95080で一致。ただし2026-11-20版コードリストでは九州電力は非上場表示(持株化等の可能性)→次回スイープ時に要再確認"
+  },
+  "life-corp": {
+   "edinet_code": "E03083",
+   "filer": "株式会社ライフコーポレーション",
+   "sec_code": "8194",
+   "verified_doc": "S100Y63D",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "line-yahoo": {
+   "edinet_code": "E05000",
+   "filer": "ＬＩＮＥヤフー株式会社",
+   "sec_code": "4689",
+   "verified_doc": "S100YBXD",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "lion": {
+   "edinet_code": "E00991",
+   "filer": "ライオン株式会社",
+   "sec_code": "4912",
+   "verified_doc": "S100XU1E",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "m3": {
+   "edinet_code": "E05425",
+   "filer": "エムスリー株式会社",
+   "sec_code": "2413",
+   "verified_doc": "S100YJ25",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "macnica-hd": {
+   "edinet_code": "E31167",
+   "filer": "マクニカホールディングス株式会社",
+   "sec_code": "3132",
+   "verified_doc": "S100YGVR",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株42名 vs 連結5,261名"
+  },
+  "matsukiyococokara": {
+   "edinet_code": "E03519",
+   "filer": "株式会社マツキヨココカラ＆カンパニー",
+   "sec_code": "3088",
+   "verified_doc": "S100YD1I",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株74名 vs 連結14,293名(最大人員会社マツモトキヨシ4,063名)"
+  },
+  "mazda": {
+   "edinet_code": "E02163",
+   "filer": "マツダ株式会社",
+   "sec_code": "7261",
+   "verified_doc": "S100YDZ1",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "medley": {
+   "edinet_code": "E33586",
+   "filer": "株式会社メドレー",
+   "sec_code": "4480",
+   "verified_doc": "S100XUX3",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "meiji-hd": {
+   "edinet_code": "E21902",
+   "filer": "明治ホールディングス株式会社",
+   "sec_code": "2269",
+   "verified_doc": "S100YILP",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株298名 vs 連結17,103名(最大人員会社㈱明治5,307名)"
+  },
+  "meitetsu": {
+   "edinet_code": "E04101",
+   "filer": "名古屋鉄道株式会社",
+   "sec_code": "9048",
+   "verified_doc": "S100YHOL",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "metawater": {
+   "edinet_code": "E31064",
+   "filer": "メタウォーター株式会社",
+   "sec_code": "9551",
+   "verified_doc": "S100YBSD",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "mitsubishi-chemical": {
+   "edinet_code": "E00808",
+   "filer": "三菱ケミカルグループ株式会社",
+   "sec_code": "4188",
+   "verified_doc": "S100YFSR",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "三菱ケミカルグループ㈱(持株)27名 vs 連結56,678名(最大人員会社=三菱ケミカル㈱)"
+  },
+  "mitsubishi-corp": {
+   "edinet_code": "E02529",
+   "filer": "三菱商事株式会社",
+   "sec_code": "8058",
+   "verified_doc": "S100YB25",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "mitsubishi-electric": {
+   "edinet_code": "E01739",
+   "filer": "三菱電機株式会社",
+   "sec_code": "6503",
+   "verified_doc": "S100YD3V",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "mitsubishi-hc": {
+   "edinet_code": "E04788",
+   "filer": "三菱ＨＣキャピタル株式会社",
+   "sec_code": "8593",
+   "verified_doc": "S100YF4V",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "mitsubishi-heavy": {
+   "edinet_code": "E02126",
+   "filer": "三菱重工業株式会社",
+   "sec_code": "7011",
+   "verified_doc": "S100YHZG",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "mitsubishi-materials": {
+   "edinet_code": "E00021",
+   "filer": "三菱マテリアル株式会社",
+   "sec_code": "5711",
+   "verified_doc": "S100YFRY",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "mitsubishi-motors": {
+   "edinet_code": "E02213",
+   "filer": "三菱自動車工業株式会社",
+   "sec_code": "7211",
+   "verified_doc": "S100YCMC",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "mitsui-bussan": {
+   "edinet_code": "E02513",
+   "filer": "三井物産株式会社",
+   "sec_code": "8031",
+   "verified_doc": "S100YAVT",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "mitsui-chemical": {
+   "edinet_code": "E00840",
+   "filer": "三井化学株式会社",
+   "sec_code": "4183",
+   "verified_doc": "S100YGUI",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "mixi": {
+   "edinet_code": "E05617",
+   "filer": "株式会社ＭＩＸＩ",
+   "sec_code": "2121",
+   "verified_doc": "S100YE1D",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "mizuho-fg": {
+   "edinet_code": "E03615",
+   "filer": "株式会社みずほフィナンシャルグループ",
+   "sec_code": "8411",
+   "verified_doc": "S100YF8Y",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株会社(連結52,427名)。提出会社の人数はPDFから自動抽出できず未確認→人が確認するまで書かない"
+  },
+  "mol": {
+   "edinet_code": "E04236",
+   "filer": "株式会社　商船三井",
+   "sec_code": "9104",
+   "verified_doc": "S100YI2T",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "⚠【会社名】に空白を含む→スイープのfiler_name_ok(\\S+)が先頭語しか取れず不一致holdになる"
+  },
+  "mori-building": {
+   "edinet_code": "E07846",
+   "filer": "森ビル株式会社",
+   "sec_code": "",
+   "verified_doc": "S100YMMQ",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "morinaga-milk": {
+   "edinet_code": "E00331",
+   "filer": "森永乳業株式会社",
+   "sec_code": "2264",
+   "verified_doc": "S100YIHY",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "morinaga-seika": {
+   "edinet_code": "E00369",
+   "filer": "森永製菓株式会社",
+   "sec_code": "2201",
+   "verified_doc": "S100YHJS",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "ms-ad": {
+   "edinet_code": "E03824",
+   "filer": "三井住友海上火災保険株式会社",
+   "sec_code": "",
+   "verified_doc": "S100YN6S",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "murata": {
+   "edinet_code": "E01914",
+   "filer": "株式会社村田製作所",
+   "sec_code": "6981",
+   "verified_doc": "S100YHPY",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "nagase": {
+   "edinet_code": "E02552",
+   "filer": "長瀬産業株式会社",
+   "sec_code": "8012",
+   "verified_doc": "S100YBTV",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "nagase-toshin": {
+   "edinet_code": "E04824",
+   "filer": "株式会社ナガセ",
+   "sec_code": "9733",
+   "verified_doc": "S100YK8I",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "ページ=ナガセ(東進)。提出会社=㈱ナガセ486名/連結1,628名"
+  },
+  "nec": {
+   "edinet_code": "E01765",
+   "filer": "日本電気株式会社",
+   "sec_code": "6701",
+   "verified_doc": "S100YBFV",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "nikkei": {
+   "edinet_code": "E00738",
+   "filer": "株式会社日本経済新聞社",
+   "sec_code": "",
+   "verified_doc": "S100XTS5",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "nikon": {
+   "edinet_code": "E02271",
+   "filer": "株式会社ニコン",
+   "sec_code": "7731",
+   "verified_doc": "S100YKBP",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "nippon-express-hd": {
+   "edinet_code": "E36706",
+   "filer": "ＮＩＰＰＯＮ　ＥＸＰＲＥＳＳホールディングス株式会社",
+   "sec_code": "9147",
+   "verified_doc": "S100XTG8",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "ページ=NXHD(日本通運)。持株296名 vs 連結77,925名 / ⚠【会社名】に空白を含む→スイープのfiler_name_ok(\\S+)が先頭語しか取れず不一致holdになる"
+  },
+  "nipponham": {
+   "edinet_code": "E00334",
+   "filer": "日本ハム株式会社",
+   "sec_code": "2282",
+   "verified_doc": "S100YEEQ",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "nishimatsu": {
+   "edinet_code": "E00060",
+   "filer": "西松建設株式会社",
+   "sec_code": "1820",
+   "verified_doc": "S100YEDU",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "nissan": {
+   "edinet_code": "E02142",
+   "filer": "日産自動車株式会社",
+   "sec_code": "7201",
+   "verified_doc": "S100YH2B",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "nitori-hd": {
+   "edinet_code": "E03144",
+   "filer": "株式会社ニトリホールディングス",
+   "sec_code": "9843",
+   "verified_doc": "S100YIMF",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "nomura-fudosan-hd": {
+   "edinet_code": "E04060",
+   "filer": "野村不動産ホールディングス株式会社",
+   "sec_code": "3231",
+   "verified_doc": "S100YH2N",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株427名(うち407名がグループ会社兼務・主に野村不動産からの出向) vs 連結9,043名"
+  },
+  "nri": {
+   "edinet_code": "E05062",
+   "filer": "株式会社野村総合研究所",
+   "sec_code": "4307",
+   "verified_doc": "S100YBM8",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "ns-solutions": {
+   "edinet_code": "E05304",
+   "filer": "日鉄ソリューションズ株式会社",
+   "sec_code": "2327",
+   "verified_doc": "S100YAEV",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "ntv-hd": {
+   "edinet_code": "E04410",
+   "filer": "日本テレビホールディングス株式会社",
+   "sec_code": "9404",
+   "verified_doc": "S100Y9BG",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株235名 vs 連結5,933名(最大人員会社=日本テレビ放送網1,211名)"
+  },
+  "obayashi": {
+   "edinet_code": "E00055",
+   "filer": "株式会社大林組",
+   "sec_code": "1802",
+   "verified_doc": "S100YITC",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "odakyu": {
+   "edinet_code": "E04088",
+   "filer": "小田急電鉄株式会社",
+   "sec_code": "9007",
+   "verified_doc": "S100YIM7",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "okinawa-electric": {
+   "edinet_code": "E04509",
+   "filer": "沖縄電力株式会社",
+   "sec_code": "9511",
+   "verified_doc": "S100YGEA",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "omron": {
+   "edinet_code": "E01755",
+   "filer": "オムロン株式会社",
+   "sec_code": "6645",
+   "verified_doc": "S100YG81",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "oriental-land": {
+   "edinet_code": "E04707",
+   "filer": "株式会社オリエンタルランド",
+   "sec_code": "4661",
+   "verified_doc": "S100YCJX",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "orix": {
+   "edinet_code": "E04762",
+   "filer": "オリックス株式会社",
+   "sec_code": "8591",
+   "verified_doc": "S100YG5L",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "osaka-gas": {
+   "edinet_code": "E04520",
+   "filer": "大阪瓦斯株式会社",
+   "sec_code": "9532",
+   "verified_doc": "S100YFQT",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "正式名 大阪瓦斯株式会社"
+  },
+  "otsuka-hd": {
+   "edinet_code": "E21183",
+   "filer": "大塚ホールディングス株式会社",
+   "sec_code": "4578",
+   "verified_doc": "S100XUA7",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株224名 vs 連結37,758名"
+  },
+  "otsuka-shokai": {
+   "edinet_code": "E05099",
+   "filer": "株式会社　大塚商会",
+   "sec_code": "4768",
+   "verified_doc": "S100XU0X",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "panasonic-hd": {
+   "edinet_code": "E01772",
+   "filer": "パナソニックホールディングス株式会社",
+   "sec_code": "6752",
+   "verified_doc": "S100YETA",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "持株1,431名(連結183,685)。最大人員会社パナソニック㈱14,500名→『持株会社の平均』注記"
+  },
+  "penta-ocean": {
+   "edinet_code": "E00086",
+   "filer": "五洋建設株式会社",
+   "sec_code": "1893",
+   "verified_doc": "S100YF3Y",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "persol-hd": {
+   "edinet_code": "E21261",
+   "filer": "パーソルホールディングス株式会社",
+   "sec_code": "2181",
+   "verified_doc": "S100YGCS",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "持株761名(連結74,926)→『持株会社の平均』注記"
+  },
+  "pia": {
+   "edinet_code": "E03379",
+   "filer": "ぴあ株式会社",
+   "sec_code": "4337",
+   "verified_doc": "S100YDQN",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "pola-orbis-hd": {
+   "edinet_code": "E24951",
+   "filer": "株式会社ポーラ・オルビスホールディングス",
+   "sec_code": "4927",
+   "verified_doc": "S100XSDL",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株278名 vs 連結3,898名"
+  },
+  "rakus": {
+   "edinet_code": "E31878",
+   "filer": "株式会社ラクス",
+   "sec_code": "3923",
+   "verified_doc": "S100YL65",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "rakuten-bank": {
+   "edinet_code": "E03621",
+   "filer": "楽天銀行株式会社",
+   "sec_code": "5838",
+   "verified_doc": "S100YGME",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "rakuten-group": {
+   "edinet_code": "E05080",
+   "filer": "楽天グループ株式会社",
+   "sec_code": "4755",
+   "verified_doc": "S100XTNW",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "recruit-hd": {
+   "edinet_code": "E07801",
+   "filer": "株式会社リクルートホールディングス",
+   "sec_code": "6098",
+   "verified_doc": "S100YDHL",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株130名 vs 連結45,586名"
+  },
+  "renesas": {
+   "edinet_code": "E02081",
+   "filer": "ルネサスエレクトロニクス株式会社",
+   "sec_code": "6723",
+   "verified_doc": "S100XR06",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "renova": {
+   "edinet_code": "E32967",
+   "filer": "株式会社レノバ",
+   "sec_code": "9519",
+   "verified_doc": "S100YD7F",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "ricoh": {
+   "edinet_code": "E02275",
+   "filer": "株式会社リコー",
+   "sec_code": "7752",
+   "verified_doc": "S100YBFF",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "round-one": {
+   "edinet_code": "E04710",
+   "filer": "株式会社ラウンドワン",
+   "sec_code": "4680",
+   "verified_doc": "S100YJKU",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "提出会社35名 vs 連結2,364名(持株的)"
+  },
+  "sanrio": {
+   "edinet_code": "E02655",
+   "filer": "株式会社サンリオ",
+   "sec_code": "8136",
+   "verified_doc": "S100YNR0",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "sapporo-hd": {
+   "edinet_code": "E00393",
+   "filer": "サッポロホールディングス株式会社",
+   "sec_code": "2501",
+   "verified_doc": "S100XTM0",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株144名 vs 連結6,102名"
+  },
+  "sbi-sec": {
+   "edinet_code": "E03816",
+   "filer": "株式会社ＳＢＩ証券",
+   "sec_code": "",
+   "verified_doc": "S100YNPY",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "scsk": {
+   "edinet_code": "E04830",
+   "filer": "ＳＣＳＫ株式会社",
+   "sec_code": "",
+   "verified_doc": "S100YHDD",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "2025年上場廃止(旧9719)後も有報提出(secCodeなし)。名称一致で特定・【会社名】一致"
+  },
+  "sega-sammy": {
+   "edinet_code": "E02475",
+   "filer": "セガサミーホールディングス株式会社",
+   "sec_code": "6460",
+   "verified_doc": "S100YD3K",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株408名 vs 連結9,237名"
+  },
+  "seibu-hd": {
+   "edinet_code": "E04154",
+   "filer": "株式会社西武ホールディングス",
+   "sec_code": "9024",
+   "verified_doc": "S100YEFI",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株386名"
+  },
+  "seika-sangyo": {
+   "edinet_code": "E02512",
+   "filer": "西華産業株式会社",
+   "sec_code": "8061",
+   "verified_doc": "S100Y935",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "seiko-epson": {
+   "edinet_code": "E01873",
+   "filer": "セイコーエプソン株式会社",
+   "sec_code": "6724",
+   "verified_doc": "S100YJ6A",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "seino-hd": {
+   "edinet_code": "E04198",
+   "filer": "セイノーホールディングス株式会社",
+   "sec_code": "9076",
+   "verified_doc": "S100YI52",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株254名 vs 連結31,408名(最大人員会社=西濃運輸15,563名)"
+  },
+  "sekisui-house": {
+   "edinet_code": "E00143",
+   "filer": "積水ハウス株式会社",
+   "sec_code": "1928",
+   "verified_doc": "S100XZ22",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "seven-and-i": {
+   "edinet_code": "E03462",
+   "filer": "株式会社セブン＆アイ・ホールディングス",
+   "sec_code": "3382",
+   "verified_doc": "S100Y4VB",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "持株866名→『持株会社の平均』注記"
+  },
+  "sg-hd": {
+   "edinet_code": "E32292",
+   "filer": "ＳＧホールディングス株式会社",
+   "sec_code": "9143",
+   "verified_doc": "S100Y9P7",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "ページ=SGHD(佐川急便)。持株242名 vs 連結60,483名(最大人員会社=佐川急便)"
+  },
+  "shikoku-electric": {
+   "edinet_code": "E04505",
+   "filer": "四国電力株式会社",
+   "sec_code": "9507",
+   "verified_doc": "S100YH23",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "shimadzu": {
+   "edinet_code": "E02265",
+   "filer": "株式会社　島津製作所",
+   "sec_code": "7701",
+   "verified_doc": "S100YGJF",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "⚠【会社名】に空白を含む→スイープのfiler_name_ok(\\S+)が先頭語しか取れず不一致holdになる"
+  },
+  "shimamura": {
+   "edinet_code": "E03137",
+   "filer": "株式会社しまむら",
+   "sec_code": "8227",
+   "verified_doc": "S100Y2PP",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "shimizu": {
+   "edinet_code": "E00053",
+   "filer": "清水建設株式会社",
+   "sec_code": "1803",
+   "verified_doc": "S100YDXD",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "shinetsu-chemical": {
+   "edinet_code": "E00776",
+   "filer": "信越化学工業株式会社",
+   "sec_code": "4063",
+   "verified_doc": "S100YE9I",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "shinkokusyoji": {
+   "edinet_code": "E02522",
+   "filer": "神鋼商事株式会社",
+   "sec_code": "8075",
+   "verified_doc": "S100YEV4",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "shionogi": {
+   "edinet_code": "E00923",
+   "filer": "塩野義製薬株式会社",
+   "sec_code": "4507",
+   "verified_doc": "S100YF57",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "shiseido": {
+   "edinet_code": "E00990",
+   "filer": "株式会社資生堂",
+   "sec_code": "4911",
+   "verified_doc": "S100XSCU",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "shizuoka-gas": {
+   "edinet_code": "E04516",
+   "filer": "静岡ガス株式会社",
+   "sec_code": "9543",
+   "verified_doc": "S100XTDX",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "shochiku": {
+   "edinet_code": "E04582",
+   "filer": "松竹株式会社",
+   "sec_code": "9601",
+   "verified_doc": "S100Y66K",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "shoko-chukin": {
+   "edinet_code": "E21951",
+   "filer": "株式会社商工組合中央金庫",
+   "sec_code": "",
+   "verified_doc": "S100YBW3",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "skyperfectjsat-hd": {
+   "edinet_code": "E04497",
+   "filer": "スカパーＪＳＡＴ株式会社",
+   "sec_code": "9412",
+   "verified_doc": "S100YBNS",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "⚠同名罠: 提出会社=スカパーJSAT㈱(E04497・旧スカパーJSATHD・純粋持株)33名、事業会社も同名のスカパーJSAT㈱695名(最大人員会社欄)。名前一致でも持株の値"
+  },
+  "smbc-bank": {
+   "edinet_code": "E03617",
+   "filer": "株式会社三井住友銀行",
+   "sec_code": "",
+   "verified_doc": "S100YEQG",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "smtb": {
+   "edinet_code": "E03627",
+   "filer": "三井住友信託銀行株式会社",
+   "sec_code": "",
+   "verified_doc": "S100YBGJ",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "socionext": {
+   "edinet_code": "E37978",
+   "filer": "株式会社ソシオネクスト",
+   "sec_code": "6526",
+   "verified_doc": "S100YHHK",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "softbank": {
+   "edinet_code": "E04426",
+   "filer": "ソフトバンク株式会社",
+   "sec_code": "9434",
+   "verified_doc": "S100YE76",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "sompo": {
+   "edinet_code": "E03827",
+   "filer": "損害保険ジャパン株式会社",
+   "sec_code": "",
+   "verified_doc": "S100YC6H",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "sony-group": {
+   "edinet_code": "E01777",
+   "filer": "ソニーグループ株式会社",
+   "sec_code": "6758",
+   "verified_doc": "S100YE2C",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "持株2,166名→『持株会社の平均』注記"
+  },
+  "subaru": {
+   "edinet_code": "E02152",
+   "filer": "株式会社ＳＵＢＡＲＵ",
+   "sec_code": "7270",
+   "verified_doc": "S100YFKZ",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "sugi-hd": {
+   "edinet_code": "E03344",
+   "filer": "スギホールディングス株式会社",
+   "sec_code": "7649",
+   "verified_doc": "S100Y3QN",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株147名 vs 連結13,417名"
+  },
+  "sumitomo-chemical": {
+   "edinet_code": "E00752",
+   "filer": "住友化学株式会社",
+   "sec_code": "4005",
+   "verified_doc": "S100YAUO",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "sumitomo-corp": {
+   "edinet_code": "E02528",
+   "filer": "住友商事株式会社",
+   "sec_code": "8053",
+   "verified_doc": "S100YARD",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "sumitomo-electric": {
+   "edinet_code": "E01333",
+   "filer": "住友電気工業株式会社",
+   "sec_code": "5802",
+   "verified_doc": "S100YL2M",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "sumitomo-forestry": {
+   "edinet_code": "E00011",
+   "filer": "住友林業株式会社",
+   "sec_code": "1911",
+   "verified_doc": "S100XTVO",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "sumitomo-fudosan": {
+   "edinet_code": "E03907",
+   "filer": "住友不動産株式会社",
+   "sec_code": "8830",
+   "verified_doc": "S100YI5D",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "sumitomo-metal-mining": {
+   "edinet_code": "E00023",
+   "filer": "住友金属鉱山株式会社",
+   "sec_code": "5713",
+   "verified_doc": "S100YJ6N",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "sundrug": {
+   "edinet_code": "E03226",
+   "filer": "株式会社サンドラッグ",
+   "sec_code": "9989",
+   "verified_doc": "S100YL7Q",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "suzuki": {
+   "edinet_code": "E02167",
+   "filer": "スズキ株式会社",
+   "sec_code": "7269",
+   "verified_doc": "S100YFG2",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "taiki-sha": {
+   "edinet_code": "E00183",
+   "filer": "株式会社大気社",
+   "sec_code": "1979",
+   "verified_doc": "S100YCPQ",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "taisei": {
+   "edinet_code": "E00052",
+   "filer": "大成建設株式会社",
+   "sec_code": "1801",
+   "verified_doc": "S100YBGF",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "takasago-thermal": {
+   "edinet_code": "E00149",
+   "filer": "高砂熱学工業株式会社",
+   "sec_code": "1969",
+   "verified_doc": "S100YDOU",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "takashimaya": {
+   "edinet_code": "E03013",
+   "filer": "株式会社髙島屋",
+   "sec_code": "8233",
+   "verified_doc": "S100Y4X5",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "takeda": {
+   "edinet_code": "E00919",
+   "filer": "武田薬品工業株式会社",
+   "sec_code": "4502",
+   "verified_doc": "S100YB5L",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "takenaka": {
+   "edinet_code": "E00169",
+   "filer": "株式会社竹中工務店",
+   "sec_code": "",
+   "verified_doc": "S100XU22",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "tbs-hd": {
+   "edinet_code": "E04375",
+   "filer": "株式会社ＴＢＳホールディングス",
+   "sec_code": "9401",
+   "verified_doc": "S100YI1U",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株269名"
+  },
+  "tdk": {
+   "edinet_code": "E01780",
+   "filer": "ＴＤＫ株式会社",
+   "sec_code": "6762",
+   "verified_doc": "S100YD2Y",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "tepco": {
+   "edinet_code": "E04498",
+   "filer": "東京電力ホールディングス株式会社",
+   "sec_code": "9501",
+   "verified_doc": "S100YIHR",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "東京電力HD 7,157名(連結38,341)・最大人員会社東電PG13,888名→『持株会社の平均』注記"
+  },
+  "tis": {
+   "edinet_code": "E05739",
+   "filer": "ＴＩＳ株式会社",
+   "sec_code": "3626",
+   "verified_doc": "S100YH5C",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "tobu": {
+   "edinet_code": "E04094",
+   "filer": "東武鉄道株式会社",
+   "sec_code": "9001",
+   "verified_doc": "S100Y8FK",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "toda": {
+   "edinet_code": "E00147",
+   "filer": "戸田建設株式会社",
+   "sec_code": "1860",
+   "verified_doc": "S100YG3E",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "toei": {
+   "edinet_code": "E04585",
+   "filer": "東映株式会社",
+   "sec_code": "9605",
+   "verified_doc": "S100YI7S",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "toho": {
+   "edinet_code": "E04583",
+   "filer": "東宝株式会社",
+   "sec_code": "9602",
+   "verified_doc": "S100Y5O3",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "toho-gas": {
+   "edinet_code": "E04517",
+   "filer": "東邦瓦斯株式会社",
+   "sec_code": "9533",
+   "verified_doc": "S100YGFW",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "正式名 東邦瓦斯株式会社"
+  },
+  "toho-hd": {
+   "edinet_code": "E02608",
+   "filer": "東邦ホールディングス株式会社",
+   "sec_code": "8129",
+   "verified_doc": "S100YHSN",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株199名 vs 連結7,675名(最大人員会社=東邦薬品3,024名)"
+  },
+  "tohoku-electric": {
+   "edinet_code": "E04501",
+   "filer": "東北電力株式会社",
+   "sec_code": "9506",
+   "verified_doc": "S100YEK2",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "tokyo-century": {
+   "edinet_code": "E05346",
+   "filer": "東京センチュリー株式会社",
+   "sec_code": "8439",
+   "verified_doc": "S100YDRI",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "tokyo-electron": {
+   "edinet_code": "E02652",
+   "filer": "東京エレクトロン株式会社",
+   "sec_code": "8035",
+   "verified_doc": "S100YEOO",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "tokyo-tatemono": {
+   "edinet_code": "E03859",
+   "filer": "東京建物株式会社",
+   "sec_code": "8804",
+   "verified_doc": "S100XSKF",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "tokyu": {
+   "edinet_code": "E04090",
+   "filer": "東急株式会社",
+   "sec_code": "9005",
+   "verified_doc": "S100YE63",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "tokyu-fudosan-hd": {
+   "edinet_code": "E27633",
+   "filer": "東急不動産ホールディングス株式会社",
+   "sec_code": "3289",
+   "verified_doc": "S100YHXW",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株105名 vs 連結21,036名"
+  },
+  "toray": {
+   "edinet_code": "E00873",
+   "filer": "東レ株式会社",
+   "sec_code": "3402",
+   "verified_doc": "S100YFG9",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "tsuruha-hd": {
+   "edinet_code": "E03464",
+   "filer": "株式会社ツルハホールディングス",
+   "sec_code": "3391",
+   "verified_doc": "S100Y5EY",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "持株245名 vs 連結27,681名"
+  },
+  "tv-asahi-hd": {
+   "edinet_code": "E04414",
+   "filer": "株式会社テレビ朝日ホールディングス",
+   "sec_code": "9409",
+   "verified_doc": "S100YCD2",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "持株1,234名(連結5,622)→『持株会社の平均』注記"
+  },
+  "unicharm": {
+   "edinet_code": "E00678",
+   "filer": "ユニ・チャーム株式会社",
+   "sec_code": "8113",
+   "verified_doc": "S100XSEU",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "wowow": {
+   "edinet_code": "E04427",
+   "filer": "株式会社ＷＯＷＯＷ",
+   "sec_code": "4839",
+   "verified_doc": "S100YDWH",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "yakult": {
+   "edinet_code": "E00406",
+   "filer": "株式会社ヤクルト本社",
+   "sec_code": "2267",
+   "verified_doc": "S100YCBJ",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "yamada-hd": {
+   "edinet_code": "E03139",
+   "filer": "株式会社ヤマダホールディングス",
+   "sec_code": "9831",
+   "verified_doc": "S100YJWD",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": "持株561名(連結26,747)→『持株会社の平均』注記(境界)"
+  },
+  "yamazaki-pan": {
+   "edinet_code": "E00375",
+   "filer": "山崎製パン株式会社",
+   "sec_code": "2212",
+   "verified_doc": "S100XQ5C",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "yaskawa": {
+   "edinet_code": "E01741",
+   "filer": "株式会社安川電機",
+   "sec_code": "6506",
+   "verified_doc": "S100Y69H",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "yucho": {
+   "edinet_code": "E31775",
+   "filer": "株式会社ゆうちょ銀行",
+   "sec_code": "7182",
+   "verified_doc": "S100Y9G1",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "yukijirushi-megmilk": {
+   "edinet_code": "E23202",
+   "filer": "雪印メグミルク株式会社",
+   "sec_code": "2270",
+   "verified_doc": "S100YC5I",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "filer",
+   "note": ""
+  },
+  "yaoko": {
+   "edinet_code": "E40736",
+   "filer": "株式会社ブルーゾーンホールディングス",
+   "sec_code": "417A",
+   "verified_doc": "S100YC3L",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "ページ=ヤオコー(上場廃止・有報なし)。親=ブルーゾーンHD(417A)の提出会社4名 vs 連結5,766名。ヤオコー型→持株の値は使わない"
+  },
+  "shizuokagin": {
+   "edinet_code": "E37777",
+   "filer": "株式会社しずおかフィナンシャルグループ",
+   "sec_code": "5831",
+   "verified_doc": "S100Y9RT",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "ページ=静岡銀行(有報なし)。親=しずおかFG(5831・持株、従業員は静岡銀行からの出向者)。提出会社人数は自動抽出できず。連結4,226名"
+  },
+  "welcia-hd": {
+   "edinet_code": "E03464",
+   "filer": "株式会社ツルハホールディングス",
+   "sec_code": "3391",
+   "verified_doc": "S100Y5EY",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "ページ=ウエルシアHD(上場廃止・ツルハに統合)。親=ツルハHD(3391)持株245名 vs 連結27,681名"
+  },
+  "hamagin": {
+   "edinet_code": "E32022",
+   "filer": "株式会社横浜フィナンシャルグループ",
+   "sec_code": "7186",
+   "verified_doc": "S100YA32",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "ページ=横浜銀行(有報なし)。親=横浜FG(7186)持株701名、同有報の最大人員会社欄に横浜銀行4,053名"
+  },
+  "taiyo-life": {
+   "edinet_code": "E03851",
+   "filer": "株式会社Ｔ＆Ｄホールディングス",
+   "sec_code": "8795",
+   "verified_doc": "S100Y9UP",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "ページ=太陽生命(有報なし)。親=T&DHD(8795)持株114名、同有報の最大人員会社等欄に太陽生命(内務職員2,669名)"
+  },
+  "smbc-nikko": {
+   "edinet_code": "E03614",
+   "filer": "株式会社三井住友フィナンシャルグループ",
+   "sec_code": "8316",
+   "verified_doc": "S100YERK",
+   "verified": "2026-11-20 有報PDFの【会社名】・証券コードで確認",
+   "use": "needs_judgment",
+   "note": "ページ=SMBC日興証券(コードリスト上「提出義務者以外」)。親=SMFG(8316)提出会社1,678名・最大人員会社欄は三井住友銀行(日興の値ではない)"
+  },
+  "abeam": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "accenture": {
+   "edinet_code": "E38042",
+   "filer": "アクセンチュア株式会社",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "EDINETコードリスト上「内国法人・組合（有価証券報告書等の提出義務者以外）」(E38042)=有報提出義務なし"
+  },
+  "adl": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "amazon-japan": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索). 外国親会社Amazon.com,Inc.(E05908)は有報提出あるが日本法人の年収なし"
+  },
+  "bain": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "bcg": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "bitflyer": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "bungeishunju": {
+   "edinet_code": "E39432",
+   "filer": "株式会社文藝春秋",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "EDINETコードリスト上「内国法人・組合（有価証券報告書等の提出義務者以外）」(E39432)=有報提出義務なし"
+  },
+  "cainz": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "cdi": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "deloitte": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "elyza": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "ey": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "google-japan": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "ibm-consulting": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "ibm-japan": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "jfe-shoji": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "jri": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "kodansha": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "kokubu": {
+   "edinet_code": "E11733",
+   "filer": "国分グループ本社株式会社",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "EDINETコードリスト上「内国法人・組合（有価証券報告書等の提出義務者以外）」(E11733)=有報提出義務なし"
+  },
+  "kpmg": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "layerx": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "loreal-japan": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "lotte": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索). 該当はロッテ・ショッピング(韓国)のみ・別社"
+  },
+  "mckinsey": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "meiji-yasuda": {
+   "edinet_code": "E06369",
+   "filer": "明治安田生命保険相互会社",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "EDINETコードリスト上「内国法人・組合（有価証券報告書等の提出義務者以外）」(E06369)=有報提出義務なし"
+  },
+  "metal-one": {
+   "edinet_code": "E06581",
+   "filer": "株式会社メタルワン",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "EDINETコードリスト上「内国法人・組合（有価証券報告書等の提出義務者以外）」(E06581)=有報提出義務なし"
+  },
+  "microsoft-japan": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索). 外国親会社Microsoft Corp.(E05817)のみ"
+  },
+  "nestle-japan": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "nippon-life": {
+   "edinet_code": "E06125",
+   "filer": "日本生命保険相互会社",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "EDINETコードリスト上「内国法人・組合（有価証券報告書等の提出義務者以外）」(E06125)=有報提出義務なし"
+  },
+  "norinchukin": {
+   "edinet_code": "E08480",
+   "filer": "農林中央金庫",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "EDINETコードリスト上「内国法人・組合（有価証券報告書等の提出義務者以外）」(E08480)=有報提出義務なし"
+  },
+  "openai-japan": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "pg-japan": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索). 外国親会社P&G(E05760)のみ"
+  },
+  "pref-networks": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "pwc": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "rapidus": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "roland-berger": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索). 名称類似はローランド㈱(別社)"
+  },
+  "sakana-ai": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "salesforce-japan": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索). 外国親会社は「提出義務者以外」"
+  },
+  "sap-japan": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "shogakukan": {
+   "edinet_code": "E21120",
+   "filer": "株式会社小学館",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "EDINETコードリスト上「内国法人・組合（有価証券報告書等の提出義務者以外）」(E21120)=有報提出義務なし"
+  },
+  "shueisha": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "sky": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "smarthr": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "strategy-and": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "sumitomo-life": {
+   "edinet_code": "E06134",
+   "filer": "住友生命保険相互会社",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "EDINETコードリスト上「内国法人・組合（有価証券報告書等の提出義務者以外）」(E06134)=有報提出義務なし"
+  },
+  "tbm": {
+   "edinet_code": "E41376",
+   "filer": "株式会社ＴＢＭ",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "EDINETコードリスト上「内国法人・組合（有価証券報告書等の提出義務者以外）」(E41376)=有報提出義務なし"
+  },
+  "turing": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "unilever-japan": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "yodobashi": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
+  },
+  "yomiuri-group": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索). 読売新聞東京本社等は「提出義務者以外」"
+  },
+  "yoshimoto-hd": {
+   "edinet_code": "",
+   "filer": "",
+   "sec_code": "",
+   "verified_doc": "",
+   "verified": "2026-11-20 EDINETコードリスト(同日DL・11,469件)で有報提出なしを確認",
+   "use": "no_filing",
+   "note": "非上場・EDINETコードリストに有報提出者として該当なし(名称検索)."
   }
  }
 }

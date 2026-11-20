@@ -18,8 +18,25 @@ kawasaki-heavy,1878,創業,official,https://global.kawasaki.com/,opens Kawasaki 
 morinaga-seika,1899,創業,official,https://www.morinaga.co.jp/,会社概要PDF2026「1899年に菓子製造業として創業し、125年を超える…」,2026-11-20,
 honda,1948,設立,official,https://global.honda/,"Established September 24, 1948",2026-11-20,
 sompo,1888,創業,secondary,,東京都資料「1888年…東京火災が創業」,2026-11-20,公式サイトJS描画で未取得・1887登記説あり
-osaka-gas,1897,設立,needs_judgment,https://www.daigasgroup.com/en/about/history/,"1897: Osaka Gas Co., Ltd. founded／公式周年は1905年(事業開始)起点",2026-11-20,台本は1897年創業と明記
-isuzu,1916,創業,needs_judgment,,自動車製造着手1916(第三者資料)・公式周年は1937創立起点,2026-11-20,公式未取得
+osaka-gas,1905,創業,official,https://www.daigasgroup.com/about/message/,2025年度は、大阪ガスが1905年（明治38年）の創業から120年を迎える節目の年です,2026-11-20,1897年は設立・台本の1897年創業は誤り(2026-11-20 1905年創業へ修正)
+isuzu,1916,創業,official,https://www.isuzu-global.com/ja/company/profile.html,創業 1916年（大正5年） 設立 1937年（昭和12年）4月9日,2026-11-20,周年(創立80周年=2017)は1937設立起点
 yaoko,1890,創業,secondary,,有報沿革(二次サイト経由)「1890年…八百幸商店」,2026-11-20,1893説あり・公式未取得
 toho-gas,1922,設立,secondary,,有報沿革(二次サイト経由)「1922年7月…設立」,2026-11-20,公式ページ404
 adl,1886,創業,secondary,https://www.adlittle.com/timeline,検索スニペットのみ(直接取得403),2026-11-20,
+agc,1907,創立,official,https://www.agc.com/company/history/,兵庫県尼崎にて旭硝子株式会社を創立(1907),2026-11-20,
+gakken-hd,1946,創業,official,https://www.gakken.co.jp/ja/about/history.html,1946年04月 …「学習研究社」を創立,2026-11-20,1947年3月は株式会社設立
+inabata,1890,創業,official,https://www.inabata.co.jp/company/outline/,創業年月日 1890年(明治23年)10月1日 設立年月日 1918年,2026-11-20,
+kikkoman,1917,創立,official,https://www.kikkoman.com/jp/corporate/about/history/,1917年 野田醤油株式会社設立／2017年 キッコーマン創立100周年記念式典,2026-11-20,1957サンフランシスコ進出起点は別起点(allow)
+life-corp,1910,創業,needs_judgment,https://www.lifecorp.jp/company/info/about.html,沿革 明治43年 創業 昭和31年 清水実業株式会社を設立,2026-11-20,台本は1956年(設立)を創業と表記→オスカー判断待ち
+open-house-group,1997,創業,official,https://openhouse-group.co.jp/company/outline.html,創業 1997年9月,2026-11-20,p2『創業N年で売上1兆円』は達成時点の固定値の可能性→要判断
+pg-japan,1837,創業,official,https://us.pg.com/innovation/,1837 P&G founded by William Procter & James Gamble,2026-11-20,日本法人は1973年
+saibu-gas,1930,設立,official,https://hd.saibugas.co.jp/group/profile/,設立 1930年(昭和5年)12月1日,2026-11-20,
+shizuoka-gas,1910,創立,official,https://www.shizuokagas.co.jp/about/corporate/guide/history.html,明治43年4月 創立,2026-11-20,
+suzuki,1909,創業,official,https://www.suzuki.co.jp/release/d/2020/0315/,1909年に鈴木道雄が創業した「鈴木式織機製作所」を前身とし、1920年3月15日に…創立,2026-11-20,周年は1920創立起点
+taisei,1873,創業,official,https://www.taisei.co.jp/corp/ayumi/150th.html,1873年、大倉喜八郎が大倉組商会を設立したことを起源とし、2023年に創業150周年,2026-11-20,
+takashimaya,1831,創業,official,https://www.takashimaya.co.jp/corp/info/outline/,創業 1831年1月10日 会社設立 1919年8月20日,2026-11-20,
+shimizu,1804,創業,official,https://www.shimz.co.jp/company/,創業1804年―220年以上にわたり受け継がれる,2026-11-20,220年は公式も丸め表記(据置)
+kose,1946,創業,official,https://koseholdings.co.jp/ja/info/outline/,創業 1946年,2026-11-20,雪肌精1985起点は製品起点(allow)
+ricoh,1936,創業,official,https://jp.ricoh.com/about/at-a-glance,1936年 創業…理研感光紙株式会社を設立／リコーは今年で90周年,2026-11-20,三愛精神1946提唱起点は別起点(allow)
+kurita,1949,創立,official,https://www.kurita-water.com/about/road-map.html,クリタは1949年にボイラ向けの水処理薬品事業により創立しました,2026-11-20,p8の1953年事業は公式未確認(据置)
+kao,1887,創業,official,https://www.kao.com/jp/corporate/data/,創業 139 年 1887年の創業以来,2026-11-20,1890花王石鹸起点は製品起点(allow)
