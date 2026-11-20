@@ -57,14 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": 4020000,
+  "avg_salary": 14313037,
   "starting_salary": null,
   "industry": {
    "value": "銀行・証券・保険",
    "estimated": false
   },
   "avg_salary_as_of": "2026年3月期",
-  "avg_salary_source": "EDINET:S100Y7D9"
+  "avg_salary_source": "EDINET:S100YCMP(最大人員会社 大和証券㈱・総合職の平均。全社員の平均ではない)"
  },
  "trend_note": "創業120年超の老舗大手証券。全国120店舗網と営業利益27%増で安定性極高。転勤は多めだが新規事業・裁量は限定的。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
@@ -72,7 +72,8 @@
   "errors": [],
   "notes": [
    "avg_salary: 有報grade出典なし→null(定性提案)",
-   "starting_salary: 抽出/照合不可→null"
+   "starting_salary: 抽出/照合不可→null",
+   "avg_salary: 2026-11-20 是正(4020000/EDINET:S100Y7D9→14313037)"
   ]
  }
 }

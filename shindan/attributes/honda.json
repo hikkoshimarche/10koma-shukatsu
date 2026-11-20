@@ -58,12 +58,14 @@
   }
  },
  "facts": {
-  "avg_salary": null,
+  "avg_salary": 9326000,
   "starting_salary": null,
   "industry": {
    "value": "自動車・モビリティ",
    "estimated": false
-  }
+  },
+  "avg_salary_as_of": "2026年3月期",
+  "avg_salary_source": "EDINET:S100YDD9"
  },
  "trend_note": "創業75年超の老舗大型メーカーで安定性が高い。全国多数拠点と海外展開で転勤・駐在機会が豊富。技術立社で理系中心採用。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
@@ -71,7 +73,8 @@
   "errors": [],
   "notes": [
    "avg_salary: 有報grade出典なし→null(定性提案)",
-   "starting_salary: 抽出/照合不可→null"
+   "starting_salary: 抽出/照合不可→null",
+   "avg_salary: 2026-11-20 是正(None/None→9326000)"
   ]
  }
 }

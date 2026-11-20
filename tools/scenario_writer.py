@@ -101,6 +101,12 @@ def _apply_edits(scn: dict, edits: dict) -> dict:
             if not isinstance(after["script"], list) or not all(isinstance(x, str) for x in after["script"]):
                 raise WriterError(f"koma{n}: script は文字列の配列であること")
             k["script"] = list(after["script"])
+        if "source" in after:   # overlay_text.source → D1 source_url(2026-11-20: 数字の出典docIDを付けるため)
+            ov = k.setdefault("overlay_text", {})
+            if after["source"] in (None, ""):
+                ov.pop("source", None)
+            else:
+                ov["source"] = after["source"]
         if "main_copy" in after or "sub_copy" in after:
             ov = k.setdefault("overlay_text", {})
             if "main_copy" in after:
@@ -164,6 +170,7 @@ def plan(slug: str, edits: dict, ref: str | None = None, d1_rows=None, image_kom
         if any(f in v for f in S2P.IMAGE_COUPLED_FIELDS) and "image_url" not in v:
             raise WriterError(f"{slug} panel{n}: 画像とセットの列だけが変わる → 画像と同時でなければ書かない")
     allowed = {(int(n), f) for n in edits for f in TEXT_FIELDS}
+    allowed |= {(int(n), "source_url") for n, a in edits.items() if "source" in a}
     allowed |= {(int(n), f) for n in (image_komas or ()) for f in ("image_url",) + S2P.IMAGE_COUPLED_FIELDS}
     extra = [(n, f) for n, v in updates.items() for f in v if (n, f) not in allowed]
     if extra:

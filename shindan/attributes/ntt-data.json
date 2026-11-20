@@ -57,21 +57,22 @@
   }
  },
  "facts": {
-  "avg_salary": 10562434,
+  "avg_salary": 9583906,
   "starting_salary": null,
   "industry": {
    "value": "IT・通信・SaaS",
    "estimated": false
   },
   "avg_salary_as_of": "2026年3月期",
-  "avg_salary_source": "EDINET:S100YCP3"
+  "avg_salary_source": "EDINET:S100YCP3(親会社NTTの有報・最大人員会社 ㈱NTTデータ)"
  },
  "trend_note": "社会インフラを支える金融・公共システムで高い安定性。世界70ヵ国展開で海外機会あり。平均残業29時間/月と働き方改革も進",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
  "lint": {
   "errors": [],
   "notes": [
-   "starting_salary: 抽出/照合不可→null"
+   "starting_salary: 抽出/照合不可→null",
+   "avg_salary: 2026-11-20 是正(10562434/EDINET:S100YCP3→9583906)"
   ]
  }
 }

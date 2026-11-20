@@ -57,14 +57,14 @@
   }
  },
  "facts": {
-  "avg_salary": 11708279,
+  "avg_salary": 11762284,
   "starting_salary": null,
   "industry": {
    "value": "食品・飲料",
    "estimated": false
   },
-  "avg_salary_as_of": "2026年3月期",
-  "avg_salary_source": "EDINET:S100XSOA"
+  "avg_salary_as_of": "2025年12月期",
+  "avg_salary_source": "EDINET:S100XSOR(持株会社サントリーHD 1,557人の平均)"
  },
  "trend_note": "創業1899年の歴史ある老舗で安定性が高い。グローバル展開とマルチカテゴリ事業で国内外の転勤・異動機会が豊富。",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
@@ -72,7 +72,8 @@
   "errors": [],
   "notes": [
    "avg_salary: 有報grade出典なし→null(定性提案)",
-   "starting_salary: 抽出/照合不可→null"
+   "starting_salary: 抽出/照合不可→null",
+   "avg_salary: 2026-11-20 是正(11708279/EDINET:S100XSOA→11762284)"
   ]
  }
 }

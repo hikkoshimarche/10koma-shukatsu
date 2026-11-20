@@ -58,21 +58,22 @@
   }
  },
  "facts": {
-  "avg_salary": 6555364,
+  "avg_salary": 6284071,
   "starting_salary": null,
   "industry": {
    "value": "インフラ・エネルギー",
    "estimated": false
   },
   "avg_salary_as_of": "2026年3月期",
-  "avg_salary_source": "EDINET:S100YE54"
+  "avg_salary_source": "EDINET:S100YE54(最大人員会社 西部瓦斯㈱・管理職を除く)"
  },
  "trend_note": "インフラ企業の安定性維持。海外拠点記述なく、地域内転勤（福岡・北九州・熊本・長崎・佐世保）が中心。賃上げ・奨学金制度で待",
  "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
  "lint": {
   "errors": [],
   "notes": [
-   "starting_salary: 抽出/照合不可→null"
+   "starting_salary: 抽出/照合不可→null",
+   "avg_salary: 2026-11-20 是正(6555364/EDINET:S100YE54→6284071)"
   ]
  }
 }
