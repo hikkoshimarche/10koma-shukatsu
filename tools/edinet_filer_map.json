@@ -1,0 +1,133 @@
+{
+ "_doc": "slug→EDINET提出者の対応表(年収スイープの唯一の照合根拠・2026-11-20)。社名の部分一致は廃止。ここに無い社はスイープが値を書かない(not_in_filer_map で止まって報告)。登録は1社ずつ、有報PDFの【会社名】と証券コードで確認したものだけ。use: filer=提出会社の平均を使う / needs_judgment=持株会社等で人の判断待ち(書かない) / no_filing=有報なし(数字を書かない)",
+ "items": {
+  "daiwa": {
+   "edinet_code": "E03753",
+   "filer": "株式会社大和証券グループ本社",
+   "sec_code": "8601",
+   "verified_doc": "S100YCMP",
+   "verified": "2026-11-20 有報PDFの【会社名】・従業員の状況表で確認(年収取り違え調査)",
+   "use": "needs_judgment",
+   "note": "ページ=大和証券。提出会社494名は全員大和証券との兼務。事業会社値は同有報の最大人員会社欄(大和証券 5,234名・総合職)。どちらを使うかオスカー判断まで書かない"
+  },
+  "suntory": {
+   "edinet_code": "E22559",
+   "filer": "サントリーホールディングス株式会社",
+   "sec_code": "",
+   "verified_doc": "S100XSOR",
+   "verified": "2026-11-20 有報PDFの【会社名】・従業員の状況表で確認(年収取り違え調査)",
+   "use": "filer",
+   "note": "非上場だが有報提出。持株単体1,557名(連結41,628)→『持株会社の平均』注記"
+  },
+  "nissin-hd": {
+   "edinet_code": "E00457",
+   "filer": "日清食品ホールディングス株式会社",
+   "sec_code": "2897",
+   "verified_doc": "S100YEWB",
+   "verified": "2026-11-20 有報PDFの【会社名】・従業員の状況表で確認(年収取り違え調査)",
+   "use": "filer",
+   "note": "提出会社=HD(980名)。事業会社日清食品㈱の値は最大人員会社欄。主体名を正しく書く"
+  },
+  "saibu-gas": {
+   "edinet_code": "E04523",
+   "filer": "西部ガスホールディングス株式会社",
+   "sec_code": "9536",
+   "verified_doc": "S100YE54",
+   "verified": "2026-11-20 有報PDFの【会社名】・従業員の状況表で確認(年収取り違え調査)",
+   "use": "needs_judgment",
+   "note": "ページ=事業会社西部ガス。HD160名 vs 西部瓦斯856名(いずれも管理職除く)"
+  },
+  "resona": {
+   "edinet_code": "E03538",
+   "filer": "株式会社りそな銀行",
+   "sec_code": "",
+   "verified_doc": "S100YDPD",
+   "verified": "2026-11-20 有報PDFの【会社名】・従業員の状況表で確認(年収取り違え調査)",
+   "use": "filer",
+   "note": "りそな銀行自身が有報提出(非上場・上場はHD 8308)"
+  },
+  "jpx": {
+   "edinet_code": "E03814",
+   "filer": "株式会社日本取引所グループ",
+   "sec_code": "8697",
+   "verified_doc": "S100YA84",
+   "verified": "2026-11-20 有報PDFの【会社名】・従業員の状況表で確認(年収取り違え調査)",
+   "use": "filer",
+   "note": "持株223名・東証305名と規模が近い→持株単体の注記"
+  },
+  "square-enix": {
+   "edinet_code": "E04859",
+   "filer": "株式会社スクウェア・エニックス・ホールディングス",
+   "sec_code": "9684",
+   "verified_doc": "S100YHJ4",
+   "verified": "2026-11-20 有報PDFの【会社名】・従業員の状況表で確認(年収取り違え調査)",
+   "use": "needs_judgment",
+   "note": "HD26名 vs 事業会社3,235名(ヤオコー型)→HD平均は使わない方向"
+  },
+  "dream-incubator": {
+   "edinet_code": "E05221",
+   "filer": "株式会社ドリームインキュベータ",
+   "sec_code": "4310",
+   "verified_doc": "S100YD1A",
+   "verified": "2026-11-20 有報PDFの【会社名】・従業員の状況表で確認(年収取り違え調査)",
+   "use": "filer",
+   "note": ""
+  },
+  "kikkoman": {
+   "edinet_code": "E00435",
+   "filer": "キッコーマン株式会社",
+   "sec_code": "2801",
+   "verified_doc": "S100YE5V",
+   "verified": "2026-11-20 有報PDFの【会社名】・従業員の状況表で確認(年収取り違え調査)",
+   "use": "filer",
+   "note": "持株672名(病院職員含む)・キッコーマン食品911名→持株単体の注記"
+  },
+  "nippon-steel": {
+   "edinet_code": "E01225",
+   "filer": "日本製鉄株式会社",
+   "sec_code": "5401",
+   "verified_doc": "S100YF8E",
+   "verified": "2026-11-20 有報PDFの【会社名】・従業員の状況表で確認(年収取り違え調査)",
+   "use": "filer",
+   "note": ""
+  },
+  "honda": {
+   "edinet_code": "E02166",
+   "filer": "本田技研工業株式会社",
+   "sec_code": "7267",
+   "verified_doc": "S100YDD9",
+   "verified": "2026-11-20 有報PDFの【会社名】・従業員の状況表で確認(年収取り違え調査)",
+   "use": "filer",
+   "note": ""
+  },
+  "ntt-data": {
+   "edinet_code": "E04430",
+   "filer": "日本電信電話株式会社",
+   "sec_code": "9432",
+   "verified_doc": "S100YCP3",
+   "verified": "2026-11-20 有報PDFの【会社名】・従業員の状況表で確認(年収取り違え調査)",
+   "use": "needs_judgment",
+   "note": "NTTデータグループは自社有報なし(非上場化)。親NTTの最大人員会社欄に㈱NTTデータの値。親(持株)の平均は使わない"
+  },
+  "jasm": {
+   "use": "no_filing",
+   "verified": "2026-11-20 有報PDFの【会社名】・従業員の状況表で確認(年収取り違え調査)",
+   "note": "非上場(TSMC子会社)・有報なし→年収の数字は書かない"
+  },
+  "usj": {
+   "use": "no_filing",
+   "verified": "2026-11-20 有報PDFの【会社名】・従業員の状況表で確認(年収取り違え調査)",
+   "note": "非上場(合同会社)・有報なし"
+  },
+  "uzabase": {
+   "use": "no_filing",
+   "verified": "2026-11-20 有報PDFの【会社名】・従業員の状況表で確認(年収取り違え調査)",
+   "note": "2023上場廃止・有報なし"
+  },
+  "paypay-bank": {
+   "use": "no_filing",
+   "verified": "2026-11-20 有報PDFの【会社名】・従業員の状況表で確認(年収取り違え調査)",
+   "note": "有報なし(親PayPayの有報に銀行の年収記載なし)"
+  }
+ }
+}

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """EDINET 平均年間給与 一括スイープ(強化版)。2026年3月期有報の平均年間給与を一次取得。
-照合強化: NFKC(全角→半角)正規化 + 複数社名源(datasheet/companies.json/shindan) + secCode。
+照合: tools/edinet_filer_map.json(slug→EDINETコード・人が1社ずつ確認)のみ。社名の部分一致は廃止(2026-11-20)。
+  対応表に無い社は書かない(not_in_filer_map で報告)。取得PDFの【会社名】が対応表と不一致なら hold。
 精度ゲート: 「従業員の状況」表と「主要な経営指標等の推移」表の相互照合(±5%一致)のみ採用。
   乖離>25%/片方欠落 → 据置(要人間確認リスト)。走査窓=2026-03〜07(3月期/12月期両対応)。
 出力(--dry): output/_salary_sweep_result.json (adopt/hold/exclude/review)。
@@ -84,18 +85,35 @@ def slug_names(slug):
 _CJ = None
 
 
-def match(slug, idx):
-    for nm in slug_names(slug):
-        k = norm(nm)
-        if k in idx:
-            return idx[k]
-    # 部分一致(正規化名の包含)
-    cands = [norm(nm) for nm in slug_names(slug) if len(norm(nm)) >= 4]
-    for key, e in idx.items():
-        for c in cands:
-            if c in key or key in c:
-                return e
-    return None
+FILER_MAP = os.path.join(ROOT, "tools", "edinet_filer_map.json")
+
+
+def load_filer_map():
+    m = json.load(open(FILER_MAP, encoding="utf-8"))["items"]
+    if not m:
+        sys.exit("⛔ edinet_filer_map.json が空(空=失敗)→ 走らない")
+    return m
+
+
+def match(slug, idx, fmap):
+    """slug → EDINET 提出者は対応表(edinet_filer_map.json)だけで決める(2026-11-20)。
+    社名の部分一致は廃止: 「大和証券」に「大和」(株式会社大和=百貨店)が当たり別社の年収を書いた事故の根治。
+    返り値: (entry or None, reason)。対応表に無い/needs_judgment/no_filing は値を書かない。"""
+    f = fmap.get(slug)
+    if not f:
+        return None, "not_in_filer_map"
+    if f.get("use") != "filer":
+        return None, f"filer_map_{f.get('use')}"
+    hits = [e for e in idx.values() if e.get("edinetCode") == f["edinet_code"]]
+    if not hits:
+        return None, "edinet_code_not_in_index"
+    return max(hits, key=lambda e: e.get("periodEnd") or ""), "ok"
+
+
+def filer_name_ok(text, f):
+    """取得した有報の【会社名】が対応表の提出者名と一致するか(取り違えの最終防御)。"""
+    m = re.search(r"【会社名】\s*(\S+)", text)
+    return bool(m) and norm(m.group(1)) == norm(f["filer"])
 
 
 def fetch_text(docid):
@@ -201,17 +219,20 @@ def main():
     targets = only or json.load(open(TARGETS))["union"]
     sys.stderr.write(f"対象{len(targets)}社 / index構築...\n")
     idx = build_index()
+    fmap = load_filer_map()
     adopt, hold, exclude, review = [], [], [], []
     for slug in targets:
-        e = match(slug, idx)
+        e, why_m = match(slug, idx, fmap)
         if not e:
-            exclude.append({"slug": slug, "reason": "no_edinet_filing"}); continue
+            exclude.append({"slug": slug, "reason": why_m}); continue
         pe = e.get("periodEnd") or ""
         if not (pe.startswith("2026") or pe.startswith("2025-12")):
             hold.append({"slug": slug, "reason": f"period={pe}", "docid": e["docid"]}); continue
         text = fetch_text(e["docid"])
         if not text:
             hold.append({"slug": slug, "reason": "pdf_fail", "docid": e["docid"]}); continue
+        if not filer_name_ok(text, fmap[slug]):
+            hold.append({"slug": slug, "reason": "filer_name_mismatch", "docid": e["docid"]}); continue
         ok, val, emp, tr, why = extract(text)
         rec = {"slug": slug, "filer": e["filer"], "docid": e["docid"], "periodEnd": pe,
                "emp": emp, "trend": tr, "reason": why}
@@ -226,7 +247,8 @@ def main():
     out = {"targets": len(targets), "adopt": len(adopt), "hold": len(hold), "exclude": len(exclude),
            "review_needed": len(review), "adopt_list": adopt, "review_list": review,
            "hold_reasons": _count([h["reason"].split("(")[0] for h in hold]),
-           "exclude_list": [e["slug"] for e in exclude]}
+           "exclude_list": [e["slug"] for e in exclude],
+           "exclude_reasons": _count([e["reason"] for e in exclude])}
     json.dump(out, open(RESULT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     json.dump([e["slug"] for e in exclude], open(EXCLUDE, "w", encoding="utf-8"), ensure_ascii=False)
     print(json.dumps({k: v for k, v in out.items() if k not in ("adopt_list", "review_list", "exclude_list")},
