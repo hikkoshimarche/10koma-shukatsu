@@ -169,6 +169,13 @@ def plan(slug: str, edits: dict, ref: str | None = None, d1_rows=None, image_kom
     for n, v in updates.items():
         if any(f in v for f in S2P.IMAGE_COUPLED_FIELDS) and "image_url" not in v:
             raise WriterError(f"{slug} panel{n}: 画像とセットの列だけが変わる → 画像と同時でなければ書かない")
+    _img = sorted(n for n, v in updates.items() if "image_url" in v)
+    if _img:   # 【承認台帳 2026-11-20 ■4】新 ref の画像が台帳と一致しなければ書かない(候補を本番に出さない)
+        import image_approval as IA
+        try:
+            IA.assert_ref_approved(IA._resolve(ref), [f"public/images/{slug}/panel_{n:02d}.png" for n in _img])
+        except IA.ImageNotApproved as e:
+            raise WriterError(f"[承認台帳] {slug}: {e}")
     allowed = {(int(n), f) for n in edits for f in TEXT_FIELDS}
     allowed |= {(int(n), "source_url") for n, a in edits.items() if "source" in a}
     allowed |= {(int(n), f) for n in (image_komas or ()) for f in ("image_url",) + S2P.IMAGE_COUPLED_FIELDS}
@@ -310,7 +317,7 @@ def selftest() -> int:
         nonlocal ok
         ok &= bool(cond)
         print(f"  {'✅' if cond else '❌'} {name}")
-    slug = "ibm-consulting"
+    slug = "itochu-shoji"   # lint error 0 が保証された商社9社から(2026-11-20: ibm-consulting は年収等式の保留で error)
     ref = subprocess.check_output(["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip()
     scn = json.loads((PIPE / scenario_rel(slug)).read_text(encoding="utf-8"))
     exp = S2P._expected_rows(scn, slug, ref)

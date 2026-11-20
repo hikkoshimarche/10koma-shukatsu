@@ -11,6 +11,14 @@
 
 理由と経緯: マスクinpaint(gpt-image-1)は「背景・単純塗りで消せるアーチファクト」のみ自動修正可、**構造を持つ前景オブジェクト(デバイス/腕/持ち物/扉)は自由に描き直して別物化するため不可**（実証）。よって前景系は**生成プロンプトで再発を断つ**のが根本策。既存分はローンチ後のimage-to-image一括バッチ+人承認へ。詳細は memory `image-drain-regen-unsafe-2026-07-24`。
 
+## 【必須】画像の承認台帳（未承認画像を本番に出さない・2026-11-20）
+7/21 の一括軽量化が public/images に置かれた人QA待ち候補を圧縮 → refbump で未承認157コマが本番化した。再発防止：
+- **承認は `tools/image_approval_ledger.json`（ファイル→git blob）だけが表す**。repo の新しい画像＝承認済みではない。初期値＝本番参照中の画像から未承認157を除いたもの（カニゼン10枚はCC目視）。
+- **候補は `review/candidates/<slug>/panel_NN.<timestamp>.png`**（public/images に置かない）。phase_c 混在型はここへ push、人QA OK で `promote_candidate` → 台帳追記 → public/images へ昇格 → その ref だけ D1。
+- **一括で画像を触るツール（optimize_images / image_crop_fix）は台帳と中身が一致するファイルだけ対象**。結果は derived として台帳に追記（同じ commit）。
+- **D1 の ref を一括で動かす migration は `tools/image_ref_migrate.py` で生成**（新 ref の画像が台帳に無ければ SQL を出さず exit 3）。手書きの全行置換SQL（refbump 型）は禁止。scenario_to_panels `--image-komas`・scenario_writer の image_url 更新も同じ関所を通る。
+- 検分で「採用」→ `python3 tools/image_approval.py approve <path> --ref <候補ref> --by "人QA(画像検分タブ)" --note …`。「元に戻す」は元画像の blob を同様に approve してから ref を戻す。確認: `image_approval.py check-worktree` / `verify-ref <ref>`。
+
 ## 【必須】台本のNotion保存（Definition of Done）
 台本を新規作成・変更・本番デプロイしたら、その作業は「Notionファクトシートへの台本同期」まで終えて初めて"完了"とする。ローカル(scenario_v4.json / D1)だけで終えない。未同期で作業を閉じない。
 - 同期は非破壊の notion_sync.py を使う：既存版は削除せず見出しを「⚠️旧版(...)」にrename、新版を「## 自動生成版 <日付> <版>（最新の正）✅」として末尾に追記。

@@ -302,9 +302,16 @@ def _notion_sync_one(tslug, label=""):
 # ============================================================================
 # 混在型: 候補生成 → レビューURL → LINEで人QA依頼(自動反映しない)
 # ============================================================================
-def review_url(slug, koma, sha):
-    """人が見る候補画像URL(jsDelivr pinned)。"""
-    return f"https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@{sha}/public/images/{slug}/panel_{koma:02d}.png"
+def review_url(slug, koma, sha, rel=None):
+    """人が見る候補画像URL(jsDelivr pinned)。rel=候補の repo 相対パス(review/candidates/…)。"""
+    rel = rel or f"public/images/{slug}/panel_{koma:02d}.png"   # 旧方式(2026-11-20 以前の起票)
+    return f"https://cdn.jsdelivr.net/gh/hikkoshimarche/10koma-shukatsu@{sha}/{rel}"
+
+
+def _cand_path_from_url(url, slug, koma):
+    """起票URLから候補のパス(review/candidates/… または旧方式の public/images/…)。"""
+    m = re.search(r"10koma-shukatsu@[0-9a-f]+/(.+?\.png)", url or "")
+    return m.group(1) if m else f"public/images/{slug}/panel_{koma:02d}.png"
 
 
 def mixed_notify_one(company, slug, tslug, koma, detail, instruction, dry, st, c):
@@ -345,9 +352,15 @@ def mixed_notify_one(company, slug, tslug, koma, detail, instruction, dry, st, c
     if not gate_ok:
         rec["escalate"] = f"候補QA{PCI.QA_MAX}回不可(sev={sev}) → 通知せず据置"; return rec
     # 候補をレビュー用にpush(D1のimage_urlは更新しない=liveは旧画像のまま)
-    panel = FAD.copy_panel_to_deploy(tslug, koma)
-    sha = FAD.git_commit_push(panel, f"review(image:{slug}): koma{koma:02d} 候補(混在型・人QA待ち)")
-    rec["candidate_url"] = review_url(slug, koma, sha)
+    # 【承認台帳 2026-11-20 ■4】候補は review/candidates/<slug>/panel_NN.<ts>.png に置く。public/images に置かない
+    # (7/21 の一括軽量化が public/images の候補を圧縮→refbump で未承認157コマが本番化した事故の再発防止)。
+    import image_approval as IA
+    rel = IA.candidate_rel(slug, koma)
+    panel = REPO / rel
+    panel.parent.mkdir(parents=True, exist_ok=True)
+    panel.write_bytes((FAD.ROOT / "output" / tslug / f"koma{koma:02d}.png").read_bytes())
+    sha = FAD.git_commit_push(panel, f"review(image:{slug}): koma{koma:02d} 候補(混在型・人QA待ち) {rel}")
+    rec["candidate_url"] = review_url(slug, koma, sha, rel)
     # スプシ人QA列に起票(OK記入で次ループ反映)
     PCI.gas({"mode": "addimageqa", "company": company, "slug": slug, "koma": str(koma),
              "sha": sha, "url": rec["candidate_url"], "detail": detail[:80]})
@@ -375,6 +388,22 @@ def consume_human_qa(dry, st, c):
         if dry or not c["enabled"]:
             rec["note"] = f"DRY: OK候補 {slug}#{koma}@{sha} をライブなら反映(canary/404)"; out.append(rec); continue
         import fix_and_deploy as FAD
+        import image_approval as IA
+        # 【承認台帳 2026-11-20 ■4】人QAのOKを台帳に記録して public/images へ昇格 → その commit の ref だけを D1 へ。
+        cand = _cand_path_from_url(it.get("url"), slug, koma)
+        try:
+            dst, _blob = IA.promote_candidate(sha, cand, slug, koma, by="人QA(スプシ画像人QA)",
+                                              note=f"スプシ『画像人QA』でOK(行{it.get('row')})")
+        except Exception as e:
+            rec["escalate"] = f"候補の昇格失敗: {e}"; out.append(rec); continue
+        FAD.run(["git", "add", str(IA.LEDGER.relative_to(REPO))], cwd=REPO)
+        new_sha = FAD.git_commit_push(REPO / dst, f"image(approved:{slug}): koma{koma:02d} 人QA OK の候補を採用(台帳に記録)")
+        FAD.wait_jsdelivr(slug, koma, new_sha)
+        try:
+            IA.assert_ref_approved(new_sha, [dst])
+        except IA.ImageNotApproved as e:
+            rec["escalate"] = f"台帳不一致で止めた: {e}"; out.append(rec); continue
+        rec["sha"] = sha = new_sha
         D.backup_d1(slug); cb = D.canary_snapshot({slug})
         FAD.update_d1_panel(slug, koma, sha)
         if D.canary_diff(cb, D.canary_snapshot({slug})):

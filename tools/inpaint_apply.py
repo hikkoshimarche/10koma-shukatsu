@@ -217,7 +217,12 @@ def apply_one(job, result):
     dst = IMG / slug / f"panel_{koma:02d}.png"
     before = canary_snapshot()
     optimize_png(result, dst)
-    subprocess.run(["git", "add", str(dst)], cwd=str(REPO))
+    # 【承認台帳 2026-11-20 ■4】--apply は人/Web Claude の承認後にだけ呼ばれる → 結果を台帳に記録
+    import sys as _s; _s.path.insert(0, str(REPO / "tools"))
+    import image_approval as IA
+    _rel = str(dst.relative_to(REPO))
+    IA.approve(_rel, IA.blob_of_file(_rel), "人承認(inpaint)", f"inpaint 局所修正 {job.get('label','')} を人が承認して --apply")
+    subprocess.run(["git", "add", str(dst), str(IA.LEDGER)], cwd=str(REPO))
     subprocess.run(["git", "commit", "-q", "-m",
                     f"fix(image:inpaint): {slug} koma{koma:02d} 局所修正(mask合成・{job.get('label','')})"], cwd=str(REPO))
     sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(REPO), capture_output=True, text=True).stdout.strip()

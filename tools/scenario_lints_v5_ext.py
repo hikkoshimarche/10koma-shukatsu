@@ -164,11 +164,41 @@ def lint_year_arithmetic(scenario):
                               f"(現在{CY}年基準で正しくは{CY-best}年前)"))
     return res
 
+# ── 年収の等式(2026-11-20 オスカー指示 ■2) ─────────────────────────────
+# 「904万円=127年の技術蓄積」のように、年収(◯万円)と年収ではないもの(歴史・理念・事業・規模)を
+# 「＝」で結ぶ main_copy が96社で量産された。生成側コードに型が見つからなかったため lint で止める。
+# 右辺(左辺)が給与の構造・属性(年俸/賞与/基本給/平均勤続…)なら warning(出典確認)、それ以外は error。
+_SAL_EQ_RE = re.compile(r"([0-9０-９][0-9０-９,，.]*)\s*万円?\s*[=＝]\s*([^/／\n|]{1,40})")
+_SAL_EQ_REV_RE = re.compile(r"([^/／\n|=＝]{1,40}?)\s*[=＝]\s*([0-9０-９][0-9０-９,，.]*)\s*万円")
+_PAY_STRUCT_RE = re.compile(r"年俸|賞与|ボーナス|基本給|手当|月給|初任給|成果給|成果報酬|インセンティブ|ストックオプション|SO|"
+                            r"オファー|持株会社|管理職|平均年齢|平均勤続|勤続|成果主義|成果×|成果の積み上げ|職種×|給与|報酬制度|年収")
+
+def lint_salary_equation(scenario):
+    res = []
+    def check(koma, src, text):
+        for m in _SAL_EQ_RE.finditer(text):
+            other = m.group(2).strip()
+            sev = "warning" if _PAY_STRUCT_RE.search(other) else "error"
+            res.append(_f("salary_equation", sev, koma,
+                          f"{src}: 『{m.group(0).strip()}』年収と{'給与構造' if sev=='warning' else '年収以外(歴史・理念・事業など)'}を＝で結んでいる"
+                          + ("(出典を確認)" if sev == "warning" else "→年収は何の数字かを添えて単独で書き、他は別の文で")))
+        for m in _SAL_EQ_REV_RE.finditer(text):
+            other = m.group(1).strip()
+            if not other or re.search(r"万円?\s*$", other):
+                continue
+            sev = "warning" if _PAY_STRUCT_RE.search(other) else "error"
+            res.append(_f("salary_equation", sev, koma, f"{src}: 『{m.group(0).strip()}』年収以外と年収を＝で結んでいる"))
+    for koma, key, text in overlay_texts(scenario):
+        check(koma, key, text)
+    for koma, sp, text in parse_lines(scenario):
+        check(koma, "script", text)
+    return res
+
 def run_ext_lints(scenario, company_slug=None):
     findings = (lint_ratio_ban(scenario, company_slug) + lint_raw_markdown(scenario)
                 + lint_unsourced_headcount(scenario) + lint_word_repeat(scenario)
                 + lint_terminal_punctuation(scenario) + lint_third_party_dominance(scenario)
-                + lint_year_arithmetic(scenario))
+                + lint_year_arithmetic(scenario) + lint_salary_equation(scenario))
     e = sum(1 for f in findings if f["severity"]=="error")
     w = sum(1 for f in findings if f["severity"]=="warning")
     return {"slug": company_slug, "findings": findings, "errors": e, "warnings": w}
@@ -199,6 +229,7 @@ def _fixtures():
           {"script":["[senpai] 俺が主役だ。","[senpai] ずっと喋る。"]},
           {"script":["[senpai] まだ喋る。","[nana] 一言。"]}]},
       "year_arith":{"meta":{},"koma":[{"script":["[haruki] 1936年に創業。50年前のことだ。"]}]},
+      "salary_equation":{"meta":{},"koma":[{"overlay_text":{"main_copy":"904万円=127年の技術蓄積"},"script":["[nana] 年収は?"]}]},
     }
 
 def selftest():

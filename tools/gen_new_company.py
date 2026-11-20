@@ -3,7 +3,20 @@
 rendered_corpus を corpus として供給(acquire_corpus_thickの新規crawlを回避)。全lintゲート適用。
 本番D1反映はしない(パイロット承認後に別途)。$ガード=QUIZ_MAX_USD。resumable(成果物存在でskip)。LINEなし。
   python tools/gen_new_company.py <slug...>
+
+⚠️【出力は必ず人が全項目を見直す・そのまま本番に入れない】(2026-11-20 日本カニゼンでの実績)
+lint を全部通っても、次の誤りが出た。下書きとして扱い、人が出典と1件ずつ突き合わせてから使うこと:
+  1. ブランドの取り違え: datasheet に「カニゼンめっきの特徴: 低反射性」(低反射は別ブランド カニブラック® の特長)。
+     → 製品ごとの特長・用途が、正しい製品に紐づいているかを出典ページで確認する。
+  2. 的外れな誤答: 出典に無い語(「ゲーム開発」「アニメ制作」等)を誤答選択肢に使い、設問として成立していない。
+     → 誤答は出典本文に実在する語(同社の別製品・別工程・関係会社名など)から作る。
+  3. 難易度の偏り: Lv3/Lv4 が0問。非上場・小規模社は財務の素材が無く、Lv4(財務)が組めない。
+     → Lv4 は事業構造(製品の使い分け・工程・用途)で組む。人名を問う設問は作らない。
+  非上場社は有報が無い=年収・売上は「出典なし」で書かない(Source-or-Silence)。
 """
+
+HUMAN_REVIEW_BANNER = ("⚠️ gen_new_company の出力は下書き。本番に入れる前に、人が全項目を出典と突き合わせること"
+                       "(2026-11-20 カニゼン: ブランド取り違え・出典外の誤答・Lv3/4ゼロ)。")
 import sys, os, json, re
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import quiz_fanout as q
@@ -236,6 +249,7 @@ def restore_best(slug):
 
 
 def main():
+    print(HUMAN_REVIEW_BANNER, file=sys.stderr, flush=True)
     if "--restore-best" in sys.argv:
         for s in [a for a in sys.argv[sys.argv.index("--restore-best") + 1:] if not a.startswith("--")]:
             print(restore_best(s))

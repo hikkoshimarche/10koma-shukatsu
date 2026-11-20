@@ -21,6 +21,7 @@ DONE = ROOT / ".backups" / "_optimize_done.txt"
 STATS = ROOT / ".backups" / "_optimize_stats.json"
 SAMPLES = ROOT / ".backups" / "_optimize_samples.json"
 PANEL_W = 480
+LEDGER_D = None   # 承認台帳(main で読む)
 PERSONA = 256
 BATCH = 20
 
@@ -85,7 +86,7 @@ def git_commit_push(companies, batchno):
     """commitはローカルに確実に作る(=room-avatar loopがfetch/merge/pushで拾う実績あり)。
     自前pushはbest-effort(autostash rebaseで loopのlive編集ファイルを回避)。push失敗でも
     停止せず継続(commitは durable + loopがpush)。返り値は常にTrue(=commit済で前進可)。"""
-    paths = [f"public/images/{c}" for c in companies]
+    paths = [f"public/images/{c}" for c in companies] + ["tools/image_approval_ledger.json"]
     run(["git", "add"] + paths, cwd=ROOT)
     st = run(["git", "status", "--porcelain"] + paths, cwd=ROOT)
     if not st.stdout.strip():
@@ -105,7 +106,32 @@ def git_commit_push(companies, batchno):
     print(f"  [warn] batch{batchno}: 自前push未達(commitは作成済・loop/最終reconcileで origin へ)")
     return True
 
+def _approved_or_skip(path: Path, stats) -> str | None:
+    """【承認台帳 2026-11-20 ■4】作業ツリーの中身が台帳と一致するファイルだけを圧縮する。
+    一致しない(=人QA待ちの候補等)は触らない。7/21 に候補を圧縮→refbump で本番化した事故の再発防止。"""
+    import image_approval as IA
+    rel = str(path.relative_to(ROOT))
+    b = IA.blob_of_file(rel)
+    if not IA.is_approved(rel, b, LEDGER_D):
+        stats.setdefault("skipped_unapproved", []).append(rel)
+        return None
+    return b
+
+
+def _record_derived(path: Path, old_blob: str):
+    import image_approval as IA
+    rel = str(path.relative_to(ROOT))
+    nb = IA.blob_of_file(rel)
+    if nb != old_blob:
+        IA.approve(rel, nb, "派生(圧縮)", f"承認済み {old_blob[:12]} を optimize_images で圧縮", derived_from=old_blob,
+                   d=LEDGER_D, write=False)
+
+
 def main():
+    global LEDGER_D
+    sys.path.insert(0, str(ROOT / "tools"))
+    import image_approval as IA
+    LEDGER_D = IA.load()          # 台帳が無い/空なら止まる(全部未承認として素通りしない)
     done = set()
     if DONE.exists():
         done = set(DONE.read_text().split())
@@ -122,28 +148,39 @@ def main():
         cdir = IMG / comp
         try:
             for pf in sorted(cdir.glob("panel_*.png")):
+                ob = _approved_or_skip(pf, stats)
+                if ob is None:
+                    continue
                 o, n = opt_image(pf, "panel")
                 v = qa(pf, "panel")
                 stats["orig"] += o; stats["new"] += n; stats["panels"] += 1
                 if v != "ok":
                     stats["qa_fail"].append(f"{comp}/{pf.name}:{v}")
                     restore(Path(comp) / pf.name)
-                elif len(samples) < 20 and pf.name == "panel_01.png":
+                else:
+                    _record_derived(pf, ob)
+                if v == "ok" and len(samples) < 20 and pf.name == "panel_01.png":
                     samples.append({"company": comp, "rel": f"{comp}/{pf.name}", "orig": o, "new": n})
             pdir = cdir / "personas"
             if pdir.is_dir():
                 for rf in sorted(pdir.glob("r*.png")):
+                    ob = _approved_or_skip(rf, stats)
+                    if ob is None:
+                        continue
                     o, n = opt_image(rf, "persona")
                     v = qa(rf, "persona")
                     stats["orig"] += o; stats["new"] += n; stats["personas"] += 1
                     if v != "ok":
                         stats["qa_fail"].append(f"{comp}/personas/{rf.name}:{v}")
                         restore(Path(comp) / "personas" / rf.name)
+                    else:
+                        _record_derived(rf, ob)
         except Exception as e:
             print(f"  [FAIL] {comp}: {e}", flush=True)
             stats["qa_fail"].append(f"{comp}:EXC:{str(e)[:80]}")
         batch.append(comp)
         if len(batch) >= BATCH or ci == len(todo):
+            IA.save(LEDGER_D)                     # 派生(圧縮)の承認を同じ commit に入れる
             ok = git_commit_push(batch, batchno)
             if not ok:
                 print(f"❌ batch{batchno} push失敗 → 停止(手動確認)", flush=True)

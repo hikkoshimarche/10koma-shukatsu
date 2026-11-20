@@ -30,7 +30,10 @@ from PIL import Image, ImageDraw, ImageFont
 WCONF = REPO / "api" / "wrangler.toml"
 OAI_KEY = (os.getenv("OPENAI_API_KEY") or "").strip()
 ANT_KEY = re.sub(r"\s", "", os.environ.get("ANTHROPIC_API_KEY", ""))
-IMG_MODEL = os.getenv("ROOM_AVATAR_MODEL", "gpt-image-1")   # 2026-11-20: gpt-image-1 が提供終了(does not exist)→ env で後継を指定
+# 2026-11-20: OpenAI gpt-image-1 は提供終了("does not exist" で 0/9 生成)→ 既定を後継 gpt-image-1.5 に変更。
+# カニゼン8人のアバターは gpt-image-1.5 で生成(256px に縮小して配置)。
+# ⚠ 全社アバターの 1024 化(ローンチ後)の費用見積もりは gpt-image-1 の単価で出していた → 1.5 の単価で出し直すこと。
+IMG_MODEL = os.getenv("ROOM_AVATAR_MODEL", "gpt-image-1.5")
 COST_PER_IMAGE = 0.167   # high品質1024²の実測(94in+4160imgout)
 PARALLEL = 3
 _LOCK = threading.Lock(); _STATE = {"spent": 0.0, "n": 0}

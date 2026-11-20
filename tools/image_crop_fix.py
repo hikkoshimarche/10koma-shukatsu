@@ -235,6 +235,14 @@ def crop_fix_one(slug: str, koma: int, company: str = "", detail: str = "", dry:
         if not dry:
             to_human(k, company, reason, gas)
         return rec
+    import image_approval as IA          # 【承認台帳 2026-11-20 ■4】切る元の絵が承認済みであること
+    old_blob = IA.blob_of_file(dst)
+    if not IA.is_approved(str(dst.relative_to(REPO)), old_blob):
+        reason = "配信中の絵が承認台帳に無い(人QA待ち候補の可能性)=切らずに人へ"
+        rec["escalate"] = f"人レビュー: {reason}"
+        if not dry:
+            to_human(k, company, reason, gas)
+        return rec
     if dry:
         rec["note"] = f"DRY: {a['reason']} → 候補 {cand.name}(live なら push→D1→canary)"
         return rec
@@ -251,11 +259,14 @@ def crop_fix_one(slug: str, koma: int, company: str = "", detail: str = "", dry:
         rec["escalate"] = f"origin/main が {ahead} コミット先行 → 中止(次回)"; return rec
     dst.write_bytes(out)
     rel = str(dst.relative_to(REPO))
-    _git("add", rel)
+    IA.approve(rel, IA.blob_of_file(rel), "派生(白帯crop)", f"承認済み {old_blob[:12]} の白帯を機械的に除去({a['reason']})",
+               derived_from=old_blob)
+    led = str(IA.LEDGER.relative_to(REPO))
+    _git("add", rel, led)
     msg = (f"fix(image:{slug}): koma{koma:02d} 白帯をcrop除去(自動・{a['reason']})\n\n"
            f"再生成なし(絵は配信中のまま)。image_crop_fix.py\n\n"
            f"Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>")
-    c = _git("commit", "-m", msg, "--", rel, check=False)
+    c = _git("commit", "-m", msg, "--", rel, led, check=False)
     if c.returncode != 0:
         raise RuntimeError(f"commit 失敗: {(c.stdout + c.stderr)[-300:]}")
     sha = _git("rev-parse", "HEAD").stdout.strip()
