@@ -1,0 +1,86 @@
+{
+ "slug": "kanigen",
+ "name": "日本カニゼン",
+ "industry": "鉄鋼・素材・化学",
+ "soft": {
+  "tenkin_do": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": {
+    "source_url": "https://www.kanigen.co.jp/recruit/",
+    "quote": "総合職：国内各事業所ならびに海外関係会社(タイ/バンコク・中国/上海)等。転勤の可能性あり。製造・一般職：各事業所。転勤なし"
+   }
+  },
+  "kaigai_do": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": {
+    "source_url": "https://www.kanigen.co.jp/recruit/",
+    "quote": "海外関係会社(タイ/バンコク・中国/上海)"
+   }
+  },
+  "stability": {
+   "value": 4,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": {
+    "source_url": "https://www.kanigen.co.jp/company/",
+    "quote": "設立 昭和30年12月19日／株主 日本パーカライジング株式会社"
+   }
+  },
+  "growth": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "remote_flex": {
+   "value": 2,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "young_discretion": {
+   "value": 3,
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "bunri": {
+   "value": "理系寄り",
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  },
+  "job_tags": {
+   "value": [
+    "研究・開発",
+    "生産・技術",
+    "営業"
+   ],
+   "estimated": true,
+   "confidence": "medium",
+   "evidence": null
+  }
+ },
+ "facts": {
+  "avg_salary": null,
+  "starting_salary": null,
+  "industry": {
+   "value": "鉄鋼・素材・化学",
+   "estimated": false
+  }
+ },
+ "trend_note": "無電解ニッケルめっきの草分け(1955年設立・従業員150名・日本パーカライジンググループ)。めっき加工とめっき液の製造販売の二本柱。",
+ "disclaimer": "公式公開情報と業界傾向に基づく参考提案です。",
+ "lint": {
+  "errors": [],
+  "notes": [
+   "avg_salary: 非上場で有報なし・公式に平均年収の記載なし→null",
+   "starting_salary: 公式のモデル賃金は『年間賞与は2016年度実績ベース』で古いため不採用→null",
+   "soft: 業界baseline(鉄鋼・素材・化学)を公式記載で調整(転勤度4→3: 製造・一般職は転勤なし)。すべて推定"
+  ]
+ }
+}

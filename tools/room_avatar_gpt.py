@@ -30,7 +30,7 @@ from PIL import Image, ImageDraw, ImageFont
 WCONF = REPO / "api" / "wrangler.toml"
 OAI_KEY = (os.getenv("OPENAI_API_KEY") or "").strip()
 ANT_KEY = re.sub(r"\s", "", os.environ.get("ANTHROPIC_API_KEY", ""))
-IMG_MODEL = "gpt-image-1"
+IMG_MODEL = os.getenv("ROOM_AVATAR_MODEL", "gpt-image-1")   # 2026-11-20: gpt-image-1 が提供終了(does not exist)→ env で後継を指定
 COST_PER_IMAGE = 0.167   # high品質1024²の実測(94in+4160imgout)
 PARALLEL = 3
 _LOCK = threading.Lock(); _STATE = {"spent": 0.0, "n": 0}
@@ -138,6 +138,7 @@ def gen_gpt(appearance, out_path, do_qa=True):
                 continue
             if r.status_code in (429, 500, 503):
                 time.sleep(2 ** att); continue
+            print(f"  [avatar] 生成失敗 HTTP{r.status_code}: {r.text[:200]}", flush=True)   # 黙って0枚にしない
             return None
         except Exception:
             time.sleep(2 ** att)
