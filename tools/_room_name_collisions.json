@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "slug": "tokyo-gas",
+    "n": 6,
+    "ok": true,
+    "surname_collision": [
+      "小林",
+      "石川"
+    ],
+    "fullname_collision": []
+  }
+]

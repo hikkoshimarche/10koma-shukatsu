@@ -62,5 +62,667 @@
       "note": "DRY: 台本lint_err=0(OK). ライブなら 画像[1]再生成→QA→(lint0 & 全QA両立時のみ)台本[1]+画像[1]を同一トランザクション反映→canary→404。片方成立では一切反映しない。"
     }
   ],
-  "note": ""
+  "safe": [
+    {
+      "company": "IBMコンサルティング",
+      "slug": "ibm-consulting",
+      "tslug": "ibm-consulting",
+      "koma": 8,
+      "detail": "イラスト上部の白い余白部分を削除する",
+      "action": "auto",
+      "instruction": "【画像再生成指示】画像上部/端の白い空白帯・余白を除去し、画面全体を情景で満たす(必要ならズーム/再構図。主要被写体は切らない)。 【キャラ一貫性を厳守】ナナ=淡い青のカーディガン、ハルキ=ダークグリーンのシャツ＋ジャケット、2名の顔立ちをキャラ設定と同一に保つ。【背景フック保持】会社を象徴する固有の視覚フック(建物/製品/機械等)はbefore同等の形状・色で保持し、別物に描き直さない。コラージュ禁止・パネル番号/セリフの文字焼き込み禁止(文字はデータ層)。\n(元FB: イラスト上部の白い余白部分を削除する)",
+      "reason": "ルーブリック型=white_band",
+      "guard": "ok",
+      "showcase": false,
+      "deployed": false,
+      "escalate": null,
+      "qa": null,
+      "cost": 0.0,
+      "commit": null,
+      "note": "DRY: 翻訳・ガード通過。ライブなら再生成→ハードQA→canary→反映へ"
+    },
+    {
+      "company": "野村総合研究所（NRI）",
+      "slug": "nri",
+      "tslug": "nri",
+      "koma": 9,
+      "detail": "イラスト上部の白い余白部分を削除する",
+      "action": "auto",
+      "instruction": "【画像再生成指示】画像上部/端の白い空白帯・余白を除去し、画面全体を情景で満たす(必要ならズーム/再構図。主要被写体は切らない)。 【キャラ一貫性を厳守】ナナ=淡い青のカーディガン、ハルキ=ダークグリーンのシャツ＋ジャケット、2名の顔立ちをキャラ設定と同一に保つ。【背景フック保持】会社を象徴する固有の視覚フック(建物/製品/機械等)はbefore同等の形状・色で保持し、別物に描き直さない。コラージュ禁止・パネル番号/セリフの文字焼き込み禁止(文字はデータ層)。\n(元FB: イラスト上部の白い余白部分を削除する)",
+      "reason": "ルーブリック型=white_band",
+      "guard": "ok",
+      "showcase": false,
+      "deployed": false,
+      "escalate": null,
+      "qa": null,
+      "cost": 0.0,
+      "commit": null,
+      "note": "DRY: 翻訳・ガード通過。ライブなら再生成→ハードQA→canary→反映へ"
+    },
+    {
+      "company": "レスターホールディングス",
+      "slug": "lester-hd",
+      "tslug": "lester-hd",
+      "koma": 1,
+      "detail": "イラスト上部の白い部分を削除する",
+      "action": "auto",
+      "instruction": "【画像再生成指示】画像上部/端の白い空白帯・余白を除去し、画面全体を情景で満たす(必要ならズーム/再構図。主要被写体は切らない)。 【キャラ一貫性を厳守】ナナ=淡い青のカーディガン、ハルキ=ダークグリーンのシャツ＋ジャケット、2名の顔立ちをキャラ設定と同一に保つ。【背景フック保持】会社を象徴する固有の視覚フック(建物/製品/機械等)はbefore同等の形状・色で保持し、別物に描き直さない。コラージュ禁止・パネル番号/セリフの文字焼き込み禁止(文字はデータ層)。\n(元FB: イラスト上部の白い部分を削除する)",
+      "reason": "ルーブリック型=white_band",
+      "guard": "ok",
+      "showcase": false,
+      "deployed": false,
+      "escalate": null,
+      "qa": null,
+      "cost": 0.0,
+      "commit": null,
+      "note": "DRY: 翻訳・ガード通過。ライブなら再生成→ハードQA→canary→反映へ"
+    }
+  ],
+  "mixed": [
+    {
+      "slug": "sony-group",
+      "koma": 9,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "sony-group",
+      "koma": 10,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "shinetsu-chemical",
+      "koma": 9,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "tokyo-electron",
+      "koma": 9,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "tokyo-electron",
+      "koma": 10,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "komatsu",
+      "koma": 7,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "komatsu",
+      "koma": 7,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "nidec",
+      "koma": 10,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "bridgestone",
+      "koma": 2,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "shimadzu",
+      "koma": 7,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "seiko-epson",
+      "koma": 3,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "seiko-epson",
+      "koma": 3,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "mitsubishi-materials",
+      "koma": 1,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "asahi-kasei",
+      "koma": 8,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "agc",
+      "koma": 6,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "resona",
+      "koma": 8,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "ms-ad",
+      "koma": 1,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "ms-ad",
+      "koma": 4,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "ms-ad",
+      "koma": 6,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "ms-ad",
+      "koma": 7,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "ms-ad",
+      "koma": 8,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "taiyo-life",
+      "koma": 1,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "orix",
+      "koma": 7,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "tokyo-century",
+      "koma": 1,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "tokyo-century",
+      "koma": 2,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "credit-saison",
+      "koma": 1,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "credit-saison",
+      "koma": 4,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "credit-saison",
+      "koma": 4,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "ntt-docomo",
+      "koma": 9,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "ntt-docomo",
+      "koma": 10,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "layerx",
+      "koma": 2,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "layerx",
+      "koma": 2,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "layerx",
+      "koma": 10,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "sega-sammy",
+      "koma": 3,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "mckinsey",
+      "koma": 9,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "mckinsey",
+      "koma": 10,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "baycurrent",
+      "koma": 10,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "mode": "mixed_notify",
+      "company": "野村総合研究所（NRI）",
+      "slug": "nri",
+      "koma": 9,
+      "detail": "イラスト内のハルキとナナのセリフを削除する",
+      "candidate_url": null,
+      "notified": false,
+      "escalate": "AUTO_MIXED_MODE=off → 混在型は通知しない"
+    },
+    {
+      "slug": "dream-incubator",
+      "koma": 7,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "seika-sangyo",
+      "koma": 9,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "seika-sangyo",
+      "koma": 10,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "daiichi-jitsugyo",
+      "koma": 9,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "daiichi-jitsugyo",
+      "koma": 10,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "j-power",
+      "koma": 1,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "j-power",
+      "koma": 4,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "j-power",
+      "koma": 6,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "toho-gas",
+      "koma": 6,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "toho-gas",
+      "koma": 7,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "jgc-hd",
+      "koma": 6,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "renova",
+      "koma": 7,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "renova",
+      "koma": 7,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "erex",
+      "koma": 7,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "tokyo-tatemono",
+      "koma": 3,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "sekisui-house",
+      "koma": 2,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "taisei",
+      "koma": 4,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "taisei",
+      "koma": 6,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "taisei",
+      "koma": 7,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "welcia-hd",
+      "koma": 1,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "welcia-hd",
+      "koma": 3,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "welcia-hd",
+      "koma": 4,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "welcia-hd",
+      "koma": 9,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "tsuruha-hd",
+      "koma": 3,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "tsuruha-hd",
+      "koma": 8,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "cainz",
+      "koma": 5,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "cainz",
+      "koma": 8,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "dcm-hd",
+      "koma": 6,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "zozo",
+      "koma": 7,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "morinaga-seika",
+      "koma": 5,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "morinaga-seika",
+      "koma": 6,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "morinaga-milk",
+      "koma": 3,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "house-foods",
+      "koma": 1,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "house-foods",
+      "koma": 3,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "house-foods",
+      "koma": 9,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "itoen",
+      "koma": 4,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "itoen",
+      "koma": 6,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "itoen",
+      "koma": 6,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "nichirei",
+      "koma": 1,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "nichirei",
+      "koma": 6,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "nichirei",
+      "koma": 6,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "nichirei",
+      "koma": 8,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "nichirei",
+      "koma": 9,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "calbee",
+      "koma": 2,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "calbee",
+      "koma": 2,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "calbee",
+      "koma": 4,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "lotte",
+      "koma": 7,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "kao",
+      "koma": 2,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "pola-orbis-hd",
+      "koma": 8,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "jal",
+      "koma": 4,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "jal",
+      "koma": 8,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "hakuhodo-dy",
+      "koma": 2,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "adk-hd",
+      "koma": 7,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "yoshimoto-hd",
+      "koma": 4,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "usj",
+      "koma": 7,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "usj",
+      "koma": 9,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "shochiku",
+      "koma": 2,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "yomiuri-group",
+      "koma": 2,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "yomiuri-group",
+      "koma": 4,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "yomiuri-group",
+      "koma": 7,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "yomiuri-group",
+      "koma": 10,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "amazon-japan",
+      "koma": 2,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "amazon-japan",
+      "koma": 4,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "amazon-japan",
+      "koma": 6,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "microsoft-japan",
+      "koma": 1,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "microsoft-japan",
+      "koma": 3,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "microsoft-japan",
+      "koma": 6,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "microsoft-japan",
+      "koma": 7,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "microsoft-japan",
+      "koma": 8,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "sap-japan",
+      "koma": 3,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "sap-japan",
+      "koma": 5,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "sap-japan",
+      "koma": 5,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "pasona-group",
+      "koma": 3,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "pasona-group",
+      "koma": 8,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "benesse-hd",
+      "koma": 1,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "nagase-toshin",
+      "koma": 8,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "astroscale-hd",
+      "koma": 4,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "slug": "openai-japan",
+      "koma": 3,
+      "skip": "起票済/per_koマ到達→再生成せず"
+    },
+    {
+      "mode": "mixed_notify",
+      "company": "株式会社ABEJA",
+      "slug": "abeja",
+      "koma": 7,
+      "detail": "画像内のホワイトボードの文字「テクノプレナーシップ」「リベラルアーツ」「倫理観」を削除する(文字はデータ層=overlayが持つため画像内に焼かない。ホワイトボードは無地または簡素な図に描き直す)",
+      "candidate_url": null,
+      "notified": false,
+      "escalate": "AUTO_MIXED_MODE=off → 混在型は通知しない"
+    }
+  ],
+  "note": "",
+  "errors": [],
+  "ledger_skipped": [],
+  "eligible": 8,
+  "counts": {
+    "safe_candidates": 3,
+    "mixed_candidates": 117,
+    "mixed_generated_this_loop": 2
+  },
+  "queue_remaining": 597
 }

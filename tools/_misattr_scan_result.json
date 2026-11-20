@@ -444,22 +444,6 @@
   "reason": "本文に非自社エンティティ: 新生証券×1"
  },
  {
-  "id": "sompo",
-  "name": "損害保険ジャパン",
-  "n_items": 30,
-  "claimed_domain": "sompo-japan.co.jp",
-  "domain_match": true,
-  "alien_entities": [
-   [
-    "損保ジャパン",
-    2
-   ]
-  ],
-  "geo": [],
-  "verdict": "review",
-  "reason": "本文に非自社エンティティ: 損保ジャパン×2"
- },
- {
   "id": "ms-ad",
   "name": "三井住友海上火災保険",
   "n_items": 19,
@@ -482,6 +466,22 @@
   "geo": [],
   "verdict": "review",
   "reason": "本文に非自社エンティティ: 三井海上火災保険×1, 大正海上火災保険×1, 大阪海上火災保険×1"
+ },
+ {
+  "id": "sompo",
+  "name": "損害保険ジャパン",
+  "n_items": 30,
+  "claimed_domain": "sompo-japan.co.jp",
+  "domain_match": true,
+  "alien_entities": [
+   [
+    "損保ジャパン",
+    2
+   ]
+  ],
+  "geo": [],
+  "verdict": "review",
+  "reason": "本文に非自社エンティティ: 損保ジャパン×2"
  },
  {
   "id": "taiyo-life",
@@ -516,30 +516,6 @@
   "reason": "本文に非自社エンティティ: Way×1"
  },
  {
-  "id": "orico",
-  "name": "オリエントコーポレーション（オリコ）",
-  "n_items": 27,
-  "claimed_domain": "orico.co.jp",
-  "domain_match": true,
-  "alien_entities": [
-   [
-    "オリコ",
-    3
-   ],
-   [
-    "広島信用販売",
-    1
-   ],
-   [
-    "オリエントファイナンス",
-    1
-   ]
-  ],
-  "geo": [],
-  "verdict": "review",
-  "reason": "本文に非自社エンティティ: オリコ×3, 広島信用販売×1, オリエントファイナンス×1"
- },
- {
   "id": "acom",
   "name": "アコム",
   "n_items": 32,
@@ -564,24 +540,28 @@
   "reason": "本文に非自社エンティティ: アイ・アール債権回収×1, エム・ユー信用保証×1, リレイツ×1"
  },
  {
-  "id": "jpx",
-  "name": "日本取引所グループ（JPX）",
-  "n_items": 17,
-  "claimed_domain": null,
+  "id": "orico",
+  "name": "オリエントコーポレーション（オリコ）",
+  "n_items": 27,
+  "claimed_domain": "orico.co.jp",
   "domain_match": true,
   "alien_entities": [
    [
-    "仕事内容",
+    "オリコ",
+    3
+   ],
+   [
+    "広島信用販売",
     1
    ],
    [
-    "TENRYU",
+    "オリエントファイナンス",
     1
    ]
   ],
   "geo": [],
   "verdict": "review",
-  "reason": "本文に非自社エンティティ: 仕事内容×1, TENRYU×1"
+  "reason": "本文に非自社エンティティ: オリコ×3, 広島信用販売×1, オリエントファイナンス×1"
  },
  {
   "id": "paypay-bank",
@@ -616,6 +596,42 @@
   "reason": "本文に非自社エンティティ: 商工中金×4"
  },
  {
+  "id": "jpx",
+  "name": "日本取引所グループ（JPX）",
+  "n_items": 17,
+  "claimed_domain": null,
+  "domain_match": true,
+  "alien_entities": [
+   [
+    "仕事内容",
+    1
+   ],
+   [
+    "TENRYU",
+    1
+   ]
+  ],
+  "geo": [],
+  "verdict": "review",
+  "reason": "本文に非自社エンティティ: 仕事内容×1, TENRYU×1"
+ },
+ {
+  "id": "kddi",
+  "name": "KDDI",
+  "n_items": 27,
+  "claimed_domain": "kddi.com",
+  "domain_match": true,
+  "alien_entities": [
+   [
+    "第二電電",
+    1
+   ]
+  ],
+  "geo": [],
+  "verdict": "review",
+  "reason": "本文に非自社エンティティ: 第二電電×1"
+ },
+ {
   "id": "tis",
   "name": "TIS",
   "n_items": 27,
@@ -646,22 +662,6 @@
   "geo": [],
   "verdict": "review",
   "reason": "本文に非自社エンティティ: 日本電気×1"
- },
- {
-  "id": "kddi",
-  "name": "KDDI",
-  "n_items": 27,
-  "claimed_domain": "kddi.com",
-  "domain_match": true,
-  "alien_entities": [
-   [
-    "第二電電",
-    1
-   ]
-  ],
-  "geo": [],
-  "verdict": "review",
-  "reason": "本文に非自社エンティティ: 第二電電×1"
  },
  {
   "id": "mixi",
@@ -698,46 +698,6 @@
   "geo": [],
   "verdict": "review",
   "reason": "本文に非自社エンティティ: REALITY×1, WFS×1"
- },
- {
-  "id": "layerx",
-  "name": "LayerX",
-  "n_items": 24,
-  "claimed_domain": "layerx.co.jp",
-  "domain_match": true,
-  "alien_entities": [
-   [
-    "三井物産デジタル・アセットマネジメント",
-    1
-   ],
-   [
-    "井物産デジタル・アセット・マネジメント",
-    1
-   ],
-   [
-    "AgenticSec",
-    1
-   ]
-  ],
-  "geo": [],
-  "verdict": "review",
-  "reason": "本文に非自社エンティティ: 三井物産デジタル・アセットマネジメント×1, 井物産デジタル・アセット・マネジメント×1, AgenticSec×1"
- },
- {
-  "id": "smarthr",
-  "name": "SmartHR",
-  "n_items": 28,
-  "claimed_domain": "smarthr.co.jp",
-  "domain_match": true,
-  "alien_entities": [
-   [
-    "ABC",
-    1
-   ]
-  ],
-  "geo": [],
-  "verdict": "review",
-  "reason": "本文に非自社エンティティ: ABC×1"
  },
  {
   "id": "visional",
@@ -778,6 +738,46 @@
   "geo": [],
   "verdict": "review",
   "reason": "本文に非自社エンティティ: ミツカリ×1"
+ },
+ {
+  "id": "smarthr",
+  "name": "SmartHR",
+  "n_items": 28,
+  "claimed_domain": "smarthr.co.jp",
+  "domain_match": true,
+  "alien_entities": [
+   [
+    "ABC",
+    1
+   ]
+  ],
+  "geo": [],
+  "verdict": "review",
+  "reason": "本文に非自社エンティティ: ABC×1"
+ },
+ {
+  "id": "layerx",
+  "name": "LayerX",
+  "n_items": 24,
+  "claimed_domain": "layerx.co.jp",
+  "domain_match": true,
+  "alien_entities": [
+   [
+    "三井物産デジタル・アセットマネジメント",
+    1
+   ],
+   [
+    "井物産デジタル・アセット・マネジメント",
+    1
+   ],
+   [
+    "AgenticSec",
+    1
+   ]
+  ],
+  "geo": [],
+  "verdict": "review",
+  "reason": "本文に非自社エンティティ: 三井物産デジタル・アセットマネジメント×1, 井物産デジタル・アセット・マネジメント×1, AgenticSec×1"
  },
  {
   "id": "sakana-ai",
@@ -868,6 +868,19 @@
   "reason": "本文に非自社エンティティ: Japanグループ×1"
  },
  {
+  "id": "roland-berger",
+  "name": "ローランド・ベルガー",
+  "n_items": 12,
+  "claimed_domain": "rolandberger.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [
+   "ミュンヘン"
+  ],
+  "verdict": "review",
+  "reason": "海外地名手がかり: ミュンヘン"
+ },
+ {
   "id": "nri",
   "name": "野村総合研究所（NRI）",
   "n_items": 27,
@@ -892,17 +905,24 @@
   "reason": "本文に非自社エンティティ: 金融ITソリューションセグメント×1, 産業ITソリューションセグメント×1, IT基盤サービスセグメント×1"
  },
  {
-  "id": "roland-berger",
-  "name": "ローランド・ベルガー",
-  "n_items": 12,
-  "claimed_domain": "rolandberger.com",
+  "id": "cdi",
+  "name": "コーポレイトディレクション（CDI）",
+  "n_items": 21,
+  "claimed_domain": "cdi-japan.co.jp",
   "domain_match": true,
-  "alien_entities": [],
-  "geo": [
-   "ミュンヘン"
+  "alien_entities": [
+   [
+    "オークネット",
+    1
+   ],
+   [
+    "東京ガス",
+    1
+   ]
   ],
+  "geo": [],
   "verdict": "review",
-  "reason": "海外地名手がかり: ミュンヘン"
+  "reason": "本文に非自社エンティティ: オークネット×1, 東京ガス×1"
  },
  {
   "id": "jri",
@@ -933,42 +953,6 @@
   "reason": "本文に非自社エンティティ: 三井住友フィナンシャルグループ×1, 日本総研ホールディングス×1, 住友銀行×1, 日本情報サービス×1"
  },
  {
-  "id": "cdi",
-  "name": "コーポレイトディレクション（CDI）",
-  "n_items": 21,
-  "claimed_domain": "cdi-japan.co.jp",
-  "domain_match": true,
-  "alien_entities": [
-   [
-    "オークネット",
-    1
-   ],
-   [
-    "東京ガス",
-    1
-   ]
-  ],
-  "geo": [],
-  "verdict": "review",
-  "reason": "本文に非自社エンティティ: オークネット×1, 東京ガス×1"
- },
- {
-  "id": "suzuken",
-  "name": "スズケン",
-  "n_items": 26,
-  "claimed_domain": "suzuken.co.jp",
-  "domain_match": true,
-  "alien_entities": [
-   [
-    "キッセイ薬品工業",
-    1
-   ]
-  ],
-  "geo": [],
-  "verdict": "review",
-  "reason": "本文に非自社エンティティ: キッセイ薬品工業×1"
- },
- {
   "id": "medipal",
   "name": "メディパルホールディングス",
   "n_items": 22,
@@ -987,6 +971,22 @@
   "geo": [],
   "verdict": "review",
   "reason": "本文に非自社エンティティ: MPアグロ×1, メディセオ×1"
+ },
+ {
+  "id": "suzuken",
+  "name": "スズケン",
+  "n_items": 26,
+  "claimed_domain": "suzuken.co.jp",
+  "domain_match": true,
+  "alien_entities": [
+   [
+    "キッセイ薬品工業",
+    1
+   ]
+  ],
+  "geo": [],
+  "verdict": "review",
+  "reason": "本文に非自社エンティティ: キッセイ薬品工業×1"
  },
  {
   "id": "kato-sangyo",
@@ -1017,22 +1017,6 @@
   "reason": "本文に非自社エンティティ: カンピー食品工業×1, マンナ運輸×1, カネショー×1, 三陽物産×1"
  },
  {
-  "id": "inabata",
-  "name": "稲畑産業",
-  "n_items": 28,
-  "claimed_domain": "inabata.co.jp",
-  "domain_match": true,
-  "alien_entities": [
-   [
-    "日本染料製造",
-    1
-   ]
-  ],
-  "geo": [],
-  "verdict": "review",
-  "reason": "本文に非自社エンティティ: 日本染料製造×1"
- },
- {
   "id": "nagase",
   "name": "長瀬産業",
   "n_items": 39,
@@ -1047,6 +1031,22 @@
   "geo": [],
   "verdict": "review",
   "reason": "本文に非自社エンティティ: 三井住友信託銀行×1"
+ },
+ {
+  "id": "inabata",
+  "name": "稲畑産業",
+  "n_items": 28,
+  "claimed_domain": "inabata.co.jp",
+  "domain_match": true,
+  "alien_entities": [
+   [
+    "日本染料製造",
+    1
+   ]
+  ],
+  "geo": [],
+  "verdict": "review",
+  "reason": "本文に非自社エンティティ: 日本染料製造×1"
  },
  {
   "id": "chori",
@@ -1097,34 +1097,6 @@
   "reason": "本文に非自社エンティティ: 日本揮発油×1"
  },
  {
-  "id": "japex",
-  "name": "石油資源開発（JAPEX）",
-  "n_items": 23,
-  "claimed_domain": "japex-jpl.co.jp",
-  "domain_match": true,
-  "alien_entities": [
-   [
-    "ジャペックスパイプライン",
-    11
-   ],
-   [
-    "株式会社ジャペックスパイプライン",
-    1
-   ],
-   [
-    "東北天然ガス",
-    1
-   ],
-   [
-    "三菱ガス化学",
-    1
-   ]
-  ],
-  "geo": [],
-  "verdict": "review",
-  "reason": "本文に非自社エンティティ: ジャペックスパイプライン×11, 株式会社ジャペックスパイプライン×1, 東北天然ガス×1, 三菱ガス化学×1"
- },
- {
   "id": "west-hd",
   "name": "ウエスト ホールディングス",
   "n_items": 30,
@@ -1161,20 +1133,32 @@
   "reason": "本文に非自社エンティティ: 日本碍子×1, 富士電機×1"
  },
  {
-  "id": "nomura-fudosan-hd",
-  "name": "野村不動産ホールディングス",
+  "id": "japex",
+  "name": "石油資源開発（JAPEX）",
   "n_items": 23,
-  "claimed_domain": "nomura-fudosan.com",
+  "claimed_domain": "japex-jpl.co.jp",
   "domain_match": true,
   "alien_entities": [
    [
-    "JPMC",
+    "ジャペックスパイプライン",
+    11
+   ],
+   [
+    "株式会社ジャペックスパイプライン",
+    1
+   ],
+   [
+    "東北天然ガス",
+    1
+   ],
+   [
+    "三菱ガス化学",
     1
    ]
   ],
   "geo": [],
   "verdict": "review",
-  "reason": "本文に非自社エンティティ: JPMC×1"
+  "reason": "本文に非自社エンティティ: ジャペックスパイプライン×11, 株式会社ジャペックスパイプライン×1, 東北天然ガス×1, 三菱ガス化学×1"
  },
  {
   "id": "tokyu-fudosan-hd",
@@ -1191,6 +1175,22 @@
   "geo": [],
   "verdict": "review",
   "reason": "本文に非自社エンティティ: 田園都市×1"
+ },
+ {
+  "id": "nomura-fudosan-hd",
+  "name": "野村不動産ホールディングス",
+  "n_items": 23,
+  "claimed_domain": "nomura-fudosan.com",
+  "domain_match": true,
+  "alien_entities": [
+   [
+    "JPMC",
+    1
+   ]
+  ],
+  "geo": [],
+  "verdict": "review",
+  "reason": "本文に非自社エンティティ: JPMC×1"
  },
  {
   "id": "sekisui-house",
@@ -1289,22 +1289,6 @@
   "reason": "本文に非自社エンティティ: 近畿電気工事×1, 西原衛生工業所×1"
  },
  {
-  "id": "kandenko",
-  "name": "関電工",
-  "n_items": 36,
-  "claimed_domain": "kandenko.co.jp",
-  "domain_match": true,
-  "alien_entities": [
-   [
-    "関東電気工事",
-    1
-   ]
-  ],
-  "geo": [],
-  "verdict": "review",
-  "reason": "本文に非自社エンティティ: 関東電気工事×1"
- },
- {
   "id": "aeon",
   "name": "イオン",
   "n_items": 23,
@@ -1345,22 +1329,6 @@
   "reason": "本文に非自社エンティティ: 成城石井×1"
  },
  {
-  "id": "j-front",
-  "name": "J.フロント リテイリング",
-  "n_items": 21,
-  "claimed_domain": "j-front-retailing.com",
-  "domain_match": true,
-  "alien_entities": [
-   [
-    "松坂屋ホールディングス",
-    2
-   ]
-  ],
-  "geo": [],
-  "verdict": "review",
-  "reason": "本文に非自社エンティティ: 松坂屋ホールディングス×2"
- },
- {
   "id": "life-corp",
   "name": "ライフコーポレーション",
   "n_items": 19,
@@ -1383,6 +1351,38 @@
   "geo": [],
   "verdict": "review",
   "reason": "本文に非自社エンティティ: ライフフィナンシャルサービス×1, ライフホームデリバリー×1, ライフ興産×1"
+ },
+ {
+  "id": "j-front",
+  "name": "J.フロント リテイリング",
+  "n_items": 21,
+  "claimed_domain": "j-front-retailing.com",
+  "domain_match": true,
+  "alien_entities": [
+   [
+    "松坂屋ホールディングス",
+    2
+   ]
+  ],
+  "geo": [],
+  "verdict": "review",
+  "reason": "本文に非自社エンティティ: 松坂屋ホールディングス×2"
+ },
+ {
+  "id": "kandenko",
+  "name": "関電工",
+  "n_items": 36,
+  "claimed_domain": "kandenko.co.jp",
+  "domain_match": true,
+  "alien_entities": [
+   [
+    "関東電気工事",
+    1
+   ]
+  ],
+  "geo": [],
+  "verdict": "review",
+  "reason": "本文に非自社エンティティ: 関東電気工事×1"
  },
  {
   "id": "matsukiyococokara",
@@ -1419,26 +1419,6 @@
   "geo": [],
   "verdict": "review",
   "reason": "本文に非自社エンティティ: ムービータイム×1"
- },
- {
-  "id": "meiji-hd",
-  "name": "明治ホールディングス",
-  "n_items": 20,
-  "claimed_domain": "meiji.com",
-  "domain_match": true,
-  "alien_entities": [
-   [
-    "東京菓子",
-    1
-   ],
-   [
-    "極東煉乳",
-    1
-   ]
-  ],
-  "geo": [],
-  "verdict": "review",
-  "reason": "本文に非自社エンティティ: 東京菓子×1, 極東煉乳×1"
  },
  {
   "id": "asahi-group",
@@ -1497,36 +1477,24 @@
   "reason": "本文に非自社エンティティ: ENEOS×2, 富士オイルサービス株式会社×1, 富士オイルサービス×1"
  },
  {
-  "id": "kobayashi-pharma",
-  "name": "小林製薬",
-  "n_items": 29,
-  "claimed_domain": "kobayashi.co.jp",
+  "id": "meiji-hd",
+  "name": "明治ホールディングス",
+  "n_items": 20,
+  "claimed_domain": "meiji.com",
   "domain_match": true,
   "alien_entities": [
    [
-    "小林忠兵衛",
+    "東京菓子",
+    1
+   ],
+   [
+    "極東煉乳",
     1
    ]
   ],
   "geo": [],
   "verdict": "review",
-  "reason": "本文に非自社エンティティ: 小林忠兵衛×1"
- },
- {
-  "id": "unilever-japan",
-  "name": "ユニリーバ・ジャパン",
-  "n_items": 19,
-  "claimed_domain": "unilever.co.jp",
-  "domain_match": true,
-  "alien_entities": [
-   [
-    "バ・ジャパン・カスタマーマーケティング",
-    1
-   ]
-  ],
-  "geo": [],
-  "verdict": "review",
-  "reason": "本文に非自社エンティティ: バ・ジャパン・カスタマーマーケティング×1"
+  "reason": "本文に非自社エンティティ: 東京菓子×1, 極東煉乳×1"
  },
  {
   "id": "pola-orbis-hd",
@@ -1561,40 +1529,20 @@
   "reason": "本文に非自社エンティティ: ポーラ化成工業×3, ポーラ化成工業株式会社×1, ポーラ化粧品本舗×1, 現ポーラ化成工業×1, ポーラ商事×1"
  },
  {
-  "id": "jr-central",
-  "name": "JR東海（東海旅客鉄道）",
-  "n_items": 32,
-  "claimed_domain": "jr-central.co.jp",
+  "id": "kobayashi-pharma",
+  "name": "小林製薬",
+  "n_items": 29,
+  "claimed_domain": "kobayashi.co.jp",
   "domain_match": true,
   "alien_entities": [
    [
-    "東海旅客鉄道",
-    2
-   ],
-   [
-    "東海旅客鉄道株式会社",
+    "小林忠兵衛",
     1
    ]
   ],
   "geo": [],
   "verdict": "review",
-  "reason": "本文に非自社エンティティ: 東海旅客鉄道×2, 東海旅客鉄道株式会社×1"
- },
- {
-  "id": "jr-west",
-  "name": "JR西日本（西日本旅客鉄道）",
-  "n_items": 22,
-  "claimed_domain": "westjr.co.jp",
-  "domain_match": true,
-  "alien_entities": [
-   [
-    "西日本旅客鉄道",
-    1
-   ]
-  ],
-  "geo": [],
-  "verdict": "review",
-  "reason": "本文に非自社エンティティ: 西日本旅客鉄道×1"
+  "reason": "本文に非自社エンティティ: 小林忠兵衛×1"
  },
  {
   "id": "jr-east",
@@ -1619,6 +1567,42 @@
   "geo": [],
   "verdict": "review",
   "reason": "本文に非自社エンティティ: 総合職×1, 東京ステーションホテル×1, 東日本旅客鉄道×1"
+ },
+ {
+  "id": "unilever-japan",
+  "name": "ユニリーバ・ジャパン",
+  "n_items": 19,
+  "claimed_domain": "unilever.co.jp",
+  "domain_match": true,
+  "alien_entities": [
+   [
+    "バ・ジャパン・カスタマーマーケティング",
+    1
+   ]
+  ],
+  "geo": [],
+  "verdict": "review",
+  "reason": "本文に非自社エンティティ: バ・ジャパン・カスタマーマーケティング×1"
+ },
+ {
+  "id": "jr-central",
+  "name": "JR東海（東海旅客鉄道）",
+  "n_items": 32,
+  "claimed_domain": "jr-central.co.jp",
+  "domain_match": true,
+  "alien_entities": [
+   [
+    "東海旅客鉄道",
+    2
+   ],
+   [
+    "東海旅客鉄道株式会社",
+    1
+   ]
+  ],
+  "geo": [],
+  "verdict": "review",
+  "reason": "本文に非自社エンティティ: 東海旅客鉄道×2, 東海旅客鉄道株式会社×1"
  },
  {
   "id": "jal",
@@ -1665,6 +1649,22 @@
   "reason": "本文に非自社エンティティ: 日本航空×3, ジェイエア×1, 日本エアコミューター×1, 北海道エアシステム×1, 日本トランスオーシャン航空×1"
  },
  {
+  "id": "kintetsu-group-hd",
+  "name": "近鉄グループホールディングス",
+  "n_items": 28,
+  "claimed_domain": null,
+  "domain_match": true,
+  "alien_entities": [
+   [
+    "奈良軌道",
+    1
+   ]
+  ],
+  "geo": [],
+  "verdict": "review",
+  "reason": "本文に非自社エンティティ: 奈良軌道×1"
+ },
+ {
   "id": "seino-hd",
   "name": "セイノーホールディングス",
   "n_items": 23,
@@ -1701,22 +1701,6 @@
   "reason": "本文に非自社エンティティ: 目黒蒲田電鉄×1, 田園都市×1"
  },
  {
-  "id": "kintetsu-group-hd",
-  "name": "近鉄グループホールディングス",
-  "n_items": 28,
-  "claimed_domain": null,
-  "domain_match": true,
-  "alien_entities": [
-   [
-    "奈良軌道",
-    1
-   ]
-  ],
-  "geo": [],
-  "verdict": "review",
-  "reason": "本文に非自社エンティティ: 奈良軌道×1"
- },
- {
   "id": "hankyu-hanshin-hd",
   "name": "阪急阪神ホールディングス",
   "n_items": 22,
@@ -1747,6 +1731,22 @@
   "geo": [],
   "verdict": "review",
   "reason": "本文に非自社エンティティ: 大師電気鉄道×1"
+ },
+ {
+  "id": "jr-west",
+  "name": "JR西日本（西日本旅客鉄道）",
+  "n_items": 22,
+  "claimed_domain": "westjr.co.jp",
+  "domain_match": true,
+  "alien_entities": [
+   [
+    "西日本旅客鉄道",
+    1
+   ]
+  ],
+  "geo": [],
+  "verdict": "review",
+  "reason": "本文に非自社エンティティ: 西日本旅客鉄道×1"
  },
  {
   "id": "amuse",
@@ -1808,6 +1808,17 @@
   "reason": "claimedドメイン'global.toyota'が社名/slugと不一致"
  },
  {
+  "id": "canon",
+  "name": "キヤノン",
+  "n_items": 30,
+  "claimed_domain": "global.canon",
+  "domain_match": false,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "review_domain",
+  "reason": "claimedドメイン'global.canon'が社名/slugと不一致"
+ },
+ {
   "id": "tokyo-electron",
   "name": "東京エレクトロン",
   "n_items": 19,
@@ -1830,17 +1841,6 @@
   "reason": "claimedドメイン'mhi.com'が社名/slugと不一致"
  },
  {
-  "id": "canon",
-  "name": "キヤノン",
-  "n_items": 30,
-  "claimed_domain": "global.canon",
-  "domain_match": false,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "review_domain",
-  "reason": "claimedドメイン'global.canon'が社名/slugと不一致"
- },
- {
   "id": "sumitomo-metal-mining",
   "name": "住友金属鉱山",
   "n_items": 18,
@@ -1850,17 +1850,6 @@
   "geo": [],
   "verdict": "review_domain",
   "reason": "claimedドメイン'smm.co.jp'が社名/slugと不一致"
- },
- {
-  "id": "mitsubishi-materials",
-  "name": "三菱マテリアル",
-  "n_items": 28,
-  "claimed_domain": "mmc.co.jp",
-  "domain_match": false,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "review_domain",
-  "reason": "claimedドメイン'mmc.co.jp'が社名/slugと不一致"
  },
  {
   "id": "m3",
@@ -1894,6 +1883,17 @@
   "geo": [],
   "verdict": "review_domain",
   "reason": "claimedドメイン'nissay.co.jp'が社名/slugと不一致"
+ },
+ {
+  "id": "mitsubishi-materials",
+  "name": "三菱マテリアル",
+  "n_items": 28,
+  "claimed_domain": "mmc.co.jp",
+  "domain_match": false,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "review_domain",
+  "reason": "claimedドメイン'mmc.co.jp'が社名/slugと不一致"
  },
  {
   "id": "kampo",
@@ -1973,17 +1973,6 @@
   "reason": "claimedドメイン'jumpingknee.com'が社名/slugと不一致"
  },
  {
-  "id": "ey",
-  "name": "EYストラテジー・アンド・コンサルティング",
-  "n_items": 27,
-  "claimed_domain": "ey.com",
-  "domain_match": false,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "review_domain",
-  "reason": "claimedドメイン'ey.com'が社名/slugと不一致"
- },
- {
   "id": "baycurrent",
   "name": "ベイカレント・コンサルティング",
   "n_items": 37,
@@ -2004,6 +1993,17 @@
   "geo": [],
   "verdict": "review_domain",
   "reason": "claimedドメイン'taxan.co.jp'が社名/slugと不一致"
+ },
+ {
+  "id": "ey",
+  "name": "EYストラテジー・アンド・コンサルティング",
+  "n_items": 27,
+  "claimed_domain": "ey.com",
+  "domain_match": false,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "review_domain",
+  "reason": "claimedドメイン'ey.com'が社名/slugと不一致"
  },
  {
   "id": "daiichi-jitsugyo",
@@ -2028,15 +2028,15 @@
   "reason": "claimedドメイン'chuden.co.jp'が社名/slugと不一致"
  },
  {
-  "id": "kyushu-electric",
-  "name": "九州電力",
-  "n_items": 18,
-  "claimed_domain": "kyuden.co.jp",
+  "id": "chugoku-electric",
+  "name": "中国電力",
+  "n_items": 22,
+  "claimed_domain": "energia.co.jp",
   "domain_match": false,
   "alien_entities": [],
   "geo": [],
   "verdict": "review_domain",
-  "reason": "claimedドメイン'kyuden.co.jp'が社名/slugと不一致"
+  "reason": "claimedドメイン'energia.co.jp'が社名/slugと不一致"
  },
  {
   "id": "hokkaido-electric",
@@ -2061,26 +2061,15 @@
   "reason": "claimedドメイン'yonden.co.jp'が社名/slugと不一致"
  },
  {
-  "id": "chugoku-electric",
-  "name": "中国電力",
-  "n_items": 22,
-  "claimed_domain": "energia.co.jp",
+  "id": "kyushu-electric",
+  "name": "九州電力",
+  "n_items": 18,
+  "claimed_domain": "kyuden.co.jp",
   "domain_match": false,
   "alien_entities": [],
   "geo": [],
   "verdict": "review_domain",
-  "reason": "claimedドメイン'energia.co.jp'が社名/slugと不一致"
- },
- {
-  "id": "hokuriku-electric",
-  "name": "北陸電力",
-  "n_items": 30,
-  "claimed_domain": "rikuden.co.jp",
-  "domain_match": false,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "review_domain",
-  "reason": "claimedドメイン'rikuden.co.jp'が社名/slugと不一致"
+  "reason": "claimedドメイン'kyuden.co.jp'が社名/slugと不一致"
  },
  {
   "id": "okinawa-electric",
@@ -2092,6 +2081,17 @@
   "geo": [],
   "verdict": "review_domain",
   "reason": "claimedドメイン'okiden.co.jp'が社名/slugと不一致"
+ },
+ {
+  "id": "hokuriku-electric",
+  "name": "北陸電力",
+  "n_items": 30,
+  "claimed_domain": "rikuden.co.jp",
+  "domain_match": false,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "review_domain",
+  "reason": "claimedドメイン'rikuden.co.jp'が社名/slugと不一致"
  },
  {
   "id": "sumitomo-forestry",
@@ -2193,17 +2193,6 @@
   "reason": "claimedドメイン'bunshun.co.jp'が社名/slugと不一致"
  },
  {
-  "id": "asahi-shimbun",
-  "name": "朝日新聞社",
-  "n_items": 14,
-  "claimed_domain": "gamebiz.jp",
-  "domain_match": false,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "review_domain",
-  "reason": "claimedドメイン'gamebiz.jp'が社名/slugと不一致"
- },
- {
   "id": "oriental-land",
   "name": "オリエンタルランド",
   "n_items": 23,
@@ -2215,6 +2204,17 @@
   "reason": "claimedドメイン'olc.co.jp'が社名/slugと不一致"
  },
  {
+  "id": "asahi-shimbun",
+  "name": "朝日新聞社",
+  "n_items": 14,
+  "claimed_domain": "gamebiz.jp",
+  "domain_match": false,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "review_domain",
+  "reason": "claimedドメイン'gamebiz.jp'が社名/slugと不一致"
+ },
+ {
   "id": "yomiuri-group",
   "name": "読売新聞グループ本社",
   "n_items": 9,
@@ -2224,17 +2224,6 @@
   "geo": [],
   "verdict": "review_domain",
   "reason": "claimedドメイン'adtechmanagement.com'が社名/slugと不一致"
- },
- {
-  "id": "spiber",
-  "name": "Spiber（スパイバー）",
-  "n_items": 26,
-  "claimed_domain": "kansai.co.jp",
-  "domain_match": false,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "review_domain",
-  "reason": "claimedドメイン'kansai.co.jp'が社名/slugと不一致"
  },
  {
   "id": "ispace",
@@ -2259,59 +2248,15 @@
   "reason": "claimedドメイン'tb-m.com'が社名/slugと不一致"
  },
  {
-  "id": "toyota-tsusho",
-  "name": "豊田通商",
-  "n_items": 21,
-  "claimed_domain": "toyota-tsusho.com",
-  "domain_match": true,
+  "id": "spiber",
+  "name": "Spiber（スパイバー）",
+  "n_items": 26,
+  "claimed_domain": "kansai.co.jp",
+  "domain_match": false,
   "alien_entities": [],
   "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "sojitz",
-  "name": "双日",
-  "n_items": 27,
-  "claimed_domain": "sojitz.com",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "itochu",
-  "name": "伊藤忠商事",
-  "n_items": 27,
-  "claimed_domain": "itochu.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "honda",
-  "name": "本田技研工業（ホンダ）",
-  "n_items": 30,
-  "claimed_domain": "honda.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "suzuki",
-  "name": "スズキ",
-  "n_items": 27,
-  "claimed_domain": "suzuki.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
+  "verdict": "review_domain",
+  "reason": "claimedドメイン'kansai.co.jp'が社名/slugと不一致"
  },
  {
   "id": "marubeni",
@@ -2329,6 +2274,17 @@
   "name": "三井物産",
   "n_items": 19,
   "claimed_domain": "mitsui.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "sojitz",
+  "name": "双日",
+  "n_items": 27,
+  "claimed_domain": "sojitz.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2358,10 +2314,10 @@
   "reason": "一致"
  },
  {
-  "id": "sumitomo-corp",
-  "name": "住友商事",
-  "n_items": 29,
-  "claimed_domain": "sumitomocorp.com",
+  "id": "suzuki",
+  "name": "スズキ",
+  "n_items": 27,
+  "claimed_domain": "suzuki.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2373,6 +2329,39 @@
   "name": "日産自動車",
   "n_items": 22,
   "claimed_domain": "nissan-global.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "honda",
+  "name": "本田技研工業（ホンダ）",
+  "n_items": 30,
+  "claimed_domain": "honda.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "toyota-tsusho",
+  "name": "豊田通商",
+  "n_items": 21,
+  "claimed_domain": "toyota-tsusho.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "itochu",
+  "name": "伊藤忠商事",
+  "n_items": 27,
+  "claimed_domain": "itochu.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2402,54 +2391,21 @@
   "reason": "一致"
  },
  {
-  "id": "denso",
-  "name": "デンソー",
-  "n_items": 6,
-  "claimed_domain": "denso.com",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "toyota-shokki",
-  "name": "豊田自動織機",
-  "n_items": 18,
-  "claimed_domain": null,
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "subaru",
-  "name": "SUBARU",
-  "n_items": 22,
-  "claimed_domain": "subaru.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "keyence",
-  "name": "キーエンス",
-  "n_items": 19,
-  "claimed_domain": "keyence.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
   "id": "isuzu",
   "name": "いすゞ自動車",
   "n_items": 30,
   "claimed_domain": "isuzu.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "denso",
+  "name": "デンソー",
+  "n_items": 6,
+  "claimed_domain": "denso.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2468,6 +2424,17 @@
   "reason": "一致"
  },
  {
+  "id": "sony-group",
+  "name": "ソニーグループ",
+  "n_items": 27,
+  "claimed_domain": "sony.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
   "id": "mitsubishi-electric",
   "name": "三菱電機",
   "n_items": 32,
@@ -2479,10 +2446,10 @@
   "reason": "一致"
  },
  {
-  "id": "sony-group",
-  "name": "ソニーグループ",
-  "n_items": 27,
-  "claimed_domain": "sony.co.jp",
+  "id": "toyota-shokki",
+  "name": "豊田自動織機",
+  "n_items": 18,
+  "claimed_domain": null,
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2516,6 +2483,17 @@
   "name": "京セラ",
   "n_items": 15,
   "claimed_domain": "kyocera.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "fanuc",
+  "name": "ファナック",
+  "n_items": 19,
+  "claimed_domain": "fanuc.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2567,28 +2545,6 @@
   "reason": "一致"
  },
  {
-  "id": "fanuc",
-  "name": "ファナック",
-  "n_items": 19,
-  "claimed_domain": "fanuc.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "yaskawa",
-  "name": "安川電機",
-  "n_items": 22,
-  "claimed_domain": "yaskawa.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
   "id": "renesas",
   "name": "ルネサスエレクトロニクス",
   "n_items": 20,
@@ -2611,10 +2567,10 @@
   "reason": "一致"
  },
  {
-  "id": "shimadzu",
-  "name": "島津製作所",
-  "n_items": 25,
-  "claimed_domain": "shimadzu.co.jp",
+  "id": "yaskawa",
+  "name": "安川電機",
+  "n_items": 22,
+  "claimed_domain": "yaskawa.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2622,10 +2578,10 @@
   "reason": "一致"
  },
  {
-  "id": "nikon",
-  "name": "ニコン",
-  "n_items": 20,
-  "claimed_domain": "nikon.com",
+  "id": "shimadzu",
+  "name": "島津製作所",
+  "n_items": 25,
+  "claimed_domain": "shimadzu.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2644,10 +2600,10 @@
   "reason": "一致"
  },
  {
-  "id": "rapidus",
-  "name": "Rapidus（ラピダス）",
-  "n_items": 30,
-  "claimed_domain": "rapidus.inc",
+  "id": "sumitomo-corp",
+  "name": "住友商事",
+  "n_items": 29,
+  "claimed_domain": "sumitomocorp.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2666,10 +2622,10 @@
   "reason": "一致"
  },
  {
-  "id": "bridgestone",
-  "name": "ブリヂストン",
-  "n_items": 24,
-  "claimed_domain": "bridgestone.co.jp",
+  "id": "hoya",
+  "name": "HOYA",
+  "n_items": 28,
+  "claimed_domain": "hoya.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2677,10 +2633,10 @@
   "reason": "一致"
  },
  {
-  "id": "socionext",
-  "name": "ソシオネクスト",
-  "n_items": 33,
-  "claimed_domain": "socionext.com",
+  "id": "nikon",
+  "name": "ニコン",
+  "n_items": 20,
+  "claimed_domain": "nikon.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2699,10 +2655,43 @@
   "reason": "一致"
  },
  {
-  "id": "kobe-steel",
-  "name": "神戸製鋼所",
-  "n_items": 29,
-  "claimed_domain": "kobelco.co.jp",
+  "id": "rapidus",
+  "name": "Rapidus（ラピダス）",
+  "n_items": 30,
+  "claimed_domain": "rapidus.inc",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "socionext",
+  "name": "ソシオネクスト",
+  "n_items": 33,
+  "claimed_domain": "socionext.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "bridgestone",
+  "name": "ブリヂストン",
+  "n_items": 24,
+  "claimed_domain": "bridgestone.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "mitsubishi-chemical",
+  "name": "三菱ケミカルグループ",
+  "n_items": 25,
+  "claimed_domain": "m-chemical.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2732,28 +2721,6 @@
   "reason": "一致"
  },
  {
-  "id": "mitsubishi-chemical",
-  "name": "三菱ケミカルグループ",
-  "n_items": 25,
-  "claimed_domain": "m-chemical.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "hoya",
-  "name": "HOYA",
-  "n_items": 28,
-  "claimed_domain": "hoya.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
   "id": "sumitomo-chemical",
   "name": "住友化学",
   "n_items": 10,
@@ -2765,54 +2732,21 @@
   "reason": "一致"
  },
  {
+  "id": "kobe-steel",
+  "name": "神戸製鋼所",
+  "n_items": 29,
+  "claimed_domain": "kobelco.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
   "id": "asahi-kasei",
   "name": "旭化成",
   "n_items": 30,
   "claimed_domain": null,
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "agc",
-  "name": "AGC",
-  "n_items": 26,
-  "claimed_domain": "agc.com",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "takeda",
-  "name": "武田薬品工業",
-  "n_items": 23,
-  "claimed_domain": "takeda.com",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "astellas",
-  "name": "アステラス製薬",
-  "n_items": 19,
-  "claimed_domain": "astellas.com",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "daiichi-sankyo",
-  "name": "第一三共",
-  "n_items": 28,
-  "claimed_domain": "daiichisankyo.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2842,10 +2776,10 @@
   "reason": "一致"
  },
  {
-  "id": "chugai",
-  "name": "中外製薬",
-  "n_items": 28,
-  "claimed_domain": "chugai-pharm.co.jp",
+  "id": "agc",
+  "name": "AGC",
+  "n_items": 26,
+  "claimed_domain": "agc.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2853,10 +2787,21 @@
   "reason": "一致"
  },
  {
-  "id": "eisai",
-  "name": "エーザイ",
-  "n_items": 27,
-  "claimed_domain": "eisai-recruit.jp",
+  "id": "takeda",
+  "name": "武田薬品工業",
+  "n_items": 23,
+  "claimed_domain": "takeda.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "chugai",
+  "name": "中外製薬",
+  "n_items": 28,
+  "claimed_domain": "chugai-pharm.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2875,10 +2820,43 @@
   "reason": "一致"
  },
  {
+  "id": "daiichi-sankyo",
+  "name": "第一三共",
+  "n_items": 28,
+  "claimed_domain": "daiichisankyo.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "eisai",
+  "name": "エーザイ",
+  "n_items": 27,
+  "claimed_domain": "eisai-recruit.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
   "id": "shionogi",
   "name": "塩野義製薬",
   "n_items": 21,
   "claimed_domain": "shionogi.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "astellas",
+  "name": "アステラス製薬",
+  "n_items": 19,
+  "claimed_domain": "astellas.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2897,10 +2875,10 @@
   "reason": "一致"
  },
  {
-  "id": "mufg",
-  "name": "三菱UFJ銀行",
-  "n_items": 13,
-  "claimed_domain": "mufg.jp",
+  "id": "daiichi-life",
+  "name": "第一生命保険",
+  "n_items": 21,
+  "claimed_domain": "dai-ichi-life.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2908,10 +2886,10 @@
   "reason": "一致"
  },
  {
-  "id": "smtb",
-  "name": "三井住友信託銀行",
-  "n_items": 20,
-  "claimed_domain": "smtb.jp",
+  "id": "mufg",
+  "name": "三菱UFJ銀行",
+  "n_items": 13,
+  "claimed_domain": "mufg.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2930,10 +2908,10 @@
   "reason": "一致"
  },
  {
-  "id": "daiichi-life",
-  "name": "第一生命保険",
-  "n_items": 21,
-  "claimed_domain": "dai-ichi-life.co.jp",
+  "id": "smtb",
+  "name": "三井住友信託銀行",
+  "n_items": 20,
+  "claimed_domain": "smtb.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -2963,17 +2941,6 @@
   "reason": "一致"
  },
  {
-  "id": "mizuho-sec",
-  "name": "みずほ証券",
-  "n_items": 25,
-  "claimed_domain": "mizuho-sc.com",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
   "id": "smbc-nikko",
   "name": "SMBC日興証券",
   "n_items": 20,
@@ -2985,10 +2952,21 @@
   "reason": "一致"
  },
  {
-  "id": "sumitomo-life",
-  "name": "住友生命保険",
-  "n_items": 24,
-  "claimed_domain": "sumitomolife.co.jp",
+  "id": "mizuho-sec",
+  "name": "みずほ証券",
+  "n_items": 25,
+  "claimed_domain": "mizuho-sc.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "subaru",
+  "name": "SUBARU",
+  "n_items": 22,
+  "claimed_domain": "subaru.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3007,10 +2985,10 @@
   "reason": "一致"
  },
  {
-  "id": "aioi-nissay",
-  "name": "あいおいニッセイ同和損害保険",
-  "n_items": 22,
-  "claimed_domain": "aioinissaydowa.co.jp",
+  "id": "sumitomo-life",
+  "name": "住友生命保険",
+  "n_items": 24,
+  "claimed_domain": "sumitomolife.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3018,21 +2996,10 @@
   "reason": "一致"
  },
  {
-  "id": "mitsubishi-hc",
-  "name": "三菱HCキャピタル",
+  "id": "keyence",
+  "name": "キーエンス",
   "n_items": 19,
-  "claimed_domain": "mitsubishi-hc-capital.com",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "tokyo-century",
-  "name": "東京センチュリー",
-  "n_items": 19,
-  "claimed_domain": "tokyocentury.co.jp",
+  "claimed_domain": "keyence.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3051,10 +3018,32 @@
   "reason": "一致"
  },
  {
-  "id": "sumishin-sbi-net",
-  "name": "住信SBIネット銀行",
-  "n_items": 13,
-  "claimed_domain": null,
+  "id": "tokyo-century",
+  "name": "東京センチュリー",
+  "n_items": 19,
+  "claimed_domain": "tokyocentury.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "mitsubishi-hc",
+  "name": "三菱HCキャピタル",
+  "n_items": 19,
+  "claimed_domain": "mitsubishi-hc-capital.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "aioi-nissay",
+  "name": "あいおいニッセイ同和損害保険",
+  "n_items": 22,
+  "claimed_domain": "aioinissaydowa.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3077,6 +3066,17 @@
   "name": "楽天銀行",
   "n_items": 17,
   "claimed_domain": "rakuten.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "sumishin-sbi-net",
+  "name": "住信SBIネット銀行",
+  "n_items": 13,
+  "claimed_domain": null,
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3128,6 +3128,17 @@
   "reason": "一致"
  },
  {
+  "id": "softbank",
+  "name": "ソフトバンク",
+  "n_items": 23,
+  "claimed_domain": "softbank.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
   "id": "ntt-docomo",
   "name": "NTTドコモ",
   "n_items": 19,
@@ -3150,43 +3161,10 @@
   "reason": "一致"
  },
  {
-  "id": "softbank",
-  "name": "ソフトバンク",
-  "n_items": 23,
-  "claimed_domain": "softbank.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "otsuka-shokai",
-  "name": "大塚商会",
-  "n_items": 37,
-  "claimed_domain": "otsuka-shokai.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
   "id": "scsk",
   "name": "SCSK",
   "n_items": 27,
   "claimed_domain": "scsk.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "biprogy",
-  "name": "BIPROGY",
-  "n_items": 22,
-  "claimed_domain": "biprogy.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3205,10 +3183,21 @@
   "reason": "一致"
  },
  {
-  "id": "sky",
-  "name": "Sky",
-  "n_items": 34,
-  "claimed_domain": "sky-recruit.jp",
+  "id": "otsuka-shokai",
+  "name": "大塚商会",
+  "n_items": 37,
+  "claimed_domain": "otsuka-shokai.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "biprogy",
+  "name": "BIPROGY",
+  "n_items": 22,
+  "claimed_domain": "biprogy.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3227,10 +3216,32 @@
   "reason": "一致"
  },
  {
+  "id": "recruit-hd",
+  "name": "リクルートホールディングス",
+  "n_items": 30,
+  "claimed_domain": "recruit-holdings.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
   "id": "cyberagent",
   "name": "サイバーエージェント",
   "n_items": 20,
   "claimed_domain": "cyberagent.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "sky",
+  "name": "Sky",
+  "n_items": 34,
+  "claimed_domain": "sky-recruit.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3249,17 +3260,6 @@
   "reason": "一致"
  },
  {
-  "id": "line-yahoo",
-  "name": "LINEヤフー",
-  "n_items": 22,
-  "claimed_domain": null,
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
   "id": "mercari",
   "name": "メルカリ",
   "n_items": 22,
@@ -3271,10 +3271,10 @@
   "reason": "一致"
  },
  {
-  "id": "freee",
-  "name": "freee",
-  "n_items": 30,
-  "claimed_domain": "freee.co.jp",
+  "id": "line-yahoo",
+  "name": "LINEヤフー",
+  "n_items": 22,
+  "claimed_domain": null,
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3293,17 +3293,6 @@
   "reason": "一致"
  },
  {
-  "id": "rakus",
-  "name": "ラクス",
-  "n_items": 24,
-  "claimed_domain": "rakus.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
   "id": "moneyforward",
   "name": "マネーフォワード",
   "n_items": 5,
@@ -3315,10 +3304,21 @@
   "reason": "一致"
  },
  {
-  "id": "uzabase",
-  "name": "ユーザベース",
-  "n_items": 7,
-  "claimed_domain": "uzabase.com",
+  "id": "freee",
+  "name": "freee",
+  "n_items": 30,
+  "claimed_domain": "freee.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "rakus",
+  "name": "ラクス",
+  "n_items": 24,
+  "claimed_domain": "rakus.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3337,43 +3337,21 @@
   "reason": "一致"
  },
  {
+  "id": "uzabase",
+  "name": "ユーザベース",
+  "n_items": 7,
+  "claimed_domain": "uzabase.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
   "id": "pref-networks",
   "name": "Preferred Networks",
   "n_items": 21,
   "claimed_domain": "preferred.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "appier",
-  "name": "Appier Group",
-  "n_items": 17,
-  "claimed_domain": "appier.com",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "brainpad",
-  "name": "ブレインパッド",
-  "n_items": 21,
-  "claimed_domain": "brainpad.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "turing",
-  "name": "Turing",
-  "n_items": 11,
-  "claimed_domain": "turing-motors.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3392,10 +3370,32 @@
   "reason": "一致"
  },
  {
+  "id": "appier",
+  "name": "Appier Group",
+  "n_items": 17,
+  "claimed_domain": "appier.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
   "id": "fronteo",
   "name": "FRONTEO",
   "n_items": 23,
   "claimed_domain": "fronteo.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "brainpad",
+  "name": "ブレインパッド",
+  "n_items": 21,
+  "claimed_domain": "brainpad.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3414,32 +3414,10 @@
   "reason": "一致"
  },
  {
-  "id": "ibm-japan",
-  "name": "日本アイ・ビー・エム",
-  "n_items": 33,
-  "claimed_domain": "ibm.com",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "recruit-hd",
-  "name": "リクルートホールディングス",
-  "n_items": 30,
-  "claimed_domain": "recruit-holdings.com",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "salesforce-japan",
-  "name": "セールスフォース・ジャパン",
-  "n_items": 21,
-  "claimed_domain": "salesforce.com",
+  "id": "turing",
+  "name": "Turing",
+  "n_items": 11,
+  "claimed_domain": "turing-motors.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3458,6 +3436,17 @@
   "reason": "一致"
  },
  {
+  "id": "salesforce-japan",
+  "name": "セールスフォース・ジャパン",
+  "n_items": 21,
+  "claimed_domain": "salesforce.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
   "id": "sap-japan",
   "name": "SAPジャパン",
   "n_items": 21,
@@ -3469,54 +3458,10 @@
   "reason": "一致"
  },
  {
-  "id": "square-enix",
-  "name": "スクウェア・エニックス・ホールディングス",
-  "n_items": 25,
-  "claimed_domain": null,
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "bandai-namco",
-  "name": "バンダイナムコホールディングス",
-  "n_items": 21,
-  "claimed_domain": "bandainamco.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "openai-japan",
-  "name": "OpenAI Japan",
-  "n_items": 3,
-  "claimed_domain": "openai.com",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "nintendo",
-  "name": "任天堂",
-  "n_items": 13,
-  "claimed_domain": "nintendo.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "capcom",
-  "name": "カプコン",
-  "n_items": 21,
-  "claimed_domain": "capcom.co.jp",
+  "id": "ibm-japan",
+  "name": "日本アイ・ビー・エム",
+  "n_items": 33,
+  "claimed_domain": "ibm.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3535,10 +3480,32 @@
   "reason": "一致"
  },
  {
-  "id": "bcg",
-  "name": "ボストン コンサルティング グループ（BCG）",
-  "n_items": 10,
-  "claimed_domain": "bcg.co.jp",
+  "id": "square-enix",
+  "name": "スクウェア・エニックス・ホールディングス",
+  "n_items": 25,
+  "claimed_domain": null,
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "openai-japan",
+  "name": "OpenAI Japan",
+  "n_items": 3,
+  "claimed_domain": "openai.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "capcom",
+  "name": "カプコン",
+  "n_items": 21,
+  "claimed_domain": "capcom.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3557,10 +3524,10 @@
   "reason": "一致"
  },
  {
-  "id": "accenture",
-  "name": "アクセンチュア",
-  "n_items": 29,
-  "claimed_domain": "accenture.com",
+  "id": "nintendo",
+  "name": "任天堂",
+  "n_items": 13,
+  "claimed_domain": "nintendo.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3568,21 +3535,10 @@
   "reason": "一致"
  },
  {
-  "id": "bain",
-  "name": "ベイン・アンド・カンパニー",
-  "n_items": 15,
-  "claimed_domain": "bain.com",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "deloitte",
-  "name": "デロイト トーマツ コンサルティング",
-  "n_items": 26,
-  "claimed_domain": "deloitte.com",
+  "id": "bandai-namco",
+  "name": "バンダイナムコホールディングス",
+  "n_items": 21,
+  "claimed_domain": "bandainamco.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3601,6 +3557,39 @@
   "reason": "一致"
  },
  {
+  "id": "bain",
+  "name": "ベイン・アンド・カンパニー",
+  "n_items": 15,
+  "claimed_domain": "bain.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "bcg",
+  "name": "ボストン コンサルティング グループ（BCG）",
+  "n_items": 10,
+  "claimed_domain": "bcg.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "deloitte",
+  "name": "デロイト トーマツ コンサルティング",
+  "n_items": 26,
+  "claimed_domain": "deloitte.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
   "id": "abeam",
   "name": "アビームコンサルティング",
   "n_items": 25,
@@ -3612,10 +3601,10 @@
   "reason": "一致"
  },
  {
-  "id": "strategy-and",
-  "name": "Strategy&（PwC）",
-  "n_items": 16,
-  "claimed_domain": "pwc.com",
+  "id": "accenture",
+  "name": "アクセンチュア",
+  "n_items": 29,
+  "claimed_domain": "accenture.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3627,6 +3616,17 @@
   "name": "IBMコンサルティング",
   "n_items": 21,
   "claimed_domain": "ibm.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "dream-incubator",
+  "name": "ドリームインキュベータ",
+  "n_items": 13,
+  "claimed_domain": "dreamincubator.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3667,43 +3667,21 @@
   "reason": "一致"
  },
  {
-  "id": "toho-hd",
-  "name": "東邦ホールディングス",
-  "n_items": 23,
-  "claimed_domain": "tohohd.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "dream-incubator",
-  "name": "ドリームインキュベータ",
-  "n_items": 13,
-  "claimed_domain": "dreamincubator.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "mitsubishi-shokuhin",
-  "name": "三菱食品",
-  "n_items": 23,
-  "claimed_domain": "mitsubishi-shokuhin.com",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
   "id": "kokubu",
   "name": "国分グループ本社",
   "n_items": 37,
   "claimed_domain": "kokubu.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "toho-hd",
+  "name": "東邦ホールディングス",
+  "n_items": 23,
+  "claimed_domain": "tohohd.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3722,17 +3700,6 @@
   "reason": "一致"
  },
  {
-  "id": "hanwa",
-  "name": "阪和興業",
-  "n_items": 21,
-  "claimed_domain": "hanwa.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
   "id": "metal-one",
   "name": "メタルワン",
   "n_items": 20,
@@ -3744,10 +3711,10 @@
   "reason": "一致"
  },
  {
-  "id": "jfe-shoji",
-  "name": "JFE商事",
-  "n_items": 12,
-  "claimed_domain": "jfe-holdings.co.jp",
+  "id": "hanwa",
+  "name": "阪和興業",
+  "n_items": 21,
+  "claimed_domain": "hanwa.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3755,10 +3722,10 @@
   "reason": "一致"
  },
  {
-  "id": "macnica-hd",
-  "name": "マクニカホールディングス",
-  "n_items": 16,
-  "claimed_domain": "macnica.co.jp",
+  "id": "jfe-shoji",
+  "name": "JFE商事",
+  "n_items": 12,
+  "claimed_domain": "jfe-holdings.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3788,32 +3755,21 @@
   "reason": "一致"
  },
  {
-  "id": "kepco",
-  "name": "関西電力",
-  "n_items": 16,
-  "claimed_domain": "kepco.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "tepco",
-  "name": "東京電力ホールディングス",
-  "n_items": 28,
-  "claimed_domain": "tepco.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
   "id": "iwatani",
   "name": "岩谷産業",
   "n_items": 36,
   "claimed_domain": "iwatani.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "macnica-hd",
+  "name": "マクニカホールディングス",
+  "n_items": 16,
+  "claimed_domain": "macnica.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3832,6 +3788,17 @@
   "reason": "一致"
  },
  {
+  "id": "tepco",
+  "name": "東京電力ホールディングス",
+  "n_items": 28,
+  "claimed_domain": "tepco.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
   "id": "j-power",
   "name": "電源開発（J-POWER）",
   "n_items": 30,
@@ -3843,21 +3810,10 @@
   "reason": "一致"
  },
  {
-  "id": "jera",
-  "name": "JERA",
-  "n_items": 8,
-  "claimed_domain": "jera.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "osaka-gas",
-  "name": "大阪ガス",
-  "n_items": 20,
-  "claimed_domain": null,
+  "id": "toho-gas",
+  "name": "東邦ガス",
+  "n_items": 7,
+  "claimed_domain": "tohogas.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3869,17 +3825,6 @@
   "name": "東京ガス",
   "n_items": 25,
   "claimed_domain": "tokyo-gas.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "toho-gas",
-  "name": "東邦ガス",
-  "n_items": 7,
-  "claimed_domain": "tohogas.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3909,10 +3854,10 @@
   "reason": "一致"
  },
  {
-  "id": "idemitsu",
-  "name": "出光興産",
-  "n_items": 15,
-  "claimed_domain": "idemitsu.com",
+  "id": "kepco",
+  "name": "関西電力",
+  "n_items": 16,
+  "claimed_domain": "kepco.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3931,10 +3876,21 @@
   "reason": "一致"
  },
  {
-  "id": "renova",
-  "name": "レノバ",
-  "n_items": 28,
-  "claimed_domain": "renovainc.com",
+  "id": "idemitsu",
+  "name": "出光興産",
+  "n_items": 15,
+  "claimed_domain": "idemitsu.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "jera",
+  "name": "JERA",
+  "n_items": 8,
+  "claimed_domain": "jera.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3953,10 +3909,10 @@
   "reason": "一致"
  },
  {
-  "id": "erex",
-  "name": "イーレックス",
-  "n_items": 23,
-  "claimed_domain": "erex.co.jp",
+  "id": "renova",
+  "name": "レノバ",
+  "n_items": 28,
+  "claimed_domain": "renovainc.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3964,10 +3920,10 @@
   "reason": "一致"
  },
  {
-  "id": "hokkaido-gas",
-  "name": "北海道ガス",
-  "n_items": 25,
-  "claimed_domain": "hokkaido-gas.co.jp",
+  "id": "erex",
+  "name": "イーレックス",
+  "n_items": 23,
+  "claimed_domain": "erex.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -3990,6 +3946,17 @@
   "name": "静岡ガス",
   "n_items": 25,
   "claimed_domain": "shizuokagas.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "hokkaido-gas",
+  "name": "北海道ガス",
+  "n_items": 25,
+  "claimed_domain": "hokkaido-gas.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4030,6 +3997,17 @@
   "reason": "一致"
  },
  {
+  "id": "hulic",
+  "name": "ヒューリック",
+  "n_items": 24,
+  "claimed_domain": "hulic.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
   "id": "mori-building",
   "name": "森ビル",
   "n_items": 34,
@@ -4041,10 +4019,10 @@
   "reason": "一致"
  },
  {
-  "id": "hulic",
-  "name": "ヒューリック",
-  "n_items": 24,
-  "claimed_domain": "hulic.co.jp",
+  "id": "osaka-gas",
+  "name": "大阪ガス",
+  "n_items": 20,
+  "claimed_domain": null,
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4074,10 +4052,10 @@
   "reason": "一致"
  },
  {
-  "id": "open-house-group",
-  "name": "オープンハウスグループ",
-  "n_items": 24,
-  "claimed_domain": "openhouse-group.com",
+  "id": "strategy-and",
+  "name": "Strategy&（PwC）",
+  "n_items": 16,
+  "claimed_domain": "pwc.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4085,10 +4063,10 @@
   "reason": "一致"
  },
  {
-  "id": "obayashi",
-  "name": "大林組",
-  "n_items": 22,
-  "claimed_domain": "obayashi.co.jp",
+  "id": "open-house-group",
+  "name": "オープンハウスグループ",
+  "n_items": 24,
+  "claimed_domain": "openhouse-group.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4107,10 +4085,10 @@
   "reason": "一致"
  },
  {
-  "id": "takenaka",
-  "name": "竹中工務店",
-  "n_items": 28,
-  "claimed_domain": "takenaka.co.jp",
+  "id": "obayashi",
+  "name": "大林組",
+  "n_items": 22,
+  "claimed_domain": "obayashi.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4118,10 +4096,10 @@
   "reason": "一致"
  },
  {
-  "id": "toda",
-  "name": "戸田建設",
-  "n_items": 27,
-  "claimed_domain": "toda.co.jp",
+  "id": "takenaka",
+  "name": "竹中工務店",
+  "n_items": 28,
+  "claimed_domain": "takenaka.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4140,32 +4118,21 @@
   "reason": "一致"
  },
  {
-  "id": "penta-ocean",
-  "name": "五洋建設",
-  "n_items": 18,
-  "claimed_domain": "penta-ocean.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "kumagai-gumi",
-  "name": "熊谷組",
-  "n_items": 23,
-  "claimed_domain": "kumagaigumi.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
   "id": "nishimatsu",
   "name": "西松建設",
   "n_items": 27,
   "claimed_domain": "nishimatsu.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "penta-ocean",
+  "name": "五洋建設",
+  "n_items": 18,
+  "claimed_domain": "penta-ocean.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4184,10 +4151,21 @@
   "reason": "一致"
  },
  {
-  "id": "seven-and-i",
-  "name": "セブン＆アイ・ホールディングス",
-  "n_items": 25,
-  "claimed_domain": "7andi.com",
+  "id": "mitsubishi-shokuhin",
+  "name": "三菱食品",
+  "n_items": 23,
+  "claimed_domain": "mitsubishi-shokuhin.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "ppih",
+  "name": "パン・パシフィック・インターナショナルホールディングス（ドン・キホーテ）",
+  "n_items": 20,
+  "claimed_domain": "ppih.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4206,10 +4184,10 @@
   "reason": "一致"
  },
  {
-  "id": "ppih",
-  "name": "パン・パシフィック・インターナショナルホールディングス（ドン・キホーテ）",
-  "n_items": 20,
-  "claimed_domain": "ppih.co.jp",
+  "id": "seven-and-i",
+  "name": "セブン＆アイ・ホールディングス",
+  "n_items": 25,
+  "claimed_domain": "7andi.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4283,10 +4261,10 @@
   "reason": "一致"
  },
  {
-  "id": "workman",
-  "name": "ワークマン",
-  "n_items": 22,
-  "claimed_domain": "workman.co.jp",
+  "id": "yamada-hd",
+  "name": "ヤマダホールディングス",
+  "n_items": 28,
+  "claimed_domain": "yamada-holdings.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4294,10 +4272,10 @@
   "reason": "一致"
  },
  {
-  "id": "biccamera",
-  "name": "ビックカメラ",
-  "n_items": 6,
-  "claimed_domain": "biccamera.co.jp",
+  "id": "workman",
+  "name": "ワークマン",
+  "n_items": 22,
+  "claimed_domain": "workman.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4316,43 +4294,21 @@
   "reason": "一致"
  },
  {
+  "id": "biccamera",
+  "name": "ビックカメラ",
+  "n_items": 6,
+  "claimed_domain": "biccamera.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
   "id": "tsuruha-hd",
   "name": "ツルハホールディングス",
   "n_items": 23,
   "claimed_domain": "tsuruha-hd.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "sugi-hd",
-  "name": "スギホールディングス",
-  "n_items": 41,
-  "claimed_domain": "sugi-hd.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "yamada-hd",
-  "name": "ヤマダホールディングス",
-  "n_items": 28,
-  "claimed_domain": "yamada-holdings.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "cainz",
-  "name": "カインズ",
-  "n_items": 30,
-  "claimed_domain": "cainz.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4371,10 +4327,10 @@
   "reason": "一致"
  },
  {
-  "id": "zozo",
-  "name": "ZOZO",
-  "n_items": 36,
-  "claimed_domain": "zozo.com",
+  "id": "cainz",
+  "name": "カインズ",
+  "n_items": 30,
+  "claimed_domain": "cainz.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4386,6 +4342,39 @@
   "name": "サンドラッグ",
   "n_items": 24,
   "claimed_domain": "sundrug-recruit.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "zozo",
+  "name": "ZOZO",
+  "n_items": 36,
+  "claimed_domain": "zozo.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "kirin-hd",
+  "name": "キリンホールディングス",
+  "n_items": 27,
+  "claimed_domain": null,
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "suntory",
+  "name": "サントリーホールディングス",
+  "n_items": 12,
+  "claimed_domain": null,
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4415,10 +4404,10 @@
   "reason": "一致"
  },
  {
-  "id": "kirin-hd",
-  "name": "キリンホールディングス",
-  "n_items": 27,
-  "claimed_domain": null,
+  "id": "yamazaki-pan",
+  "name": "山崎製パン",
+  "n_items": 42,
+  "claimed_domain": "yamazakipan.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4430,28 +4419,6 @@
   "name": "日本ハム",
   "n_items": 22,
   "claimed_domain": "nipponham.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "suntory",
-  "name": "サントリーホールディングス",
-  "n_items": 12,
-  "claimed_domain": null,
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "yamazaki-pan",
-  "name": "山崎製パン",
-  "n_items": 42,
-  "claimed_domain": "yamazakipan.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4492,6 +4459,28 @@
   "reason": "一致"
  },
  {
+  "id": "nichirei",
+  "name": "ニチレイ",
+  "n_items": 21,
+  "claimed_domain": "nichirei.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "itoen",
+  "name": "伊藤園",
+  "n_items": 23,
+  "claimed_domain": "itoen.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
   "id": "house-foods",
   "name": "ハウス食品グループ本社",
   "n_items": 24,
@@ -4507,6 +4496,17 @@
   "name": "カルビー",
   "n_items": 34,
   "claimed_domain": "calbee.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "yakult",
+  "name": "ヤクルト本社",
+  "n_items": 34,
+  "claimed_domain": "yakult.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4536,65 +4536,10 @@
   "reason": "一致"
  },
  {
-  "id": "yakult",
-  "name": "ヤクルト本社",
-  "n_items": 34,
-  "claimed_domain": "yakult.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "itoen",
-  "name": "伊藤園",
-  "n_items": 23,
-  "claimed_domain": "itoen.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "nichirei",
-  "name": "ニチレイ",
-  "n_items": 21,
-  "claimed_domain": "nichirei.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
   "id": "lotte",
   "name": "ロッテ",
   "n_items": 27,
   "claimed_domain": "lotte.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "kao",
-  "name": "花王",
-  "n_items": 21,
-  "claimed_domain": "kao.com",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "shiseido",
-  "name": "資生堂",
-  "n_items": 25,
-  "claimed_domain": "shiseido.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4613,10 +4558,10 @@
   "reason": "一致"
  },
  {
-  "id": "unicharm",
-  "name": "ユニ・チャーム",
-  "n_items": 29,
-  "claimed_domain": "unicharm.co.jp",
+  "id": "shiseido",
+  "name": "資生堂",
+  "n_items": 25,
+  "claimed_domain": "shiseido.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4624,10 +4569,21 @@
   "reason": "一致"
  },
  {
-  "id": "loreal-japan",
-  "name": "日本ロレアル",
-  "n_items": 5,
-  "claimed_domain": "loreal.com",
+  "id": "kao",
+  "name": "花王",
+  "n_items": 21,
+  "claimed_domain": "kao.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "unicharm",
+  "name": "ユニ・チャーム",
+  "n_items": 29,
+  "claimed_domain": "unicharm.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4646,32 +4602,21 @@
   "reason": "一致"
  },
  {
+  "id": "loreal-japan",
+  "name": "日本ロレアル",
+  "n_items": 5,
+  "claimed_domain": "loreal.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
   "id": "ana-hd",
   "name": "ANAホールディングス",
   "n_items": 27,
   "claimed_domain": "ana.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "yamato-hd",
-  "name": "ヤマトホールディングス",
-  "n_items": 19,
-  "claimed_domain": "yamato-hd.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "nyk",
-  "name": "日本郵船",
-  "n_items": 18,
-  "claimed_domain": "nyk.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4690,17 +4635,6 @@
   "reason": "一致"
  },
  {
-  "id": "k-line",
-  "name": "川崎汽船",
-  "n_items": 23,
-  "claimed_domain": "kline.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
   "id": "nippon-express-hd",
   "name": "NIPPON EXPRESS ホールディングス（日本通運）",
   "n_items": 17,
@@ -4712,10 +4646,10 @@
   "reason": "一致"
  },
  {
-  "id": "sg-hd",
-  "name": "SGホールディングス（佐川急便）",
-  "n_items": 33,
-  "claimed_domain": null,
+  "id": "nyk",
+  "name": "日本郵船",
+  "n_items": 18,
+  "claimed_domain": "nyk.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4723,10 +4657,32 @@
   "reason": "一致"
  },
  {
-  "id": "odakyu",
-  "name": "小田急電鉄",
-  "n_items": 24,
-  "claimed_domain": "odakyu.jp",
+  "id": "k-line",
+  "name": "川崎汽船",
+  "n_items": 23,
+  "claimed_domain": "kline.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "yamato-hd",
+  "name": "ヤマトホールディングス",
+  "n_items": 19,
+  "claimed_domain": "yamato-hd.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "sg-hd",
+  "name": "SGホールディングス（佐川急便）",
+  "n_items": 33,
+  "claimed_domain": null,
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4778,17 +4734,6 @@
   "reason": "一致"
  },
  {
-  "id": "hakuhodo-dy",
-  "name": "博報堂DYホールディングス",
-  "n_items": 30,
-  "claimed_domain": "hakuhodody-holdings.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
   "id": "ntv-hd",
   "name": "日本テレビホールディングス",
   "n_items": 21,
@@ -4800,10 +4745,10 @@
   "reason": "一致"
  },
  {
-  "id": "shueisha",
-  "name": "集英社",
-  "n_items": 23,
-  "claimed_domain": "shueisha.co.jp",
+  "id": "hakuhodo-dy",
+  "name": "博報堂DYホールディングス",
+  "n_items": 30,
+  "claimed_domain": "hakuhodody-holdings.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4811,21 +4756,10 @@
   "reason": "一致"
  },
  {
-  "id": "kadokawa",
-  "name": "KADOKAWA",
-  "n_items": 20,
-  "claimed_domain": null,
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "kodansha",
-  "name": "講談社",
-  "n_items": 25,
-  "claimed_domain": "kodansha.co.jp",
+  "id": "toda",
+  "name": "戸田建設",
+  "n_items": 27,
+  "claimed_domain": "toda.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4844,10 +4778,10 @@
   "reason": "一致"
  },
  {
-  "id": "skyperfectjsat-hd",
-  "name": "スカパーJSATホールディングス",
+  "id": "kumagai-gumi",
+  "name": "熊谷組",
   "n_items": 23,
-  "claimed_domain": "newgraduate-sptvjsat.com",
+  "claimed_domain": "kumagaigumi.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4877,10 +4811,32 @@
   "reason": "一致"
  },
  {
-  "id": "avex",
-  "name": "エイベックス",
-  "n_items": 12,
-  "claimed_domain": "avex.co.jp",
+  "id": "kadokawa",
+  "name": "KADOKAWA",
+  "n_items": 20,
+  "claimed_domain": null,
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "shueisha",
+  "name": "集英社",
+  "n_items": 23,
+  "claimed_domain": "shueisha.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "skyperfectjsat-hd",
+  "name": "スカパーJSATホールディングス",
+  "n_items": 23,
+  "claimed_domain": "newgraduate-sptvjsat.com",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4899,10 +4855,43 @@
   "reason": "一致"
  },
  {
-  "id": "shochiku",
-  "name": "松竹",
-  "n_items": 19,
-  "claimed_domain": "shochiku.co.jp",
+  "id": "kodansha",
+  "name": "講談社",
+  "n_items": 25,
+  "claimed_domain": "kodansha.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "avex",
+  "name": "エイベックス",
+  "n_items": 12,
+  "claimed_domain": "avex.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "odakyu",
+  "name": "小田急電鉄",
+  "n_items": 24,
+  "claimed_domain": "odakyu.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "usj",
+  "name": "合同会社ユー・エス・ジェイ（USJ）",
+  "n_items": 8,
+  "claimed_domain": "usj.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4913,6 +4902,17 @@
   "id": "round-one",
   "name": "ラウンドワン",
   "n_items": 24,
+  "claimed_domain": null,
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "toho",
+  "name": "東宝",
+  "n_items": 30,
   "claimed_domain": null,
   "domain_match": true,
   "alien_entities": [],
@@ -4932,43 +4932,10 @@
   "reason": "一致"
  },
  {
-  "id": "toho",
-  "name": "東宝",
-  "n_items": 30,
-  "claimed_domain": null,
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "nikkei",
-  "name": "日本経済新聞社",
-  "n_items": 11,
-  "claimed_domain": null,
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
   "id": "sanrio",
   "name": "サンリオ",
   "n_items": 24,
   "claimed_domain": "sanrio.co.jp",
-  "domain_match": true,
-  "alien_entities": [],
-  "geo": [],
-  "verdict": "ok",
-  "reason": "一致"
- },
- {
-  "id": "usj",
-  "name": "合同会社ユー・エス・ジェイ（USJ）",
-  "n_items": 8,
-  "claimed_domain": "usj.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -4998,10 +4965,21 @@
   "reason": "一致"
  },
  {
-  "id": "gakken-hd",
-  "name": "学研ホールディングス",
-  "n_items": 23,
-  "claimed_domain": "gakken.co.jp",
+  "id": "shochiku",
+  "name": "松竹",
+  "n_items": 19,
+  "claimed_domain": "shochiku.co.jp",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "nikkei",
+  "name": "日本経済新聞社",
+  "n_items": 11,
+  "claimed_domain": null,
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -5031,10 +5009,10 @@
   "reason": "一致"
  },
  {
-  "id": "nagase-toshin",
-  "name": "ナガセ（東進）",
-  "n_items": 21,
-  "claimed_domain": "nagase.co.jp",
+  "id": "sugi-hd",
+  "name": "スギホールディングス",
+  "n_items": 41,
+  "claimed_domain": "sugi-hd.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -5042,10 +5020,10 @@
   "reason": "一致"
  },
  {
-  "id": "astroscale-hd",
-  "name": "アストロスケールホールディングス",
-  "n_items": 23,
-  "claimed_domain": "astroscale.com",
+  "id": "nagase-toshin",
+  "name": "ナガセ（東進）",
+  "n_items": 21,
+  "claimed_domain": "nagase.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -5064,10 +5042,21 @@
   "reason": "一致"
  },
  {
-  "id": "base-food",
-  "name": "ベースフード",
-  "n_items": 11,
-  "claimed_domain": "basefood.co.jp",
+  "id": "astroscale-hd",
+  "name": "アストロスケールホールディングス",
+  "n_items": 23,
+  "claimed_domain": "astroscale.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "gakken-hd",
+  "name": "学研ホールディングス",
+  "n_items": 23,
+  "claimed_domain": "gakken.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
@@ -5079,6 +5068,17 @@
   "name": "bitFlyer",
   "n_items": 23,
   "claimed_domain": "bitflyer.com",
+  "domain_match": true,
+  "alien_entities": [],
+  "geo": [],
+  "verdict": "ok",
+  "reason": "一致"
+ },
+ {
+  "id": "base-food",
+  "name": "ベースフード",
+  "n_items": 11,
+  "claimed_domain": "basefood.co.jp",
   "domain_match": true,
   "alien_entities": [],
   "geo": [],
