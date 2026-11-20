@@ -34,7 +34,15 @@ with open(CSV, encoding="utf-8-sig") as f:
         for t in filter(None, tags.split("/")):
             if t not in valid_tags: errs.append(f"[{slug}] 未知タグ: {t}")
 
-if rows != 400: errs.append(f"社数が400でない: {rows}")
+# 社数は固定値(旧: 400)でなく companies.json との双方向一致で見る(2026-11-20 新規社追加に対応)
+_cj = json.load(open("/Users/oscardodds/projects/10koma-shukatsu/public/companies.json"))
+_cj_ids = {c["id"] for arr in _cj.values() for c in arr}
+if not _cj_ids: errs.append("companies.json の社が0件(空=失敗)")
+_miss_csv = sorted(_cj_ids - seen)   # 未分類 = companies.json にあるが CSV に無い
+_miss_cj = sorted(seen - _cj_ids)    # 欠落 = CSV にあるが companies.json に無い(生成し忘れ)
+print(f"未分類(companies.jsonにあってCSVに無い)={len(_miss_csv)} / 欠落(CSVにあってcompanies.jsonに無い)={len(_miss_cj)} (分母: CSV {rows}社・companies.json {len(_cj_ids)}社)")
+if _miss_csv: errs.append(f"未分類: {_miss_csv}")
+if _miss_cj: errs.append(f"欠落(build_companies_taxonomy.py 未実行?): {_miss_cj}")
 
 # 空バケツ(taxonomyにあるがCSVに個社0の中分類)
 empty = [c for c in chu2dai if csv_chu.get(c,0)==0]

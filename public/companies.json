@@ -843,6 +843,19 @@
       "chu_slug": "chemical-materials",
       "chu_name": "化学・繊維・ゴム・ガラス",
       "tags": []
+    },
+    {
+      "id": "kanigen",
+      "name": "日本カニゼン",
+      "jukoma_liff_id": "2010075487-89AJxZnA",
+      "room_liff_id": "2010075487-d4TJ2xZc",
+      "video_url": null,
+      "kessan_url": null,
+      "dai_slug": "materials-chemical",
+      "dai_name": "素材・化学",
+      "chu_slug": "chemical-materials",
+      "chu_name": "化学・繊維・ゴム・ガラス",
+      "tags": []
     }
   ],
   "製薬・ヘルスケア": [

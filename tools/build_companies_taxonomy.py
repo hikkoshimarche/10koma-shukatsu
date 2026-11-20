@@ -29,9 +29,11 @@ tag_label2id = {t["label"]: t["id"] for t in tax["tags"]}
 
 # CSV: id -> (現行分類18, 中分類name, [tag_id])
 row_of = {}
+_csv_name = {}
 for r in csv.DictReader(open(CSVF, encoding="utf-8-sig")):
     tag_ids = [tag_label2id[t] for t in filter(None, r.get("横断タグ", "").split("/"))]
     row_of[r["slug"]] = (r["現行分類(18)"], r["新・中分類"], tag_ids)
+    _csv_name[r["slug"]] = r["社名"]
 
 old = json.load(open(CJ))
 # id -> 既存の基礎フィールド(liff/video等)。順序は既存を保持=差分最小。
@@ -40,6 +42,20 @@ for topkey, arr in old.items():
     for c in arr:
         base[c["id"]] = {k: c[k] for k in ("id", "name", "jukoma_liff_id", "room_liff_id", "video_url", "kessan_url") if k in c}
         order.append(c["id"])
+
+# 新規社(CSVにあって companies.json にまだ無い社)の追加。2026-11-20 kanigen で導入。
+# 基礎フィールドは companies.json を手で編集せずここで生成する: name=CSV「社名」、LIFF ID は全社共通値
+# (既存全社で1種類であることを確認してから使う。複数あれば止める)、video/kessan は未制作=null。
+_liff = {(b.get("jukoma_liff_id"), b.get("room_liff_id")) for b in base.values()}
+for _slug, _row in row_of.items():
+    if _slug in base:
+        continue
+    if len(_liff) != 1:
+        raise SystemExit(f"❌ 新規社 {_slug}: 既存社のLIFF IDが1種類でない {_liff} → 自動生成しない")
+    _j, _r = next(iter(_liff))
+    base[_slug] = {"id": _slug, "name": _csv_name[_slug], "jukoma_liff_id": _j, "room_liff_id": _r,
+                   "video_url": None, "kessan_url": None}
+    order.append(_slug)
 
 # 生成: トップレベル18キーは CSV「現行分類(18)」列が"正"(＝この列がコンテナのグルーピングを定義する)。
 # 旧: 現状キーと一致必須の関所を置いていたが、ルームのアーキタイプ是正のため 18キー間で社を移設する運用に変更。
