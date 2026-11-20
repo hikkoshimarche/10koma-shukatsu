@@ -1054,7 +1054,7 @@ app.get('/api/profile', async (c) => {
   if (!userId) return c.json({ registered: false, profile: null })
   try {
     const row = await c.env.DB.prepare(
-      `SELECT user_id, user_type, university, faculty, grad_year, consented_at, consent_version FROM user_profiles WHERE user_id = ?`
+      `SELECT user_id, user_type, university, faculty, grad_year, consented_at, consent_version, first_consented_at FROM user_profiles WHERE user_id = ?`
     ).bind(userId).first<any>()
     return c.json({ registered: !!row, profile: row || null })
   } catch (e) { return c.json({ registered: false, profile: null }) }
@@ -1071,12 +1071,33 @@ app.post('/api/profile', async (c) => {
     const uni = userType === 'student_univ' ? (b.university || null) : null
     const fac = userType === 'student_univ' ? (b.faculty || null) : null
     const grad = (userType === 'student_univ' || userType === 'student_pre') ? (b.grad_year || null) : null
-    await c.env.DB.prepare(
-      `INSERT INTO user_profiles (user_id, user_type, university, faculty, grad_year, consented_at, consent_version)
-       VALUES (?, ?, ?, ?, ?, datetime('now'), ?)
-       ON CONFLICT(user_id) DO UPDATE SET user_type=excluded.user_type, university=excluded.university,
-         faculty=excluded.faculty, grad_year=excluded.grad_year, consented_at=excluded.consented_at, consent_version=excluded.consent_version`
-    ).bind(userId, userType, uni, fac, grad, b.consent_version).run()
+    // 同意の監査(2026-11-20): first_consented_at は初回だけ入れて以後保持、consent_events は追記のみ。
+    // event: 行なし&過去イベントなし=granted / 行なし&過去イベントあり(削除後の再登録)=regranted /
+    //        行あり&同じ版=regranted / 行あり&別の版=version_changed。withdrawn は保留(オスカー確認待ち)。
+    const prev = await c.env.DB.prepare(`SELECT consent_version FROM user_profiles WHERE user_id = ?`)
+      .bind(userId).first<{ consent_version: string | null }>()
+    let event: string
+    let prevVersion: string | null = null
+    if (prev) {
+      prevVersion = prev.consent_version ?? null
+      event = prevVersion === b.consent_version ? 'regranted' : 'version_changed'
+    } else {
+      const past = await c.env.DB.prepare(`SELECT 1 AS x FROM consent_events WHERE user_id = ? LIMIT 1`)
+        .bind(userId).first<{ x: number }>()
+      event = past ? 'regranted' : 'granted'
+    }
+    await c.env.DB.batch([
+      c.env.DB.prepare(
+        `INSERT INTO user_profiles (user_id, user_type, university, faculty, grad_year, consented_at, consent_version, first_consented_at)
+         VALUES (?, ?, ?, ?, ?, datetime('now'), ?, datetime('now'))
+         ON CONFLICT(user_id) DO UPDATE SET user_type=excluded.user_type, university=excluded.university,
+           faculty=excluded.faculty, grad_year=excluded.grad_year, consented_at=excluded.consented_at, consent_version=excluded.consent_version,
+           first_consented_at=COALESCE(user_profiles.first_consented_at, excluded.first_consented_at)`
+      ).bind(userId, userType, uni, fac, grad, b.consent_version),
+      c.env.DB.prepare(
+        `INSERT INTO consent_events (user_id, event, consent_version, prev_version, endpoint) VALUES (?, ?, ?, ?, 'POST /api/profile')`
+      ).bind(userId, event, b.consent_version, prevVersion),
+    ])
     return c.json({ ok: true })
   } catch (e) { return c.json({ ok: false }, 500) }
 })
