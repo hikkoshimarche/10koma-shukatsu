@@ -80,3 +80,15 @@ tools/_subj_clear_errors.json
 # 画像自動修正の試行台帳(2026-11-18・public repoに出さない)
 tools/.image_fix_attempts.json
 tools/.image_fix_attempts.json.tmp
+
+# 2026-11-20 孤児整理: 作業ログ/中間データ(内部FB・キュー照合を含む→public repoに出さない)
+tools/_batch_fix_infra.log
+tools/_staleness_sweep.log
+tools/_dropped_49_for_F.json
+tools/_queue_reconciliation_for_F.json
+tools/_infra28.txt
+tools/_ob15.json
+# 内部の適用手順メモ(public repo のため commit しない)
+api/migration_v4_industry_10koma_APPLY.md
+# pipeline(private repo)scripts へのローカル symlink
+/scripts

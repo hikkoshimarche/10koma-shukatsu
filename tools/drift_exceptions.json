@@ -33,46 +33,6 @@
    "reason": "同上(業界10コマ総合商社koma1・画像の描き直しとセット)",
    "added": "2026-11-19",
    "expires": "2026-12-31"
-  },
-  {
-   "slug": "honda",
-   "panel": 1,
-   "fields": [
-    "dialogue"
-   ],
-   "reason": "③と同じ判断ルールに当てはまらずオスカー判断待ち(2026-11-19報告)。決まったら scenario_writer 経由で揃えて削除",
-   "added": "2026-11-19",
-   "expires": "2026-11-26"
-  },
-  {
-   "slug": "honda",
-   "panel": 4,
-   "fields": [
-    "dialogue"
-   ],
-   "reason": "③と同じ判断ルールに当てはまらずオスカー判断待ち(2026-11-19報告)。決まったら scenario_writer 経由で揃えて削除",
-   "added": "2026-11-19",
-   "expires": "2026-11-26"
-  },
-  {
-   "slug": "honda",
-   "panel": 5,
-   "fields": [
-    "dialogue"
-   ],
-   "reason": "③と同じ判断ルールに当てはまらずオスカー判断待ち(2026-11-19報告)。決まったら scenario_writer 経由で揃えて削除",
-   "added": "2026-11-19",
-   "expires": "2026-11-26"
-  },
-  {
-   "slug": "mitsubishi-shokuhin",
-   "panel": 2,
-   "fields": [
-    "dialogue"
-   ],
-   "reason": "持ち主不明の未コミット変更(koma7倍率除去・D1と一致)の処理承認待ちで書き戻し保留(2026-11-19報告)。承認後に commit→koma2 を D1→ファイル書き戻しして削除",
-   "added": "2026-11-19",
-   "expires": "2026-11-26"
   }
  ]
 }
